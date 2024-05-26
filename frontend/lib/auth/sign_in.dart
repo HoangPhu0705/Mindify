@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
 import 'package:pretty_animated_buttons/pretty_animated_buttons.dart';
 import 'package:pretty_animated_buttons/widgets/pretty_border_button.dart';
@@ -63,12 +64,14 @@ class _SignInState extends State<SignIn> {
                     MyTextField(
                         controller: emailController,
                         hintText: "Email",
+                        icon: Icons.email_outlined,
                         obsecure: false,
                         isPasswordTextField: false),
                     AppSpacing.extraLargeVertical,
                     MyTextField(
                         controller: passwordController,
                         hintText: "Password",
+                        icon: CupertinoIcons.padlock,
                         obsecure: _isObsecured,
                         isPasswordTextField: true),
                     AppSpacing.mediumVertical,
@@ -76,11 +79,7 @@ class _SignInState extends State<SignIn> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              signInUser();
-                            }
-                          },
+                          onTap: () {},
                           child: Text(
                             "Forgot password?",
                             style: TextStyle(fontWeight: FontWeight.w300),
@@ -92,25 +91,41 @@ class _SignInState extends State<SignIn> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        style: ButtonStyle(
-                          elevation: MaterialStateProperty.all(0),
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(AppColors.cream),
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.black),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
+                        style: AppStyles.primaryButtonStyle,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            signInUser();
+                          }
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(10.0),
                           child: Text("Login"),
                         ),
                       ),
+                    ),
+                    AppSpacing.mediumVertical,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Don't have an account? ",
+                          style: TextStyle(fontWeight: FontWeight.w300),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Transform.translate(
+                            offset: const Offset(0, 2),
+                            child: const Text(
+                              "Create one",
+                              style: TextStyle(
+                                shadows: [Shadow(offset: Offset(0, -2))],
+                                color: Colors.transparent,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                     AppSpacing.mediumVertical,
                     Row(

@@ -44,6 +44,7 @@ dependencies:
   lottie: ^3.1.2
   pretty_animated_buttons: ^0.0.1
   sign_in_button: ^3.2.0
+  toastification: ^2.0.0
 
 dev_dependencies:
   flutter_test:
