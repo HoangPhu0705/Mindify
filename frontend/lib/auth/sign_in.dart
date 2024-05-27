@@ -11,7 +11,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("Sign In"),
+      body: Text("Sign In", style: TextStyle(color: Colors.black),),
     );
   }
 }

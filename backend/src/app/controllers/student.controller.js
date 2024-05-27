@@ -4,6 +4,9 @@ class StudentController {
         res.send("All students");
     }
 
+    async addCourse(req, res){
+        
+    }
 
 }
 
