@@ -1,4 +1,5 @@
 const db = require('../../config/firebase');
+const course = require('../models/course.model')
 class CourseController {
 
     getAllCourses(req, res){
@@ -16,12 +17,17 @@ class CourseController {
 
     async addCourse(req, res) {
         try {
-            const course = {
+            const courseData = {
                 title: req.body.title,
                 description: req.body.description,
-                createdAt: new Date().toLocaleString(),
+
+                upDay: new Date().toISOString(),
             };
+
+            const course = new Course(null, courseData.title, courseData.description, null, null);
+
             const docRef = await db.collection('courses').add(course);
+
             res.status(201).send({ message: 'Course added successfully', courseId: docRef.id });
         } catch (error) {
             console.error('Error adding course: ', error);

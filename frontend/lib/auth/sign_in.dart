@@ -234,6 +234,7 @@ class _SignInState extends State<SignIn> {
           ),
         ),
       ),
+>>>>>>> 7c8f5b0a08d7419405a49cbf516d4bc24a0651a1
     );
   }
 }
