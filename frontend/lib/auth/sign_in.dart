@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,9 +13,15 @@ import 'package:pretty_animated_buttons/pretty_animated_buttons.dart';
 import 'package:pretty_animated_buttons/widgets/pretty_border_button.dart';
 import 'package:pretty_animated_buttons/widgets/pretty_wave_button.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:toastification/toastification.dart';
 
 class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+  final VoidCallback showSignUpPage;
+
+  const SignIn({
+    Key? key,
+    required this.showSignUpPage,
+  }) : super(key: key);
 
   @override
   State<SignIn> createState() => _SignInState();
@@ -31,13 +39,59 @@ class _SignInState extends State<SignIn> {
     _isObsecured = true;
   }
 
-  void signInUser() {
-    log("signin user");
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> signInUser() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential') {
+        // show error to user
+        showErrorToast("Incorrect email or passwords !");
+      }
+    }
   }
 
   void singInGoogle() {}
 
   void signInFacebook() {}
+
+  void showErrorToast(String message) {
+    toastification.show(
+      context: context,
+      title: Text(
+        message,
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
+      showProgressBar: false,
+      alignment: Alignment.bottomLeft,
+      autoCloseDuration: const Duration(seconds: 3),
+      type: ToastificationType.error,
+    );
+  }
+
+  void showSuccessToast() {
+    toastification.show(
+      context: context,
+      title: Text(
+        'Account created',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
+      showProgressBar: false,
+      alignment: Alignment.bottomLeft,
+      autoCloseDuration: const Duration(seconds: 2),
+      type: ToastificationType.success,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +166,7 @@ class _SignInState extends State<SignIn> {
                           style: TextStyle(fontWeight: FontWeight.w300),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: widget.showSignUpPage,
                           child: Transform.translate(
                             offset: const Offset(0, 2),
                             child: const Text(

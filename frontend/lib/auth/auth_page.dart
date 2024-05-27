@@ -1,30 +1,29 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/auth/sign_in.dart';
-import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/auth/sign_up.dart';
 
-class AuthPage extends StatelessWidget {
+class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
 
   @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
+  bool showLoginPage = true;
+
+  void toggleScreen() {
+    setState(() {
+      showLoginPage = !showLoginPage;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          // user is logged in
-          if (snapshot.hasData) {
-            return HomePage();
-          }
-          // user is NOT logged in
-          else {
-            return SignIn();
-          }
-        },
-      ),
-    );
+    if (showLoginPage) {
+      return SignIn(showSignUpPage: toggleScreen);
+    } else {
+      return SignUp(showLoginPage: toggleScreen);
+    }
   }
 }

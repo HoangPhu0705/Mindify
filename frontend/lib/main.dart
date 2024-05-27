@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/auth/main_page.dart';
 import 'package:frontend/auth/sign_in.dart';
 import 'package:frontend/auth/sign_up.dart';
 import 'package:frontend/firebase_options.dart';
@@ -46,7 +47,7 @@ class _MindifyAppState extends State<MindifyApp> {
           labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
-      home: SignUp(),
+      home: MainPage(),
     );
   }
 
