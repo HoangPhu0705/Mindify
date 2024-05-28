@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserService {
-  User user = FirebaseAuth.instance.currentUser!;
+  User get user => FirebaseAuth.instance.currentUser!;
 
   String getUsername() {
-    return user.displayName ?? "Mindify menber";
+    return user.displayName ?? "Mindify member";
   }
 
   Future<void> updateUsername(String newDisplayName) async {

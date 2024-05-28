@@ -27,14 +27,20 @@ class _SignUpState extends State<SignUp> {
   //Controllers
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController usernameController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   var _isObsecured;
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+  final FocusNode confirmPasswordFocusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _isObsecured = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      emailFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -42,26 +48,25 @@ class _SignUpState extends State<SignUp> {
     // TODO: implement dispose
     emailController.dispose();
     passwordController.dispose();
-    usernameController.dispose();
+    confirmPasswordController.dispose();
+
     super.dispose();
   }
 
   Future<void> signUpUser() async {
     String email = emailController.text.trim();
-    String username = usernameController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
     String password = passwordController.text.trim();
 
+    if (confirmPassword != password) {
+      showErrorToast("Confirm password does not match");
+      return;
+    }
+
     try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
-      )
-          .then(
-        (result) async {
-          User user = result.user!;
-          await user.updateDisplayName(username);
-        },
       );
     } on FirebaseAuthException catch (e) {
       log("Error: $e");
@@ -124,24 +129,42 @@ class _SignUpState extends State<SignUp> {
                 child: Column(
                   children: [
                     MyTextField(
-                        controller: usernameController,
-                        hintText: "Username",
-                        icon: Icons.account_box_outlined,
-                        obsecure: false,
-                        isPasswordTextField: false),
-                    AppSpacing.extraLargeVertical,
-                    MyTextField(
+                        actionType: TextInputAction.next,
                         controller: emailController,
+                        inputType: TextInputType.emailAddress,
                         hintText: "Email",
                         icon: Icons.email_outlined,
                         obsecure: false,
+                        focusNode: emailFocusNode,
+                        onFieldSubmitted: (value) {
+                          FocusScope.of(context)
+                              .requestFocus(passwordFocusNode);
+                        },
                         isPasswordTextField: false),
                     AppSpacing.extraLargeVertical,
                     MyTextField(
                         controller: passwordController,
+                        actionType: TextInputAction.next,
+                        inputType: TextInputType.visiblePassword,
                         hintText: "Password",
                         icon: CupertinoIcons.padlock,
                         obsecure: _isObsecured,
+                        focusNode: passwordFocusNode,
+                        onFieldSubmitted: (value) {
+                          FocusScope.of(context)
+                              .requestFocus(confirmPasswordFocusNode);
+                        },
+                        isPasswordTextField: true),
+                    AppSpacing.extraLargeVertical,
+                    MyTextField(
+                        actionType: TextInputAction.done,
+                        controller: confirmPasswordController,
+                        inputType: TextInputType.visiblePassword,
+                        hintText: "Confirm Password",
+                        icon: CupertinoIcons.padlock,
+                        obsecure: _isObsecured,
+                        focusNode: confirmPasswordFocusNode,
+                        onFieldSubmitted: (value) {},
                         isPasswordTextField: true),
                     AppSpacing.extraLargeVertical,
                     SizedBox(

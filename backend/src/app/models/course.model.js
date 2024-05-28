@@ -19,4 +19,4 @@ class Course {
     }
   }
 
-module.exports = Course;
+module.exports = new Course();

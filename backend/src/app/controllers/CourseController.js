@@ -6,7 +6,7 @@ exports.getAllCourses = async (req, res) => {
     } catch (error) {
       res.status(500).send(error.message);
     }
-  };
+  }
 exports.createCourse = async (req, res) => {
   try {
     const newCourse = req.body;
@@ -47,3 +47,6 @@ exports.getCourseById = async (req, res) => {
     res.status(404).send(error.message);
   }
 };
+
+
+module.exports = new CourseController();
