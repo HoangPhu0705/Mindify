@@ -1,13 +1,13 @@
-class StudentController {
+// class StudentController {
 
-    getAllStudents(req, res){
-        res.send("All students");
-    }
+//     getAllStudents(req, res){
+//         res.send("All students");
+//     }
 
-    async addCourse(req, res){
+//     async addCourse(req, res){
         
-    }
+//     }
 
-}
+// }
 
-module.exports = new StudentController();
+// module.exports = new StudentController();
