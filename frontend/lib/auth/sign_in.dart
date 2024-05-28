@@ -9,6 +9,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pretty_animated_buttons/pretty_animated_buttons.dart';
 import 'package:pretty_animated_buttons/widgets/pretty_border_button.dart';
 import 'package:pretty_animated_buttons/widgets/pretty_wave_button.dart';
@@ -32,18 +33,24 @@ class _SignInState extends State<SignIn> {
   TextEditingController passwordController = TextEditingController();
   var _isObsecured;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _isObsecured = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      emailFocusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     emailController.dispose();
+    passwordFocusNode.dispose();
     passwordController.dispose();
+    emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -55,13 +62,24 @@ class _SignInState extends State<SignIn> {
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
-        // show error to user
         showErrorToast("Incorrect email or passwords !");
       }
     }
   }
 
-  void singInGoogle() {}
+  void signInGoogle() async {
+    GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+
+    GoogleSignInAuthentication? gAuth = await gUser?.authentication;
+
+    AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: gAuth?.accessToken,
+      idToken: gAuth?.idToken,
+    );
+
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   void signInFacebook() {}
 
@@ -116,17 +134,28 @@ class _SignInState extends State<SignIn> {
                 child: Column(
                   children: [
                     MyTextField(
+                        inputType: TextInputType.emailAddress,
                         controller: emailController,
                         hintText: "Email",
+                        actionType: TextInputAction.next,
+                        focusNode: emailFocusNode,
                         icon: Icons.email_outlined,
+                        onFieldSubmitted: (value) {
+                          FocusScope.of(context)
+                              .requestFocus(passwordFocusNode);
+                        },
                         obsecure: false,
                         isPasswordTextField: false),
                     AppSpacing.extraLargeVertical,
                     MyTextField(
+                        inputType: TextInputType.visiblePassword,
                         controller: passwordController,
                         hintText: "Password",
+                        actionType: TextInputAction.done,
                         icon: CupertinoIcons.padlock,
+                        focusNode: passwordFocusNode,
                         obsecure: _isObsecured,
+                        onFieldSubmitted: (value) {},
                         isPasswordTextField: true),
                     AppSpacing.mediumVertical,
                     Row(
@@ -172,7 +201,11 @@ class _SignInState extends State<SignIn> {
                             child: const Text(
                               "Create one",
                               style: TextStyle(
-                                shadows: [Shadow(offset: Offset(0, -2))],
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(0, -2),
+                                  ),
+                                ],
                                 color: Colors.transparent,
                                 decoration: TextDecoration.underline,
                               ),
@@ -220,7 +253,7 @@ class _SignInState extends State<SignIn> {
                       child: SignInButton(
                         Buttons.google,
                         text: "Login with Google",
-                        onPressed: () {},
+                        onPressed: signInGoogle,
                         padding: EdgeInsets.all(4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -234,7 +267,6 @@ class _SignInState extends State<SignIn> {
           ),
         ),
       ),
->>>>>>> 7c8f5b0a08d7419405a49cbf516d4bc24a0651a1
     );
   }
 }

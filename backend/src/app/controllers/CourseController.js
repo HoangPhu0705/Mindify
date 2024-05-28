@@ -1,5 +1,5 @@
 const db = require('../../config/firebase');
-const course = require('../models/course.model')
+const Course = require('../models/course.model')
 class CourseController {
 
     getAllCourses(req, res){
@@ -24,7 +24,7 @@ class CourseController {
                 upDay: new Date().toISOString(),
             };
 
-            const course = new Course(null, courseData.title, courseData.description, null, null);
+            const course = Course(null, courseData.title, courseData.description, null, null);
 
             const docRef = await db.collection('courses').add(course);
 

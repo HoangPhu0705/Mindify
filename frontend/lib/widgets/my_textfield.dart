@@ -10,15 +10,23 @@ class MyTextField extends StatefulWidget {
   final String hintText;
   final IconData icon;
   bool obsecure;
-  bool isPasswordTextField;
-  MyTextField({
-    Key? key,
-    required this.controller,
-    required this.icon,
-    required this.hintText,
-    required this.obsecure,
-    required this.isPasswordTextField,
-  }) : super(key: key);
+  final FocusNode focusNode;
+  final bool isPasswordTextField;
+  final TextInputType inputType;
+  final TextInputAction actionType;
+  final onFieldSubmitted;
+  MyTextField(
+      {Key? key,
+      required this.controller,
+      required this.icon,
+      required this.hintText,
+      required this.focusNode,
+      required this.obsecure,
+      required this.isPasswordTextField,
+      required this.inputType,
+      required this.actionType,
+      required this.onFieldSubmitted})
+      : super(key: key);
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -58,6 +66,8 @@ class _MyTextFieldState extends State<MyTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onFieldSubmitted: widget.onFieldSubmitted,
+      focusNode: widget.focusNode,
       validator: (value) {
         if (widget.isPasswordTextField) {
           return validatePassword(value);
@@ -68,6 +78,8 @@ class _MyTextFieldState extends State<MyTextField> {
           return validateEmail(value);
         }
       },
+      textInputAction: widget.actionType,
+      keyboardType: widget.inputType,
       controller: widget.controller,
       cursorColor: AppColors.blue,
       obscureText: widget.obsecure,

@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/auth/main_page.dart';
-import 'package:frontend/auth/sign_in.dart';
-import 'package:frontend/auth/sign_up.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/utils/colors.dart';
