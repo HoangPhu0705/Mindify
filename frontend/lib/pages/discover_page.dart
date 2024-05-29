@@ -41,7 +41,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 itemBuilder: (context, index) {
                   return PopularCourse(
                       imageUrl:
-                          "https://cdn.domestika.org/ar_16:9,c_fill,dpr_1.0,f_auto,pg_1,q_auto:eco,t_base_params,w_768/v1712231738/course-covers/000/004/280/4280-original.jpg?1712231738",
+                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvZRzCOTmTpG-0zKoHeoNr8J-LeI_ihfZO3Q&s",
                       courseName:
                           "Portrait Sketchbooking: Explore the Human Face",
                       instructor: " Gabriela Niko");
