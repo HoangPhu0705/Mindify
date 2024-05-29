@@ -3,7 +3,7 @@ const studentRouter = require('./students');
 
 function route(app){
     app.use('/api/course', courseRouter)
-    app.use('/api/student', studentRouter)
+    // app.use('/api/student', studentRouter)
 
 }
 
