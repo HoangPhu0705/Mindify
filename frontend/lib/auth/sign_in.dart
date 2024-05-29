@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -28,6 +29,13 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
+class Resource {
+  final Status status;
+  Resource({required this.status});
+}
+
+enum Status { Success, Error, Cancelled }
+
 class _SignInState extends State<SignIn> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -35,7 +43,7 @@ class _SignInState extends State<SignIn> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
-
+  String userEmail = "";
   @override
   void initState() {
     super.initState();
@@ -81,7 +89,19 @@ class _SignInState extends State<SignIn> {
         await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  void signInFacebook() {}
+  Future<UserCredential> signInFacebook() async {
+    final LoginResult loginResult = await FacebookAuth.instance
+        .login(permissions: ['email', 'public_profile', 'user_birthday']);
+
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
+
+    final userData = await FacebookAuth.instance.getUserData();
+
+    userEmail = userData['email'];
+
+    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  }
 
   void showErrorToast(String message) {
     toastification.show(
@@ -240,7 +260,7 @@ class _SignInState extends State<SignIn> {
                       child: SignInButton(
                         Buttons.facebook,
                         text: "Login with Facebook",
-                        onPressed: () {},
+                        onPressed: signInFacebook,
                         padding: EdgeInsets.all(12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),

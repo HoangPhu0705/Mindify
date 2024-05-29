@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Colors
-  static const Color charcoal = Color(0xFF333333);
+  static const Color deepSpace = Color(0xFF062137);
   static const Color cream = Color(0xFF00FF7C);
   static const Color red = Color(0xFFFF0000);
 

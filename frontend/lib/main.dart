@@ -41,6 +41,12 @@ class _MindifyAppState extends State<MindifyApp> {
         textTheme: const TextTheme(
           displayLarge: TextStyle(
               fontSize: 40, fontWeight: FontWeight.w700, color: AppColors.blue),
+          displaySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          headlineMedium: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.blue),
+          titleLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+          titleMedium: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
           labelLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
