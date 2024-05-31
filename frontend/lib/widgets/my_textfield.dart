@@ -54,14 +54,6 @@ String? validatePassword(String? value) {
   return null;
 }
 
-String? validateUsername(String? value) {
-  if (value!.isEmpty) {
-    return "Please choose a username";
-  }
-
-  return null;
-}
-
 class _MyTextFieldState extends State<MyTextField> {
   @override
   Widget build(BuildContext context) {
@@ -72,9 +64,6 @@ class _MyTextFieldState extends State<MyTextField> {
         if (widget.isPasswordTextField) {
           return validatePassword(value);
         } else {
-          if (widget.hintText == "Username") {
-            return validateUsername(value);
-          }
           return validateEmail(value);
         }
       },
@@ -93,6 +82,7 @@ class _MyTextFieldState extends State<MyTextField> {
         ),
         hintText: widget.hintText,
         hintStyle: const TextStyle(
+          fontSize: 16,
           color: AppColors.grey,
         ),
         suffixIcon: widget.isPasswordTextField
