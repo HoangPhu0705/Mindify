@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/auth/sign_in.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -8,6 +10,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,6 +96,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       // Handle Watched History tap
                     },
+                  ),
+                  // to test logout, sửa cái này giúp
+                  ListTile(
+                    leading: Icon(Icons.logout),
+                    title: Text('Logout'),
+                    onTap: signUserOut,
                   ),
                 ],
               ),
