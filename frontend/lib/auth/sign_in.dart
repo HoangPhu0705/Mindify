@@ -6,6 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:frontend/auth/forgot_password.dart';
+import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/pages/profile_page.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -182,7 +185,14 @@ class _SignInState extends State<SignIn> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                    ForgotPasswordScreen()), // Trang đích
+                            );
+                          },
                           child: Text(
                             "Forgot password?",
                             style: TextStyle(fontWeight: FontWeight.w300),
@@ -199,6 +209,12 @@ class _SignInState extends State<SignIn> {
                           if (_formKey.currentState!.validate()) {
                             signInUser();
                           }
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           HomePage()), // Trang đích
+                          // );
                         },
                         child: const Padding(
                           padding: EdgeInsets.all(10.0),

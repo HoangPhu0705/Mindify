@@ -1,9 +1,14 @@
 const { TeacherCollection } = require('./Collections')
 
 exports.createTeacher = async (teacher) => {
-    const docRef = TeacherCollection.doc();
-    await docRef.set(teacher);
-    return docRef.id;
+    try {
+        const docRef = TeacherCollection.doc();
+        await docRef.set(teacher);
+        return docRef.id;
+    } catch (error) {
+        console.error('Error creating teacher:', error);
+        throw error;
+    }
 };
 
 exports.getAllTeachers = async () => {
