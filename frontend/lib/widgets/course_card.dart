@@ -33,8 +33,6 @@ class CourseCard extends StatefulWidget {
 }
 
 class _CourseCardState extends State<CourseCard> {
-  bool isSaved = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,7 +40,7 @@ class _CourseCardState extends State<CourseCard> {
       width: 320,
       height: 400,
       child: Card(
-        elevation: 10,
+        elevation: 4,
         shadowColor: Colors.black,
         surfaceTintColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -138,16 +136,9 @@ class _CourseCardState extends State<CourseCard> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    isSaved = !isSaved;
-                                  });
-
-                                },
+                                onTap: () {},
                                 child: Icon(
-                                  isSaved
-                                      ? Icons.bookmark
-                                      : Icons.bookmark_border_outlined,
+                                  Icons.bookmark_border_outlined,
                                   size: 28,
                                 ),
                               )

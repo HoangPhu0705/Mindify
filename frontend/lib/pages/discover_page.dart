@@ -18,7 +18,7 @@ class DiscoverPage extends StatefulWidget {
 class _DiscoverPageState extends State<DiscoverPage> {
   final _pageController = PageController();
   final _courseController =
-      PageController(viewportFraction: .8, initialPage: 0, keepPage: false);
+      PageController(viewportFraction: 0.8, keepPage: false, initialPage: 0);
 
   @override
   void initState() {
@@ -52,7 +52,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 height: 400,
                 width: double.infinity,
                 child: PageView.builder(
-                  physics: CustomPageViewScrollPhysics(),
                   controller: _pageController,
                   itemCount: 5,
                   itemBuilder: (context, index) {
@@ -92,6 +91,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 child: PageView.builder(
                   padEnds: false,
                   controller: _courseController,
+                  physics: CustomPageViewScrollPhysics(),
                   itemCount: 4,
                   itemBuilder: (context, index) {
                     return GestureDetector(
@@ -125,6 +125,34 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 400,
+                child: PageView.builder(
+                  padEnds: false,
+                  physics: CustomPageViewScrollPhysics(),
+                  controller: _courseController,
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        log("choose course $index");
+                      },
+                      child: CourseCard(
+                        thumbnail:
+                            "https://cdn.domestika.org/ar_16:9,c_fill,dpr_1.0,f_auto,pg_1,q_auto:eco,t_base_params,w_768/v1637746204/course-covers/000/001/745/1745-original.jpg?1637746204",
+                        instructor: "Jordy Vandeput",
+                        specializaion: "Filmaker and Youtuber",
+                        courseName:
+                            "Advanced Video Editing with Adobe Premiere Pro",
+                        time: 53,
+                        numberOfLesson: 9,
+                        avatar: "https://avatar.iran.liara.run/public/boy",
+                      ),
+                    );
+                  },
+                ),
+              ),
+              AppSpacing.mediumVertical,
             ],
           ),
         ),
@@ -144,7 +172,7 @@ class CustomPageViewScrollPhysics extends ScrollPhysics {
 
   @override
   SpringDescription get spring => const SpringDescription(
-        mass: 50,
+        mass: 80,
         stiffness: 100,
         damping: 0.8,
       );
