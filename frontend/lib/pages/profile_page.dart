@@ -1,6 +1,13 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend/auth/sign_in.dart';
+import 'package:frontend/pages/setting_page.dart';
+import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/spacing.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,46 +20,77 @@ class _ProfilePageState extends State<ProfilePage> {
   void signUserOut() {
     FirebaseAuth.instance.signOut();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Column(
         children: [
           Container(
-            color: Color(0xFF6200EE),
-            padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 20.0),
-            child: Row(
+            color: AppColors.deepBlue,
+            padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 30.0),
+            child: Column(
               children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('assets/john_cena.jpg'), // Add the path to your profile picture
-                  radius: 30,
-                ),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  //icon notification
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                      'JOHN CENA',
-                      style: TextStyle(
+                    GestureDetector(
+                      onTap: () {},
+                      child: Icon(
+                        CupertinoIcons.bell,
                         color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        size: 26,
                       ),
                     ),
-                    Text(
-                      'View Profile',
-                      style: TextStyle(
+                    AppSpacing.mediumHorizontal,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SettingPage(),
+                          ),
+                        );
+                      },
+                      child: Icon(
+                        CupertinoIcons.gear,
                         color: Colors.white,
-                        fontSize: 14,
+                        size: 26,
                       ),
                     ),
                   ],
                 ),
-                Spacer(),
-                Icon(Icons.notifications, color: Colors.white),
-                SizedBox(width: 10,),
-                Icon(Icons.settings, color: Colors.white,)
+                AppSpacing.largeVertical,
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                          "https://avatar.iran.liara.run/public/boy"),
+                      radius: 30,
+                    ),
+                    AppSpacing.mediumHorizontal,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Phú Phan',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Colors.white,
+                                  ),
+                        ),
+                        Text(
+                          'View Profile',
+                          style:
+                              Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    color: AppColors.cream,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -65,39 +103,44 @@ class _ProfilePageState extends State<ProfilePage> {
               child: ListView(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.cloud_download),
-                    title: Text('Downloads'),
+                    leading: Icon(Icons.arrow_circle_down),
+                    title: Text(
+                      'Downloads',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge!
+                          .copyWith(fontSize: 16),
+                    ),
                     subtitle: Text('0 classes'),
                     trailing: Icon(Icons.chevron_right),
-                    onTap: () {
-                      // Handle Downloads tap
-                    },
+                    onTap: () {},
                   ),
                   ListTile(
-                    leading: Icon(Icons.bookmark),
-                    title: Text('All saved Classes'),
+                    leading: Icon(Icons.bookmark_border_outlined),
+                    title: Text(
+                      'All saved Classes',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge!
+                          .copyWith(fontSize: 16),
+                    ),
                     trailing: Icon(Icons.chevron_right),
                     onTap: () {
                       // Handle All saved Classes tap
                     },
                   ),
-                  // ListTile(
-                  //   leading: Icon(Icons.list),
-                  //   title: Text('My Lists'),
-                  //   trailing: Icon(Icons.chevron_right),
-                  //   onTap: () {
-                  //     // Handle My Lists tap
-                  //   },
-                  // ),
                   ListTile(
                     leading: Icon(Icons.history),
-                    title: Text('Watched History'),
+                    title: Text(
+                      'Watched History',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge!
+                          .copyWith(fontSize: 16),
+                    ),
                     trailing: Icon(Icons.chevron_right),
-                    onTap: () {
-                      // Handle Watched History tap
-                    },
+                    onTap: () {},
                   ),
-                  // to test logout, sửa cái này giúp
                   ListTile(
                     leading: Icon(Icons.logout),
                     title: Text('Logout'),

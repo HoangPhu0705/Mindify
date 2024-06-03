@@ -51,6 +51,8 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   exprollable_page_view: ^1.0.1
   cached_network_image: ^3.3.1
+  flutter_quill: ^9.3.11
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

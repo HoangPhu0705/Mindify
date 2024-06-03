@@ -8,7 +8,6 @@ import 'package:frontend/utils/colors.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(const MindifyApp());
 }
 
@@ -37,6 +36,7 @@ class _MindifyAppState extends State<MindifyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        scaffoldBackgroundColor: AppColors.ghostWhite,
         fontFamily: 'Poppins',
         textTheme: const TextTheme(
           displayLarge: TextStyle(

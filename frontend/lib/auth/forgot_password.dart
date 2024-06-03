@@ -1,116 +1,87 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/auth/email_verification_page.dart';
+import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_textfield.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final TextEditingController _emailcontroller = TextEditingController();
+  final FocusNode emailFocusNode = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _emailcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        emailFocusNode.requestFocus();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Mindify.',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Forgot Password.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 40),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Email',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Your email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                ),
-              ),
-              SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle submit button press
-                },
+      appBar: AppBar(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("Mindify.", style: Theme.of(context).textTheme.displayLarge),
+            AppSpacing.mediumVertical,
+            Text(
+              'Forgot Password.',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            AppSpacing.largeVertical,
+            Form(
+              key: _formKey,
+              child: MyTextField(
+                  inputType: TextInputType.emailAddress,
+                  controller: _emailcontroller,
+                  hintText: "Enter your email",
+                  actionType: TextInputAction.next,
+                  focusNode: emailFocusNode,
+                  icon: Icons.email_outlined,
+                  onFieldSubmitted: (value) {},
+                  obsecure: false,
+                  isPasswordTextField: false),
+            ),
+            AppSpacing.largeVertical,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
                 style: AppStyles.primaryButtonStyle,
-                child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: AppStyles.primaryButtonStyle,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    EmailVerificationScreen()), // Trang đích
-                          );
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text("Submit"),
-                        ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmailVerificationScreen(),
                       ),
-                    ),
+                    );
+                  }
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text("Submit"),
+                ),
               ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Already have an account? ',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) =>
-                          //           HomePage()), // Trang đích
-                          // );
-                    },
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

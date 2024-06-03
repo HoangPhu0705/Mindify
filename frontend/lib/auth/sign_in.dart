@@ -190,7 +190,7 @@ class _SignInState extends State<SignIn> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                    ForgotPasswordScreen()), // Trang đích
+                                      ForgotPasswordScreen()), // Trang đích
                             );
                           },
                           child: Text(
@@ -209,12 +209,6 @@ class _SignInState extends State<SignIn> {
                           if (_formKey.currentState!.validate()) {
                             signInUser();
                           }
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) =>
-                          //           HomePage()), // Trang đích
-                          // );
                         },
                         child: const Padding(
                           padding: EdgeInsets.all(10.0),
@@ -269,19 +263,6 @@ class _SignInState extends State<SignIn> {
                           child: Divider(),
                         ),
                       ],
-                    ),
-                    AppSpacing.smallVertical,
-                    SizedBox(
-                      width: double.infinity,
-                      child: SignInButton(
-                        Buttons.facebook,
-                        text: "Login with Facebook",
-                        onPressed: signInFacebook,
-                        padding: EdgeInsets.all(12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
                     ),
                     AppSpacing.smallVertical,
                     SizedBox(
