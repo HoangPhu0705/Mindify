@@ -1,10 +1,14 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/bottom_sheet/image_option.dart';
 import 'package:frontend/widgets/change_passwordField.dart';
 import 'package:frontend/widgets/my_textfield.dart';
 
@@ -29,7 +33,6 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _isObsecured = true;
     super.initState();
   }
@@ -73,10 +76,15 @@ class _EditProfileState extends State<EditProfile> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(
-                    "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"),
+              GestureDetector(
+                onTap: () {
+                  showImageOptionModalBottomSheet(context);
+                },
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: NetworkImage(
+                      "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"),
+                ),
               ),
               AppSpacing.largeVertical,
               Container(

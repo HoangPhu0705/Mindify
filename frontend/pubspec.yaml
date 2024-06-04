@@ -53,6 +53,8 @@ dependencies:
   cached_network_image: ^3.3.1
   flutter_quill: ^9.3.11
   provider: ^6.1.2
+  wolt_modal_sheet: ^0.6.0
+  super_cupertino_navigation_bar: ^2.1.2
 
 dev_dependencies:
   flutter_test:
