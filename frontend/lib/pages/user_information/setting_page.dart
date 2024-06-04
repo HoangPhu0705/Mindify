@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/user_information/edit_profile.dart';
 import 'package:frontend/utils/colors.dart';
 
 class SettingPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class _SettingPageState extends State<SettingPage> {
           centerTitle: true,
           title: const Text(
             "Settings",
-            style: TextStyle(fontSize: 24),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         body: SingleChildScrollView(
@@ -33,14 +34,22 @@ class _SettingPageState extends State<SettingPage> {
               _buildListTile(
                 "Edit Profile",
                 Icons.chevron_right_outlined,
-                () {},
+                () {
+                  //go to edit profile page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfile()),
+                  );
+                },
               ),
               Divider(),
               _buildSectionTitle("Notification"),
               _buildListTileNotify(
                 "Learning reminders",
                 "Set aside time every week for learning",
-                () {},
+                () {
+                  log("notify");
+                },
               ),
               Divider(),
               _buildSectionTitle("About"),
@@ -73,8 +82,11 @@ class _SettingPageState extends State<SettingPage> {
               ),
               _buildListTileDeleteAccount(
                 "Delete Account",
-                () {},
+                () {
+                  log("Delete Account");
+                },
               ),
+              Divider(),
             ],
           ),
         ),
@@ -96,16 +108,23 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Widget _buildListTile(String title, IconData icon, VoidCallback onTap) {
-    return ListTile(
-      title: Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .bodyLarge!
-            .copyWith(fontWeight: FontWeight.w400),
+    return Theme(
+      data: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
-      trailing: Icon(icon),
-      onTap: onTap,
+      child: ListTile(
+        splashColor: AppColors.ghostWhite,
+        title: Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge!
+              .copyWith(fontWeight: FontWeight.w400),
+        ),
+        trailing: Icon(icon),
+        onTap: onTap,
+      ),
     );
   }
 

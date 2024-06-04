@@ -9,6 +9,7 @@ class AppColors {
 
   // Secondary Colors
   static const Color grey = Color(0xFF4F6272);
+  static const Color lightGrey = Color(0xFFA4A4A4);
   static const Color pastelPink = Color(0xFFFFD1DC);
   static const Color deepBlue = Color(0xFF8B00FD);
 

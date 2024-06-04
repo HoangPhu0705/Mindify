@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/auth/sign_in.dart';
-import 'package:frontend/pages/setting_page.dart';
+import 'package:frontend/pages/user_information/setting_page.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 

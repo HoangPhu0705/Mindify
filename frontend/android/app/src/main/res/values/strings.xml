@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="facebook_app_id">1167769450892278</string>
-    <string name="fb_login_protocol_scheme">fb1167769450892278</string>
-    <string name="facebook_client_token">71ca82c43b3ef6d9e59a3ec517c51760</string>
-    <string name="app_name">"Mindify_Auth"</string>
-</resources>
-
-

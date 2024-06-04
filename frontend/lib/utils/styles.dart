@@ -13,6 +13,15 @@ class AppStyles {
     ),
   );
 
-
-  
+  static var secondaryButtonStyle = ButtonStyle(
+    elevation: MaterialStateProperty.all(0),
+    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        side: BorderSide(color: Colors.black),
+      ),
+    ),
+  );
 }
