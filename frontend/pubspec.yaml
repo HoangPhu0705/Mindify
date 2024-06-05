@@ -55,6 +55,7 @@ dependencies:
   provider: ^6.1.2
   wolt_modal_sheet: ^0.6.0
   super_cupertino_navigation_bar: ^2.1.2
+  chip_list: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -79,9 +80,19 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+  - assets/images/category/animation.jpg
+  - assets/images/category/culinary.jpg
+  - assets/images/category/drawing.jpg    
+  - assets/images/category/film.jpg
+  - assets/images/category/graphic_design.jpg
+  - assets/images/category/illustration.jpg
+  - assets/images/category/photography.jpg
+  - assets/images/category/procreate.jpg
+  - assets/images/category/watercolor.jpg
+  - assets/images/category/web_app_design.jpg
+  - assets/images/category/writing.jpg
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -98,6 +109,7 @@ flutter:
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 400
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700 
         - asset: assets/fonts/Poppins-Semibold.ttf
