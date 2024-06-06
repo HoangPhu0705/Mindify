@@ -13,7 +13,7 @@ class AppConstants {
     'Writing',
   ];
 
-  static const List<String> catogoryImage = [
+  static const List<String> categoryImage = [
     'assets/images/category/animation.jpg',
     'assets/images/category/culinary.jpg',
     'assets/images/category/drawing.jpg',

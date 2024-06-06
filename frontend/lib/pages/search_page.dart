@@ -33,10 +33,21 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _preloadImages();
+    });
+  }
+
+  void _preloadImages() {
+    for (String imagePath in AppConstants.categoryImage) {
+      precacheImage(AssetImage(imagePath), context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    const categories = AppConstants.categories;
+    const categoryImage = AppConstants.categoryImage;
     return SafeArea(
       child: Scaffold(
         //SuperScaffold
@@ -111,10 +122,8 @@ class _SearchPageState extends State<SearchPage> {
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: AppConstants.categories.length,
                   itemBuilder: (context, index) {
-                    final _categories = AppConstants.categories;
-                    final _categoryImage = AppConstants.catogoryImage;
                     return _buildCategoryTile(
-                        _categories[index], _categoryImage[index]);
+                        categories[index], categoryImage[index]);
                   },
                 ),
                 AppSpacing.largeVertical,
