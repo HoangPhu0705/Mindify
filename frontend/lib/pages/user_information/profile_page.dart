@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/auth/sign_in.dart';
 import 'package:frontend/pages/user_information/setting_page.dart';
+import 'package:frontend/services/functions/UserService.dart';
+import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,8 +20,22 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  void signUserOut() {
-    FirebaseAuth.instance.signOut();
+  UserService userService = UserService();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      String displayName = userService.getUsername();
+      Provider.of<UserProvider>(context, listen: false)
+          .setDisplayName(displayName);
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -74,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Phú Phan',
+                          context.watch<UserProvider>().displayName,
                           style:
                               Theme.of(context).textTheme.titleMedium!.copyWith(
                                     color: Colors.white,
@@ -153,5 +170,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
+  }
+
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
   }
 }

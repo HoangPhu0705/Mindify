@@ -5,12 +5,17 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:frontend/services/functions/UserService.dart';
+import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/bottom_sheet/image_option.dart';
 import 'package:frontend/widgets/change_passwordField.dart';
 import 'package:frontend/widgets/my_textfield.dart';
+import 'package:provider/provider.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -20,6 +25,10 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  //Services
+  final UserService _userService = UserService();
+
+  //Controllers
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _newPasswordController = TextEditingController();
@@ -29,12 +38,16 @@ class _EditProfileState extends State<EditProfile> {
   final passwordFocusNode = FocusNode();
   final newPasswordFocusNode = FocusNode();
 
+  //key
+  final GlobalKey<FormState> _changePasswordKey = GlobalKey<FormState>();
+
   var _isObsecured;
 
   @override
   void initState() {
     _isObsecured = true;
     super.initState();
+    _usernameController.text = _userService.getUsername();
   }
 
   @override
@@ -61,14 +74,24 @@ class _EditProfileState extends State<EditProfile> {
             style: TextStyle(fontSize: 20),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Done",
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: AppColors.deepBlue,
-                      fontWeight: FontWeight.w700,
-                    ),
+            GestureDetector(
+              onTap: () async {
+                var newName = _usernameController.text;
+                await _userService.updateUsername(newName);
+                Provider.of<UserProvider>(context, listen: false)
+                    .setDisplayName(newName);
+
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Done",
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: AppColors.deepBlue,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
               ),
             ),
           ],
@@ -82,8 +105,8 @@ class _EditProfileState extends State<EditProfile> {
                 },
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(
-                      "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"),
+                  backgroundImage:
+                      NetworkImage("https://avatar.iran.liara.run/public/boy"),
                 ),
               ),
               AppSpacing.largeVertical,
@@ -119,21 +142,30 @@ class _EditProfileState extends State<EditProfile> {
                     AppSpacing.mediumVertical,
                     _buildSection("Change Password"),
                     Form(
+                      key: _changePasswordKey,
                       child: Column(
                         children: [
                           ChangePasswordField(
+                              controller: _passwordController,
                               obsecure: _isObsecured,
                               title: "Current password"),
                           AppSpacing.mediumVertical,
                           ChangePasswordField(
-                              obsecure: _isObsecured, title: "New password"),
+                              controller: _newPasswordController,
+                              obsecure: _isObsecured,
+                              title: "New password"),
                           AppSpacing.mediumVertical,
                           ChangePasswordField(
+                              controller: _confirmNewPasswordController,
                               obsecure: _isObsecured,
                               title: "Confirm new password"),
                           AppSpacing.mediumVertical,
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (_changePasswordKey.currentState!.validate()) {
+                                changePassword();
+                              }
+                            },
                             style: AppStyles.secondaryButtonStyle,
                             child: Text("Change Password"),
                           )
@@ -148,6 +180,28 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
     );
+  }
+
+  Future<void> changePassword() async {
+    String currentPassword = _passwordController.text;
+    String newPassword = _newPasswordController.text;
+    String confirmNewPassword = _confirmNewPasswordController.text;
+
+    if (newPassword != confirmNewPassword) {
+      showErrorToast(context, "Passwords do not match");
+    } else {
+      try {
+        String response =
+            await _userService.changePassword(currentPassword, newPassword);
+        if (response.isEmpty) {
+          showSuccessToast(context, "Password changed successfully");
+        } else {
+          showErrorToast(context, response);
+        }
+      } catch (err) {
+        log("message");
+      }
+    }
   }
 
   Widget _buildSection(String title) {

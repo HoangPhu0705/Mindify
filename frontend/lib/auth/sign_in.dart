@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:frontend/auth/forgot_password.dart';
 import 'package:frontend/pages/home_page.dart';
-import 'package:frontend/pages/profile_page.dart';
+import 'package:frontend/pages/user_information/profile_page.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -31,13 +31,6 @@ class SignIn extends StatefulWidget {
   @override
   State<SignIn> createState() => _SignInState();
 }
-
-class Resource {
-  final Status status;
-  Resource({required this.status});
-}
-
-enum Status { Success, Error, Cancelled }
 
 class _SignInState extends State<SignIn> {
   TextEditingController emailController = TextEditingController();
@@ -90,20 +83,6 @@ class _SignInState extends State<SignIn> {
 
     UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
-  }
-
-  Future<UserCredential> signInFacebook() async {
-    final LoginResult loginResult = await FacebookAuth.instance
-        .login(permissions: ['email', 'public_profile', 'user_birthday']);
-
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
-
-    final userData = await FacebookAuth.instance.getUserData();
-
-    userEmail = userData['email'];
-
-    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
   }
 
   void showErrorToast(String message) {
@@ -206,6 +185,7 @@ class _SignInState extends State<SignIn> {
                       child: ElevatedButton(
                         style: AppStyles.primaryButtonStyle,
                         onPressed: () {
+                          FocusScope.of(context).unfocus();
                           if (_formKey.currentState!.validate()) {
                             signInUser();
                           }

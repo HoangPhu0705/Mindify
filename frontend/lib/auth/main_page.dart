@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/auth/auth_page.dart';
 import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/services/providers/UserProvider.dart';
+import 'package:provider/provider.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});

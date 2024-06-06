@@ -77,7 +77,7 @@ class _SignUpState extends State<SignUp> {
       }
     }
   }
-  
+
   void showErrorToast(String message) {
     toastification.show(
       context: context,

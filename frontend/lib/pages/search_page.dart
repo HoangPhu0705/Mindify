@@ -6,6 +6,7 @@ import 'package:chip_list/chip_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/constants.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:super_cupertino_navigation_bar/super_cupertino_navigation_bar.dart';
@@ -26,34 +27,6 @@ class _SearchPageState extends State<SearchPage> {
     'design',
     'watercolor',
     'Illustration',
-  ];
-
-  final List<String> _categories = [
-    'Animation',
-    'Culinary',
-    'Drawing',
-    'Film',
-    'Graphic Design',
-    'Illustration',
-    'Photography',
-    'Procreate',
-    'Watercolor',
-    'Web & App Design',
-    'Writing',
-  ];
-
-  final List<String> _catogoryImage = [
-    'assets/images/category/animation.jpg',
-    'assets/images/category/culinary.jpg',
-    'assets/images/category/drawing.jpg',
-    'assets/images/category/film.jpg',
-    'assets/images/category/graphic_design.jpg',
-    'assets/images/category/illustration.jpg',
-    'assets/images/category/photography.jpg',
-    'assets/images/category/procreate.jpg',
-    'assets/images/category/watercolor.jpg',
-    'assets/images/category/web_app_design.jpg',
-    'assets/images/category/writing.jpg',
   ];
 
   @override
@@ -112,7 +85,7 @@ class _SearchPageState extends State<SearchPage> {
                       style: TextStyle(
                         fontSize: 14,
                       ),
-
+                      showCheckmark: false,
                       activeBorderColorList: [Colors.black],
                       inactiveBgColorList: [AppColors.ghostWhite],
                       inactiveBorderColorList: [AppColors.lightGrey],
@@ -123,13 +96,12 @@ class _SearchPageState extends State<SearchPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       extraOnToggle: (val) {
                         _currentSearchIndex = val;
-                        log(_currentSearchIndex.toString());
                         setState(() {});
                       },
                     ),
                   ),
                 ),
-
+                AppSpacing.largeVertical,
                 _buildLabel("Categories"),
 
                 AppSpacing.mediumVertical,
@@ -137,12 +109,15 @@ class _SearchPageState extends State<SearchPage> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: _categories.length,
+                  itemCount: AppConstants.categories.length,
                   itemBuilder: (context, index) {
+                    final _categories = AppConstants.categories;
+                    final _categoryImage = AppConstants.catogoryImage;
                     return _buildCategoryTile(
-                        _categories[index], _catogoryImage[index]);
+                        _categories[index], _categoryImage[index]);
                   },
                 ),
+                AppSpacing.largeVertical,
               ],
             ),
           ),

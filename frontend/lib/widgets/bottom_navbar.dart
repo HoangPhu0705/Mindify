@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/courses_page.dart';
 import 'package:frontend/pages/discover_page.dart';
-import 'package:frontend/pages/profile_page.dart';
+import 'package:frontend/pages/user_information/profile_page.dart';
 import 'package:frontend/pages/search_page.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
