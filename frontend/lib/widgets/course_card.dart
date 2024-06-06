@@ -36,7 +36,6 @@ class _CourseCardState extends State<CourseCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(5),
       width: 320,
       height: 400,
       child: Card(
@@ -45,7 +44,7 @@ class _CourseCardState extends State<CourseCard> {
         surfaceTintColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: const BorderRadius.all(
-            Radius.circular(10.0),
+            Radius.circular(5.0),
           ),
         ),
         child: Column(
@@ -56,8 +55,8 @@ class _CourseCardState extends State<CourseCard> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: Radius.circular(5),
+                    topRight: Radius.circular(5),
                   ),
                   image: DecorationImage(
                     fit: BoxFit.cover,
