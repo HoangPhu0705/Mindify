@@ -100,10 +100,12 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 itemBuilder: (context, index, realIndex) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
+                      Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
-                          builder: (context) => CourseDetail(),
+                          builder: (
+                            context,
+                          ) =>
+                              CourseDetail(),
                         ),
                       );
                     },
