@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void showImageOptionModalBottomSheet(BuildContext context) {
+void showImageOptionModalBottomSheet(
+    BuildContext context, VoidCallback onCamera, VoidCallback onGallery) {
   showModalBottomSheet(
     useRootNavigator: true,
     shape: RoundedRectangleBorder(
@@ -19,6 +20,7 @@ void showImageOptionModalBottomSheet(BuildContext context) {
               title: Text("Take photo"),
               onTap: () {
                 //open camera
+                onCamera();
                 Navigator.pop(context);
               },
             ),
@@ -27,6 +29,7 @@ void showImageOptionModalBottomSheet(BuildContext context) {
               title: Text("Open photos"),
               onTap: () {
                 //open gallery
+                onGallery();
                 Navigator.pop(context);
               },
             ),

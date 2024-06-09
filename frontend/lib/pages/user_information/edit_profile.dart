@@ -2,19 +2,23 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/images.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/bottom_sheet/image_option.dart';
 import 'package:frontend/widgets/change_passwordField.dart';
 import 'package:frontend/widgets/my_textfield.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class EditProfile extends StatefulWidget {
@@ -25,6 +29,10 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  //Variables
+  Uint8List? _avatarImage;
+  var _isObsecured;
+
   //Services
   final UserService _userService = UserService();
 
@@ -41,7 +49,38 @@ class _EditProfileState extends State<EditProfile> {
   //key
   final GlobalKey<FormState> _changePasswordKey = GlobalKey<FormState>();
 
-  var _isObsecured;
+  //Functions
+  Future<void> changePassword() async {
+    String currentPassword = _passwordController.text;
+    String newPassword = _newPasswordController.text;
+    String confirmNewPassword = _confirmNewPasswordController.text;
+
+    if (newPassword != confirmNewPassword) {
+      showErrorToast(context, "Passwords do not match");
+    } else {
+      try {
+        String response =
+            await _userService.changePassword(currentPassword, newPassword);
+        if (response.isEmpty) {
+          showSuccessToast(context, "Password changed successfully");
+        } else {
+          showErrorToast(context, response);
+        }
+      } catch (err) {
+        log("message");
+      }
+    }
+  }
+
+  void selectImageFromGallery() async {
+    log("message");
+    Uint8List _selectedImage = await pickImage(ImageSource.gallery);
+    setState(() {
+      _avatarImage = _selectedImage;
+    });
+  }
+
+  void takePhotos() {}
 
   @override
   void initState() {
@@ -100,14 +139,23 @@ class _EditProfileState extends State<EditProfile> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: () {
-                  showImageOptionModalBottomSheet(context);
+                onTap: () async {
+                  showImageOptionModalBottomSheet(
+                    context,
+                    takePhotos,
+                    selectImageFromGallery,
+                  );
                 },
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage:
-                      NetworkImage("https://avatar.iran.liara.run/public/boy"),
-                ),
+                child: _avatarImage != null
+                    ? CircleAvatar(
+                        radius: 50,
+                        backgroundImage: MemoryImage(_avatarImage!),
+                      )
+                    : CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(
+                            "https://avatar.iran.liara.run/public/boy"),
+                      ),
               ),
               AppSpacing.largeVertical,
               Container(
@@ -180,28 +228,6 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
     );
-  }
-
-  Future<void> changePassword() async {
-    String currentPassword = _passwordController.text;
-    String newPassword = _newPasswordController.text;
-    String confirmNewPassword = _confirmNewPasswordController.text;
-
-    if (newPassword != confirmNewPassword) {
-      showErrorToast(context, "Passwords do not match");
-    } else {
-      try {
-        String response =
-            await _userService.changePassword(currentPassword, newPassword);
-        if (response.isEmpty) {
-          showSuccessToast(context, "Password changed successfully");
-        } else {
-          showErrorToast(context, response);
-        }
-      } catch (err) {
-        log("message");
-      }
-    }
   }
 
   Widget _buildSection(String title) {

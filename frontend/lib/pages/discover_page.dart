@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/course_card.dart';
@@ -99,7 +100,12 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 itemBuilder: (context, index, realIndex) {
                   return GestureDetector(
                     onTap: () {
-                      log("choose course $index");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CourseDetail(),
+                        ),
+                      );
                     },
                     child: CourseCard(
                       thumbnail:

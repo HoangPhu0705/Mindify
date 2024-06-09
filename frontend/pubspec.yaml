@@ -59,6 +59,9 @@ dependencies:
   image_picker: ^1.1.2
   dio: ^5.4.3+1
   flutter_carousel_widget: ^2.2.0
+  device_preview: ^1.1.0
+  chewie: ^1.8.1
+  video_player: ^2.8.6
 
 dev_dependencies:
   flutter_test:

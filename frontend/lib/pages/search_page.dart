@@ -33,9 +33,11 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _preloadImages();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        _preloadImages();
+      },
+    );
   }
 
   void _preloadImages() {
