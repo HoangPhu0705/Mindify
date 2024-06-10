@@ -12,8 +12,6 @@ class CourseDetail extends StatefulWidget {
 }
 
 class _CourseDetailState extends State<CourseDetail> {
-  late ChewieController _chewieController;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -29,10 +27,13 @@ class _CourseDetailState extends State<CourseDetail> {
           children: [
             Container(
               width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.black,
+              ),
               height: MediaQuery.of(context).size.height * 0.3,
               child: VideoPlayerView(
                 url:
-                    "https://www.shutterstock.com/shutterstock/videos/8848282/preview/stock-footage-sunset-time-lapse-of-busy-light-trail-traffic-with-kuala-lumpur-skyline-at-kuala-lumpur-city.webm",
+                    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
                 dataSourceType: DataSourceType.network,
               ),
             ),

@@ -62,6 +62,8 @@ dependencies:
   device_preview: ^1.1.0
   chewie: ^1.8.1
   video_player: ^2.8.6
+  loading_indicator: ^3.1.1
+  pod_player: ^0.2.2
 
 dev_dependencies:
   flutter_test:
