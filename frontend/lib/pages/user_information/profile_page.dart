@@ -11,6 +11,7 @@ import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -29,6 +30,8 @@ class _ProfilePageState extends State<ProfilePage> {
       String displayName = userService.getUsername();
       Provider.of<UserProvider>(context, listen: false)
           .setDisplayName(displayName);
+      String photoUrl = userService.getPhotoUrl();
+      Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
     });
   }
 
@@ -81,8 +84,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          "https://avatar.iran.liara.run/public/boy"),
+                      backgroundImage: Image(
+                        image: NetworkImage(
+                          context.watch<UserProvider>().photoUrl,
+                        ),
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          return Text('Error loading image');
+                        },
+                      ).image,
                       radius: 30,
                     ),
                     AppSpacing.mediumHorizontal,

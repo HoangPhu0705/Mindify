@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class UserService {
   //Chi nen su dung service nay khi da login
@@ -10,8 +12,16 @@ class UserService {
     return user.displayName ?? "Mindify Member";
   }
 
+  String getPhotoUrl() {
+    return user.photoURL ?? "";
+  }
+
   Future<void> updateUsername(String newDisplayName) async {
     await user.updateDisplayName(newDisplayName);
+  }
+
+  Future<void> updateAvatar(String newPhotoUrl) async {
+    await user.updatePhotoURL(newPhotoUrl);
   }
 
   //Change password with validating the old password
@@ -26,6 +36,20 @@ class UserService {
     } catch (err) {
       print("Lỗi $err");
       return "Wrong current password";
+    }
+  }
+
+  //update profile url
+
+  Future<Uint8List?> getProfileImage(String userId) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child('avatars/user_$userId');
+    try {
+      final imageBytes = await imageRef.getData();
+      return imageBytes;
+    } catch (err) {
+      log("Error: $err");
+      return null;
     }
   }
 

@@ -2,12 +2,15 @@
 
 import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -73,20 +76,49 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void selectImageFromGallery() async {
-    log("message");
     Uint8List _selectedImage = await pickImage(ImageSource.gallery);
+    updateAvatar(_selectedImage);
+  }
+
+  void takePhotos() async {
+    Uint8List _selectedImage = await pickImage(ImageSource.camera);
+    updateAvatar(_selectedImage);
+  }
+
+  void updateAvatar(Uint8List _selectedImage) async {
     setState(() {
       _avatarImage = _selectedImage;
     });
+    String userId = _userService.user.uid;
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child('avatars/user_$userId');
+    await imageRef.putData(_selectedImage);
+    var photoUrl = (await imageRef.getDownloadURL()).toString();
+    Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
+    await _userService.updateAvatar(photoUrl);
   }
 
-  void takePhotos() {}
+  //get profile image
+  Future<void> getProfileImage() async {
+    try {
+      Uint8List? avatarImage =
+          await _userService.getProfileImage(_userService.user.uid);
+      if (avatarImage != null) {
+        setState(() {
+          _avatarImage = avatarImage;
+        });
+      }
+    } catch (err) {
+      log("Error: $err");
+    }
+  }
 
   @override
   void initState() {
     _isObsecured = true;
     super.initState();
     _usernameController.text = _userService.getUsername();
+    getProfileImage();
   }
 
   @override
@@ -138,14 +170,29 @@ class _EditProfileState extends State<EditProfile> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () async {
-                  showImageOptionModalBottomSheet(
-                    context,
-                    takePhotos,
-                    selectImageFromGallery,
-                  );
-                },
+              FocusedMenuHolder(
+                onPressed: () => debugPrint('Do something'),
+                openWithTap: true,
+                menuWidth: MediaQuery.of(context).size.width * 0.5,
+                menuOffset: 5,
+                menuItems: [
+                  FocusedMenuItem(
+                    title: const Text('Take photo'),
+                    backgroundColor: Colors.white,
+                    trailingIcon: const Icon(CupertinoIcons.photo_camera),
+                    onPressed: () {
+                      takePhotos();
+                    },
+                  ),
+                  FocusedMenuItem(
+                    title: const Text('Open photos'),
+                    backgroundColor: Colors.white,
+                    trailingIcon: const Icon(CupertinoIcons.photo_on_rectangle),
+                    onPressed: () {
+                      selectImageFromGallery();
+                    },
+                  ),
+                ],
                 child: _avatarImage != null
                     ? CircleAvatar(
                         radius: 50,
@@ -153,8 +200,9 @@ class _EditProfileState extends State<EditProfile> {
                       )
                     : CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(
-                            "https://avatar.iran.liara.run/public/boy"),
+                        backgroundImage: CachedNetworkImageProvider(
+                          "https://avatar.iran.liara.run/public/boy",
+                        ),
                       ),
               ),
               AppSpacing.largeVertical,
