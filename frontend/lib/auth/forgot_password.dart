@@ -67,12 +67,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 style: AppStyles.primaryButtonStyle,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EmailVerificationScreen(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => //EmailVerificationScreen(),
+                    //   ),
+                    // );
                   }
                 },
                 child: const Padding(

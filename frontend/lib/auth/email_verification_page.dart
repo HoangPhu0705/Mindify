@@ -1,50 +1,143 @@
-import 'package:flutter/material.dart';
-import 'package:frontend/auth/auth_page.dart';
-import 'package:frontend/auth/reset_password.dart';
-import 'package:frontend/auth/sign_in.dart';
-import 'package:frontend/utils/spacing.dart';
-import 'package:frontend/utils/styles.dart';
+// ignore_for_file: prefer_const_constructors
 
-class EmailVerificationScreen extends StatelessWidget {
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:frontend/auth/main_page.dart';
+import 'package:frontend/pages/discover_page.dart';
+import 'package:frontend/pages/home_page.dart';
+// import 'package:cookie_app/pages/home_page.dart';
+import 'package:frontend/auth/sign_in.dart';
+import 'package:frontend/services/functions/UserService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+class VerifyEmailPage extends StatefulWidget {
+  @override
+  _VerifyEmailPageState createState() => _VerifyEmailPageState();
+}
+
+class _VerifyEmailPageState extends State<VerifyEmailPage> {
+  bool isEmailVerify = false;
+  bool canResendEmail = false;
+  // UserService userService = UserService(FirebaseAuth.instance.currentUser!);
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+    isEmailVerify = FirebaseAuth.instance.currentUser!.emailVerified;
+    if (!isEmailVerify) {
+      sendVerifycationEmail();
+      timer = Timer.periodic(
+        Duration(seconds: 5),
+        (_) => checkEmailVerified(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  Future checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser!.reload();
+    setState(() {
+      isEmailVerify = FirebaseAuth.instance.currentUser!.emailVerified;
+    });
+    if (isEmailVerify) timer?.cancel();
+  }
+
+  Future sendVerifycationEmail() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+      await user.sendEmailVerification();
+
+      setState(() => canResendEmail = false);
+      await Future.delayed(Duration(seconds: 5));
+      setState(() => canResendEmail = true);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    if (isEmailVerify) {
+      return FutureBuilder<void>(
+        future: () async {
+          await FirebaseAuth.instance.currentUser!.reload();
+          // await UserService(FirebaseAuth.instance.currentUser!);
+        }(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return HomePage();
+          }
+        },
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: Center(
+            child: Text(
+              'Verify Email',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Mindify.", style: Theme.of(context).textTheme.displayLarge),
-              AppSpacing.largeVertical,
               Text(
-                'We have emailed your password reset link.\nPlease check your inboxes',
+                'We have emailed your password reset link.\nPlease check your inboxes to active your account.',
+                style: TextStyle(fontSize: 20.0),
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.labelMedium,
               ),
-              AppSpacing.largeVertical,
               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: AppStyles.primaryButtonStyle,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AuthPage(),
-                      ), // Trang đích
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Text("Confirm"),
-                  ),
-                ),
+                height: 24.0,
               ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.cyan,
+                  minimumSize: Size.fromHeight(50),
+                ),
+                icon: Icon(
+                  Icons.email,
+                  size: 32,
+                ),
+                label: Text(
+                  'Resent email',
+                  style: TextStyle(fontSize: 24.0),
+                ),
+                onPressed: canResendEmail ? sendVerifycationEmail : null,
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              TextButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(50),
+                ),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 24.0),
+                ),
+                onPressed: () => FirebaseAuth.instance.signOut(),
+              )
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
