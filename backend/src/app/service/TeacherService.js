@@ -12,18 +12,20 @@ exports.createTeacher = async (teacher) => {
 };
 
 exports.getAllTeachers = async () => {
-    try {
+    // try {
         const snapshot = await TeacherCollection.get();
         if (!snapshot.empty) {
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            return snapshot.docs.map(doc => (
+                { id: doc.id, ...doc.data() }
+            ));
         } else {
             console.error('No documents found in the teachers collection.');
             return [];
         }
-    } catch (error) {
-        console.error('Error fetching teachers:', error);
-        throw error;
-    }
+    // } catch (error) {
+    //     console.error('Error fetching teachers:', error);
+    //     throw error;
+    // }
 };
 
 exports.getTeacherById = async (id) => {

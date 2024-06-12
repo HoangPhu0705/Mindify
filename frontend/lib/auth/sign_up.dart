@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,10 +65,22 @@ class _SignUpState extends State<SignUp> {
     }
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      String uid = userCredential.user!.uid;
+      // add to firestore
+      Map<String, dynamic> userData = {
+        'id': uid,
+        'displayName': 'Mindify Member',
+        'avatar': '',
+        'email': email,
+        'role': 'user',
+        'savedClasses': []
+      };
+      await FirebaseFirestore.instance.collection('users').doc(uid).set(userData);
     } on FirebaseAuthException catch (e) {
       log("Error: $e");
       if (e.code == 'invalid-credential') {

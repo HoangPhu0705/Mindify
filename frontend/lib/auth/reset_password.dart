@@ -86,12 +86,12 @@ class ResetPasswordScreen extends StatelessWidget {
                       child: ElevatedButton(
                         style: AppStyles.primaryButtonStyle,
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    EmailVerificationScreen()), // Trang đích
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   // MaterialPageRoute(
+                          //   //     builder: (context) => 
+                          //   //         //EmailVerificationScreen()), // Trang đích
+                          // );
                         },
                         child: const Padding(
                           padding: EdgeInsets.all(10.0),

@@ -5,8 +5,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class UserService {
+
   //Chi nen su dung service nay khi da login
   User get user => FirebaseAuth.instance.currentUser!;
+
+  String getUserId(){
+    return user.uid!;
+  }
 
   String getUsername() {
     return user.displayName ?? "Mindify Member";

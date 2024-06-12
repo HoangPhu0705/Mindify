@@ -35,7 +35,7 @@ class BottomNavBar extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: const MyCoursePage(),
+          screen: MyCoursePage(),
           item: ItemConfig(
             icon: const Icon(CupertinoIcons.play_circle),
             activeColorSecondary: AppColors.cream,

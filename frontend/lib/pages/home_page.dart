@@ -12,8 +12,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   //Services
-  UserService userService = UserService();
   User user = FirebaseAuth.instance.currentUser!;
+  UserService userService = UserService();
 
   @override
   void initState() {

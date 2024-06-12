@@ -1,39 +1,48 @@
 // service/CourseService.js
 const { CourseCollection } = require('./Collections');
 
-// Ví dụ CRUD đơn giản
-const getAllCourses = async () => {
+
+exports.getAllCourses = async () => {
   const snapshot = await CourseCollection.get();
   const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   return courses;
 };
 
-const createCourse = async (course) => {
-  const result = await CourseCollection.add(course);
-  return result.id;
-};
-
-const getCourseById = async (id) => {
-  const doc = await CourseCollection.doc(id).get();
-  if (!doc.exists) {
-    throw new Error('Course not found');
+exports.createCourse = async (course) => {
+  try {
+    const docRef = CourseCollection.doc();
+    await docRef.set(course);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error creating course:', error);
+    throw error;
   }
-  return { id: doc.id, ...doc.data() };
 };
 
-const updateCourse = async (id, updates) => {
-  await CourseCollection.doc(id).update(updates);
-  return getCourseById(id);
+exports.getCourseById = async (id) => {
+  try {
+      const doc = await CourseCollection.doc(id).get();
+      return doc.exists ? { id: doc.id, ...doc.data() } : null;
+  } catch (error) {
+      console.error('Error fetching course by ID:', error);
+      throw error;
+  }
 };
 
-const deleteCourse = async (id) => {
-  await CourseCollection.doc(id).delete();
+exports.updateCourse = async (id, updates) => {
+  try {
+      await CourseCollection.doc(id).update(updates);
+  } catch (error) {
+      console.error('Error updating course:', error);
+      throw error;
+  }
 };
 
-module.exports = {
-  getAllCourses,
-  createCourse,
-  getCourseById,
-  updateCourse,
-  deleteCourse
+exports.deleteCourse = async (id) => {
+  try {
+      await CourseCollection.doc(id).delete();
+  } catch (error) {
+      console.error('Error deleting course:', error);
+      throw error;
+  }
 };
