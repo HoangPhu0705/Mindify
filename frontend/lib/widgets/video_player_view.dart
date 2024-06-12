@@ -39,7 +39,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       quality: 75,
     );
 
-    log("FileName: ");
+    log("FileName: $fileName");
     setState(() {});
   }
 
@@ -52,12 +52,14 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       podPlayerConfig: PodPlayerConfig(
         autoPlay: false,
         isLooping: false,
+        videoQualityPriority: [360, 720, 1080],
       ),
     )..initialise();
 
     switch (widget.dataSourceType) {
       case DataSourceType.network:
-        _videoPlayerController = VideoPlayerController.network(widget.url);
+        _videoPlayerController =
+            VideoPlayerController.networkUrl(Uri.parse(widget.url));
         break;
       case DataSourceType.file:
         _videoPlayerController = VideoPlayerController.file(File(widget.url));
@@ -86,12 +88,21 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(110.0),
-              child: LoadingIndicator(
-                indicatorType: Indicator.lineSpinFadeLoader,
-                colors: [AppColors.blue],
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.black,
+            ),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.lineSpinFadeLoader,
+                    colors: [AppColors.blue],
+                  ),
+                ),
               ),
             ),
           );
@@ -99,16 +110,24 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
 
         if (snapshot.connectionState == ConnectionState.done &&
             fileName != null) {
-          return PodVideoPlayer(
-            controller: _podPlayerController,
-            podProgressBarConfig: PodProgressBarConfig(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              backgroundColor: Colors.white,
-              playingBarColor: AppColors.cream,
-              circleHandlerColor: AppColors.cream,
-            ),
-            alwaysShowProgressBar: false,
-            videoAspectRatio: 16 / 9,
+          return Stack(
+            children: [
+              PodVideoPlayer(
+                controller: _podPlayerController,
+                podProgressBarConfig: PodProgressBarConfig(
+                  padding: EdgeInsets.symmetric(horizontal: 2),
+                  height: 2,
+                  backgroundColor: Colors.white,
+                  playingBarColor: AppColors.cream,
+                  circleHandlerColor: AppColors.cream,
+                ),
+                podPlayerLabels: PodPlayerLabels(),
+                alwaysShowProgressBar: false,
+                videoAspectRatio: 16 / 9,
+                videoThumbnail:
+                    DecorationImage(image: Image.file(File(fileName!)).image),
+              ),
+            ],
           );
         }
 
