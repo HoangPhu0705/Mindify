@@ -69,6 +69,7 @@ dependencies:
   focused_menu: ^1.0.5
   firebase_storage: ^11.7.7
   floating_tabbar: ^1.0.0
+  flutter_animated_button: ^2.0.3
 
 dev_dependencies:
   flutter_test:
