@@ -48,6 +48,45 @@ class _CourseDetailState extends State<CourseDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.ghostWhite,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              offset: Offset(0, -1),
+            ),
+          ],
+        ),
+        height: MediaQuery.of(context).size.height * 0.1,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "đ149.000",
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            AppSpacing.mediumHorizontal,
+            Expanded(
+              child: TextButton(
+                style: AppStyles.primaryButtonStyle,
+                onPressed: () {},
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Purchase",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
         surfaceTintColor: AppColors.ghostWhite,
         leading: IconButton(
