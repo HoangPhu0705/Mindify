@@ -25,6 +25,17 @@ class AppStyles {
     ),
   );
 
+  static var tertiaryButtonStyle = ButtonStyle(
+    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: const BorderSide(color: AppColors.lightGrey),
+      ),
+    ),
+  );
+
   static var searchBarPlaceHolderStyle = const TextStyle(
     color: AppColors.lightGrey,
     fontFamily: "Poppins",
