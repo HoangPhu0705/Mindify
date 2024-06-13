@@ -1,6 +1,10 @@
 const  CourseService = require('../service/CourseService');
 
 exports.getAllCourses = async (req, res) => {
+  
+
+
+
   try {
     const courses = await CourseService.getAllCourses;
     res.status(200).json(courses);
