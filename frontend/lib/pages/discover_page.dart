@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -20,13 +21,28 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  final _pageController = PageController();
+  int _currentTopCourse = 0;
+  final _pageController = PageController(initialPage: 0);
+  late Timer _timer;
   final _courseController =
       PageController(viewportFraction: 0.8, keepPage: false, initialPage: 0);
 
   @override
   void initState() {
     super.initState();
+    _timer = Timer.periodic(Duration(seconds: 4), (Timer timer) {
+      if (_currentTopCourse < 4) {
+        _currentTopCourse++;
+      } else {
+        _currentTopCourse = 0;
+      }
+
+      _pageController.animateToPage(
+        _currentTopCourse,
+        duration: Duration(milliseconds: 350),
+        curve: Curves.ease,
+      );
+    });
   }
 
   @override
@@ -34,6 +50,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     _pageController.dispose();
     _courseController.dispose();
     super.dispose();
+    _timer.cancel();
   }
 
   void addFavoriteCourse(int id) {
@@ -58,6 +75,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: 5,
+                  onPageChanged: (value) {
+                    _currentTopCourse = value;
+                  },
                   itemBuilder: (context, index) {
                     return PopularCourse(
                         imageUrl:

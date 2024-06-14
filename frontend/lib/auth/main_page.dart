@@ -20,7 +20,7 @@ class MainPage extends StatelessWidget {
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
-            return VerifyEmailPage();
+            return HomePage();
           }
           // user is NOT logged in
           else {

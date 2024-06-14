@@ -22,13 +22,13 @@ class VideoPlayerView extends StatefulWidget {
 }
 
 class _VideoPlayerViewState extends State<VideoPlayerView> {
-  late VideoPlayerController _videoPlayerController;
+  // late VideoPlayerController _videoPlayerController;
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
   String? fileName;
 
   Future<void> initVideoPlayer() async {
-    await _videoPlayerController.initialize();
+    // await _videoPlayerController.initialize();
 
     fileName = await VideoThumbnail.thumbnailFile(
       video: widget.url,
@@ -39,7 +39,6 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       quality: 75,
     );
 
-    log("FileName: $fileName");
     setState(() {});
   }
 
@@ -56,29 +55,29 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       ),
     )..initialise();
 
-    switch (widget.dataSourceType) {
-      case DataSourceType.network:
-        _videoPlayerController =
-            VideoPlayerController.networkUrl(Uri.parse(widget.url));
-        break;
-      case DataSourceType.file:
-        _videoPlayerController = VideoPlayerController.file(File(widget.url));
-        break;
-      case DataSourceType.asset:
-        _videoPlayerController = VideoPlayerController.asset(widget.url);
-        break;
-      case DataSourceType.contentUri:
-        _videoPlayerController =
-            VideoPlayerController.contentUri(Uri.parse(widget.url));
-        break;
-    }
+    // switch (widget.dataSourceType) {
+    //   case DataSourceType.network:
+    //     _videoPlayerController =
+    //         VideoPlayerController.networkUrl(Uri.parse(widget.url));
+    //     break;
+    //   case DataSourceType.file:
+    //     _videoPlayerController = VideoPlayerController.file(File(widget.url));
+    //     break;
+    //   case DataSourceType.asset:
+    //     _videoPlayerController = VideoPlayerController.asset(widget.url);
+    //     break;
+    //   case DataSourceType.contentUri:
+    //     _videoPlayerController =
+    //         VideoPlayerController.contentUri(Uri.parse(widget.url));
+    //     break;
+    // }
     _future = initVideoPlayer();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _videoPlayerController.dispose();
+    // _videoPlayerController.dispose();
     _podPlayerController.dispose();
   }
 
@@ -110,24 +109,20 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
 
         if (snapshot.connectionState == ConnectionState.done &&
             fileName != null) {
-          return Stack(
-            children: [
-              PodVideoPlayer(
-                controller: _podPlayerController,
-                podProgressBarConfig: PodProgressBarConfig(
-                  padding: EdgeInsets.symmetric(horizontal: 2),
-                  height: 2,
-                  backgroundColor: Colors.white,
-                  playingBarColor: AppColors.cream,
-                  circleHandlerColor: AppColors.cream,
-                ),
-                podPlayerLabels: PodPlayerLabels(),
-                alwaysShowProgressBar: false,
-                videoAspectRatio: 16 / 9,
-                videoThumbnail:
-                    DecorationImage(image: Image.file(File(fileName!)).image),
-              ),
-            ],
+          return PodVideoPlayer(
+            controller: _podPlayerController,
+            podProgressBarConfig: PodProgressBarConfig(
+              padding: EdgeInsets.symmetric(horizontal: 2),
+              height: 2,
+              backgroundColor: Colors.white,
+              playingBarColor: AppColors.cream,
+              circleHandlerColor: AppColors.cream,
+            ),
+            podPlayerLabels: PodPlayerLabels(),
+            alwaysShowProgressBar: false,
+            videoAspectRatio: 16 / 9,
+            videoThumbnail:
+                DecorationImage(image: Image.file(File(fileName!)).image),
           );
         }
 
