@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +9,7 @@ class UserService {
 
   //Chi nen su dung service nay khi da login
   User get user => FirebaseAuth.instance.currentUser!;
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String getUserId(){
     return user.uid!;
   }
@@ -60,5 +61,19 @@ class UserService {
 
   void signOut() {
     FirebaseAuth.instance.signOut();
+  }
+  // get user info
+  Future<Map<String, dynamic>?> getUserInfoById(String uid) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        return userDoc.data() as Map<String, dynamic>;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user info: $e");
+      return null;
+    }
   }
 }

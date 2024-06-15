@@ -9,7 +9,7 @@ import 'package:frontend/utils/spacing.dart';
 class CourseCard extends StatefulWidget {
   final String thumbnail;
   final String instructor;
-  final String specializaion;
+  final String specialization;
   final String courseName;
   final int time;
   final int numberOfLesson;
@@ -20,7 +20,7 @@ class CourseCard extends StatefulWidget {
     Key? key,
     required this.thumbnail,
     required this.instructor,
-    required this.specializaion,
+    required this.specialization,
     required this.courseName,
     required this.time,
     required this.numberOfLesson,
@@ -91,7 +91,7 @@ class _CourseCardState extends State<CourseCard> {
                                 style: Theme.of(context).textTheme.labelMedium,
                               ),
                               Text(
-                                widget.specializaion,
+                                widget.specialization,
                                 style: TextStyle(fontSize: 14),
                               )
                             ],
