@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/auth/sign_in.dart';
+import 'package:frontend/pages/user_information/downloads.dart';
+import 'package:frontend/pages/user_information/saved_classes.dart';
 import 'package:frontend/pages/user_information/setting_page.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
@@ -139,7 +141,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     subtitle: Text('0 classes'),
                     trailing: Icon(Icons.chevron_right),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Downloads(),
+                        ),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: Icon(Icons.bookmark_border_outlined),
@@ -153,6 +162,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     trailing: Icon(Icons.chevron_right),
                     onTap: () {
                       // Handle All saved Classes tap
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SavedClasses(),
+                        ),
+                      );
                     },
                   ),
                   ListTile(
@@ -165,7 +180,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           .copyWith(fontSize: 16),
                     ),
                     trailing: Icon(Icons.chevron_right),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Downloads(),
+                        ),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: Icon(Icons.logout),

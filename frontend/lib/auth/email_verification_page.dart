@@ -11,6 +11,8 @@ import 'package:frontend/auth/sign_in.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/colors.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   @override
@@ -66,21 +68,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerify) {
-      return FutureBuilder<void>(
-        future: () async {
-          await FirebaseAuth.instance.currentUser!.reload();
-          // await UserService(FirebaseAuth.instance.currentUser!);
-        }(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return HomePage();
-          }
-        },
-      );
+      return HomePage();
     } else {
       return Scaffold(
         appBar: AppBar(

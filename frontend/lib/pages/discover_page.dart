@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -65,6 +66,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     _pageController.dispose();
     _courseController.dispose();
     super.dispose();
+    _timer.cancel();
     _timer.cancel();
   }
 
