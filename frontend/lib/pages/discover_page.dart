@@ -22,15 +22,20 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
+  //Variables
   int _currentTopCourse = 0;
   final _pageController = PageController(initialPage: 0);
   late Timer _timer;
-  final _courseController =
-      PageController(viewportFraction: 0.8, keepPage: false, initialPage: 0);
-  final CourseService courseService = CourseService();
   Future<List<Course>>? _coursesFuture;
   Map<String, String> instructorNames = {};
   Future<List<Course>>? _courseRandom;
+
+  //Controllers
+  final _courseController =
+      PageController(viewportFraction: 0.8, keepPage: false, initialPage: 0);
+
+  //Services
+  final CourseService courseService = CourseService();
 
   @override
   void initState() {
@@ -171,7 +176,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Text("Mindify", style: Theme.of(context).textTheme.headlineMedium),
+              Text("Mindify",
+                  style: Theme.of(context).textTheme.headlineMedium),
               AppSpacing.smallVertical,
               FutureBuilder<List<Course>>(
                 future: _coursesFuture,
@@ -200,9 +206,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   } else {
                     return Column(
                       children: [
-                        buildCarouselCourses(snapshot.data!, "Recommend For You"),
+                        buildCarouselCourses(
+                            snapshot.data!, "Recommend For You"),
                         AppSpacing.mediumVertical,
-                        buildCarouselCourses(snapshot.data!, "New and Trending"),
+                        buildCarouselCourses(
+                            snapshot.data!, "New and Trending"),
                       ],
                     );
                   }

@@ -1,4 +1,5 @@
 class AppConstants {
+  static const baseUrl = "http://10.0.2.2:3000/api";
   static const List<String> categories = [
     'Animation',
     'Culinary',
@@ -26,4 +27,6 @@ class AppConstants {
     'assets/images/category/web_app_design.jpg',
     'assets/images/category/writing.jpg',
   ];
+
+  static const EXAMPLE_API = "";
 }

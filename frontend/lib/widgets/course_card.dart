@@ -109,7 +109,13 @@ class _CourseCardState extends State<CourseCard> {
                         children: [
                           Text(
                             widget.courseName,
-                            style: Theme.of(context).textTheme.labelLarge,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            maxLines: 2,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

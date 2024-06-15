@@ -60,10 +60,12 @@ class _CourseScreenState extends State<CourseScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final course = snapshot.data![index];
-                final instructorName = instructorNames[course.id] ?? 'Loading...';
+                final instructorName =
+                    instructorNames[course.id] ?? 'Loading...';
                 return ListTile(
                   title: Text(course.title),
-                  subtitle: Text('Instructor: $instructorName\n${course.description}'),
+                  subtitle: Text(
+                      'Instructor: $instructorName\n${course.description}'),
                 );
               },
             );
