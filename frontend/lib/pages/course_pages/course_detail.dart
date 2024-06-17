@@ -23,7 +23,7 @@ class _CourseDetailState extends State<CourseDetail>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -106,17 +106,19 @@ class _CourseDetailState extends State<CourseDetail>
         child: Column(
           children: [
             VideoPlayerView(
-              url:
-                  "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+              url: "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
               dataSourceType: DataSourceType.network,
             ),
             TabBar(
+              tabAlignment: TabAlignment.center,
+              isScrollable: true,
               controller: _tabController,
               splashFactory: NoSplash.splashFactory,
               tabs: const [
                 Tab(text: 'Lessons'),
                 Tab(text: 'Projects'),
                 Tab(text: 'Discussions'),
+                Tab(text: 'Notes'),
               ],
               labelColor: Colors.black,
               labelStyle: TextStyle(
@@ -135,8 +137,15 @@ class _CourseDetailState extends State<CourseDetail>
                     isFollowed: isFollowed,
                     followUser: followUser,
                   ),
-                  Center(child: Text("Projects")),
-                  Center(child: Text("Discussions")),
+                  Center(
+                    child: Text("Projects"),
+                  ),
+                  Center(
+                    child: Text("Discussions"),
+                  ),
+                  Center(
+                    child: Text("Notes"),
+                  ),
                 ],
               ),
             ),

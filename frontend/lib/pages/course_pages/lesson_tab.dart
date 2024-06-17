@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
@@ -65,7 +65,12 @@ class _LessonTabState extends State<LessonTab> {
                 Text("3.1K Students"),
                 AppSpacing.mediumVertical,
                 Text(
-                    "The YouTube game has changed like never before. Learn how to grow your own channel in 2023 using the same secrets as Mr. Beast, Ryan Trahan,..."),
+                  "The YouTube game has changed like never before. Learn how to grow your own channel in 2023 using the same secrets as Mr. Beast, Ryan Trahan,",
+                  style: TextStyle(
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  maxLines: 3,
+                ),
                 AppSpacing.mediumVertical,
                 Divider(),
                 Row(

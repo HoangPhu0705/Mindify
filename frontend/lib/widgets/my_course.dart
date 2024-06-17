@@ -10,14 +10,15 @@ class MyCourseItem extends StatefulWidget {
   final String author;
   final String duration;
   final String students;
+  final VoidCallback? moreOnPress;
 
-  const MyCourseItem({
-    required this.imageUrl,
-    required this.title,
-    required this.author,
-    required this.duration,
-    required this.students,
-  });
+  const MyCourseItem(
+      {required this.imageUrl,
+      required this.title,
+      required this.author,
+      required this.duration,
+      required this.students,
+      required this.moreOnPress});
 
   @override
   State<MyCourseItem> createState() => _MyCourseItemState();
@@ -78,7 +79,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
                 ],
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: widget.moreOnPress,
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 icon: Icon(

@@ -62,6 +62,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
                     author: 'Ellen Lupton',
                     duration: '3m',
                     students: '97.5K',
+                    moreOnPress: () {},
                   );
                 },
               )

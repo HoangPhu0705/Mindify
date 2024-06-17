@@ -11,6 +11,7 @@ import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/course_card.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/popular_course.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -50,7 +51,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   Future<void> _initPage() async {
     _coursesFuture = await courseService.fetchCourses();
-    _fetchInstructorNames(_coursesFuture!);
+    await _fetchInstructorNames(_coursesFuture!);
   }
 
   @override
@@ -178,41 +179,33 @@ class _DiscoverPageState extends State<DiscoverPage> {
     return SafeArea(
       child: Scaffold(
         body: FutureBuilder(
-            future: _future,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: LoadingIndicator(
-                      indicatorType: Indicator.lineSpinFadeLoader,
-                      colors: [AppColors.blue],
-                    ),
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return MyLoading(width: 30, height: 30);
+            }
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text("Mindify",
+                      style: Theme.of(context).textTheme.headlineMedium),
+                  AppSpacing.smallVertical,
+                  buildPopularCourses(_coursesFuture!),
+                  AppSpacing.mediumVertical,
+                  Column(
+                    children: [
+                      buildCarouselCourses(
+                          _coursesFuture!, "Recommend For You"),
+                      AppSpacing.mediumVertical,
+                      buildCarouselCourses(_coursesFuture!, "New and Trending"),
+                    ],
                   ),
-                );
-              }
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text("Mindify",
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    AppSpacing.smallVertical,
-                    buildPopularCourses(_coursesFuture!),
-                    AppSpacing.mediumVertical,
-                    Column(
-                      children: [
-                        buildCarouselCourses(
-                            _coursesFuture!, "Recommend For You"),
-                        AppSpacing.mediumVertical,
-                        buildCarouselCourses(
-                            _coursesFuture!, "New and Trending"),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }),
+                  AppSpacing.largeVertical,
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -40,7 +40,8 @@ class CourseService {
   }
 
   Future<String> getInstructorName(String instructorId) async {
-    DocumentSnapshot snapshot = await _firestore.collection('users').doc(instructorId).get();
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(instructorId).get();
     if (snapshot.exists && snapshot.data() != null) {
       final data = snapshot.data() as Map<String, dynamic>;
       return data['displayName'] ?? 'Unknown';

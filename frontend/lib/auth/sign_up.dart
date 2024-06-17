@@ -1,5 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +15,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:toastification/toastification.dart';
 
 class SignUp extends StatefulWidget {
@@ -54,6 +59,24 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
+  //Functions
+
+  //Get default avatar
+  Future<File> getImageFileFromAssets(String path) async {
+    try {
+      final byteData = await rootBundle.load('assets/$path');
+      final file = File('${(await getTemporaryDirectory()).path}/$path');
+      await file.create(recursive: true); // Ensure the directory exists
+      await file.writeAsBytes(byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      return file;
+    } catch (e) {
+      log("Error loading asset: $e");
+      rethrow;
+    }
+  }
+
+  //Sign up function
   Future<void> signUpUser() async {
     String email = emailController.text.trim();
     String confirmPassword = confirmPasswordController.text.trim();
@@ -71,16 +94,33 @@ class _SignUpState extends State<SignUp> {
         password: password,
       );
       String uid = userCredential.user!.uid;
-      // add to firestore
+
+      // Add to Firestore
       Map<String, dynamic> userData = {
         'id': uid,
         'displayName': 'Mindify Member',
         'avatar': '',
         'email': email,
         'role': 'user',
-        'savedClasses': []
+        'savedClasses': [],
       };
-      await FirebaseFirestore.instance.collection('users').doc(uid).set(userData);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .set(userData);
+
+      try {
+        File defaultImageFile =
+            await getImageFileFromAssets("images/default_avatar.png");
+        Uint8List defaultImage = await defaultImageFile.readAsBytes();
+        final storageRef = FirebaseStorage.instance.ref();
+        final imageRef = storageRef.child('avatars/user_$uid');
+        await imageRef.putData(defaultImage);
+        var photoUrl = (await imageRef.getDownloadURL()).toString();
+        await userCredential.user!.updatePhotoURL(photoUrl);
+      } catch (e) {
+        log("Error uploading avatar: $e");
+      }
     } on FirebaseAuthException catch (e) {
       log("Error: $e");
       if (e.code == 'invalid-credential') {

@@ -8,6 +8,8 @@ import 'package:frontend/auth/sign_in.dart';
 import 'package:frontend/pages/user_information/downloads.dart';
 import 'package:frontend/pages/user_information/saved_classes.dart';
 import 'package:frontend/pages/user_information/setting_page.dart';
+import 'package:frontend/pages/user_information/view_profile.dart';
+import 'package:frontend/pages/user_information/watch_history.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -108,12 +110,24 @@ class _ProfilePageState extends State<ProfilePage> {
                                     color: Colors.white,
                                   ),
                         ),
-                        Text(
-                          'View Profile',
-                          style:
-                              Theme.of(context).textTheme.titleSmall!.copyWith(
-                                    color: AppColors.cream,
-                                  ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewProfile(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'View Profile',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(
+                                  color: AppColors.cream,
+                                ),
+                          ),
                         ),
                       ],
                     ),
@@ -184,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Downloads(),
+                          builder: (context) => WatchHistory(),
                         ),
                       );
                     },

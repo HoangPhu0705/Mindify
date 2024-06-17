@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:frontend/auth/forgot_password.dart';
 import 'package:frontend/pages/home_page.dart';
-import 'package:frontend/pages/user_information/profile_page.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/profile_page.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';

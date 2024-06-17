@@ -70,7 +70,7 @@ class _EditProfileState extends State<EditProfile> {
           showErrorToast(context, response);
         }
       } catch (err) {
-        log("message");
+        log("error: $err");
       }
     }
   }
@@ -201,7 +201,7 @@ class _EditProfileState extends State<EditProfile> {
                     : CircleAvatar(
                         radius: 50,
                         backgroundImage: CachedNetworkImageProvider(
-                          "https://avatar.iran.liara.run/public/boy",
+                          "https://i.ibb.co/tZxYspW/default-avatar.png",
                         ),
                       ),
               ),

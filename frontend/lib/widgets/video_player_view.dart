@@ -55,22 +55,6 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       ),
     )..initialise();
 
-    // switch (widget.dataSourceType) {
-    //   case DataSourceType.network:
-    //     _videoPlayerController =
-    //         VideoPlayerController.networkUrl(Uri.parse(widget.url));
-    //     break;
-    //   case DataSourceType.file:
-    //     _videoPlayerController = VideoPlayerController.file(File(widget.url));
-    //     break;
-    //   case DataSourceType.asset:
-    //     _videoPlayerController = VideoPlayerController.asset(widget.url);
-    //     break;
-    //   case DataSourceType.contentUri:
-    //     _videoPlayerController =
-    //         VideoPlayerController.contentUri(Uri.parse(widget.url));
-    //     break;
-    // }
     _future = initVideoPlayer();
   }
 
@@ -107,8 +91,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
           );
         }
 
-        if (snapshot.connectionState == ConnectionState.done &&
-            fileName != null) {
+        if (snapshot.connectionState == ConnectionState.done) {
           return PodVideoPlayer(
             controller: _podPlayerController,
             podProgressBarConfig: PodProgressBarConfig(
@@ -121,8 +104,18 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
             podPlayerLabels: PodPlayerLabels(),
             alwaysShowProgressBar: false,
             videoAspectRatio: 16 / 9,
-            videoThumbnail:
-                DecorationImage(image: Image.file(File(fileName!)).image),
+            onLoading: (context) {
+              return Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.lineSpinFadeLoader,
+                    colors: [AppColors.blue],
+                  ),
+                ),
+              );
+            },
           );
         }
 
