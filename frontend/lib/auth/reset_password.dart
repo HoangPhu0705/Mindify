@@ -1,6 +1,6 @@
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:frontend/auth/email_verification_page.dart';
 import 'package:frontend/utils/styles.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -54,7 +54,6 @@ class ResetPasswordScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -82,23 +81,23 @@ class ResetPasswordScreen extends StatelessWidget {
                 },
                 style: AppStyles.primaryButtonStyle,
                 child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: AppStyles.primaryButtonStyle,
-                        onPressed: () {
-                          // Navigator.push(
-                          //   context,
-                          //   // MaterialPageRoute(
-                          //   //     builder: (context) => 
-                          //   //         //EmailVerificationScreen()), // Trang đích
-                          // );
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text("Submit"),
-                        ),
-                      ),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: AppStyles.primaryButtonStyle,
+                    onPressed: () {
+                      // Navigator.push(
+                      //   context,
+                      //   // MaterialPageRoute(
+                      //   //     builder: (context) =>
+                      //   //         //EmailVerificationScreen()), // Trang đích
+                      // );
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text("Submit"),
                     ),
+                  ),
+                ),
               ),
               SizedBox(height: 20),
               Row(
@@ -114,11 +113,11 @@ class ResetPasswordScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) =>
-                          //           HomePage()), // Trang đích
-                          // );
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) =>
+                      //           HomePage()), // Trang đích
+                      // );
                     },
                     child: Text(
                       'Login',

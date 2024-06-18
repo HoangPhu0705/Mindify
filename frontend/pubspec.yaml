@@ -70,6 +70,7 @@ dependencies:
   firebase_storage: ^11.7.7
   flutter_animated_button: ^2.0.3
   getwidget: ^4.0.0
+  comment_tree: ^0.3.0
 
 dev_dependencies:
   flutter_test:

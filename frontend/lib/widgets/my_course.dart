@@ -69,13 +69,13 @@ class _MyCourseItemState extends State<MyCourseItem> {
                     Icons.timer_sharp,
                     size: 20,
                   ),
-                  Text("11h 50m  •"),
+                  Text("${widget.duration}  •"),
                   AppSpacing.smallHorizontal,
                   Icon(
                     Icons.person_2_outlined,
                     size: 20,
                   ),
-                  Text("11h 50m"),
+                  Text("${widget.students}"),
                 ],
               ),
               IconButton(

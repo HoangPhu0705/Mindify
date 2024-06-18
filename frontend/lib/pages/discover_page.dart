@@ -13,7 +13,6 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/popular_course.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -29,15 +28,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   //Variables
   int _currentTopCourse = 0;
-  final _pageController = PageController(initialPage: 0);
   late Timer _timer;
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
   late Future<void> _future;
 
   //Controllers
-  final _courseController =
-      PageController(viewportFraction: 0.8, keepPage: false, initialPage: 0);
+
+  final _pageController = PageController(initialPage: 0);
 
   //Functions
   Future<void> _fetchInstructorNames(List<Course> courses) async {
@@ -64,11 +62,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
         _currentTopCourse = 0;
       }
 
-      _pageController.animateToPage(
-        _currentTopCourse,
-        duration: Duration(milliseconds: 350),
-        curve: Curves.ease,
-      );
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentTopCourse,
+          duration: Duration(milliseconds: 350),
+          curve: Curves.ease,
+        );
+      }
     });
     _future = _initPage();
   }
@@ -76,7 +76,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   void dispose() {
     _pageController.dispose();
-    _courseController.dispose();
     super.dispose();
     _timer.cancel();
   }
@@ -165,7 +164,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 courseName: course.title,
                 time: 9,
                 numberOfLesson: course.lessons.length,
-                avatar: "https://avatar.iran.liara.run/public/boy",
+                avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
               ),
             );
           },
@@ -184,6 +183,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return MyLoading(width: 30, height: 30);
             }
+
             return SingleChildScrollView(
               child: Column(
                 children: [

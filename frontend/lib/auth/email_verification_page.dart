@@ -2,17 +2,10 @@
 
 import 'dart:async';
 import 'dart:developer';
-
-import 'package:frontend/auth/main_page.dart';
-import 'package:frontend/pages/discover_page.dart';
 import 'package:frontend/pages/home_page.dart';
 // import 'package:cookie_app/pages/home_page.dart';
-import 'package:frontend/auth/sign_in.dart';
-import 'package:frontend/services/functions/UserService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/colors.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   @override
@@ -61,7 +54,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await Future.delayed(Duration(seconds: 5));
       setState(() => canResendEmail = true);
     } catch (e) {
-      print(e);
+      log("error: $e");
     }
   }
 

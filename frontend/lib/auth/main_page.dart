@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/auth/auth_page.dart';
 import 'package:frontend/auth/email_verification_page.dart';
-import 'package:frontend/pages/discover_page.dart';
-import 'package:frontend/pages/home_page.dart';
-import 'package:frontend/services/providers/UserProvider.dart';
-import 'package:provider/provider.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -20,7 +16,7 @@ class MainPage extends StatelessWidget {
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
-            return HomePage();
+            return VerifyEmailPage();
           }
           // user is NOT logged in
           else {
