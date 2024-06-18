@@ -1,0 +1,2412 @@
+[
+    {
+        "courseName": "Coding 101: Python for Beginners",
+        "description": "About This Class\nWhat You Need\nThe class is designed for anyone with little to no knowledge of coding. No prerequisite knowledge is required. Unlike other courses, you won't need to install anything on your computer either: All you need is a desktop, internet, and an hour of time.\nTo avoid installation, we use a website called pytwiddle.com -- it's free, doesn't require an account to use, and allows you to share code easily (by clicking on the \"Share\" button).\nWhat You\u2019ll Learn\nYou\u2019ll learn the fundamentals of code using Python. However, unlike most coding courses, this class doesn\u2019t give you an exhaustive list of minutiae; instead, you learn just enough to start using code. The goal is for you to finish the class with (a) a set of nifty tools, (b) the ability to write more nifty tools, and (c) the recognition of code\u2019s value in automating day-to-day functions. You\u2019ll cover the following concepts throughout the course:",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:52"
+            },
+            {
+                "title": "About the Course",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:02"
+            },
+            {
+                "title": "Expressions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:37"
+            },
+            {
+                "title": "Variables",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:54"
+            },
+            {
+                "title": "(Bonus) Guided Exercises for Variables etc.",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:25"
+            },
+            {
+                "title": "Calling Functions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:58"
+            },
+            {
+                "title": "Project: Currency Converter",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:53"
+            },
+            {
+                "title": "Calling Methods",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:02"
+            },
+            {
+                "title": "Project: Email Reformatter",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:05"
+            },
+            {
+                "title": "Lists",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:36"
+            },
+            {
+                "title": "Project: Name Picker",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:54"
+            },
+            {
+                "title": "Dictionaries",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:56"
+            },
+            {
+                "title": "Project: Location Checker",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:08"
+            },
+            {
+                "title": "(Bonus) Guided Exercises for Collections",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:48"
+            },
+            {
+                "title": "(Bonus) Guided Exercises for Using Functions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:32"
+            },
+            {
+                "title": "If-Else Statement",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:27"
+            },
+            {
+                "title": "Project: Birthday Countdown",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:00"
+            },
+            {
+                "title": "While Loops",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:28"
+            },
+            {
+                "title": "Project: Bacon Ipsum",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:18"
+            },
+            {
+                "title": "For Loops",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:17"
+            },
+            {
+                "title": "Project: Generate Password",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:12"
+            },
+            {
+                "title": "Define Functions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:39"
+            },
+            {
+                "title": "Project: Secret Messages",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:05"
+            },
+            {
+                "title": "(Bonus) Guided Exercises for Defining Functions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:15"
+            },
+            {
+                "title": "(Bonus) Guided Exercises for If, While",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:24"
+            },
+            {
+                "title": "(Bonus) Guided Exercises for For Loops",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:07"
+            },
+            {
+                "title": "Coding101 Conclusion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:57"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/519f5f05b51f9f64f44305b30722d68d/small",
+        "author": "Alvin Wan",
+        "duration": "2h 52m"
+    },
+    {
+        "courseName": "How to Draw: A Beginner\u2019s Guide - Part 1 of The Drawing Laboratory",
+        "description": "About This Class\nDrawing is not a talent. Drawing is a skill you can learn. \nJoin award winning instructor Brent Eviston, creator of the best selling Art and Science of Drawing series, in his most immersive, in-depth drawing series yet. You\u2019ll join Brent in his studio where you\u2019ll experience some of the clearest, most effective drawing instruction available. \nThis new course includes 8 in-depth lessons, each focusing on a different set of essential drawing skills. At the end of each lesson is a project where you\u2019ll practice the skills you\u2019ve just learned. Once you\u2019ve completed the 8 lessons, you\u2019re invited to draw along with Brent as he demonstrates the entire drawing process start to finish. \nThis course is designed to teach you everything you need to start drawing the subjects that most fascinate you, whether you\u2019re an absolute beginner or a more experienced artist looking to strengthen your fundamental skills. ",
+        "lessons": [
+            {
+                "title": "Trailer",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:31"
+            },
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "12:09"
+            },
+            {
+                "title": "How to Begin",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:17"
+            },
+            {
+                "title": "Circles & Ovals",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:19"
+            },
+            {
+                "title": "Straight Edged Shapes",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "21:06"
+            },
+            {
+                "title": "Beyond Basic Shapes",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "22:19"
+            },
+            {
+                "title": "How to Simplify Any Subject",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "27:08"
+            },
+            {
+                "title": "The Basics of Measuring & Proportion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "35:12"
+            },
+            {
+                "title": "Angles, Enveloping & the Block-In",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "40:34"
+            },
+            {
+                "title": "Contours, Detail & Value",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "28:53"
+            },
+            {
+                "title": "Conclusion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:09"
+            },
+            {
+                "title": "Cardinal Demo Part 1",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "29:15"
+            },
+            {
+                "title": "Cardinal Demo Part 2",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "33:00"
+            },
+            {
+                "title": "Botanical Demo Part 1",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "28:07"
+            },
+            {
+                "title": "Botanical Demo Part 2",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "23:48"
+            },
+            {
+                "title": "Materials & Setup",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:33"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/c69b0a6739ac2a05a60637b593efa6f0/448-252",
+        "author": "Brent Eviston",
+        "duration": "5h 57m"
+    },
+    {
+        "courseName": "7 Day Watercolor Challenge for Everyone - Build Painting Habits & Master Fundamentals",
+        "description": "About This Class\nThis challenge explores basic watercolor techniques, creating textures, adding detail, but also absolute basics of sketching different subjects. It promotes and supports quick, fresh and fearless approach to watercolor painting.\nTherefore, it's for absolute beginners, as well as for any advanced watercolorists, who find themselves a bit uninspired to paint at the moment and need something quick & easy to get yourself to a more ready state.\nClass contains demos that are easier to approach. I'm sure many can benefit from going through all the basics in this short amount of time, as a way of easing ourselves into harder subjects.",
+        "lessons": [
+            {
+                "title": "Intro, trailer",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:15"
+            },
+            {
+                "title": "Class orientation",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:02"
+            },
+            {
+                "title": "Materials",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "16:23"
+            },
+            {
+                "title": "Day 1, Exercise (Watercolor fundamentals)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:51"
+            },
+            {
+                "title": "Day 1, Demo (Peonies)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:27"
+            },
+            {
+                "title": "Day 2, Exercise (Watercolor effects)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:38"
+            },
+            {
+                "title": "Day 2, Demo (Ice cream)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:14"
+            },
+            {
+                "title": "Day 3, Exercise (Sketching basics)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:31"
+            },
+            {
+                "title": "Day 3, Demo (Toucan)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "20:37"
+            },
+            {
+                "title": "Day 4, Exercise (Shading basics)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "19:43"
+            },
+            {
+                "title": "Day 4, Demo (Pears)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "19:45"
+            },
+            {
+                "title": "Day 5, Exercise (Complex shading)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:58"
+            },
+            {
+                "title": "Day 5, Demo (Rose)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:28"
+            },
+            {
+                "title": "Day 6, Exercise (Masking fluid)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:26"
+            },
+            {
+                "title": "Day 6, Demo (Red Mushrooms)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:54"
+            },
+            {
+                "title": "Day 7, Exercise (Color blending, complex sketching) - Part 1",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "20:33"
+            },
+            {
+                "title": "Day 7, Exercise (Color blending, complex sketching) - Part 2",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:13"
+            },
+            {
+                "title": "Day 7, Demo (Red parrot)",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "20:52"
+            },
+            {
+                "title": "Final Thoughts",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:59"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/7f1fa46ab076fd5502cafbb63aca9755/448-252",
+        "author": "Jane-Beata",
+        "duration": "3h 59m"
+    },
+    {
+        "courseName": "YouTube for Beginners - How to Start & Grow Your YouTube Channel",
+        "description": "About This Class\nThis class is for anyone who'd like to start a YouTube channel.\nMy FREE Skillshare Bonus Resources\nAs I mentioned in the course, I\u2019ve now made a bunch of free resources for all of my Skillshare classes, exclusively for my Skillshare students. They\u2019re packed with additional course-related content for every class, and will help you refresh what you\u2019ve learnt, as well as explore some of the other classes you haven\u2019t taken yet. Check it out here.\n----------\nYou'll learn everything you need to get started as a YouTuber including how to script, shoot, and edit your first video. \nYou'll also learn how to:",
+        "lessons": [
+            {
+                "title": "Welcome to the Class",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:11"
+            },
+            {
+                "title": "Class Project",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:54"
+            },
+            {
+                "title": "Why Start a YouTube Channel?",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:12"
+            },
+            {
+                "title": "What to Make Videos About",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:15"
+            },
+            {
+                "title": "Overcome the Fear of Getting Started",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:03"
+            },
+            {
+                "title": "Starting Your New Channel",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:55"
+            },
+            {
+                "title": "Create Your YouTube Account",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:04"
+            },
+            {
+                "title": "Choose Your Channel's Visuals",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:17"
+            },
+            {
+                "title": "Beat Perfectionism",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:51"
+            },
+            {
+                "title": "Brainstorm Video Ideas",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:45"
+            },
+            {
+                "title": "Script Your Video",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:40"
+            },
+            {
+                "title": "Film With Your Phone",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:12"
+            },
+            {
+                "title": "Upgrading Your Camera Setup",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:22"
+            },
+            {
+                "title": "Set Up Your Audio",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:14"
+            },
+            {
+                "title": "Set Up Your Lighting",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:10"
+            },
+            {
+                "title": "Perfect Your Background",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:23"
+            },
+            {
+                "title": "Exclusive Bonus Materials",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:47"
+            },
+            {
+                "title": "Talk to the Camera",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "16:49"
+            },
+            {
+                "title": "Set Up Your First Video",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:04"
+            },
+            {
+                "title": "Shoot Your First Video",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:10"
+            },
+            {
+                "title": "Shoot Your B-Roll",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:10"
+            },
+            {
+                "title": "Shoot Your Thumbnail",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:27"
+            },
+            {
+                "title": "Edit Your Footage",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "25:21"
+            },
+            {
+                "title": "Upload Your Video to YouTube",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:16"
+            },
+            {
+                "title": "Grow Your Channel - 6 Tips",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:14"
+            },
+            {
+                "title": "Bonus: 10 Tips for Aspiring YouTubers",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:00"
+            },
+            {
+                "title": "Make YouTube Fun",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:47"
+            },
+            {
+                "title": "Final Thoughts",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:44"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/3d4e26f38f2cb702b655467f0be55771/448-252",
+        "author": "Ali Abdaal",
+        "duration": "4h 9m"
+    },
+    {
+        "courseName": "Masterclass sur Notion : optimiser votre productivit\u00e9 et votre organisation",
+        "description": "About This Class\nNotion est l'une des meilleures applications de productivit\u00e9 qui existent. Elle est con\u00e7ue pour rendre l'organisation et la syst\u00e9matisation de votre vie personnelle ou professionnelle beaucoup plus simple et nettement plus productive. Dans ce cours, j'explique comment utiliser Notion et en tirer parti pour optimiser votre productivit\u00e9 et votre organisation. \nMes ressources bonus gratuites sur Skillshare\nComme je l'ai mentionn\u00e9 dans le cours, j'ai d\u00e9sormais compil\u00e9 de nombreuses ressources gratuites pour tous mes cours Skillshare, exclusivement r\u00e9serv\u00e9es \u00e0 mes \u00e9tudiants sur la plateforme. Elles regorgent de contenu compl\u00e9mentaire pour chacun de mes cours. Elles vous aideront \u00e0 vous rafra\u00eechir la m\u00e9moire sur ce que vous avez appris et \u00e0 d\u00e9couvrir certains autres cours que vous n'avez pas encore suivis. Consultez-les ici.\n----------",
+        "lessons": [
+            {
+                "title": "Bienvenue au cours",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:32"
+            },
+            {
+                "title": "Projet du cours",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:39"
+            },
+            {
+                "title": "1.1 Commencer \u00e0 utiliser Notion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:38"
+            },
+            {
+                "title": "1.2 L'anatomie de Notion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:33"
+            },
+            {
+                "title": "1.3 Les bases : pages et blocs",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:02"
+            },
+            {
+                "title": "1.4 Concevoir votre LifeOS",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "21:08"
+            },
+            {
+                "title": "1.5 Utiliser les liens et les backlinks",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:56"
+            },
+            {
+                "title": "1.6 Choisir le style de votre page",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:40"
+            },
+            {
+                "title": "2.1 La puissance des bases de donn\u00e9es",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:44"
+            },
+            {
+                "title": "2.2 Comprendre les affichages de base de donn\u00e9es",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:18"
+            },
+            {
+                "title": "2.3 Utilisation des vues li\u00e9es de bases de donn\u00e9es",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:41"
+            },
+            {
+                "title": "2.4 Comprendre les relations et les synth\u00e8ses",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:36"
+            },
+            {
+                "title": "2.5 Gagner du temps gr\u00e2ce aux mod\u00e8les",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:12"
+            },
+            {
+                "title": "3.1 S'amuser avec les formules",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:10"
+            },
+            {
+                "title": "3.2 Travailler en \u00e9quipes",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:53"
+            },
+            {
+                "title": "3.3 Am\u00e9liorer votre niveau avec les widgets",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:30"
+            },
+            {
+                "title": "3.4 Cr\u00e9er un site web avec Super",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:35"
+            },
+            {
+                "title": "3.5 Conclusion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:29"
+            },
+            {
+                "title": "4.1 Ressources bonus",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:11"
+            },
+            {
+                "title": "4.2 Mon calendrier de r\u00e9sonance",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "14:07"
+            },
+            {
+                "title": "4.3 Mon moteur de production de contenu - Angus",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "20:48"
+            },
+            {
+                "title": "4.4 La configuration Notion de Thomas Frank",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "24:59"
+            },
+            {
+                "title": "4.5 La configuration Notion d'August Bradley",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:59"
+            },
+            {
+                "title": "Ressources bonus exclusives",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:43"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/7db4ebdc11a4b203995b65666a56d1fd/448-252",
+        "author": "Ali Abdaal",
+        "duration": "1h 45m"
+    },
+    {
+        "courseName": "Video Editing With Adobe Premiere Pro For Beginners (2024)",
+        "description": "About This Class\nLearn professional video editing with Adobe Premiere Pro. A beginner course to get you started with basic editing techniques, text & graphics, audio enhancing, transitions, video effects and so much more!",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:06"
+            },
+            {
+                "title": "Starting a Video Project",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:43"
+            },
+            {
+                "title": "The Workspace",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:56"
+            },
+            {
+                "title": "Basic Editing Workflow",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:25"
+            },
+            {
+                "title": "The Timeline",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:39"
+            },
+            {
+                "title": "The Effects Controls",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:42"
+            },
+            {
+                "title": "Layers and Blending",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:43"
+            },
+            {
+                "title": "Cropping and Reframing",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:56"
+            },
+            {
+                "title": "Slow and Fast Motion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:04"
+            },
+            {
+                "title": "The Toolbox",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:25"
+            },
+            {
+                "title": "Transitions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:01"
+            },
+            {
+                "title": "Text and Graphics",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:44"
+            },
+            {
+                "title": "Text Transcription",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:49"
+            },
+            {
+                "title": "Templates",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:22"
+            },
+            {
+                "title": "Masking",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:29"
+            },
+            {
+                "title": "Creating Animations",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:01"
+            },
+            {
+                "title": "Custom Transitions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:47"
+            },
+            {
+                "title": "Audio Enhancing and Effects",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:04"
+            },
+            {
+                "title": "Editing and Sound Design",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:24"
+            },
+            {
+                "title": "Audio Mixing",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "16:34"
+            },
+            {
+                "title": "Color Correction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:39"
+            },
+            {
+                "title": "Color Grading",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:47"
+            },
+            {
+                "title": "Export Your Video",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:46"
+            },
+            {
+                "title": "Conclusion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:51"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/3824b6c6a480144f0862b673e85cf856/448-252",
+        "author": "Jordy Vandeput",
+        "duration": "3h 44m"
+    },
+    {
+        "courseName": "Productivity Masterclass - Principles and Tools to Boost Your Productivity",
+        "description": "About This Class\nThis course is a productivity masterclass, the first in a series about my principles of productivity. I want to explore the idea of productivity in more depth - break down the concept into principles and theories as well as laws and powers to provide the foundation to enable us all to understand productivity on a more fundamental level so that we can all work towards living happier, more productive lives.\nMy FREE Skillshare Bonus Resources\nAs I mentioned in the course, I\u2019ve now made a bunch of free resources for all of my Skillshare classes, exclusively for my Skillshare students. They\u2019re packed with additional course-related content for every class, and will help you refresh what you\u2019ve learnt, as well as explore some of the other classes you haven\u2019t taken yet. Check it out here. \n---------\n\"Being productive is really just about understanding the productivity equation and then figuring out which bits we need to optimise to apply to our own lives\".",
+        "lessons": [
+            {
+                "title": "Welcome to the Class",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:45"
+            },
+            {
+                "title": "The Class Project",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:16"
+            },
+            {
+                "title": "The Productivity Equation",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:41"
+            },
+            {
+                "title": "The Myth of \"I Don't Have Time\"",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:20"
+            },
+            {
+                "title": "The Myth of Motivation",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "20:34"
+            },
+            {
+                "title": "The Myth of Multitasking",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:42"
+            },
+            {
+                "title": "Parkinson's Law",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:36"
+            },
+            {
+                "title": "Pareto Principle",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:27"
+            },
+            {
+                "title": "Newton's First Law of Motion",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:00"
+            },
+            {
+                "title": "The Power of Habits",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:33"
+            },
+            {
+                "title": "The Power of Productive Downtime",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:08"
+            },
+            {
+                "title": "The Power of Productive Procrastination",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:48"
+            },
+            {
+                "title": "The Fun Factor",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:06"
+            },
+            {
+                "title": "Outro",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:20"
+            },
+            {
+                "title": "The Next Step of Your Productivity Journey",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:29"
+            },
+            {
+                "title": "Exclusive Bonus Materials",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:47"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/47230a8b326958092ad8898b0dae8c45/448-252",
+        "author": "Ali Abdaal",
+        "duration": "1h 55m"
+    },
+    {
+        "courseName": "Figma UI UX Design Essentials",
+        "description": "About This Class\nHi there - my name is Dan Scott & welcome to Figma Essentials. Together - you and me - are going to learn everything you need to get started working as a UX Designer using Figma. \nWe\u2019ll use this UI UX design tool to create beautiful User Interfaces and engaging prototypes. Most importantly... we'll cover the client expectations of you as a new UX designer. \nThis course is aimed at people new to design, new to User Experience design. Even if you\u2019re not totally sure what UX really means, don\u2019t worry. We\u2019ll start right at the beginning and work our way through step by step. \nFirst we\u2019ll describe the brief & how to work with a UX persona.  \nThen you\u2019ll learn how to create simple wireframes.  ",
+        "lessons": [
+            {
+                "title": "Introduction to Figma Essentials training course",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:53"
+            },
+            {
+                "title": "Getting started with Figma training",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:06"
+            },
+            {
+                "title": "What is Figma for & does it do the coding?",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:46"
+            },
+            {
+                "title": "Whats the difference between UI and UX in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:22"
+            },
+            {
+                "title": "What we are making in this Figma course",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:18"
+            },
+            {
+                "title": "Class project 01- Create your own brief",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:01"
+            },
+            {
+                "title": "What is Lo Fi Wireframe vs High Fidelity in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:34"
+            },
+            {
+                "title": "Creating our design file & introducing frames in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:29"
+            },
+            {
+                "title": "The basics of type & fonts in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:51"
+            },
+            {
+                "title": "Rectangles, Circles Buttons & Rounded corners in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:50"
+            },
+            {
+                "title": "How to use color in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:45"
+            },
+            {
+                "title": "Strokes plus updating color defaults in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:28"
+            },
+            {
+                "title": "Object editing and how to escape in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:47"
+            },
+            {
+                "title": "Scale vs Selection Tool in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:39"
+            },
+            {
+                "title": "Frames vs Groups in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:24"
+            },
+            {
+                "title": "Class project 02- Wireframe",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:00"
+            },
+            {
+                "title": "Where to get Free icons for Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:31"
+            },
+            {
+                "title": "Matching the stroke of our icons",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:16"
+            },
+            {
+                "title": "How to use Plugins in Figma for icons",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:06"
+            },
+            {
+                "title": "Class project 03 - Icons",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:48"
+            },
+            {
+                "title": "How to use Pages in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:31"
+            },
+            {
+                "title": "How to prototype in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:46"
+            },
+            {
+                "title": "Prototype animation and easing in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:53"
+            },
+            {
+                "title": "Testing on your phone with Figma Mirror",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:40"
+            },
+            {
+                "title": "Class project 04 - Testing on your phone",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:51"
+            },
+            {
+                "title": "What is Smart Animation & delays in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:44"
+            },
+            {
+                "title": "Class project 05 - My first animation",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:01"
+            },
+            {
+                "title": "Sharing & Commenting on Figma file with Stakeholders",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:10"
+            },
+            {
+                "title": "Share editing with other UX designers in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:58"
+            },
+            {
+                "title": "How I get inspiration for UX projects",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:39"
+            },
+            {
+                "title": "How to create a mood board in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:33"
+            },
+            {
+                "title": "Class Project 06 - Moodboard",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:26"
+            },
+            {
+                "title": "How to work with Columns & Grid in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:54"
+            },
+            {
+                "title": "Tips, Tricks, Preferences and Weirdness in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:52"
+            },
+            {
+                "title": "Color Inspiration & the eyedropper in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:34"
+            },
+            {
+                "title": "How to create a color palette in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:02"
+            },
+            {
+                "title": "How to make gradients in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:46"
+            },
+            {
+                "title": "How to create & use Color Styles in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:01"
+            },
+            {
+                "title": "Class Project - Colors & Columns",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:00"
+            },
+            {
+                "title": "Font on Desktop vs Browser Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:30"
+            },
+            {
+                "title": "What fonts can I use plus font pairing in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:01"
+            },
+            {
+                "title": "What common font sizes should I choose in web design",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:30"
+            },
+            {
+                "title": "How to make Character Styles in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:36"
+            },
+            {
+                "title": "Lorem ipsum & Placeholder text in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:28"
+            },
+            {
+                "title": "Useful things to know about text in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:35"
+            },
+            {
+                "title": "How fix missing fonts in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:42"
+            },
+            {
+                "title": "Class project 08 - Text",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:19"
+            },
+            {
+                "title": "Drawing tips and tricks in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:38"
+            },
+            {
+                "title": "Squircle buttons with ios rounded courses in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:48"
+            },
+            {
+                "title": "Boolean Union Subtract Intersect Exclude Pathfinder in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:25"
+            },
+            {
+                "title": "What is the difference Union vs Flatten Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:36"
+            },
+            {
+                "title": "Class Project 09 - Making stuff",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:29"
+            },
+            {
+                "title": "Smart Selection & Tidy up in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:40"
+            },
+            {
+                "title": "Do I need to know Illustrator with Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:15"
+            },
+            {
+                "title": "Tips & tricks for using images in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:11"
+            },
+            {
+                "title": "Masking Cropping images in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:12"
+            },
+            {
+                "title": "Free image & plugin for Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:31"
+            },
+            {
+                "title": "Do you need Photoshop for UX design in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:40"
+            },
+            {
+                "title": "Class Project - Images",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:17"
+            },
+            {
+                "title": "What is Autolayout & expanding buttons in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:59"
+            },
+            {
+                "title": "Class project 11 - Buttons",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:15"
+            },
+            {
+                "title": "Auto Layout for spacing",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:47"
+            },
+            {
+                "title": "How to use constraints in figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:22"
+            },
+            {
+                "title": "Combining Nested frames Auto Layout & Constraints in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "14:29"
+            },
+            {
+                "title": "Adding Text Box Autoheight to Autolayout in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:27"
+            },
+            {
+                "title": "Class Project 12 - Responsive Design",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:19"
+            },
+            {
+                "title": "Nice drop shadow & Inner drop shadow effects in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:56"
+            },
+            {
+                "title": "Blur Layer & Background Blur & Image Blur in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:57"
+            },
+            {
+                "title": "How to make Neumorphic ui buttons in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:37"
+            },
+            {
+                "title": "Class project - Effects",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:53"
+            },
+            {
+                "title": "How to save locally & save history in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:42"
+            },
+            {
+                "title": "What are components in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:19"
+            },
+            {
+                "title": "Updating & Changing & Resetting your components",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:47"
+            },
+            {
+                "title": "You can\u2019t kill main components in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:22"
+            },
+            {
+                "title": "Where should you keep your main components in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:02"
+            },
+            {
+                "title": "Intro to the forward slash / naming convention in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:55"
+            },
+            {
+                "title": "Class Project - Components",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:44"
+            },
+            {
+                "title": "How to make component variants in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:41"
+            },
+            {
+                "title": "Another way to make variants in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:14"
+            },
+            {
+                "title": "How to make a Multi Dimensional Variant in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:13"
+            },
+            {
+                "title": "Class Project 15 - Variants",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:41"
+            },
+            {
+                "title": "How to make a form using variants in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "16:48"
+            },
+            {
+                "title": "Class Project 16 - Form",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:27"
+            },
+            {
+                "title": "Putting it all together in an desktop example",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "19:44"
+            },
+            {
+                "title": "How to add a popup overlay modal in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:03"
+            },
+            {
+                "title": "How to make & prototype a tool tip in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:26"
+            },
+            {
+                "title": "What are Flows in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:39"
+            },
+            {
+                "title": "Slide in mobile nav menu overlay in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:55"
+            },
+            {
+                "title": "Class project - Prototyping",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:10"
+            },
+            {
+                "title": "How to pin navigation to top in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:09"
+            },
+            {
+                "title": "How to make horizontal scrolling swipe in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:36"
+            },
+            {
+                "title": "Automatic scroll down the page to anchor point in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:50"
+            },
+            {
+                "title": "What are Teams vs Projects vs Files in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:18"
+            },
+            {
+                "title": "How do you use team libraries in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:03"
+            },
+            {
+                "title": "The difference between animation & micro interactions",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:55"
+            },
+            {
+                "title": "Animation with custom easing in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "25:36"
+            },
+            {
+                "title": "Class Project 18 - My Second Animation",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:55"
+            },
+            {
+                "title": "How to make animated transitions in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "17:23"
+            },
+            {
+                "title": "Class Project - Page transition",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:31"
+            },
+            {
+                "title": "Micro interactions using interactive components in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:55"
+            },
+            {
+                "title": "Micro interaction toggle switch in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:23"
+            },
+            {
+                "title": "Micro Interaction burger menu turned into cross in Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:23"
+            },
+            {
+                "title": "Class Project 20 - Micro interaction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:36"
+            },
+            {
+                "title": "How to change the thumbnail for Figma Files",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:10"
+            },
+            {
+                "title": "How to export Images out of Figma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:40"
+            },
+            {
+                "title": "How to share you document with clients & stakeholders",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:09"
+            },
+            {
+                "title": "Talking to your developer early in the figma design process",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:55"
+            },
+            {
+                "title": "Sharing Figma with developers & engineers handoff",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:07"
+            },
+            {
+                "title": "What are the next level handoffs aka design systems",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:18"
+            },
+            {
+                "title": "Class Project 21 - Finish your design",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:57"
+            },
+            {
+                "title": "What next",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:08"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/0bcdb57f80be0d1cceb3f11e51408c6e/448-252",
+        "author": "Daniel Scott",
+        "duration": "11h 50m"
+    },
+    {
+        "courseName": "Adobe Illustrator CC \u2014 treinamento b\u00e1sico",
+        "description": "About This Class",
+        "lessons": [
+            {
+                "title": "Introdu\u00e7\u00e3o aos fundamentos do Adobe Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:31"
+            },
+            {
+                "title": "Primeiros passos",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:46"
+            },
+            {
+                "title": "Para que \u00e9 usado o Illustrator e quando usar o Photoshop vs o InDesign",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:40"
+            },
+            {
+                "title": "Um passeio r\u00e1pido pelo Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:56"
+            },
+            {
+                "title": "Como desenhar tri\u00e2ngulos de ret\u00e2ngulos arredondados e rastrear imagens no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "14:46"
+            },
+            {
+                "title": "Como desenhar arcos de linhas e estrelas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "16:50"
+            },
+            {
+                "title": "Como dimensionar tra\u00e7os e efeitos e cantos",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:37"
+            },
+            {
+                "title": "Como salvar na Creative Cloud versus localmente no meu desktop",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:51"
+            },
+            {
+                "title": "Como exportar suas imagens 101",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:27"
+            },
+            {
+                "title": "Projeto de curso 01 - sua primeira criatura",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:26"
+            },
+            {
+                "title": "Como desenhar usando a ferramenta Construtor de formas no Adobe Illustrator CC",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:42"
+            },
+            {
+                "title": "Projeto 02 do curso - \u00cdcones usando o construtor de formas",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:18"
+            },
+            {
+                "title": "Conclu\u00eddo - Projeto de curso 02 - \u00cdcones usando o construtor de formas",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:49"
+            },
+            {
+                "title": "Como usar camadas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:07"
+            },
+            {
+                "title": "Alinhar a distribui\u00e7\u00e3o de rota\u00e7\u00e3o e matem\u00e1tica em campos - Tri\u00e2ngulo imposs\u00edvel",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "12:44"
+            },
+            {
+                "title": "Projeto de curso 03 - Tri\u00e2ngulo imposs\u00edvel",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:07"
+            },
+            {
+                "title": "Como usar texto para vetor no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:52"
+            },
+            {
+                "title": "Projeto de curso 03 - Criatura de Ai",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:26"
+            },
+            {
+                "title": "Como desenhar qualquer coisa usando a ferramenta Curvatura no Adobe Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:55"
+            },
+            {
+                "title": "Mistura de curvas e linhas retas usando a ferramenta Ararajuba",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:41"
+            },
+            {
+                "title": "Projeto de curso 04 - Ferramenta de curvatura",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:21"
+            },
+            {
+                "title": "Como combinar formas e ferramentas de construtor de formas em sombras da Fox",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:04"
+            },
+            {
+                "title": "Como desenhar usando a ferramenta Caneta no Adobe Illustrator CC",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:55"
+            },
+            {
+                "title": "Projeto de curso 05 - A ferramenta Caneta Temida",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:18"
+            },
+            {
+                "title": "Dan para organizar o trabalho dos estudantes",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "12:59"
+            },
+            {
+                "title": "Projeto de curso 06 - Reden\u00e7\u00e3o de ferramentas de caneta",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:46"
+            },
+            {
+                "title": "Awake Fox como combinar ferramentas e empilhamento de habilidades",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "18:34"
+            },
+            {
+                "title": "Projeto de curso 07 - Pr\u00e1tica de empilhamento de habilidades",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:56"
+            },
+            {
+                "title": "Recolora\u00e7\u00e3o generativa com IA",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:51"
+            },
+            {
+                "title": "Como fazer um quadro de humor no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:39"
+            },
+            {
+                "title": "Projeto de curso 08 - Crie seu quadro de humor",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:39"
+            },
+            {
+                "title": "Projeto do curso 09 - sua nova criatura",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:39"
+            },
+            {
+                "title": "Fabrica\u00e7\u00e3o de camisetas",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:25"
+            },
+            {
+                "title": "Como desenhar com a ferramenta L\u00e1pis no Adobe Illustrator CC",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:13"
+            },
+            {
+                "title": "Projeto de curso 10 - Desenho de ferramenta a l\u00e1pis",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:11"
+            },
+            {
+                "title": "Ajustar seu perfil de cantos do tra\u00e7ado e mitra",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:14"
+            },
+            {
+                "title": "Como fazer uma seta no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:44"
+            },
+            {
+                "title": "Como fazer um pontilhado ou trilhado no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:00"
+            },
+            {
+                "title": "Como usar pinc\u00e9is Adobe Illustrator CC",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "15:40"
+            },
+            {
+                "title": "Projeto do curso 11 - Escova de doodles",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:40"
+            },
+            {
+                "title": "Como simplificar caminhos no Illustrato",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:16"
+            },
+            {
+                "title": "Como desenhar linhas com a ferramenta Largura no Adobe Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:17"
+            },
+            {
+                "title": "Projeto de curso 12 - Ferramenta de largura",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:32"
+            },
+            {
+                "title": "Como unir duas linhas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:01"
+            },
+            {
+                "title": "Como usar o Intertwine no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:27"
+            },
+            {
+                "title": "Projeto do curso 13 - Intertwine",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:05"
+            },
+            {
+                "title": "Como expandir a apar\u00eancia no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:52"
+            },
+            {
+                "title": "Como criar um documente de cart\u00e3o postal no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:24"
+            },
+            {
+                "title": "Como adicionar tipo no texto da \u00e1rea vs ponto do Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:00"
+            },
+            {
+                "title": "Como escolher fontes no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:59"
+            },
+            {
+                "title": "Como usar o Adobe Fonts no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:21"
+            },
+            {
+                "title": "Como fazer o emparelhamento do Adobe Font",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:36"
+            },
+            {
+                "title": "Projeto do curso 14 - Fontes de cart\u00e3o postal",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:11"
+            },
+            {
+                "title": "Como encontrar e usar glifos no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:51"
+            },
+            {
+                "title": "Projeto de curso 15 - Tipo de logotipo",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:14"
+            },
+            {
+                "title": "Como alterar texto no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:54"
+            },
+            {
+                "title": "Como colocar o tipo em um distintivo usando o Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:18"
+            },
+            {
+                "title": "Projeto de curso 16 - Tipo em um caminho",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:20"
+            },
+            {
+                "title": "Como se separar e delinear o texto no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:31"
+            },
+            {
+                "title": "Como ajustar um desenho existente usando a ferramenta de l\u00e1pis",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:50"
+            },
+            {
+                "title": "Projeto de curso 17 - Logotipo da banda de heavy metal",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:18"
+            },
+            {
+                "title": "Como entrela\u00e7ar o monograma de texto no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:14"
+            },
+            {
+                "title": "Projeto de curso 18 - Monograma",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:25"
+            },
+            {
+                "title": "O que s\u00e3o as cores RGB e CMYK, HSB e HEX no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:17"
+            },
+            {
+                "title": "Como roubar cores de uma imagem usando o conta-gotas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:17"
+            },
+            {
+                "title": "Como criar uma amostra de cores reutiliz\u00e1vel no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:43"
+            },
+            {
+                "title": "Transpar\u00eancia e opacidade e enegrecer imagens no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:36"
+            },
+            {
+                "title": "Como usar bibliotecas da CC no Adobe Illustrator CC",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:43"
+            },
+            {
+                "title": "Como encontrar cores incr\u00edveis no Illustrator usando o Adobe Color",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:16"
+            },
+            {
+                "title": "Projeto do curso 19 - Variantes de cor",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:38"
+            },
+            {
+                "title": "Como usar a Recolora\u00e7\u00e3o generativa com IA no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:53"
+            },
+            {
+                "title": "Projeto de curso 20 - Recolora\u00e7\u00e3o generativa",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:25"
+            },
+            {
+                "title": "Como fazer gradientes no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:30"
+            },
+            {
+                "title": "Como perder imagens e reiniciar e incorporar",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:30"
+            },
+            {
+                "title": "Como recortar uma imagem no Adobe Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:37"
+            },
+            {
+                "title": "Projeto de curso 21 - acabamento de cart\u00e3o postal",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:58"
+            },
+            {
+                "title": "Como cortar buracos em formas usando Formas Compostas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:15"
+            },
+            {
+                "title": "Como separar formas Compostas e Mascaradas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:26"
+            },
+            {
+                "title": "Como fazer um efeito de corte de papel no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:18"
+            },
+            {
+                "title": "Projeto de curso 22 - Efeito de corte de papel",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:58"
+            },
+            {
+                "title": "Usar pranchetas no Illustrator para fazer cart\u00f5es de visita de tamanho duplo",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:00"
+            },
+            {
+                "title": "Projeto de curso 23 - Cart\u00e3o de visita",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:18"
+            },
+            {
+                "title": "Como usar o Liquify distorcer o incha\u00e7o e o pucker das rugas no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:42"
+            },
+            {
+                "title": "Projeto de curso 24 - Tipo de Liquify",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:48"
+            },
+            {
+                "title": "Efeito de texto fatiado no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:32"
+            },
+            {
+                "title": "Projeto do curso 25 - Texto fatiado",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:13"
+            },
+            {
+                "title": "Como dobrar e deformar formas no Adobe Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:38"
+            },
+            {
+                "title": "Como deformar e dobrar o tipo no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:49"
+            },
+            {
+                "title": "Projeto de curso 26 - Urdidura de bandeira estabelecida",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:38"
+            },
+            {
+                "title": "Conclu\u00eddo - Projeto de curso 26 - Urdidura de bandeira estabelecida",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:11"
+            },
+            {
+                "title": "Como converter um esbo\u00e7o em vetor e colori-lo no ilustrador",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:03"
+            },
+            {
+                "title": "Como vetorizar uma imagem no ilustrador",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:10"
+            },
+            {
+                "title": "Como converter foto em uma silhueta de est\u00eancil no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:23"
+            },
+            {
+                "title": "Como fazer um efeito de anaglyph no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:23"
+            },
+            {
+                "title": "Projeto de curso 27 - Tra\u00e7o ao vivo",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:13"
+            },
+            {
+                "title": "Como desenhar uma flor incr\u00edvel com formas repetentes no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:23"
+            },
+            {
+                "title": "Projeto de curso 28 - Padr\u00e3o de repeti\u00e7\u00e3o",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:10"
+            },
+            {
+                "title": "Como fazer padr\u00f5es de repeti\u00e7\u00e3o com a letreia geom\u00e9trica no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:46"
+            },
+            {
+                "title": "Projeto de curso 29 - Cria\u00e7\u00e3o de padr\u00f5es",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:52"
+            },
+            {
+                "title": "Como fazer tipo extrudado de tipo 3D no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "12:00"
+            },
+            {
+                "title": "Projeto de curso 30 - Venda na Black Friday",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:21"
+            },
+            {
+                "title": "Como usar a Inflate para criar um 3D legal no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "11:21"
+            },
+            {
+                "title": "Projeto de curso 31 - Inflate",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:28"
+            },
+            {
+                "title": "Como criar um maquete de seu design no Illustrator de forma realista",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:52"
+            },
+            {
+                "title": "Projeto de curso 32 - Mockup",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:32"
+            },
+            {
+                "title": "Como compartilhar para rever seus designs do Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:05"
+            },
+            {
+                "title": "Como incorporar imagens no ilustrador",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:56"
+            },
+            {
+                "title": "Entendendo todas as maneiras de exportar arquivos do Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:57"
+            },
+            {
+                "title": "WebP vs SVG vs PNG vs JPG vs PDF AI vs EPS vs Tiff no Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "10:43"
+            },
+            {
+                "title": "Projeto de curso 33 - Spoonflower",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:54"
+            },
+            {
+                "title": "Os melhores atalhos no Adobe Illustrator",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:06"
+            },
+            {
+                "title": "O que vem a seguir",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:18"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/ea56675fc71b592e5703ff13dc986bdf/448-252",
+        "author": "Daniel Scott",
+        "duration": "11h 41m"
+    },
+    {
+        "courseName": "Prendre soin de soi gr\u00e2ce \u00e0 un journal d'art : 3 exercices de r\u00e9flexion et de d\u00e9veloppement",
+        "description": "About This Class\nUn \"bullet journal\" est parfait pour la productivit\u00e9 et le traitement des entr\u00e9es, mais qu'en est-il lorsque vous voulez quelque chose de cr\u00e9atif et de r\u00e9fl\u00e9chi ? Il est temps de s'essayer \u00e0 l'art journaling !\nD\u00e9barrassez-vous de la collection de carnets qui encombre une section enti\u00e8re sur vos \u00e9tag\u00e8res et suivez l\u2019exemple de la star Amanda Rach sur YouTube. Elle vous montre trois exercices de journaling qu\u2019elle pratique en permanence dans ses journaux intimes. Que vous soyez illustrateur, expert en bullet journal (bujo), collectionneur de d\u00e9corations Washi Tape qui perd un peu les p\u00e9dales ou quelque part \u00e0 mi-chemin, le cours d\u2019Amanda consiste \u00e0 g\u00e9rer nos sentiments. Il peut vous aider \u00e0 ressentir de la gratitude pour ce que le pr\u00e9sent vous offre et \u00e0 r\u00eaver de votre avenir.\nL'art journaling selon Amanda conna\u00eet un succ\u00e8s croissant sur YouTube. Artiste par nature et de m\u00e9tier, Amanda se sert de ses journaux pour planifier, se concentrer et r\u00e9fl\u00e9chir. Jusqu\u2019\u00e0 pr\u00e9sent, elle n\u2019avait jamais d\u00e9voil\u00e9 l\u2019importance de l\u2019art journaling dans sa vie. Avec sa m\u00e9thode d'enseignement dr\u00f4le et abordable, Amanda va vous montrer comment :",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:52"
+            },
+            {
+                "title": "Qu'est-ce que l'art journaling ?",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:46"
+            },
+            {
+                "title": "Votre humeur",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "14:30"
+            },
+            {
+                "title": "Ce que vous voulez",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:14"
+            },
+            {
+                "title": "Ce que vous \u00eates aujourd'hui",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:04"
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/4ada6b4560fe12d60f68bca30294f36a/448-252",
+        "author": "Amanda Rach Lee",
+        "duration": "39m"
+    },
+    {
+        "courseName": "Commencez \u00e0 dessiner : 3 exercices amusants et lib\u00e9rateurs pour stimuler votre cr\u00e9ativit\u00e9",
+        "description": "About This Class\nLe plus difficile pour un cr\u00e9atif est de s'y mettre. Surmontez cet obstacle et l\u00e2chez-vous dans ce cours amusant et accessible de l'artiste Carly Kuhn !\nAvant de se faire reconna\u00eetre sur Instagram pour ses dessins \u00e9l\u00e9gants et fantaisistes, Carly \u00e9tait employ\u00e9e de bureau et griffonnait au travail. Bien qu'elle ne se consid\u00e9rait pas comme une artiste, elle ressentait le besoin de cr\u00e9er et elle revenait souvent \u00e0 des exercices de dessin de lignes simples qui lui ont permis de s'amuser et d'exp\u00e9rimenter sans jugement. Aujourd'hui, Carly utilise ces m\u00eames exercices chaque fois qu'elle a besoin d'inspiration ou d'une excuse pour commencer \u00e0 dessiner, et vous pouvez en faire de m\u00eame !\nPrenez 45 minutes pour mettre votre auto-critique en veille et lib\u00e9rer votre c\u00f4t\u00e9 cr\u00e9atif. Carly vous guide \u00e0 travers des exercices faciles pour cr\u00e9er une \u0153uvre d'art unique pour chez vous.\nEn utilisant juste un stylo et du papier, vous explorerez :",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:34"
+            },
+            {
+                "title": "Pour commencer",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:56"
+            },
+            {
+                "title": "\u00c9tat d'esprit et mat\u00e9riaux",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:42"
+            },
+            {
+                "title": "Exercice une : changer de main",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:26"
+            },
+            {
+                "title": "Exercice deux : la ligne continue",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:11"
+            },
+            {
+                "title": "Exercice 3 : dessiner des contours \u00e0 l'aveugle",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:24"
+            },
+            {
+                "title": "L'art de l'esth\u00e9tique",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:34"
+            },
+            {
+                "title": "R\u00e9flexions finales",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:54"
+            },
+            {
+                "title": "Aper\u00e7u : le cours suivant de Carly",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:58"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/2a623a6263ec4d5326d5b526c36292db/448-252",
+        "author": "Carly Kuhn",
+        "duration": "42m"
+    },
+    {
+        "courseName": "Start Your Creative Career: Build a Sharp, Smart Online Presence",
+        "description": "About This Class\nAs creatives, we follow our muse and make what we love, but it can be tricky to switch gears when it comes time to start (or grow) your business and cultivate career success. Don\u2019t worry \u2014 none of that is rocket science, and Sonja Rasula is here to teach you the formula!\nSonja began in the corporate world as a wunderkind, rocketing up the ladder with ambition and savvy \u2014 until she burned out, realizing all at once that she absolutely hated what she was doing, and no amount of success in it would change that. So she quit, started her own business, and never looked back.\nSonja believes that you can have exactly the career that you want, and she\u2019s here to help you get it. Join her in this crash course in exactly what you need to start your creative career \u2014 right now! From metrics to social media best practices to website style, Sonja\u2019s seen it all in her long standing career as a consultant and successful small business owner, and she knows exactly what most people get wrong. With her fun, funny, and super-approachable teaching style, she\u2019s here to make sure you get it right.",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:37"
+            },
+            {
+                "title": "Thinking of Yourself as a Business",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:10"
+            },
+            {
+                "title": "Understanding Analytics",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:07"
+            },
+            {
+                "title": "Creating Your Brand Bible",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:48"
+            },
+            {
+                "title": "Building Your Website",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "14:44"
+            },
+            {
+                "title": "Using Your Social Media",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:57"
+            },
+            {
+                "title": "Final Thoughts",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:48"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/ddc2c953a2fb5cb7685b90c603cc94d4/448-252",
+        "author": "Sonja Rasula",
+        "duration": "48m"
+    },
+    {
+        "courseName": "Plants at Home: Uplift Your Spirit & Your Space",
+        "description": "About This Class\nDiscover the positive power of plants, no green thumb required!\nStep into Christopher Griffin\u2019s urban oasis, a Brooklyn apartment that\u2019s home to over 160 plants and counting. As Plant Kween on Instagram, Christopher shares their love of plants as a tool for finding community, creativity, and calm in an otherwise nonstop world. For Christopher, plants also opened up a new world of self-discovery: the realization that we all deserve to be nurtured and taken care of.  \nNow, Christopher shares simple steps to start your own plant fam, from finding the perfect \u201cgreen gurl\u201d for your space to troubleshooting common issues like root rot and dying leaves. \nHands on-lessons (plus the occasional dance party) cover:\nAssessing your home and habits to find the perfect plant for you",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:32"
+            },
+            {
+                "title": "The Positive Power of Plants",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:25"
+            },
+            {
+                "title": "Assessing Your Space",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:27"
+            },
+            {
+                "title": "Finding Your Perfect Plant",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:07"
+            },
+            {
+                "title": "Plant Pep Talk: Best Beginner Plants",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:16"
+            },
+            {
+                "title": "Bringing Your Plant Home",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:19"
+            },
+            {
+                "title": "Listening to Your Plant",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:41"
+            },
+            {
+                "title": "Plant Pep Talk: Root Rot Rescue",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:01"
+            },
+            {
+                "title": "Cultivating Your Routine",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:15"
+            },
+            {
+                "title": "Final Thoughts",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:23"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/7fdb9e8af7d723e2b412f6366e7e1d5c/448-252",
+        "author": "Christopher Griffin",
+        "duration": "50m"
+    },
+    {
+        "courseName": "Holistic Interior Design: Transform Your Personal Space for Well-Being",
+        "description": "About This Class\nHolistic interior design is for anyone who is interested to take simple action within their personal space.  By transforming the space around, you can transform your space within.\nThis class is an introduction to the process of holistic interior design and how its principles & technical skills can be applied to your personal space.\n\nHolistic interior design can support wellbeing as it serves the many aspects of our human experience.  It is a practice of space design that strives for wholeness.  The approach considers our emotional connection to space.  We focus not only on how a space looks but also how it feels. \n\nDuring the course we will present our five principles of holistic design, seven technical skills, three demonstrations, and one case study.  We share so much of the knowledge we hold from working over the past nine years as professional designers in New York City. ",
+        "lessons": [
+            {
+                "title": "Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:53"
+            },
+            {
+                "title": "Class Project",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:50"
+            },
+            {
+                "title": "Holistic Design Principles",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:50"
+            },
+            {
+                "title": "Principle 1 : Senses",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:59"
+            },
+            {
+                "title": "Principle 2 : Comfort",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:04"
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            },
+            {
+                "title": "",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": ""
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/68aff0a82ffb2acc25a6253dbddd81c6/448-252",
+        "author": "Clear Studios",
+        "duration": "1h 22m"
+    },
+    {
+        "courseName": "How to Organise your Workflow to Maximise Productivity",
+        "description": "About This Class\nIn this second class of my series on improving our personal productivity, I want to further explore the systems, workflows and organization techniques we can use maximise our output. \nMy FREE Skillshare Bonus Resources\nAs I mentioned in the course, I\u2019ve now made a bunch of free resources for all of my Skillshare classes, exclusively for my Skillshare students. They\u2019re packed with additional course-related content for every class, and will help you refresh what you\u2019ve learnt, as well as explore some of the other classes you haven\u2019t taken yet. Check it out here.\n----------\nI want to build upon the foundations that were laid down in the first course and explore the Pilot, Plane, Engineer analogy in more depth. I hope that through the concepts, principles and theories that were discussed in the first class, and the more practical advice offered in this class, you\u2019ll be able to work towards living a happier, healthier and more productive life. ",
+        "lessons": [
+            {
+                "title": "Welcome to the Class",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "1:17"
+            },
+            {
+                "title": "The Pilot - Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:27"
+            },
+            {
+                "title": "Scheduling and Calendars",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:10"
+            },
+            {
+                "title": "The Power of To-Do Lists",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:43"
+            },
+            {
+                "title": "Exclusive Bonus Materials",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "0:47"
+            },
+            {
+                "title": "Projects and Areas of Focus",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "6:16"
+            },
+            {
+                "title": "Goals",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:51"
+            },
+            {
+                "title": "Vision and Purpose",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:06"
+            },
+            {
+                "title": "The Plane - Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:10"
+            },
+            {
+                "title": "Hacking Motivation",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "22:15"
+            },
+            {
+                "title": "Overcoming Inertia",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "4:14"
+            },
+            {
+                "title": "Achieving Flow",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:53"
+            },
+            {
+                "title": "Distraction Management",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "9:42"
+            },
+            {
+                "title": "Pomodoro Technique",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:32"
+            },
+            {
+                "title": "Course Correcting",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:27"
+            },
+            {
+                "title": "Leveraging Artificial Deadlines",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:42"
+            },
+            {
+                "title": "The Reitoff Principle",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:07"
+            },
+            {
+                "title": "The Engineer - Introduction",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:53"
+            },
+            {
+                "title": "The Getting Things Done Methodology",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:30"
+            },
+            {
+                "title": "Digital Productivity",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "7:47"
+            },
+            {
+                "title": "Health and Wellbeing",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "8:00"
+            },
+            {
+                "title": "Daily Review - The Log Book",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "5:35"
+            },
+            {
+                "title": "Weekly Review - The Operating System",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "13:14"
+            },
+            {
+                "title": "Monthy Review - The Systems Check",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "3:53"
+            },
+            {
+                "title": "Annual Review - The Aircraft Inspection",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:31"
+            },
+            {
+                "title": "The Fun Factor",
+                "link": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+                "duration": "2:34"
+            }
+        ],
+        "thumbnail": "https://static.skillshare.com/uploads/video/thumbnails/8a6d34a8f5458236d1e4183b6c33f34e/448-252",
+        "author": "Ali Abdaal",
+        "duration": "2h 38m"
+    }
+]
