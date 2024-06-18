@@ -6,6 +6,7 @@ const LessonController = require('../app/controllers/LessonController');
 router.get('/', CourseController.getAllCourses);
 router.post('/', CourseController.createCourse);
 router.get('/:id', CourseController.getCourseById);
+router.get('/top5', CourseController.getTop5Courses);
 router.patch('/:id', CourseController.updateCourse);
 router.delete('/:id', CourseController.deleteCourse);
 // Lessons
@@ -16,6 +17,5 @@ router.patch('/:courseId/lessons/:lessonId', LessonController.updateLesson);
 router.delete('/:courseId/lessons/:lessonId', LessonController.deleteLesson);
 
 // Route for top 5 courses
-router.get('/top5', CourseController.getTop5Courses);
 router.get('/random', CourseController.getRandomCourses);
 module.exports = router;

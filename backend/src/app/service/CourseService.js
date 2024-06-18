@@ -58,9 +58,10 @@ exports.deleteCourse = async (id) => {
 
 exports.getTop5Courses = async () => {
   try {
-    const snapshot = await CourseCollection.orderBy('popularity', 'desc').limit(5).get();
-    const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return courses;
+    // const snapshot = await CourseCollection.orderBy('popularity', 'desc').limit(5).get();
+    // const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // return courses;
+
   } catch (error) {
     console.error('Error fetching top 5 courses:', error);
     throw error;
