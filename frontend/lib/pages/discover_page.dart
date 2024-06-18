@@ -48,7 +48,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   }
 
   Future<void> _initPage() async {
-    _coursesFuture = await courseService.fetchCourses();
+    _coursesFuture = await courseService.getRandomCourses();
     await _fetchInstructorNames(_coursesFuture!);
   }
 

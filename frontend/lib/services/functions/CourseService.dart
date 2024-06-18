@@ -27,7 +27,7 @@ class CourseService {
 
   Future<Course> getCourseById(String id) async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/course/$id"));
+      final response = await http.get(Uri.parse("$baseUrl/courses/$id"));
       if (response.statusCode == 200) {
         return Course.fromJson(json.decode(response.body));
       } else {

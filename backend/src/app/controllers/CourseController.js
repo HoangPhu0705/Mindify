@@ -9,6 +9,27 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
+exports.addCourses = async (req, res) => {
+  try {
+    const courses = req.body;
+    const response = await CourseService.addCourses(courses);
+    res.status(201).json(response);
+  } catch (error) {
+    res.status(500).send({ message: 'Error creating courses with lessons', error: error.message });
+  }
+};
+
+
+exports.createCourseWithLessons = async (req, res) => {
+  try {
+    const courseData = req.body;
+    const response = await CourseService.createCourseWithLessons(courseData);
+    res.status(201).json(response);
+  } catch (error) {
+    res.status(500).send({ message: 'Error creating course with lessons', error: error.message });
+  }
+};
+
 exports.createCourse = async (req, res) => {
   try {
     const course = req.body;

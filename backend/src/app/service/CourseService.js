@@ -12,6 +12,51 @@ exports.getAllCourses = async () => {
   return courses;
 };
 
+exports.addCourses = async (courses) => {
+  try {
+    const batch = CourseCollection.firestore.batch();
+
+    courses.forEach((courseData) => {
+      const { lessons, ...courseInfo } = courseData;
+      const courseRef = CourseCollection.doc();
+
+      batch.set(courseRef, courseInfo);
+
+      lessons.forEach((lesson) => {
+        const lessonRef = courseRef.collection('lessons').doc();
+        batch.set(lessonRef, lesson);
+      });
+    });
+
+    await batch.commit();
+    return { message: "Courses and lessons created successfully" };
+  } catch (error) {
+    console.error('Error creating courses with lessons:', error);
+    throw error;
+  }
+};
+
+exports.createCourseWithLessons = async (courseData) => {
+  const { lessons, ...courseInfo } = courseData;
+
+  try {
+    const courseRef = CourseCollection.doc();
+    await courseRef.set(courseInfo);
+
+    const lessonsPromises = lessons.map((lesson) => {
+      const lessonRef = courseRef.collection('lessons').doc();
+      return lessonRef.set(lesson);
+    });
+
+    await Promise.all(lessonsPromises);
+
+    return { courseId: courseRef.id, message: "Course and lessons created successfully" };
+  } catch (error) {
+    console.error('Error creating course with lessons:', error);
+    throw error;
+  }
+};
+
 exports.createCourse = async (course) => {
   try {
     const docRef = CourseCollection.doc();
