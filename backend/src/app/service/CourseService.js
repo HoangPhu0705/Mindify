@@ -115,11 +115,24 @@ exports.getTop5Courses = async () => {
 exports.getRandomCourses = async () => {
   try {
     const snapshot = await CourseCollection.get();
-    const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const shuffled = courses.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5);
+    const courses = snapshot.docs.map(async doc => {
+      const lessonsSnapshot = await doc.ref.collection('lessons').get();
+      const lessons = lessonsSnapshot.docs.map(lessonDoc => ({
+        id: lessonDoc.id,
+        ...lessonDoc.data()
+      }));
+      return {
+        id: doc.id,
+        ...doc.data(),
+        lessons: lessons // Thêm danh sách bài học vào đây
+      };
+    });
+    const resolvedCourses = await Promise.all(courses);
+    const shuffled = resolvedCourses.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 5); // Trả về 5 khóa học ngẫu nhiên với danh sách bài học
   } catch (error) {
     console.error('Error fetching random courses:', error);
     throw error;
   }
 };
+
