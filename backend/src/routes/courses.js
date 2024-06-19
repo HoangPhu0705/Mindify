@@ -9,6 +9,7 @@ router.post('/', CourseController.createCourse);
 router.get('/random', CourseController.getRandomCourses);
 // router.post('/', CourseController.createCourseWithLessons)
 router.get('/:id', CourseController.getCourseById);
+router.get('/top5', CourseController.getTop5Courses);
 router.patch('/:id', CourseController.updateCourse);
 router.delete('/:id', CourseController.deleteCourse);
 // router.get('/top5', CourseController.);
