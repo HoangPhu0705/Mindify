@@ -103,9 +103,9 @@ exports.deleteCourse = async (id) => {
 
 exports.getTop5Courses = async () => {
   try {
-    // const snapshot = await CourseCollection.orderBy('popularity', 'desc').limit(5).get();
-    // const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    // return courses;
+    const snapshot = await CourseCollection.orderBy('popularity', 'desc').limit(5).get();
+    const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return courses;
 
   } catch (error) {
     console.error('Error fetching top 5 courses:', error);
@@ -115,8 +115,21 @@ exports.getTop5Courses = async () => {
 
 exports.getRandomCourses = async () => {
   try {
+    // First, get all course IDs
     const snapshot = await CourseCollection.get();
-    const courses = snapshot.docs.map(async doc => {
+    const allCourseIds = snapshot.docs.map(doc => doc.id);
+
+    // Then, select 5 random IDs
+    const randomCourseIds = [];
+    for (let i = 0; i < 5; i++) {
+      const randomIndex = Math.floor(Math.random() * allCourseIds.length);
+      randomCourseIds.push(allCourseIds[randomIndex]);
+      allCourseIds.splice(randomIndex, 1); // Remove the selected ID from the array
+    }
+
+    // Then, get the full course data for the selected IDs
+    const courses = randomCourseIds.map(async id => {
+      const doc = await CourseCollection.doc(id).get();
       const lessonsSnapshot = await doc.ref.collection('lessons').get();
       const lessons = lessonsSnapshot.docs.map(lessonDoc => ({
         id: lessonDoc.id,
@@ -125,12 +138,12 @@ exports.getRandomCourses = async () => {
       return {
         id: doc.id,
         ...doc.data(),
-        lessons: lessons // Thêm danh sách bài học vào đây
+        lessons: lessons
       };
     });
+
     const resolvedCourses = await Promise.all(courses);
-    const shuffled = resolvedCourses.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5); // Trả về 5 khóa học ngẫu nhiên với danh sách bài học
+    return resolvedCourses;
   } catch (error) {
     console.error('Error fetching random courses:', error);
     throw error;

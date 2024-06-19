@@ -27,7 +27,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   final CourseService courseService = CourseService();
 
   //Variables
-  int _currentTopCourse = 0;
+  // int _currentTopCourse = 0;
   late Timer _timer;
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
@@ -37,39 +37,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   final _pageController = PageController(initialPage: 0);
 
-  //Functions
-  Future<void> _fetchInstructorNames(List<Course> courses) async {
-    for (var course in courses) {
-      final name = await courseService.getInstructorName(course.instructorId);
-      setState(() {
-        instructorNames[course.id] = name;
-      });
-    }
-  }
-
   Future<void> _initPage() async {
     _coursesFuture = await courseService.getRandomCourses();
-    await _fetchInstructorNames(_coursesFuture!);
   }
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(seconds: 4), (Timer timer) {
-      if (_currentTopCourse < 4) {
-        _currentTopCourse++;
-      } else {
-        _currentTopCourse = 0;
-      }
 
-      if (_pageController.hasClients) {
-        _pageController.animateToPage(
-          _currentTopCourse,
-          duration: Duration(milliseconds: 350),
-          curve: Curves.ease,
-        );
-      }
-    });
     _future = _initPage();
   }
 
@@ -86,6 +61,43 @@ class _DiscoverPageState extends State<DiscoverPage> {
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: FutureBuilder(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return MyLoading(width: 30, height: 30);
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text("Mindify",
+                      style: Theme.of(context).textTheme.headlineMedium),
+                  AppSpacing.smallVertical,
+                  buildPopularCourses(_coursesFuture!),
+                  AppSpacing.mediumVertical,
+                  Column(
+                    children: [
+                      buildCarouselCourses(
+                          _coursesFuture!, "Recommend For You"),
+                      AppSpacing.mediumVertical,
+                      buildCarouselCourses(_coursesFuture!, "New and Trending"),
+                    ],
+                  ),
+                  AppSpacing.largeVertical,
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget buildPopularCourses(List<Course> courses) {
     return Column(
       children: [
@@ -95,18 +107,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
           child: PageView.builder(
             controller: _pageController,
             itemCount: courses.length,
-            onPageChanged: (value) {
-              setState(() {
-                _currentTopCourse = value;
-              });
-            },
+            onPageChanged: (value) {},
             itemBuilder: (context, index) {
               final course = courses[index];
-              final instructorName = instructorNames[course.id] ?? 'Loading...';
               return PopularCourse(
                 imageUrl: course.thumbnail,
                 courseName: course.title,
-                instructor: instructorName,
+                instructor: course.instructorName,
               );
             },
           ),
@@ -148,7 +155,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {
             final course = courses[index];
-            final instructorName = instructorNames[course.id] ?? 'Loading...';
             return GestureDetector(
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
@@ -159,7 +165,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               },
               child: CourseCard(
                 thumbnail: course.thumbnail,
-                instructor: instructorName,
+                instructor: course.instructorName,
                 specialization: "Filmaker and Youtuber",
                 courseName: course.title,
                 time: 9,
@@ -170,43 +176,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
           },
         ),
       ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return MyLoading(width: 30, height: 30);
-            }
-
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text("Mindify",
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  AppSpacing.smallVertical,
-                  buildPopularCourses(_coursesFuture!),
-                  AppSpacing.mediumVertical,
-                  Column(
-                    children: [
-                      buildCarouselCourses(
-                          _coursesFuture!, "Recommend For You"),
-                      AppSpacing.mediumVertical,
-                      buildCarouselCourses(_coursesFuture!, "New and Trending"),
-                    ],
-                  ),
-                  AppSpacing.largeVertical,
-                ],
-              ),
-            );
-          },
-        ),
-      ),
     );
   }
 }

@@ -28,10 +28,8 @@ class CourseService {
   Future<List<Course>> getRandomCourses() async {
     try {
       final response = await http.get(Uri.parse("$baseUrl/courses/random"));
-      log("json.decode(response.body)");
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        log("hi");
         return data.map((course) => Course.fromJson(course)).toList();
       } else {
         throw Exception("Failed to load random courses");
@@ -60,26 +58,26 @@ class CourseService {
     DocumentSnapshot snapshot =
         await _firestore.collection('users').doc(instructorId).get();
     if (snapshot.exists && snapshot.data() != null) {
+      log("Successfully");
       final data = snapshot.data() as Map<String, dynamic>;
-      return data['displayName'] ?? 'Unknown';
+      return data['displayName'];
     }
-    return 'Unknown';
+
+    return "Mindify Member";
   }
 
-  // Future<List<Course>> getTop5Courses() async {
-  //   try {
-  //     final response = await http.get(Uri.parse("$baseUrl/courses/top5"));
-  //     if (response.statusCode == 200) {
-  //       List<dynamic> data = json.decode(response.body);
-  //       return data.map((course) => Course.fromJson(course)).toList();
-  //     } else {
-  //       throw Exception("Failed to load top 5 courses");
-  //     }
-  //   } catch (e) {
-  //     log("Error: $e");
-  //     throw Exception("Failed to load top 5 courses");
-  //   }
-  // }
-
-  
+  Future<List<Course>> getTop5Courses() async {
+    try {
+      final response = await http.get(Uri.parse("$baseUrl/courses/top5"));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((course) => Course.fromJson(course)).toList();
+      } else {
+        throw Exception("Failed to load top 5 courses");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Failed to load top 5 courses");
+    }
+  }
 }

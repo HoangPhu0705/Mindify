@@ -6,6 +6,7 @@ class Course {
   String description;
   String thumbnail;
   String instructorId;
+  String instructorName;
   String duration;
   List<Lesson> lessons;
 
@@ -15,6 +16,7 @@ class Course {
     required this.description,
     required this.thumbnail,
     required this.instructorId,
+    required this.instructorName,
     required this.duration,
     required this.lessons,
   });
@@ -25,9 +27,13 @@ class Course {
       title: json['courseName'] as String,
       description: json['description'] as String,
       thumbnail: json['thumbnail'] as String,
-      instructorId: json['author'] as String,
+      instructorId: json['authorId'] as String,
+      instructorName: json['author'] as String,
       duration: json['duration'] as String,
-      lessons: (json['lessons'] as List<dynamic>).map((lessonJson) => Lesson.fromJson(lessonJson as Map<String, dynamic>)).toList(),
+      lessons: (json['lessons'] as List<dynamic>)
+          .map((lessonJson) =>
+              Lesson.fromJson(lessonJson as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -37,7 +43,8 @@ class Course {
       'title': title,
       'description': description,
       'thumbnail': thumbnail,
-      'instructorId': instructorId,
+      'authorId': instructorId,
+      'author': instructorName,
       'duration': duration,
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
     };
