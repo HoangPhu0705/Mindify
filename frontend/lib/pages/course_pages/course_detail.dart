@@ -7,8 +7,6 @@ import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/utils/colors.dart';
-import 'package:frontend/utils/spacing.dart';
-import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:video_player/video_player.dart';
 
@@ -135,11 +133,12 @@ class _CourseDetailState extends State<CourseDetail>
                 Tab(text: 'Discussions'),
                 Tab(text: 'Notes'),
               ],
-              labelColor: Colors.black,
               labelStyle: TextStyle(
+                color: Colors.black,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),
+              unselectedLabelColor: Colors.black,
               indicatorSize: TabBarIndicatorSize.tab,
               indicatorColor: Colors.black,
               indicatorWeight: 3,

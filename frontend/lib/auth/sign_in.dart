@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:frontend/auth/forgot_password.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/profile_page.dart';
@@ -14,9 +13,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:pretty_animated_buttons/pretty_animated_buttons.dart';
-import 'package:pretty_animated_buttons/widgets/pretty_border_button.dart';
-import 'package:pretty_animated_buttons/widgets/pretty_wave_button.dart';
+
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:toastification/toastification.dart';
 

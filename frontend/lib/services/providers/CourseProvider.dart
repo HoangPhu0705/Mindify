@@ -22,6 +22,4 @@ class CourseProvider with ChangeNotifier {
     _selectedCourse = await courseService.getCourseById(id);
     notifyListeners();
   }
-
-  
 }

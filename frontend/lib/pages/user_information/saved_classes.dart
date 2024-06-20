@@ -1,8 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/widgets/my_course.dart';
-import 'package:getwidget/getwidget.dart';
 
 class SavedClasses extends StatefulWidget {
   const SavedClasses({super.key});
@@ -64,7 +65,7 @@ class _SavedClassesState extends State<SavedClasses> {
         appBar: AppBar(
           backgroundColor: AppColors.ghostWhite,
           centerTitle: true,
-          title: Text(
+          title: const Text(
             "All Saved Classes",
             style: TextStyle(
               fontSize: 20,

@@ -11,7 +11,7 @@ class CourseCard extends StatefulWidget {
   final String instructor;
   final String specialization;
   final String courseName;
-  final int time;
+  final String time;
   final int numberOfLesson;
   final String avatar;
   final Function()? onSavedPressed;
@@ -123,7 +123,7 @@ class _CourseCardState extends State<CourseCard> {
                               Row(
                                 children: [
                                   Text(
-                                    "${widget.time}m",
+                                    widget.time,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,

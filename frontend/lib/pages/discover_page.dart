@@ -168,7 +168,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 instructor: course.instructorName,
                 specialization: "Filmaker and Youtuber",
                 courseName: course.title,
-                time: 9,
+                time: course.duration,
                 numberOfLesson: course.lessons.length,
                 avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
               ),

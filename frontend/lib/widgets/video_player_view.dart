@@ -51,7 +51,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       podPlayerConfig: PodPlayerConfig(
         autoPlay: false,
         isLooping: false,
-        videoQualityPriority: [360, 720, 1080],
+        videoQualityPriority: [360, 720],
       ),
     )..initialise();
 
@@ -92,6 +92,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
+
           return PodVideoPlayer(
             controller: _podPlayerController,
             podProgressBarConfig: PodProgressBarConfig(
