@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/auth/email_verification_page.dart';
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/services/providers/UserProvider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
@@ -11,13 +13,13 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final TextEditingController _emailcontroller = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final FocusNode emailFocusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _emailcontroller.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -30,6 +32,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       },
     );
   }
+
+  Future<void> _resetPassword() async {
+    final userService = UserService();
+    try {
+      // ẩn bàn phím
+      FocusScope.of(context).unfocus();
+      await userService.resetPassword(_emailController.text);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password reset email sent, please check your inbox.')),
+        );
+        await Future.delayed(Duration(seconds: 2));
+
+        // về trang login
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +77,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             Form(
               key: _formKey,
               child: MyTextField(
-                  inputType: TextInputType.emailAddress,
-                  controller: _emailcontroller,
-                  hintText: "Enter your email",
-                  actionType: TextInputAction.next,
-                  focusNode: emailFocusNode,
-                  icon: Icons.email_outlined,
-                  onFieldSubmitted: (value) {},
-                  obsecure: false,
-                  isPasswordTextField: false),
+                inputType: TextInputType.emailAddress,
+                controller: _emailController,
+                hintText: "Enter your email",
+                actionType: TextInputAction.next,
+                focusNode: emailFocusNode,
+                icon: Icons.email_outlined,
+                onFieldSubmitted: (value) {},
+                obsecure: false,
+                isPasswordTextField: false,
+              ),
             ),
             AppSpacing.largeVertical,
             SizedBox(
@@ -67,12 +95,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 style: AppStyles.primaryButtonStyle,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => //EmailVerificationScreen(),
-                    //   ),
-                    // );
+                    _resetPassword();
                   }
                 },
                 child: const Padding(

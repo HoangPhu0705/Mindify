@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 
 class MyTextField extends StatefulWidget {
-  final controller;
+  final TextEditingController controller;
   final String hintText;
   final IconData icon;
   bool obsecure;
@@ -14,19 +14,20 @@ class MyTextField extends StatefulWidget {
   final bool isPasswordTextField;
   final TextInputType inputType;
   final TextInputAction actionType;
-  final onFieldSubmitted;
-  MyTextField(
-      {Key? key,
-      required this.controller,
-      required this.icon,
-      required this.hintText,
-      required this.focusNode,
-      required this.obsecure,
-      required this.isPasswordTextField,
-      required this.inputType,
-      required this.actionType,
-      required this.onFieldSubmitted})
-      : super(key: key);
+  final Function(String)? onFieldSubmitted;
+
+  MyTextField({
+    Key? key,
+    required this.controller,
+    required this.icon,
+    required this.hintText,
+    required this.focusNode,
+    required this.obsecure,
+    required this.isPasswordTextField,
+    required this.inputType,
+    required this.actionType,
+    this.onFieldSubmitted,
+  }) : super(key: key);
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -46,11 +47,9 @@ String? validatePassword(String? value) {
   if (value!.isEmpty) {
     return "Please fill in your password";
   }
-
   if (value.length < 6) {
     return "Password must be at least 6 characters";
   }
-
   return null;
 }
 
