@@ -23,5 +23,13 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  //update profile image
+  // Future<void> resetPassword(String email) async {
+  //   try {
+  //     await _userService.resetPassword(email);
+  //     notifyListeners();
+  //   } catch (e) {
+  //     print("Error resetting password: $e");
+  //     throw e;
+  //   }
+  // }
 }
