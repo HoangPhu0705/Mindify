@@ -46,20 +46,23 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     const categories = AppConstants.categories;
     const categoryImage = AppConstants.categoryImage;
-    return SafeArea(
-      child: Scaffold(
-        //SuperScaffold
-        body: SuperScaffold(
+    return Scaffold(
+      //SuperScaffold
+      body: SafeArea(
+        child: SuperScaffold(
           //App bar of super Scaffold
           appBar: SuperAppBar(
+            backgroundColor: AppColors.ghostWhite,
             height: 0,
             searchBar: SuperSearchBar(
               height: 48,
-              placeholderText: "What do you want to learn?",
+              placeholderText: "What do you want to learn today?",
               scrollBehavior: SearchBarScrollBehavior.pinned,
               placeholderTextStyle: AppStyles.searchBarPlaceHolderStyle,
               cancelTextStyle: AppStyles.cancelTextStyle,
@@ -69,11 +72,11 @@ class _SearchPageState extends State<SearchPage> {
               onSubmitted: (query) {},
               searchResult: const SizedBox(),
             ),
-            backgroundColor: AppColors.ghostWhite,
 
-            //Title of Super Scaffold
+            // Title of Super Scaffold
             largeTitle: SuperLargeTitle(
               enabled: true,
+              height: 50,
               largeTitle: "Search",
               textStyle: AppStyles.largeTitleSearchPage,
             ),

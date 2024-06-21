@@ -42,8 +42,8 @@ class _CourseCardState extends State<CourseCard> {
         elevation: 4,
         shadowColor: Colors.black,
         surfaceTintColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
             Radius.circular(5.0),
           ),
         ),
@@ -54,7 +54,7 @@ class _CourseCardState extends State<CourseCard> {
               flex: 1,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(5),
                     topRight: Radius.circular(5),
                   ),
@@ -72,7 +72,7 @@ class _CourseCardState extends State<CourseCard> {
                   Flexible(
                     flex: 1,
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                       ),
@@ -124,7 +124,7 @@ class _CourseCardState extends State<CourseCard> {
                                 children: [
                                   Text(
                                     widget.time,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.deepBlue,
@@ -133,7 +133,7 @@ class _CourseCardState extends State<CourseCard> {
                                   AppSpacing.smallHorizontal,
                                   Text(
                                     "•  ${widget.numberOfLesson} Lessons",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -142,7 +142,7 @@ class _CourseCardState extends State<CourseCard> {
                               ),
                               GestureDetector(
                                 onTap: () {},
-                                child: Icon(
+                                child: const Icon(
                                   Icons.bookmark_border_outlined,
                                   size: 28,
                                 ),

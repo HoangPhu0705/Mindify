@@ -44,34 +44,36 @@ class _MyCoursesPageState extends State<MyCoursePage>
           indicatorColor: Colors.black,
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return MyCourseItem(
-                    imageUrl:
-                        'https://static.skillshare.com/uploads/video/thumbnails/3d4e26f38f2cb702b655467f0be55771/448-252', // Placeholder image URL
-                    title:
-                        "The Professional Repeat: A Surface Designer Guide to Print Production",
-                    author: 'Ellen Lupton',
-                    duration: '3m',
-                    students: '97.5K',
-                    moreOnPress: () {},
-                  );
-                },
-              )
-            ],
-          ),
-          Center(
-            child: Text('Downloads'),
-          ),
-        ],
+      body: SafeArea(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    return MyCourseItem(
+                      imageUrl:
+                          'https://static.skillshare.com/uploads/video/thumbnails/3d4e26f38f2cb702b655467f0be55771/448-252', // Placeholder image URL
+                      title:
+                          "The Professional Repeat: A Surface Designer Guide to Print Production",
+                      author: 'Ellen Lupton',
+                      duration: '3m',
+                      students: '97.5K',
+                      moreOnPress: () {},
+                    );
+                  },
+                )
+              ],
+            ),
+            Center(
+              child: Text('Downloads'),
+            ),
+          ],
+        ),
       ),
     );
   }

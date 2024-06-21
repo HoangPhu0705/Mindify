@@ -1,4 +1,4 @@
-import 'package:frontend/models/lesson.dart';
+import 'package:frontend/services/models/lesson.dart';
 
 class Course {
   String id;

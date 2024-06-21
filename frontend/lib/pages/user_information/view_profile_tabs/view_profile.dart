@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/achievements_tab.dart';
@@ -39,9 +41,9 @@ class _ViewProfileState extends State<ViewProfile>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
           children: [
             Container(
               height: MediaQuery.of(context).size.height * 0.3,

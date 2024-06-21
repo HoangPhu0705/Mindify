@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/models/course.dart';
+import 'package:frontend/services/models/course.dart';
 
 class CourseService {
   final String baseUrl = "http://10.0.2.2:3000/api";

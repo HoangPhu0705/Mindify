@@ -23,12 +23,10 @@ class MindifyApp extends StatefulWidget {
 class _MindifyAppState extends State<MindifyApp> {
   @override
   void initState() {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-    );
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: AppColors.ghostWhite,
+      statusBarIconBrightness: Brightness.dark,
+    ));
     super.initState();
   }
 

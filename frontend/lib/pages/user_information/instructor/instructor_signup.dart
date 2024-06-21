@@ -2,14 +2,18 @@
 
 import 'dart:developer';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:form_page_view/enum/progress_enum.dart';
 import 'package:form_page_view/models/form_page_model.dart';
 import 'package:form_page_view/models/form_page_style.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:form_page_view/form_page_view.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/widgets/instructor_signup_forms/category_selection.dart';
 
 class InstructorSignUp extends StatefulWidget {
   const InstructorSignUp({super.key});
@@ -20,6 +24,21 @@ class InstructorSignUp extends StatefulWidget {
 
 class InstructorSignUpState extends State<InstructorSignUp> {
   //Variables
+  List<String> _categories = [
+    'Animation',
+    'Culinary',
+    'Drawing',
+    'Film',
+    'Graphic Design',
+    'Illustration',
+    'Photography',
+    'Procreate',
+    'Watercolor',
+    'Programming',
+    'Writing',
+    'Other',
+  ];
+  String? _currentCategory;
 
   //Controllers
   final PageController _pageController = PageController();
@@ -27,6 +46,12 @@ class InstructorSignUpState extends State<InstructorSignUp> {
   final usernameController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,27 +63,21 @@ class InstructorSignUpState extends State<InstructorSignUp> {
     final List<FormPageModel> pages = [
       FormPageModel(
         formKey: formKeyPage1,
-        title: 'Page 1',
-        textButton: 'Next to page 2',
-        buttonStyle: AppStyles.secondaryButtonStyle,
-        isButtonEnabled: true,
-        body: Form(
-          key: formKeyPage1,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-              )
-            ],
-          ),
+        textButton: 'Continue',
+        body: CategorySelectionForm(
+          formKey: formKeyPage1,
+          categories: _categories,
+          currentCategory: _currentCategory,
+          onChanged: (String? value) {
+            setState(() {
+              _currentCategory = value;
+            });
+          },
         ),
       ),
       FormPageModel(
         formKey: formKeyPage2,
-        title: 'Page 2',
-        textButton: 'Next to page 3',
+        textButton: 'Continue',
         isButtonEnabled: true,
         body: Form(
           key: formKeyPage2,
@@ -80,7 +99,6 @@ class InstructorSignUpState extends State<InstructorSignUp> {
       ),
       FormPageModel(
         formKey: formKeyPage3,
-        title: 'Page 3',
         textButton: 'Finish',
         body: Form(
           key: formKeyPage3,
@@ -111,38 +129,50 @@ class InstructorSignUpState extends State<InstructorSignUp> {
             color: Colors.white,
           ),
           onPressed: () {
-            log(_pageController.page.toString());
+            double? currentPage = _pageController.page;
+
+            if (currentPage == 0) {
+              Navigator.pop(context);
+            }
+
             _pageController.previousPage(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeIn,
             );
           },
         ),
+        centerTitle: true,
+        title: Text(
+          "Mindify.",
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: AppColors.blue,
+          ),
+        ),
         backgroundColor: AppColors.deepSpace,
       ),
-      body: SafeArea(
-        child: FormPageView(
-          showAppBar: false,
-          progress: ProgressIndicatorType.linear,
-          pages: pages,
-          onFormSubmitted: () {
-            log('Username: ${usernameController.text}');
-            log('First Name: ${firstNameController.text}');
-            log('Last Name: ${lastNameController.text}');
-            log('Email: ${emailController.text}');
-          },
-          style: FormPageStyle(
-            appBarBackgroundColor: AppColors.deepSpace,
-            backgroundColor: AppColors.deepSpace,
-            progressIndicatorBackgroundColor: Colors.white,
-            buttonStyle: AppStyles.primaryButtonStyle,
-            buttonTextStyle: const TextStyle(
-              color: Colors.black,
-            ),
-            appBarElevation: 0,
+      body: FormPageView(
+        showAppBar: false,
+        progress: ProgressIndicatorType.linear,
+        pages: pages,
+        onFormSubmitted: () {
+          log('$_currentCategory');
+          log('First Name: ${firstNameController.text}');
+          log('Last Name: ${lastNameController.text}');
+          log('Email: ${emailController.text}');
+        },
+        style: FormPageStyle(
+          appBarBackgroundColor: AppColors.deepSpace,
+          backgroundColor: AppColors.deepSpace,
+          progressIndicatorBackgroundColor: AppColors.ghostWhite,
+          progressIndicatorColor: AppColors.cream,
+          buttonStyle: AppStyles.primaryButtonStyle,
+          buttonTextStyle: const TextStyle(
+            color: Colors.black,
           ),
-          controller: _pageController,
         ),
+        controller: _pageController,
       ),
     );
   }

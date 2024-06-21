@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 
 class ChangePasswordField extends StatefulWidget {
-  final controller;
+  final TextEditingController controller;
   bool obsecure;
   final String title;
   ChangePasswordField({

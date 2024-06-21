@@ -46,7 +46,6 @@ dependencies:
   google_sign_in: ^6.2.1
   persistent_bottom_nav_bar_v2: ^5.2.3
   smooth_page_indicator: ^1.1.0
-  exprollable_page_view: ^1.0.1
   cached_network_image: ^3.3.1
   flutter_quill: ^9.3.11
   provider: ^6.1.2
@@ -72,6 +71,7 @@ dependencies:
   widget_and_text_animator: ^1.1.5
   linear_progress_bar: ^1.1.1
   form_page_view: ^0.2.4
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

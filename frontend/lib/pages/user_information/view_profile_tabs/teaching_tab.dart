@@ -2,8 +2,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/pages/user_information/instructor/instructor_signup.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -21,6 +21,10 @@ class _TeachingTabState extends State<TeachingTab> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ));
     return Container(
       padding: EdgeInsets.all(12),
       child: Column(

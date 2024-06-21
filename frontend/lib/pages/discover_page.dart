@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:async';
 import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:frontend/models/course.dart';
+import 'package:frontend/services/models/course.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/utils/colors.dart';
@@ -63,16 +60,17 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return MyLoading(width: 30, height: 30);
-            }
+    return Scaffold(
+      backgroundColor: AppColors.ghostWhite,
+      body: FutureBuilder(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const MyLoading(width: 30, height: 30);
+          }
 
-            return SingleChildScrollView(
+          return SafeArea(
+            child: SingleChildScrollView(
               child: Column(
                 children: [
                   Text("Mindify",
@@ -91,9 +89,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   AppSpacing.largeVertical,
                 ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
