@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 
-class CategorySelectionForm extends StatelessWidget {
+class CategorySelectionForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final List<String> categories;
   final String? currentCategory;
@@ -19,9 +19,14 @@ class CategorySelectionForm extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CategorySelectionForm> createState() => _CategorySelectionFormState();
+}
+
+class _CategorySelectionFormState extends State<CategorySelectionForm> {
+  @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: Column(
         children: [
           AppSpacing.largeVertical,
@@ -62,6 +67,12 @@ class CategorySelectionForm extends StatelessWidget {
                   child: DropdownButtonFormField2<String>(
                     dropdownStyleData: const DropdownStyleData(
                       maxHeight: 250,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(5),
+                          bottomRight: Radius.circular(5),
+                        ),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null) {
@@ -109,7 +120,7 @@ class CategorySelectionForm extends StatelessWidget {
                       ),
                     ),
                     selectedItemBuilder: (context) {
-                      return categories
+                      return widget.categories
                           .map((String item) => Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
@@ -122,7 +133,7 @@ class CategorySelectionForm extends StatelessWidget {
                               ))
                           .toList();
                     },
-                    items: categories
+                    items: widget.categories
                         .map(
                           (String item) => DropdownMenuItem<String>(
                             value: item,
@@ -136,8 +147,8 @@ class CategorySelectionForm extends StatelessWidget {
                           ),
                         )
                         .toList(),
-                    value: currentCategory,
-                    onChanged: onChanged,
+                    value: widget.currentCategory,
+                    onChanged: widget.onChanged,
                     buttonStyleData: const ButtonStyleData(
                       height: 40,
                       width: double.infinity,

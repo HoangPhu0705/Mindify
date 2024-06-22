@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:frontend/pages/user_information/instructor/instructor_signup.dar
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/pages/user_information/instructor/introduction.dart';
 
 class TeachingTab extends StatefulWidget {
   const TeachingTab({super.key});
@@ -20,11 +23,20 @@ class _TeachingTabState extends State<TeachingTab> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ));
     return Container(
       padding: EdgeInsets.all(12),
       child: Column(
@@ -61,11 +73,20 @@ class _TeachingTabState extends State<TeachingTab> {
                   AppSpacing.smallVertical,
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context, rootNavigator: true).push(
+                      Navigator.of(context, rootNavigator: true)
+                          .push(
                         MaterialPageRoute(
-                          builder: (context) => InstructorSignUp(),
+                          builder: (context) => Introduction(),
                         ),
-                      );
+                      )
+                          .then((value) {
+                        log("ss");
+                        SystemChrome.setSystemUIOverlayStyle(
+                          SystemUiOverlayStyle(
+                              statusBarColor: Colors.transparent,
+                              statusBarIconBrightness: Brightness.dark),
+                        );
+                      });
                     },
                     style: AppStyles.secondaryButtonStyle,
                     child: Padding(

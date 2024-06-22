@@ -2,9 +2,9 @@
 
 import 'dart:developer';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:form_page_view/enum/progress_enum.dart';
 import 'package:form_page_view/models/form_page_model.dart';
@@ -14,6 +14,7 @@ import 'package:form_page_view/form_page_view.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/instructor_signup_forms/category_selection.dart';
+import 'package:frontend/widgets/instructor_signup_forms/personal_detail.dart';
 
 class InstructorSignUp extends StatefulWidget {
   const InstructorSignUp({super.key});
@@ -50,12 +51,19 @@ class InstructorSignUpState extends State<InstructorSignUp> {
   @override
   void initState() {
     // TODO: implement initState
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: AppColors.deepSpace,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     //Form keys
+
     final GlobalKey<FormState> formKeyPage1 = GlobalKey<FormState>();
     final GlobalKey<FormState> formKeyPage2 = GlobalKey<FormState>();
     final GlobalKey<FormState> formKeyPage3 = GlobalKey<FormState>();
@@ -69,9 +77,11 @@ class InstructorSignUpState extends State<InstructorSignUp> {
           categories: _categories,
           currentCategory: _currentCategory,
           onChanged: (String? value) {
-            setState(() {
-              _currentCategory = value;
-            });
+            setState(
+              () {
+                _currentCategory = value;
+              },
+            );
           },
         ),
       ),
@@ -79,22 +89,8 @@ class InstructorSignUpState extends State<InstructorSignUp> {
         formKey: formKeyPage2,
         textButton: 'Continue',
         isButtonEnabled: true,
-        body: Form(
-          key: formKeyPage2,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: firstNameController,
-                decoration: InputDecoration(labelText: 'First Name'),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: lastNameController,
-                decoration: InputDecoration(labelText: 'Last Name'),
-              ),
-            ],
-          ),
+        body: PersonalDetail(
+          formKey: formKeyPage2,
         ),
       ),
       FormPageModel(
@@ -122,57 +118,68 @@ class InstructorSignUpState extends State<InstructorSignUp> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            CupertinoIcons.back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            double? currentPage = _pageController.page;
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              color: AppColors.deepSpace,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      CupertinoIcons.back,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      double? currentPage = _pageController.page;
 
-            if (currentPage == 0) {
-              Navigator.pop(context);
-            }
+                      if (currentPage == 0) {
+                        Navigator.pop(context);
+                      }
 
-            _pageController.previousPage(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeIn,
-            );
-          },
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                    },
+                  ),
+                  Text(
+                    "Mindify.",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FormPageView(
+                showAppBar: false,
+                progress: ProgressIndicatorType.linear,
+                pages: pages,
+                onFormSubmitted: () {
+                  log('$_currentCategory');
+                  log('First Name: ${firstNameController.text}');
+                  log('Last Name: ${lastNameController.text}');
+                  log('Email: ${emailController.text}');
+                },
+                style: FormPageStyle(
+                  appBarBackgroundColor: AppColors.deepSpace,
+                  backgroundColor: AppColors.deepSpace,
+                  progressIndicatorBackgroundColor: AppColors.ghostWhite,
+                  progressIndicatorColor: AppColors.cream,
+                  buttonStyle: AppStyles.primaryButtonStyle,
+                  buttonTextStyle: const TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+                controller: _pageController,
+              ),
+            ),
+          ],
         ),
-        centerTitle: true,
-        title: Text(
-          "Mindify.",
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            color: AppColors.blue,
-          ),
-        ),
-        backgroundColor: AppColors.deepSpace,
-      ),
-      body: FormPageView(
-        showAppBar: false,
-        progress: ProgressIndicatorType.linear,
-        pages: pages,
-        onFormSubmitted: () {
-          log('$_currentCategory');
-          log('First Name: ${firstNameController.text}');
-          log('Last Name: ${lastNameController.text}');
-          log('Email: ${emailController.text}');
-        },
-        style: FormPageStyle(
-          appBarBackgroundColor: AppColors.deepSpace,
-          backgroundColor: AppColors.deepSpace,
-          progressIndicatorBackgroundColor: AppColors.ghostWhite,
-          progressIndicatorColor: AppColors.cream,
-          buttonStyle: AppStyles.primaryButtonStyle,
-          buttonTextStyle: const TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        controller: _pageController,
       ),
     );
   }
