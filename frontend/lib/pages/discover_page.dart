@@ -30,12 +30,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
   List<Course>? _coursesFuture;
   late Future<void> _future;
   String userId = '';
+  Set<String> savedCourses = {}; // New set to track saved courses
 
   // Controllers
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
     _coursesFuture = await courseService.getRandomCourses();
+    savedCourses = await userService.getSavedCourses(userId);
   }
 
   @override
@@ -55,6 +57,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<void> saveCourse(String userId, String courseId) async {
     try {
       await userService.saveCourseForUser(userId, courseId);
+      setState(() {
+        savedCourses.add(courseId);
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Course saved successfully!')),
       );
@@ -62,6 +67,23 @@ class _DiscoverPageState extends State<DiscoverPage> {
       log("Error saving course: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save course')),
+      );
+    }
+  }
+
+  Future<void> unsaveCourse(String userId, String courseId) async {
+    try {
+      await userService.unsaveCourseForUser(userId, courseId);
+      setState(() {
+        savedCourses.remove(courseId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Course unsaved successfully!')),
+      );
+    } catch (e) {
+      log("Error unsaving course: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to unsave course')),
       );
     }
   }
@@ -162,6 +184,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {
             final course = courses[index];
+            final isSaved = savedCourses.contains(course.id);
             return GestureDetector(
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
@@ -178,7 +201,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 time: course.duration,
                 numberOfLesson: course.lessons.length,
                 avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
-                onSavePressed: userId != null ? () => saveCourse(userId, course.id) : () {}, // Truyền callback
+                isSaved: isSaved,
+                onSavePressed: userId != null 
+                  ? () {
+                      if (isSaved) {
+                        unsaveCourse(userId, course.id);
+                      } else {
+                        saveCourse(userId, course.id);
+                      }
+                    }
+                  : () {}, // Truyền callback
               ),
             );
           },

@@ -104,4 +104,30 @@ class UserService {
       throw Exception('Failed to save course');
     }
   }
+
+  Future<void> unsaveCourseForUser(String userId, String courseId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/unsaveCourse');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'courseId': courseId}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to unsave course');
+    }
+  }
+
+  Future<Set<String>> getSavedCourses(String userId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/savedCourses');
+    final response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 200) {
+      final List<dynamic> coursesJson = jsonDecode(response.body);
+      return coursesJson.map((course) => course.toString()).toSet();
+    } else {
+      throw Exception('Failed to load saved courses');
+    }
+  }
 }
