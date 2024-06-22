@@ -14,7 +14,8 @@ class CourseCard extends StatefulWidget {
   final String time;
   final int numberOfLesson;
   final String avatar;
-  final Function()? onSavedPressed;
+  final VoidCallback onSavePressed;
+  final bool isSaved; // New parameter to indicate if the course is saved
 
   const CourseCard({
     Key? key,
@@ -25,7 +26,8 @@ class CourseCard extends StatefulWidget {
     required this.time,
     required this.numberOfLesson,
     required this.avatar,
-    this.onSavedPressed,
+    required this.onSavePressed,
+    required this.isSaved, // Initialize the new parameter
   }) : super(key: key);
 
   @override
@@ -92,7 +94,7 @@ class _CourseCardState extends State<CourseCard> {
                               ),
                               Text(
                                 widget.specialization,
-                                style: TextStyle(fontSize: 14),
+                                style: const TextStyle(fontSize: 14),
                               )
                             ],
                           ),
@@ -103,7 +105,7 @@ class _CourseCardState extends State<CourseCard> {
                   Flexible(
                     flex: 2,
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -141,14 +143,16 @@ class _CourseCardState extends State<CourseCard> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: () {},
-                                child: const Icon(
-                                  Icons.bookmark_border_outlined,
+                                onTap: widget.onSavePressed,
+                                child: Icon(
+                                  widget.isSaved
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_border_outlined,
                                   size: 28,
                                 ),
-                              )
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -162,3 +166,4 @@ class _CourseCardState extends State<CourseCard> {
     );
   }
 }
+

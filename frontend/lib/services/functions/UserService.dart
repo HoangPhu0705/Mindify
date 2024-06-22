@@ -1,5 +1,6 @@
 import 'dart:developer';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,6 +13,7 @@ class UserService {
   //Chi nen su dung service nay khi da login
   User get user => FirebaseAuth.instance.currentUser!;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String baseUrl = 'http://10.0.2.2:3000/api';
   String getUserId() {
     return user.uid!;
   }
@@ -87,6 +89,45 @@ class UserService {
     } catch (e) {
       print("Error: $e");
       throw e;
+    }
+  }
+
+  Future<void> saveCourseForUser(String userId, String courseId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/saveCourse');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'courseId': courseId}),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to save course');
+    }
+  }
+
+  Future<void> unsaveCourseForUser(String userId, String courseId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/unsaveCourse');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'courseId': courseId}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to unsave course');
+    }
+  }
+
+  Future<Set<String>> getSavedCourses(String userId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/savedCourses');
+    final response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 200) {
+      final List<dynamic> coursesJson = jsonDecode(response.body);
+      return coursesJson.map((course) => course.toString()).toSet();
+    } else {
+      throw Exception('Failed to load saved courses');
     }
   }
 }
