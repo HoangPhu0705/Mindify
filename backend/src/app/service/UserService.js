@@ -18,8 +18,9 @@ exports.saveCourseForUser = async (userId, courseId) => {
             });
         }
 
-        return { message: 'Khóa học được lưu thành công', savedClasses: savedClasses };
+        // return { message: 'Save course successfully', savedClasses: savedClasses };
+        return { message: 'Save course successfully' }
     } catch (error) {
-        throw new Error(`Lỗi khi lưu khóa học cho user: ${error.message}`);
+        throw new Error(`Error when save course for user: ${error.message}`);
     }
 };

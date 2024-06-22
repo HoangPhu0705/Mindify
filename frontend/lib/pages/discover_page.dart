@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
@@ -20,18 +21,17 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  //Services
+  // Services
   final CourseService courseService = CourseService();
-
-  //Variables
-  // int _currentTopCourse = 0;
+  final UserService userService = UserService();
+  // Variables
   late Timer _timer;
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
   late Future<void> _future;
+  String userId = '';
 
-  //Controllers
-
+  // Controllers
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
@@ -41,7 +41,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   void initState() {
     super.initState();
-
+    userId = userService.getUserId();
     _future = _initPage();
   }
 
@@ -52,9 +52,17 @@ class _DiscoverPageState extends State<DiscoverPage> {
     _timer.cancel();
   }
 
-  void addFavoriteCourse(int id) {
-    try {} catch (e) {
-      log("Error adding");
+  Future<void> saveCourse(String userId, String courseId) async {
+    try {
+      await userService.saveCourseForUser(userId, courseId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Course saved successfully!')),
+      );
+    } catch (e) {
+      log("Error saving course: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save course')),
+      );
     }
   }
 
@@ -81,9 +89,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   Column(
                     children: [
                       buildCarouselCourses(
-                          _coursesFuture!, "Recommend For You"),
+                          _coursesFuture!, "Recommend For You", userId),
                       AppSpacing.mediumVertical,
-                      buildCarouselCourses(_coursesFuture!, "New and Trending"),
+                      buildCarouselCourses(
+                          _coursesFuture!, "New and Trending", userId),
                     ],
                   ),
                   AppSpacing.largeVertical,
@@ -129,7 +138,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  Widget buildCarouselCourses(List<Course> courses, String title) {
+  Widget buildCarouselCourses(List<Course> courses, String title, String? userId) {
     return Column(
       children: [
         Padding(
@@ -164,11 +173,12 @@ class _DiscoverPageState extends State<DiscoverPage> {
               child: CourseCard(
                 thumbnail: course.thumbnail,
                 instructor: course.instructorName,
-                specialization: "Filmaker and Youtuber",
+                specialization: "Filmmaker and Youtuber",
                 courseName: course.title,
                 time: course.duration,
                 numberOfLesson: course.lessons.length,
                 avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
+                onSavePressed: userId != null ? () => saveCourse(userId, course.id) : () {}, // Truyền callback
               ),
             );
           },

@@ -14,7 +14,7 @@ class CourseCard extends StatefulWidget {
   final String time;
   final int numberOfLesson;
   final String avatar;
-  final Function()? onSavedPressed;
+  final VoidCallback onSavePressed;
 
   const CourseCard({
     Key? key,
@@ -25,7 +25,7 @@ class CourseCard extends StatefulWidget {
     required this.time,
     required this.numberOfLesson,
     required this.avatar,
-    this.onSavedPressed,
+    required this.onSavePressed,
   }) : super(key: key);
 
   @override
@@ -141,7 +141,7 @@ class _CourseCardState extends State<CourseCard> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: () {},
+                                onTap: widget.onSavePressed, // Gọi callback khi nhấn vào biểu tượng
                                 child: const Icon(
                                   Icons.bookmark_border_outlined,
                                   size: 28,
