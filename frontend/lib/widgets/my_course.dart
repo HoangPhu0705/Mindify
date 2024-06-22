@@ -29,6 +29,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: AppColors.ghostWhite,
       child: Column(
         children: [
           Row(

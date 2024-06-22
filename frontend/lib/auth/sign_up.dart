@@ -162,105 +162,107 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(32, 56, 32, 0),
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Mindify.", style: Theme.of(context).textTheme.displayLarge),
-              AppSpacing.smallVertical,
-              Text(
-                "Create an Account.",
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              AppSpacing.largeVertical,
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    MyTextField(
-                        actionType: TextInputAction.next,
-                        controller: emailController,
-                        inputType: TextInputType.emailAddress,
-                        hintText: "Email",
-                        icon: Icons.email_outlined,
-                        obsecure: false,
-                        focusNode: emailFocusNode,
-                        onFieldSubmitted: (value) {
-                          FocusScope.of(context)
-                              .requestFocus(passwordFocusNode);
-                        },
-                        isPasswordTextField: false),
-                    AppSpacing.extraLargeVertical,
-                    MyTextField(
-                        controller: passwordController,
-                        actionType: TextInputAction.next,
-                        inputType: TextInputType.visiblePassword,
-                        hintText: "Password",
-                        icon: CupertinoIcons.padlock,
-                        obsecure: _isObsecured,
-                        focusNode: passwordFocusNode,
-                        onFieldSubmitted: (value) {
-                          FocusScope.of(context)
-                              .requestFocus(confirmPasswordFocusNode);
-                        },
-                        isPasswordTextField: true),
-                    AppSpacing.extraLargeVertical,
-                    MyTextField(
-                        actionType: TextInputAction.done,
-                        controller: confirmPasswordController,
-                        inputType: TextInputType.visiblePassword,
-                        hintText: "Confirm Password",
-                        icon: CupertinoIcons.padlock,
-                        obsecure: _isObsecured,
-                        focusNode: confirmPasswordFocusNode,
-                        onFieldSubmitted: (value) {},
-                        isPasswordTextField: true),
-                    AppSpacing.extraLargeVertical,
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: AppStyles.primaryButtonStyle,
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            signUpUser();
-                          }
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text("Sign Up"),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.fromLTRB(32, 56, 32, 0),
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Mindify.",
+                    style: Theme.of(context).textTheme.displayLarge),
+                AppSpacing.smallVertical,
+                Text(
+                  "Create an Account.",
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                AppSpacing.largeVertical,
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      MyTextField(
+                          actionType: TextInputAction.next,
+                          controller: emailController,
+                          inputType: TextInputType.emailAddress,
+                          hintText: "Email",
+                          icon: Icons.email_outlined,
+                          obsecure: false,
+                          focusNode: emailFocusNode,
+                          onFieldSubmitted: (value) {
+                            FocusScope.of(context)
+                                .requestFocus(passwordFocusNode);
+                          },
+                          isPasswordTextField: false),
+                      AppSpacing.extraLargeVertical,
+                      MyTextField(
+                          controller: passwordController,
+                          actionType: TextInputAction.next,
+                          inputType: TextInputType.visiblePassword,
+                          hintText: "Password",
+                          icon: CupertinoIcons.padlock,
+                          obsecure: _isObsecured,
+                          focusNode: passwordFocusNode,
+                          onFieldSubmitted: (value) {
+                            FocusScope.of(context)
+                                .requestFocus(confirmPasswordFocusNode);
+                          },
+                          isPasswordTextField: true),
+                      AppSpacing.extraLargeVertical,
+                      MyTextField(
+                          actionType: TextInputAction.done,
+                          controller: confirmPasswordController,
+                          inputType: TextInputType.visiblePassword,
+                          hintText: "Confirm Password",
+                          icon: CupertinoIcons.padlock,
+                          obsecure: _isObsecured,
+                          focusNode: confirmPasswordFocusNode,
+                          onFieldSubmitted: (value) {},
+                          isPasswordTextField: true),
+                      AppSpacing.extraLargeVertical,
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: AppStyles.primaryButtonStyle,
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              signUpUser();
+                            }
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text("Sign Up"),
+                          ),
                         ),
                       ),
-                    ),
-                    AppSpacing.mediumVertical,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Already have an account? ",
-                          style: TextStyle(fontWeight: FontWeight.w300),
-                        ),
-                        GestureDetector(
-                          onTap: widget.showLoginPage,
-                          child: Transform.translate(
-                            offset: const Offset(0, 2),
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                shadows: [Shadow(offset: Offset(0, -2))],
-                                color: Colors.transparent,
-                                decoration: TextDecoration.underline,
+                      AppSpacing.mediumVertical,
+                      Wrap(
+                        children: [
+                          const Text(
+                            "Already have an account? ",
+                            style: TextStyle(fontWeight: FontWeight.w300),
+                          ),
+                          GestureDetector(
+                            onTap: widget.showLoginPage,
+                            child: Transform.translate(
+                              offset: const Offset(0, 2),
+                              child: const Text(
+                                "Login",
+                                style: TextStyle(
+                                  shadows: [Shadow(offset: Offset(0, -2))],
+                                  color: Colors.transparent,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

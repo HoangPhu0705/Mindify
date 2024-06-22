@@ -62,8 +62,9 @@ class _SavedClassesState extends State<SavedClasses> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: AppColors.ghostWhite,
         appBar: AppBar(
-          backgroundColor: AppColors.ghostWhite,
+          surfaceTintColor: AppColors.ghostWhite,
           centerTitle: true,
           title: const Text(
             "All Saved Classes",

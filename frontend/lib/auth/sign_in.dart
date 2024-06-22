@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -112,152 +111,171 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen size
+    final screenSize = MediaQuery.of(context).size;
+
+    // Calculate dynamic padding and font size based on screen width
+    final horizontalPadding = screenSize.width * 0.08;
+    final verticalPadding = screenSize.height * 0.05;
+    final titleFontSize = screenSize.width * 0.1;
+    final labelFontSize = screenSize.width * 0.05;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(32, 56, 32, 0),
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Mindify.", style: Theme.of(context).textTheme.displayLarge),
-              AppSpacing.smallVertical,
-              Text(
-                "Log into your account.",
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              AppSpacing.largeVertical,
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    MyTextField(
-                        inputType: TextInputType.emailAddress,
-                        controller: emailController,
-                        hintText: "Email",
-                        actionType: TextInputAction.next,
-                        focusNode: emailFocusNode,
-                        icon: Icons.email_outlined,
-                        onFieldSubmitted: (value) {
-                          FocusScope.of(context)
-                              .requestFocus(passwordFocusNode);
-                        },
-                        obsecure: false,
-                        isPasswordTextField: false),
-                    AppSpacing.extraLargeVertical,
-                    MyTextField(
-                        inputType: TextInputType.visiblePassword,
-                        controller: passwordController,
-                        hintText: "Password",
-                        actionType: TextInputAction.done,
-                        icon: CupertinoIcons.padlock,
-                        focusNode: passwordFocusNode,
-                        obsecure: _isObsecured,
-                        onFieldSubmitted: (value) {},
-                        isPasswordTextField: true),
-                    AppSpacing.mediumVertical,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ForgotPasswordScreen()), // Trang đích
-                            );
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: verticalPadding,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Mindify.",
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontSize: titleFontSize,
+                      ),
+                ),
+                AppSpacing.smallVertical,
+                Text(
+                  "Log into your account.",
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontSize: labelFontSize,
+                      ),
+                ),
+                AppSpacing.largeVertical,
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      MyTextField(
+                          inputType: TextInputType.emailAddress,
+                          controller: emailController,
+                          hintText: "Email",
+                          actionType: TextInputAction.next,
+                          focusNode: emailFocusNode,
+                          icon: Icons.email_outlined,
+                          onFieldSubmitted: (value) {
+                            FocusScope.of(context)
+                                .requestFocus(passwordFocusNode);
                           },
-                          child: Text(
-                            "Forgot password?",
-                            style: TextStyle(fontWeight: FontWeight.w300),
+                          obsecure: false,
+                          isPasswordTextField: false),
+                      AppSpacing.extraLargeVertical,
+                      MyTextField(
+                          inputType: TextInputType.visiblePassword,
+                          controller: passwordController,
+                          hintText: "Password",
+                          actionType: TextInputAction.done,
+                          icon: CupertinoIcons.padlock,
+                          focusNode: passwordFocusNode,
+                          obsecure: _isObsecured,
+                          onFieldSubmitted: (value) {},
+                          isPasswordTextField: true),
+                      AppSpacing.mediumVertical,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordScreen(),
+                                ), // Trang đích
+                              );
+                            },
+                            child: Text(
+                              "Forgot password?",
+                              style: TextStyle(fontWeight: FontWeight.w300),
+                            ),
+                          )
+                        ],
+                      ),
+                      AppSpacing.extraLargeVertical,
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: AppStyles.primaryButtonStyle,
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            if (_formKey.currentState!.validate()) {
+                              signInUser();
+                            }
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text("Login"),
                           ),
-                        )
-                      ],
-                    ),
-                    AppSpacing.extraLargeVertical,
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: AppStyles.primaryButtonStyle,
-                        onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          if (_formKey.currentState!.validate()) {
-                            signInUser();
-                          }
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text("Login"),
                         ),
                       ),
-                    ),
-                    AppSpacing.mediumVertical,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don't have an account? ",
-                          style: TextStyle(fontWeight: FontWeight.w300),
-                        ),
-                        GestureDetector(
-                          onTap: widget.showSignUpPage,
-                          child: Transform.translate(
-                            offset: const Offset(0, 2),
-                            child: const Text(
-                              "Create one",
-                              style: TextStyle(
-                                shadows: [
-                                  Shadow(
-                                    offset: Offset(0, -2),
-                                  ),
-                                ],
-                                color: Colors.transparent,
-                                decoration: TextDecoration.underline,
+                      AppSpacing.mediumVertical,
+                      Wrap(
+                        children: [
+                          const Text(
+                            "Don't have an account? ",
+                            style: TextStyle(fontWeight: FontWeight.w300),
+                          ),
+                          GestureDetector(
+                            onTap: widget.showSignUpPage,
+                            child: Transform.translate(
+                              offset: const Offset(0, 2),
+                              child: const Text(
+                                "Create one",
+                                style: TextStyle(
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(0, -2),
+                                    ),
+                                  ],
+                                  color: Colors.transparent,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                    AppSpacing.mediumVertical,
-                    Row(
-                      children: [
-                        Flexible(
-                          flex: 2,
-                          child: Divider(),
-                        ),
-                        Flexible(
-                          child: Center(
-                              child: Text(
-                            "OR",
-                            style: Theme.of(context).textTheme.labelMedium,
-                          )),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: Divider(),
-                        ),
-                      ],
-                    ),
-                    AppSpacing.smallVertical,
-                    SizedBox(
-                      width: double.infinity,
-                      child: SignInButton(
-                        Buttons.google,
-                        text: "Login with Google",
-                        onPressed: signInGoogle,
-                        padding: EdgeInsets.all(4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        ],
+                      ),
+                      AppSpacing.mediumVertical,
+                      Row(
+                        children: [
+                          Flexible(
+                            flex: 2,
+                            child: Divider(),
+                          ),
+                          Flexible(
+                            child: Center(
+                                child: Text(
+                              "OR",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            )),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: Divider(),
+                          ),
+                        ],
+                      ),
+                      AppSpacing.smallVertical,
+                      SizedBox(
+                        width: double.infinity,
+                        child: SignInButton(
+                          Buttons.google,
+                          text: "Login with Google",
+                          onPressed: signInGoogle,
+                          padding: EdgeInsets.all(4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
