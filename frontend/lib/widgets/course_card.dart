@@ -141,7 +141,7 @@ class _CourseCardState extends State<CourseCard> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: widget.onSavePressed, // Gọi callback khi nhấn vào biểu tượng
+                                onTap: widget.onSavePressed, 
                                 child: const Icon(
                                   Icons.bookmark_border_outlined,
                                   size: 28,
