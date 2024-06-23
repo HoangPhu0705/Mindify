@@ -11,6 +11,8 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/popular_course.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -21,23 +23,19 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  // Services
   final CourseService courseService = CourseService();
   final UserService userService = UserService();
-  // Variables
+
   late Timer _timer;
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
   late Future<void> _future;
   String userId = '';
-  Set<String> savedCourses = {}; // New set to track saved courses
 
-  // Controllers
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
     _coursesFuture = await courseService.getRandomCourses();
-    savedCourses = await userService.getSavedCourses(userId);
   }
 
   @override
@@ -57,9 +55,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<void> saveCourse(String userId, String courseId) async {
     try {
       await userService.saveCourseForUser(userId, courseId);
-      setState(() {
-        savedCourses.add(courseId);
-      });
+      Provider.of<CourseProvider>(context, listen: false).saveCourse(courseId);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Course saved successfully!')),
       );
@@ -74,9 +70,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<void> unsaveCourse(String userId, String courseId) async {
     try {
       await userService.unsaveCourseForUser(userId, courseId);
-      setState(() {
-        savedCourses.remove(courseId);
-      });
+      Provider.of<CourseProvider>(context, listen: false).unsaveCourse(courseId);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Course unsaved successfully!')),
       );
@@ -184,7 +178,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {
             final course = courses[index];
-            final isSaved = savedCourses.contains(course.id);
+            final isSaved = Provider.of<CourseProvider>(context).isCourseSaved(course.id);
             return GestureDetector(
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
