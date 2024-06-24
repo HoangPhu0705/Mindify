@@ -4,6 +4,7 @@ import 'package:frontend/auth/main_page.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
+import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +37,10 @@ class _MindifyAppState extends State<MindifyApp> {
       providers: [
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CourseProvider()
+          ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

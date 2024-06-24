@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -79,5 +78,14 @@ class CourseService {
       log("Error: $e");
       throw Exception("Failed to load top 5 courses");
     }
+  }
+
+  Future<List<Course>> getCoursesByIds(List<String> courseIds) async {
+    List<Course> courses = [];
+    for (String courseId in courseIds) {
+      Course course = await getCourseById(courseId);
+      courses.add(course);
+    }
+    return courses;
   }
 }

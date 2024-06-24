@@ -1,5 +1,5 @@
-import 'dart:developer';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,10 +10,11 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class UserService {
-  //Chi nen su dung service nay khi da login
+  // Chỉ nên sử dụng service này khi đã login
   User get user => FirebaseAuth.instance.currentUser!;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String baseUrl = 'http://10.0.2.2:3000/api';
+
   String getUserId() {
     return user.uid!;
   }
@@ -34,7 +35,7 @@ class UserService {
     await user.updatePhotoURL(newPhotoUrl);
   }
 
-  //Change password with validating the old password
+  // Change password with validating the old password
   Future<String> changePassword(
       String currentPassword, String newPassword) async {
     final cred = EmailAuthProvider.credential(
@@ -49,8 +50,7 @@ class UserService {
     }
   }
 
-  //update profile url
-
+  // Update profile url
   Future<Uint8List?> getProfileImage(String userId) async {
     final storageRef = FirebaseStorage.instance.ref();
     final imageRef = storageRef.child('avatars/user_$userId');
@@ -67,7 +67,7 @@ class UserService {
     FirebaseAuth.instance.signOut();
   }
 
-  // get user info
+  // Get user info
   Future<Map<String, dynamic>?> getUserInfoById(String uid) async {
     try {
       DocumentSnapshot userDoc =
@@ -124,7 +124,8 @@ class UserService {
         await http.get(url, headers: {'Content-Type': 'application/json'});
 
     if (response.statusCode == 200) {
-      final List<dynamic> coursesJson = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final List<dynamic> coursesJson = jsonResponse['savedClasses'];
       return coursesJson.map((course) => course.toString()).toSet();
     } else {
       throw Exception('Failed to load saved courses');
