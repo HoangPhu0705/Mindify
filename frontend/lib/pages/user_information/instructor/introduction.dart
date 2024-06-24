@@ -48,8 +48,8 @@ class _IntroductionState extends State<Introduction> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: _loading
-            ? MyLoading(
+        child:  _loading
+            ? const MyLoading(
                 width: 30,
                 height: 30,
               )
