@@ -9,9 +9,12 @@ import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:frontend/services/models/course.dart';
+import 'package:frontend/services/functions/CourseService.dart';
 class CourseDetail extends StatefulWidget {
-  const CourseDetail({super.key});
+  final String courseId;
+
+  const CourseDetail({super.key, required this.courseId});
 
   @override
   State<CourseDetail> createState() => _CourseDetailState();
@@ -21,15 +24,31 @@ class _CourseDetailState extends State<CourseDetail>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   bool isFollowed = false;
+  Course? course;
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _fetchCourseDetails();
+  }
+
+  Future<void> _fetchCourseDetails() async {
+    try {
+      final courseService = CourseService();
+      final fetchedCourse = await courseService.getCourseById(widget.courseId);
+      setState(() {
+        course = fetchedCourse;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching course details: $e");
+    }
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _tabController?.dispose();
     super.dispose();
   }
@@ -43,57 +62,6 @@ class _CourseDetailState extends State<CourseDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // bottomSheet: Container(
-      //   padding: EdgeInsets.all(12),
-      //   decoration: BoxDecoration(
-      //     color: AppColors.deepSpace,
-      //     boxShadow: [
-      //       BoxShadow(
-      //         color: Colors.grey.withOpacity(0.5),
-      //         offset: Offset(0, -1),
-      //       ),
-      //     ],
-      //   ),
-      //   height: MediaQuery.of(context).size.height * 0.1,
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       RichText(
-      //         text: TextSpan(
-      //           text: 'đ',
-      //           style: TextStyle(
-      //             decoration: TextDecoration.underline,
-      //             fontWeight: FontWeight.w500,
-      //             fontSize: 20,
-      //           ),
-      //           children: [
-      //             TextSpan(
-      //               text: '149.000',
-      //               style: TextStyle(
-      //                 fontSize: 20,
-      //                 decoration: TextDecoration.none,
-      //               ),
-      //             )
-      //           ],
-      //         ),
-      //       ),
-      //       AppSpacing.mediumHorizontal,
-      //       Expanded(
-      //         child: TextButton(
-      //           style: AppStyles.primaryButtonStyle,
-      //           onPressed: () {},
-      //           child: Padding(
-      //             padding: const EdgeInsets.all(8.0),
-      //             child: Text(
-      //               "Purchase",
-      //               style: TextStyle(fontSize: 16),
-      //             ),
-      //           ),
-      //         ),
-      //       )
-      //     ],
-      //   ),
-      // ),
       appBar: AppBar(
         surfaceTintColor: AppColors.ghostWhite,
         leading: IconButton(
@@ -115,53 +83,56 @@ class _CourseDetailState extends State<CourseDetail>
           )
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            VideoPlayerView(
-              url: "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
-              dataSourceType: DataSourceType.network,
-            ),
-            TabBar(
-              tabAlignment: TabAlignment.center,
-              isScrollable: true,
-              controller: _tabController,
-              splashFactory: NoSplash.splashFactory,
-              tabs: const [
-                Tab(text: 'Lessons'),
-                Tab(text: 'Projects'),
-                Tab(text: 'Discussions'),
-                Tab(text: 'Notes'),
-              ],
-              labelStyle: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-              unselectedLabelColor: Colors.black,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicatorColor: Colors.black,
-              indicatorWeight: 3,
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: Column(
                 children: [
-                  LessonTab(
-                    isFollowed: isFollowed,
-                    followUser: followUser,
+                  VideoPlayerView(
+                    url: "https://drive.google.com/uc?export=download&id=1QwZMKcMiTWgq-XJNts-PY2Rci1LJez5B",
+                    dataSourceType: DataSourceType.network,
                   ),
-                  SubmitProject(),
-                  Discussion(),
-                  Center(
-                    child: Text("Notes"),
+                  TabBar(
+                    tabAlignment: TabAlignment.center,
+                    isScrollable: true,
+                    controller: _tabController,
+                    splashFactory: NoSplash.splashFactory,
+                    tabs: const [
+                      Tab(text: 'Lessons'),
+                      Tab(text: 'Projects'),
+                      Tab(text: 'Discussions'),
+                      Tab(text: 'Notes'),
+                    ],
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    unselectedLabelColor: Colors.black,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorColor: Colors.black,
+                    indicatorWeight: 3,
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        LessonTab(
+                          isFollowed: isFollowed,
+                          followUser: followUser,
+                          course: course!,
+                        ),
+                        SubmitProject(),
+                        Discussion(),
+                        Center(
+                          child: Text("Notes"),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
