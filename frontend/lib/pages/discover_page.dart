@@ -70,7 +70,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<void> unsaveCourse(String userId, String courseId) async {
     try {
       await userService.unsaveCourseForUser(userId, courseId);
-      Provider.of<CourseProvider>(context, listen: false).unsaveCourse(courseId);
+      Provider.of<CourseProvider>(context, listen: false)
+          .unsaveCourse(courseId);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Course unsaved successfully!')),
       );
@@ -90,7 +91,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const MyLoading(width: 30, height: 30);
+            return MyLoading(
+              width: 30,
+              height: 30,
+              color: AppColors.ghostWhite,
+            );
           }
 
           return SafeArea(
@@ -154,7 +159,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  Widget buildCarouselCourses(List<Course> courses, String title, String? userId) {
+  Widget buildCarouselCourses(
+      List<Course> courses, String title, String? userId) {
     return Column(
       children: [
         Padding(
@@ -178,7 +184,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {
             final course = courses[index];
-            final isSaved = Provider.of<CourseProvider>(context).isCourseSaved(course.id);
+            final isSaved =
+                Provider.of<CourseProvider>(context).isCourseSaved(course.id);
             return GestureDetector(
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
@@ -196,15 +203,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 numberOfLesson: course.lessons.length,
                 avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
                 isSaved: isSaved,
-                onSavePressed: userId != null 
-                  ? () {
-                      if (isSaved) {
-                        unsaveCourse(userId, course.id);
-                      } else {
-                        saveCourse(userId, course.id);
+                onSavePressed: userId != null
+                    ? () {
+                        if (isSaved) {
+                          unsaveCourse(userId, course.id);
+                        } else {
+                          saveCourse(userId, course.id);
+                        }
                       }
-                    }
-                  : () {}, // Truyền callback
+                    : () {}, // Truyền callback
               ),
             );
           },

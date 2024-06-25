@@ -31,3 +31,13 @@ exports.getSavedCourses = async (req, res) => {
         res.status(500).send({ message: 'Error happened when getting saved courses', error: error.message });
     }
 };
+
+
+exports.createInstructorSignUpRequest = async (req, res) => {
+    try {
+        await UserService.createInstructorSignUpRequest(req.body);
+        res.status(201).json("success");
+    } catch (error) {
+        res.status(500).send({ message: 'Error happened when requesting instructor', error: error.message });
+    }
+}

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -6,6 +8,7 @@ import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/services/models/course.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:provider/provider.dart';
 
 class SavedClasses extends StatefulWidget {
@@ -31,22 +34,22 @@ class _SavedClassesState extends State<SavedClasses> {
 
   Future<void> _loadSavedCourses() async {
     try {
-      final savedCoursesNotifier = Provider.of<CourseProvider>(context, listen: false);
+      final savedCoursesNotifier =
+          Provider.of<CourseProvider>(context, listen: false);
       Set<String> savedCourseIds = await _userService.getSavedCourses(userId);
-      print(savedCourseIds.toString());
 
-      List<Course> courses = await _courseService.getCoursesByIds(savedCourseIds.toList());
+      List<Course> courses =
+          await _courseService.getCoursesByIds(savedCourseIds.toList());
 
       setState(() {
         _savedCourses = courses;
         _isLoading = false;
       });
 
-      savedCourseIds.forEach((id) {
+      for (var id in savedCourseIds) {
         savedCoursesNotifier.saveCourse(id);
-      });
+      }
     } catch (e) {
-      print("Error loading saved courses: $e");
       setState(() {
         _isLoading = false;
       });
@@ -59,26 +62,30 @@ class _SavedClassesState extends State<SavedClasses> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.ghostWhite,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(10),
+            ),
           ),
           height: MediaQuery.of(context).size.height * 0.07,
           child: Column(
             children: [
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                   CupertinoIcons.trash,
                   color: Colors.red,
                 ),
                 titleAlignment: ListTileTitleAlignment.center,
-                title: Text(
+                title: const Text(
                   "Remove",
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
                   _userService.unsaveCourseForUser(userId, courseId).then((_) {
-                    Provider.of<CourseProvider>(context, listen: false).unsaveCourse(courseId);
+                    Provider.of<CourseProvider>(context, listen: false)
+                        .unsaveCourse(courseId);
                     Navigator.pop(context);
                   });
                 },
@@ -94,9 +101,7 @@ class _SavedClassesState extends State<SavedClasses> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: AppColors.ghostWhite,
         appBar: AppBar(
-          surfaceTintColor: AppColors.ghostWhite,
           centerTitle: true,
           title: const Text(
             "All Saved Classes",
@@ -107,14 +112,24 @@ class _SavedClassesState extends State<SavedClasses> {
           ),
         ),
         body: _isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.ghostWhite,
+              )
             : Consumer<CourseProvider>(
                 builder: (context, courseProvider, child) {
                   final savedCourseIds = courseProvider.savedCourses;
-                  final filteredCourses = _savedCourses.where((course) => savedCourseIds.contains(course.id)).toList();
-
+                  final filteredCourses = _savedCourses
+                      .where((course) => savedCourseIds.contains(course.id))
+                      .toList();
                   return filteredCourses.isEmpty
-                      ? Center(child: Text('No saved courses'))
+                      ? Container(
+                          color: AppColors.ghostWhite,
+                          child: const Center(
+                            child: Text('No savsed courses'),
+                          ),
+                        )
                       : ListView.builder(
                           itemCount: filteredCourses.length,
                           itemBuilder: (context, index) {

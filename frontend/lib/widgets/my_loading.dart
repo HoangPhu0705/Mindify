@@ -5,7 +5,12 @@ import 'package:loading_indicator/loading_indicator.dart';
 class MyLoading extends StatelessWidget {
   final double width;
   final double height;
-  const MyLoading({super.key, required this.width, required this.height});
+  final Color color;
+  const MyLoading(
+      {super.key,
+      required this.width,
+      required this.height,
+      required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +18,9 @@ class MyLoading extends StatelessWidget {
       child: SizedBox(
         width: width,
         height: height,
-        child: const LoadingIndicator(
+        child: LoadingIndicator(
           indicatorType: Indicator.lineSpinFadeLoader,
-          colors: [AppColors.blue],
+          colors: [color],
         ),
       ),
     );
