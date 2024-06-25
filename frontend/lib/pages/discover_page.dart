@@ -31,11 +31,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
   List<Course>? _coursesFuture;
   late Future<void> _future;
   String userId = '';
+  List<Course> _savedCourses = [];
 
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
     _coursesFuture = await courseService.getRandomCourses();
+    await _loadSavedCourses();
   }
 
   @override
@@ -50,6 +52,27 @@ class _DiscoverPageState extends State<DiscoverPage> {
     _pageController.dispose();
     super.dispose();
     _timer.cancel();
+  }
+
+  Future<void> _loadSavedCourses() async {
+    try {
+      final savedCoursesNotifier =
+          Provider.of<CourseProvider>(context, listen: false);
+      Set<String> savedCourseIds = await userService.getSavedCourses(userId);
+
+      List<Course> courses =
+          await courseService.getCoursesByIds(savedCourseIds.toList());
+
+      setState(() {
+        _savedCourses = courses;
+      });
+
+      for (var id in savedCourseIds) {
+        savedCoursesNotifier.saveCourse(id);
+      }
+    } catch (e) {
+      log("Error loading saved courses: $e");
+    }
   }
 
   Future<void> saveCourse(String userId, String courseId) async {
@@ -91,10 +114,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return MyLoading(
+            return const MyLoading(
               width: 30,
               height: 30,
-              color: AppColors.ghostWhite,
+              color: AppColors.blue,
             );
           }
 
@@ -184,6 +207,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {
             final course = courses[index];
+
             final isSaved =
                 Provider.of<CourseProvider>(context).isCourseSaved(course.id);
             return GestureDetector(
