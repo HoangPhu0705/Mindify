@@ -6,4 +6,6 @@ router.get('/:userId/savedCourses', UserController.getSavedCourses);
 router.post('/:userId/saveCourse', UserController.saveCourseForUser);
 router.post('/:userId/unsaveCourse', UserController.unsaveCourseForUser);
 router.post('/requestInstructor', UserController.createInstructorSignUpRequest)
+router.put('/requests/:requestId/approve', UserController.approveInstructorRequest);
+
 module.exports = router;

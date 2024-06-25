@@ -77,4 +77,20 @@ exports.createInstructorSignUpRequest = async (data) => {
 }
 
 
+exports.approveInstructorRequest = async (requestId) => {
+    try {
+        const requestRef = RequestCollection.doc(requestId);
+        const requestDoc = await requestRef.get();
+        
+        if (!requestDoc.exists) {
+            throw new Error("Request doesn't exist");
+        }
+
+        await requestRef.update({ isApproved: true });
+
+        return { message: 'Request approved successfully' };
+    } catch (error) {
+        throw new Error(`Error when approving request: ${error.message}`);
+    }
+};
 
