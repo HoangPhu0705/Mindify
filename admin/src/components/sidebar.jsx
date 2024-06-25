@@ -56,6 +56,11 @@ const sidebarComponents = [
     label: 'Lecturer',
     path: '/lecturer',
     icon: <MdOutlineMan />
+  },
+  {
+    label: 'Request',
+    path: '/request',
+    icon: <MdOutlineMan />
   }
 ];
 
