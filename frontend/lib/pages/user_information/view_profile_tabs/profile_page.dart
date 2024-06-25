@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.ghostWhite,
                 ),
                 child: ListView(
                   children: [

@@ -1,5 +1,4 @@
-const { UserCollection } = require('./Collections');
-
+const { UserCollection, RequestCollection } = require('./Collections');
 exports.saveCourseForUser = async (userId, courseId) => {
     try {
         const userRef = UserCollection.doc(userId);
@@ -65,3 +64,17 @@ exports.getSavedCourses = async (userId) => {
         throw new Error(`Error when getting saved courses for user: ${error.message}`);
     }
 };
+
+exports.createInstructorSignUpRequest = async (data) => {
+    try {
+        await RequestCollection.add(data);
+        return { message: 'Instructor sign up request sent successfully' }
+
+        
+    }catch(error){
+        throw new Error(`Error when sending instructor sign up request: ${error.message}`);
+    }    
+}
+
+
+

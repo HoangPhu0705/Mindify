@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, sort_child_properties_last
 
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,11 +11,13 @@ import 'package:flutter/widgets.dart';
 import 'package:form_page_view/enum/progress_enum.dart';
 import 'package:form_page_view/models/form_page_model.dart';
 import 'package:form_page_view/models/form_page_style.dart';
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:form_page_view/form_page_view.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/instructor_signup_forms/category_selection.dart';
+import 'package:frontend/widgets/instructor_signup_forms/describe_class.dart';
 import 'package:frontend/widgets/instructor_signup_forms/personal_detail.dart';
 
 class InstructorSignUp extends StatefulWidget {
@@ -25,7 +29,7 @@ class InstructorSignUp extends StatefulWidget {
 
 class InstructorSignUpState extends State<InstructorSignUp> {
   //Variables
-  List<String> _categories = [
+  final List<String> _categories = [
     'Animation',
     'Culinary',
     'Drawing',
@@ -43,10 +47,15 @@ class InstructorSignUpState extends State<InstructorSignUp> {
 
   //Controllers
   final PageController _pageController = PageController();
-  final emailController = TextEditingController();
-  final usernameController = TextEditingController();
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _countryNameController = TextEditingController();
+  final _dobController = TextEditingController();
+  final _topicDescription = TextEditingController();
+
+  //Services
+  UserService _userService = UserService();
 
   @override
   void initState() {
@@ -91,28 +100,19 @@ class InstructorSignUpState extends State<InstructorSignUp> {
         isButtonEnabled: true,
         body: PersonalDetail(
           formKey: formKeyPage2,
+          firstNameController: _firstNameController,
+          lastNameController: _lastNameController,
+          phoneNumberController: _phoneNumberController,
+          countryNameController: _countryNameController,
+          dobController: _dobController,
         ),
       ),
       FormPageModel(
         formKey: formKeyPage3,
         textButton: 'Finish',
-        body: Form(
-          key: formKeyPage3,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
+        body: DescribeClass(
+          formKey: formKeyPage3,
+          topicDescription: _topicDescription,
         ),
       ),
     ];
@@ -159,11 +159,20 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                 showAppBar: false,
                 progress: ProgressIndicatorType.linear,
                 pages: pages,
-                onFormSubmitted: () {
-                  log('$_currentCategory');
-                  log('First Name: ${firstNameController.text}');
-                  log('Last Name: ${lastNameController.text}');
-                  log('Email: ${emailController.text}');
+                onFormSubmitted: () async {
+                  var data = {
+                    'user_id': FirebaseAuth.instance.currentUser!.uid,
+                    'user_email': FirebaseAuth.instance.currentUser!.email,
+                    'category': _currentCategory,
+                    'firstName': _firstNameController.text,
+                    'lastName': _lastNameController.text,
+                    'phoneNumber': _phoneNumberController.text,
+                    'countryName': _countryNameController.text,
+                    'dob': _dobController.text,
+                    'topicDescription': _topicDescription.text,
+                    'isApproved': false,
+                  };
+                  await _userService.sendInstructorRequest(data);
                 },
                 style: FormPageStyle(
                   appBarBackgroundColor: AppColors.deepSpace,

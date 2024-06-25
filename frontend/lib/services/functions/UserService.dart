@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -130,5 +131,14 @@ class UserService {
     } else {
       throw Exception('Failed to load saved courses');
     }
+  }
+
+  Future<void> sendInstructorRequest(var data) {
+    final url = Uri.parse(AppConstants.CREATE_INSTRUCTOR_REQUEST);
+    return http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
   }
 }

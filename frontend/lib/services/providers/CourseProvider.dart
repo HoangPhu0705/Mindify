@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/services/models/course.dart';
-import 'package:frontend/services/functions/CourseService.dart';
-
 
 class CourseProvider with ChangeNotifier {
   // List<Course> _courses = [];

@@ -28,5 +28,5 @@ class AppConstants {
     'assets/images/category/writing.jpg',
   ];
 
-  static const EXAMPLE_API = "";
+  static const CREATE_INSTRUCTOR_REQUEST = "$baseUrl/users/requestInstructor";
 }

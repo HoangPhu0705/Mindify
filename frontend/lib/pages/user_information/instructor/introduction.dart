@@ -21,19 +21,19 @@ class Introduction extends StatefulWidget {
 }
 
 class _IntroductionState extends State<Introduction> {
-  var _image = NetworkImage(
+  final _image = const NetworkImage(
       "https://images.typeform.com/images/8uVv8sPWhbCV/background/large");
   bool _loading = true;
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+      const SystemUiOverlayStyle(
         statusBarColor: Colors.black,
         statusBarIconBrightness: Brightness.light,
       ),
     );
     super.initState();
-    _image.resolve(ImageConfiguration()).addListener(
+    _image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (info, call) {
           setState(() {
@@ -48,10 +48,16 @@ class _IntroductionState extends State<Introduction> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child:  _loading
-            ? const MyLoading(
-                width: 30,
-                height: 30,
+        child: _loading
+            ? Container(
+                color: Colors.black,
+                width: double.infinity,
+                height: double.infinity,
+                child: const MyLoading(
+                  width: 30,
+                  height: 30,
+                  color: Colors.white,
+                ),
               )
             : Container(
                 padding: const EdgeInsets.all(12),
@@ -68,7 +74,7 @@ class _IntroductionState extends State<Introduction> {
                     Align(
                       alignment: Alignment.topRight,
                       child: GestureDetector(
-                        child: Icon(
+                        child: const Icon(
                           Icons.close,
                           color: Colors.white,
                           size: 24,
@@ -81,27 +87,39 @@ class _IntroductionState extends State<Introduction> {
                     AppSpacing.mediumVertical,
                     Align(
                       alignment: Alignment.topLeft,
-                      child: RichText(
-                          textAlign: TextAlign.start,
-                          text: const TextSpan(
-                            text: 'Start teaching on\n',
-                            style: TextStyle(
-                              fontSize: 24,
-                              letterSpacing: 1.2,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: 'Mindify.',
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.blue,
-                                ),
+                      child: WidgetAnimator(
+                        incomingEffect:
+                            WidgetTransitionEffects.incomingSlideInFromBottom(
+                          duration: const Duration(
+                            milliseconds: 800,
+                          ),
+                          delay: const Duration(
+                            milliseconds: 500,
+                          ),
+                          blur: const Offset(0.5, 0.5),
+                        ),
+                        child: RichText(
+                            textAlign: TextAlign.start,
+                            text: const TextSpan(
+                              text: 'Start teaching on\n',
+                              style: TextStyle(
+                                fontSize: 24,
+                                letterSpacing: 1.2,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
                               ),
-                            ],
-                          )),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Mindify.',
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.blue,
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ),
                     ),
                     const Spacer(),
                     WidgetAnimator(
@@ -146,7 +164,7 @@ class _IntroductionState extends State<Introduction> {
                             ),
                           ).then((value) {
                             SystemChrome.setSystemUIOverlayStyle(
-                              SystemUiOverlayStyle(
+                              const SystemUiOverlayStyle(
                                 statusBarColor: Colors.black,
                                 statusBarIconBrightness: Brightness.light,
                               ),
@@ -154,7 +172,7 @@ class _IntroductionState extends State<Introduction> {
                           });
                         },
                         style: AppStyles.primaryButtonStyle,
-                        child: Text("Get Started"),
+                        child: const Text("Get Started"),
                       ),
                     ),
                     AppSpacing.largeVertical,
