@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:comment_tree/comment_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/instructor_signup_forms/category_selection.dart';
 import 'package:frontend/widgets/instructor_signup_forms/describe_class.dart';
 import 'package:frontend/widgets/instructor_signup_forms/personal_detail.dart';
+import 'package:frontend/widgets/instructor_signup_forms/sign_up_successfully.dart';
 
 class InstructorSignUp extends StatefulWidget {
   const InstructorSignUp({super.key});
@@ -172,7 +174,12 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                     'topicDescription': _topicDescription.text,
                     'isApproved': false,
                   };
-                  await _userService.sendInstructorRequest(data);
+                  // await _userService.sendInstructorRequest(data);
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                      builder: (context) => SendSuccessfully(),
+                    ),
+                  );
                 },
                 style: FormPageStyle(
                   appBarBackgroundColor: AppColors.deepSpace,

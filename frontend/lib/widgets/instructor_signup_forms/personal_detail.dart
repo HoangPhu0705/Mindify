@@ -2,14 +2,8 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:dotted_border/dotted_border.dart';
-
 import 'package:fl_country_code_picker/fl_country_code_picker.dart';
-import 'package:focused_menu/focused_menu.dart';
-import 'package:focused_menu/modals.dart';
-import 'package:frontend/utils/images.dart';
-import 'package:frontend/utils/styles.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:ndialog/ndialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +12,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
-import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class PersonalDetail extends StatefulWidget {
   final GlobalKey<FormState> formKey;

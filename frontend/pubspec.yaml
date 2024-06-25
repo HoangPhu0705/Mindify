@@ -75,7 +75,6 @@ dependencies:
   fl_country_code_picker: ^0.1.9+1
   flutter_holo_date_picker: ^1.1.3
   ndialog: ^4.3.1
-  camerawesome: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -113,7 +112,7 @@ flutter:
   - assets/images/category/web_app_design.jpg
   - assets/images/category/writing.jpg
   - assets/images/default_avatar.png
-
+  - assets/animation/request_succeed.json
 
 
 
