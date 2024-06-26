@@ -1,7 +1,8 @@
 class Lesson {
   String id;
-  String title;
-  String duration;
+   String title;
+   String duration;
+   String link;
   // DateTime createAt;
   // String moduleId;
   // Map<String, dynamic> resource;
@@ -10,6 +11,7 @@ class Lesson {
     required this.id,
     required this.title,
     required this.duration,
+    required this.link
     // required this.createAt,
     // required this.moduleId,
     // required this.resource,
@@ -20,6 +22,7 @@ class Lesson {
       id: json['id'],
       title: json['title'],
       duration: json['duration'],
+      link: json['link']
       // createAt: DateTime.parse(json['createAt']),
       // moduleId: json['moduleId'],
       // resource: json['resource'],
@@ -30,6 +33,7 @@ class Lesson {
     return {
       'title': title,
       'duration': duration,
+      'link': link
     };
   }
 }

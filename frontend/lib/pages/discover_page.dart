@@ -207,7 +207,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
-                    builder: (context) => CourseDetail(),
+                    builder: (context) => CourseDetail(courseId: course.id,),
                   ),
                 );
               },

@@ -29,13 +29,4 @@ class CourseProvider with ChangeNotifier {
     return _savedCourses.contains(courseId);
   }
 
-  // Future<void> fetchCourses() async {
-  //   _courses = await courseService.fetchCourses();
-  //   notifyListeners();
-  // }
-
-  // Future<void> getCourseById(String id) async {
-  //   _selectedCourse = await courseService.getCourseById(id);
-  //   notifyListeners();
-  // }
 }

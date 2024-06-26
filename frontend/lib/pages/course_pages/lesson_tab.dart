@@ -2,16 +2,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:frontend/services/models/course.dart';
+import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 
 class LessonTab extends StatefulWidget {
-  bool isFollowed;
-  void Function()? followUser;
+  final bool isFollowed;
+  final void Function()? followUser;
+  final Course course;
+
   LessonTab({
     Key? key,
     required this.isFollowed,
     required this.followUser,
+    required this.course,
   }) : super(key: key);
 
   @override
@@ -19,31 +24,6 @@ class LessonTab extends StatefulWidget {
 }
 
 class _LessonTabState extends State<LessonTab> {
-  List<String> todos = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "18",
-    "19",
-    "20",
-    "21",
-    "22",
-    "23"
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,16 +37,18 @@ class _LessonTabState extends State<LessonTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Secrets to Growing a Successful YouTube Channel in 2023",
+                    widget.course.title,
                     style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           fontSize: 20,
                         ),
                   ),
                   AppSpacing.mediumVertical,
-                  Text("3.1K Students"),
+                  // Text("${widget.course.studentsCount} Students"),
+                  Text("200 Students"),
+
                   AppSpacing.mediumVertical,
                   Text(
-                    "The YouTube game has changed like never before. Learn how to grow your own channel in 2023 using the same secrets as Mr. Beast, Ryan Trahan,",
+                    widget.course.description,
                     style: TextStyle(
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -89,7 +71,7 @@ class _LessonTabState extends State<LessonTab> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Jordy Vandeput",
+                                widget.course.instructorName,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Text(
@@ -150,7 +132,7 @@ class _LessonTabState extends State<LessonTab> {
                     ],
                   ),
                   Text(
-                    "9 Lessons (53m)",
+                    "${widget.course.lessons.length} Lessons 12m",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
@@ -158,25 +140,37 @@ class _LessonTabState extends State<LessonTab> {
                 ],
               ),
             ),
-
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: todos.length,
+              itemCount: widget.course.lessons.length,
               itemBuilder: (context, index) {
+                final lesson = widget.course.lessons[index];
                 return ListTile(
                   onTap: () {},
-                  title: Text("Lesson ${index + 1}"),
-                  subtitle: Text("1:54"),
+                  title: Text(lesson.title),
+                  subtitle: Text(lesson.duration),
                   leading: Icon(Icons.play_circle_filled_outlined),
                 );
               },
             ),
-
-            // Add more lessons here...
           ],
         ),
       ),
     );
   }
+
+  // String _calculateTotalDuration(List<Lesson> lessons) {
+  //   final totalMinutes = lessons.fold<int>(
+  //       0, (sum, lesson) => sum + lesson.duration.inMinutes);
+  //   final hours = totalMinutes ~/ 60;
+  //   final minutes = totalMinutes % 60;
+  //   return "${hours}h ${minutes}m";
+  // }
+
+  // String _formatDuration(Duration duration) {
+  //   final minutes = duration.inMinutes;
+  //   final seconds = duration.inSeconds % 60;
+  //   return "${minutes}:${seconds.toString().padLeft(2, '0')}";
+  // }
 }
