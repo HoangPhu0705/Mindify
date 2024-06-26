@@ -157,3 +157,28 @@ exports.getUnapprovedRequests = async () => {
     }
 };
 
+
+exports.getRequestDetails = async (requestId) => {
+    try {
+        const requestRef = RequestCollection.doc(requestId);
+        const requestDoc = await requestRef.get();
+        if (!requestDoc.exists) {
+            throw new Error("Request doesn't exist");
+        }
+
+        const requestData = requestDoc.data();
+        const userId = requestData.user_id;
+
+        const userRef = UserCollection.doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            throw new Error("User doesn't exist");
+        }
+
+        const userData = userDoc.data();
+        return { user: userData, request: requestData };
+    } catch (error) {
+        throw new Error(`Error fetching request details: ${error.message}`);
+    }
+};
+

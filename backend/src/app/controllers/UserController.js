@@ -60,3 +60,13 @@ exports.getUnapprovedRequests = async (req, res) => {
         res.status(500).send({ message: 'Error fetching unapproved requests', error: error.message });
     }
 };
+
+exports.getRequestDetails = async (req, res) => {
+    try {
+        const requestId = req.params.requestId;
+        const response = await UserService.getRequestDetails(requestId);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).send({ message: 'Error fetching request details', error: error.message });
+    }
+};
