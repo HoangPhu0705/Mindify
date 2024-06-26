@@ -115,7 +115,7 @@ class _SavedClassesState extends State<SavedClasses> {
             ? const MyLoading(
                 width: 30,
                 height: 30,
-                color: AppColors.ghostWhite,
+                color: AppColors.deepBlue,
               )
             : Consumer<CourseProvider>(
                 builder: (context, courseProvider, child) {

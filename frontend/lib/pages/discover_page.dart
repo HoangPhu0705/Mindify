@@ -8,6 +8,7 @@ import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/popular_course.dart';
@@ -79,14 +80,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
     try {
       await userService.saveCourseForUser(userId, courseId);
       Provider.of<CourseProvider>(context, listen: false).saveCourse(courseId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Course saved successfully!')),
-      );
+      showSavedSuccessToast(context, "Course saved!");
     } catch (e) {
       log("Error saving course: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save course')),
-      );
+      showErrorToast(context, "Failed to save course");
     }
   }
 
@@ -95,14 +92,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
       await userService.unsaveCourseForUser(userId, courseId);
       Provider.of<CourseProvider>(context, listen: false)
           .unsaveCourse(courseId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Course unsaved successfully!')),
-      );
+      showSuccessToast(context, "Removed saved course");
     } catch (e) {
       log("Error unsaving course: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to unsave course')),
-      );
+      showErrorToast(context, "Failed to unsave course");
     }
   }
 
@@ -117,7 +110,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             return const MyLoading(
               width: 30,
               height: 30,
-              color: AppColors.blue,
+              color: AppColors.deepBlue,
             );
           }
 
