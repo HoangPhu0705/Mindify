@@ -1,4 +1,28 @@
 const { UserCollection, RequestCollection } = require('./Collections');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
+
+const sendApprovalEmail = async (email, firstName) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Approval Success Notification',
+        text: `Hello ${firstName},\n\nYour instructor sign-up request has been approved.\n\nBest regards,\nPhu Phan`
+    };
+
+    return transporter.sendMail(mailOptions);
+};
+
 exports.saveCourseForUser = async (userId, courseId) => {
     try {
         const userRef = UserCollection.doc(userId);
@@ -106,6 +130,8 @@ exports.approveInstructorRequest = async (requestId) => {
             phoneNumber: requestData.phoneNumber,
             topicDescription: requestData.topicDescription
         });
+
+        await sendApprovalEmail(requestData.user_email, requestData.firstName);
 
         return { message: 'Request approved and user updated successfully' };
     } catch (error) {
