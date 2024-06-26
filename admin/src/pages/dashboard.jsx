@@ -1,6 +1,6 @@
 import React from 'react'
 import { MdShoppingBag } from "react-icons/md";
-import DashboardStatsGrid from './statsgrid';
+import DashboardStatsGrid from '../components/statsgrid';
 
 export default function Dashboard() {
   return (

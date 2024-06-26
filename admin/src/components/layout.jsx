@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./sidebar";
 import Header from "./header";
-// perform layout of dashboard
+
 function Layout(){
     return <div className="flex flex-row bg-neural-100 h-screen w-screen overflow-hidden">
         <div className=""><Sidebar /></div>

@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.0.4",
+    "@heroicons/react": "^2.1.4",
+    "@material-tailwind/react": "^2.1.9",
     "axios": "^1.7.2",
     "classnames": "^2.5.1",
     "cors": "^2.8.5",
