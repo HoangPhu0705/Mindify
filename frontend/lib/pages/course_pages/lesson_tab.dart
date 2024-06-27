@@ -25,6 +25,16 @@ class LessonTab extends StatefulWidget {
 
 class _LessonTabState extends State<LessonTab> {
   @override
+  void initState() {
+    super.initState();
+    _sortLessonsByIndex();
+  }
+  // this will sort the lessons by index
+  void _sortLessonsByIndex() {
+    widget.course.lessons.sort((a, b) => a.index.compareTo(b.index));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -44,7 +54,7 @@ class _LessonTabState extends State<LessonTab> {
                   ),
                   AppSpacing.mediumVertical,
                   // Text("${widget.course.studentsCount} Students"),
-                  Text("200 Students"),
+                  Text("${widget.course.students} students"),
 
                   AppSpacing.mediumVertical,
                   Text(
@@ -132,7 +142,7 @@ class _LessonTabState extends State<LessonTab> {
                     ],
                   ),
                   Text(
-                    "${widget.course.lessons.length} Lessons 12m",
+                    "${widget.course.lessons.length} Lessons in ${widget.course.duration}",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                     ),

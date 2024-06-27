@@ -122,7 +122,9 @@ class _CourseDetailState extends State<CourseDetail>
                           followUser: followUser,
                           course: course!,
                         ),
-                        SubmitProject(),
+                        SubmitProject(
+                          course: course!,
+                        ),
                         Discussion(),
                         Center(
                           child: Text("Notes"),
