@@ -29,4 +29,5 @@ class AppConstants {
   ];
 
   static const CREATE_INSTRUCTOR_REQUEST = "$baseUrl/users/requestInstructor";
+  static const USER_API = "$baseUrl/users/";
 }

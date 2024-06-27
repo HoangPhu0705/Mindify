@@ -174,7 +174,7 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                     'topicDescription': _topicDescription.text,
                     'isApproved': false,
                   };
-                  // await _userService.sendInstructorRequest(data);
+                  await _userService.sendInstructorRequest(data);
                   Navigator.of(context, rootNavigator: true).push(
                     MaterialPageRoute(
                       builder: (context) => SendSuccessfully(),

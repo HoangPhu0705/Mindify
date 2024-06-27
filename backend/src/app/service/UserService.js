@@ -131,3 +131,20 @@ exports.getUnapprovedRequests = async () => {
     }
 };
 
+
+//Get user data by user id snapsho
+exports.getUserData = async (userId) => {
+    try {
+        const userRef = UserCollection.doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            throw new Error("User doesn't exist");
+        }
+
+        const userData = userDoc.data();
+        return userData;
+    } catch (error) {
+        throw new Error(`Error when getting user data: ${error.message}`);
+    }
+};
+

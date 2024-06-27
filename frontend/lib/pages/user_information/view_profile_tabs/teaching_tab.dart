@@ -11,6 +11,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/pages/user_information/instructor/introduction.dart';
+import 'package:frontend/widgets/my_loading.dart';
 
 class TeachingTab extends StatefulWidget {
   const TeachingTab({super.key});
