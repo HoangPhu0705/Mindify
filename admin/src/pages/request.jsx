@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Card, Typography } from "@material-tailwind/react";
+import { Link } from 'react-router-dom';
 
-const TABLE_HEAD = ["Email", "Role", "Sign up date", ""];
-
-
+const TABLE_HEAD = ["Full Name", "Email", "Category", "", "Detail"];
 
 const Request = () => {
-  const [requests, setRequests] = useState([]);  // Ensure requests is initialized as an array
+  const [requests, setRequests] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -15,7 +15,6 @@ const Request = () => {
         const response = await axios.get('http://localhost:3000/api/users/requests/unapproved');
         if (Array.isArray(response.data)) {
           setRequests(response.data);
-          console.log(requests);
         } else {
           throw new Error('Invalid data format');
         }
@@ -40,35 +39,49 @@ const Request = () => {
     return <p>{error}</p>;
   }
 
-
-
   return (
-    <div className="rounded-xl border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark">
+    <Card className="h-full w-full overflow-scroll">
       <div className="py-6 px-4 md:px-6 xl:px-7.5 bg-gray-100 dark:bg-gray-800">
-        <h4 className="text-xl font-semibold text-black dark:text-white">
+        <Typography variant="h4" color="black" className="dark:text-white">
           Application Requests
-        </h4>
+        </Typography>
       </div>
 
-      <table className="w-full border-collapse">
-        <thead className="bg-gray-50 dark:bg-gray-900">
+      <table className="w-full min-w-max table-auto text-left">
+        <thead>
           <tr>
-            <th className="px-4 py-3 text-left text-sm font-medium text-black dark:text-white">Full Name</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-black dark:text-white">Email</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-black dark:text-white">Category</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-black dark:text-white">Approve</th>
+            {TABLE_HEAD.map((head) => (
+              <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal leading-none opacity-70"
+                >
+                  {head}
+                </Typography>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {requests.map((request, key) => (
-            <tr
-              key={key}
-              className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-t border-stroke dark:border-strokedark"
-            >
-              <td className="px-4 py-3 text-sm text-black dark:text-black">{request.firstName} {request.lastName}</td>
-              <td className="px-4 py-3 text-sm text-black dark:text-black">{request.user_email}</td>
-              <td className="px-4 py-3 text-sm text-black dark:text-black">{request.category}</td>
-              <td className="px-4 py-3 text-sm text-black dark:text-black">
+          {requests.map((request) => (
+            <tr key={request.id} className="even:bg-blue-gray-50/50">
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {request.firstName} {request.lastName}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {request.user_email}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {request.category}
+                </Typography>
+              </td>
+              <td className="p-4">
                 <button
                   onClick={() => approveRequest(request.id)}
                   className="bg-blue-500 text-white px-3 py-1 rounded"
@@ -76,12 +89,19 @@ const Request = () => {
                   Approve
                 </button>
               </td>
+              <td className="p-4">
+                <Link
+                  to={`/request/${request.id}`}
+                  className="bg-gray-500 text-white px-3 py-1 rounded"
+                >
+                  View Details
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-    </div>
+    </Card>
   );
 };
 

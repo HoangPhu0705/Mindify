@@ -3,6 +3,7 @@ import Layout from "./components/layout"
 import Dashboard from "./pages/dashboard"
 import Lecturer from "./pages/lecturer"
 import Request from "./pages/request"
+import RequestDetail from "./pages/request_detail"
 export default function App() {
   return (
     <Router>
@@ -11,6 +12,7 @@ export default function App() {
           <Route index element={<Dashboard/>} />
           <Route path="/lecturer" element={<Lecturer/>} />
           <Route path="/request" element={<Request/>} />
+          <Route path="/request/:requestId" element={<RequestDetail/>} />
         </Route>
       </Routes>
     </Router>
