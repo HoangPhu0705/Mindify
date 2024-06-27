@@ -142,5 +142,33 @@ class UserService {
     );
   }
 
-  
+  //get user data by id
+  Future<dynamic> getUserData(String userId) async {
+    final url = Uri.parse('${AppConstants.USER_API}/$userId');
+
+    final response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to get user data');
+    }
+  }
+
+  Future<void> updateUserRequestStatus(String userId, bool status) async {
+    try {
+      DocumentReference userRef = _firestore.collection('users').doc(userId);
+      DocumentSnapshot userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        throw Exception('User not found');
+      }
+
+      await userRef.update({
+        "requestSent": status,
+      });
+    } catch (e) {
+      log("Error $e");
+      throw Exception("Failed to update user");
+    }
+  }
 }

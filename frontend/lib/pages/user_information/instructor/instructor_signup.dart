@@ -175,6 +175,8 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                     'isApproved': false,
                   };
                   await _userService.sendInstructorRequest(data);
+                  await _userService.updateUserRequestStatus(
+                      FirebaseAuth.instance.currentUser!.uid, true);
                   Navigator.of(context, rootNavigator: true).push(
                     MaterialPageRoute(
                       builder: (context) => SendSuccessfully(),

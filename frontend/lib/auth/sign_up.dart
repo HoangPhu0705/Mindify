@@ -100,6 +100,7 @@ class _SignUpState extends State<SignUp> {
         'avatar': '',
         'email': email,
         'role': 'user',
+        'requestSent': false,
         'savedClasses': [],
       };
       await FirebaseFirestore.instance
