@@ -23,7 +23,6 @@ class MindifyApp extends StatefulWidget {
 }
 
 class _MindifyAppState extends State<MindifyApp> {
-
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -40,7 +39,9 @@ class _MindifyAppState extends State<MindifyApp> {
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
         ),
-        ChangeNotifierProvider(create: (context) => CourseProvider()),
+        ChangeNotifierProvider(
+          create: (context) => CourseProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -64,7 +65,7 @@ class _MindifyAppState extends State<MindifyApp> {
             labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
-        home: SplashScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

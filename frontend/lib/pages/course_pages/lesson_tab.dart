@@ -29,6 +29,7 @@ class _LessonTabState extends State<LessonTab> {
     super.initState();
     _sortLessonsByIndex();
   }
+
   // this will sort the lessons by index
   void _sortLessonsByIndex() {
     widget.course.lessons.sort((a, b) => a.index.compareTo(b.index));
@@ -150,19 +151,23 @@ class _LessonTabState extends State<LessonTab> {
                 ],
               ),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: widget.course.lessons.length,
-              itemBuilder: (context, index) {
-                final lesson = widget.course.lessons[index];
-                return ListTile(
-                  onTap: () {},
-                  title: Text(lesson.title),
-                  subtitle: Text(lesson.duration),
-                  leading: Icon(Icons.play_circle_filled_outlined),
-                );
-              },
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height * 0.1),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: widget.course.lessons.length,
+                itemBuilder: (context, index) {
+                  final lesson = widget.course.lessons[index];
+                  return ListTile(
+                    onTap: () {},
+                    title: Text(lesson.title),
+                    subtitle: Text(lesson.duration),
+                    leading: Icon(Icons.play_circle_filled_outlined),
+                  );
+                },
+              ),
             ),
           ],
         ),
