@@ -17,10 +17,13 @@ class UserService {
   final String baseUrl = 'http://10.0.2.2:3000/api';
 
   String getUserId() {
-    return user.uid!;
+    return user.uid;
   }
 
   String getUsername() {
+    if(user.displayName == null || user.displayName!.isEmpty) {
+      return "Mindify Member";
+    }
     return user.displayName ?? "Mindify Member";
   }
 

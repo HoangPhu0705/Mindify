@@ -15,21 +15,21 @@ import 'package:frontend/utils/spacing.dart';
 
 class PersonalDetail extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final firstNameController;
-  final lastNameController;
-  final phoneNumberController;
-  final countryNameController;
-  final dobController;
+  final TextEditingController firstNameController;
+  final TextEditingController lastNameController;
+  final TextEditingController phoneNumberController;
+  final TextEditingController countryNameController;
+  final TextEditingController dobController;
 
   const PersonalDetail({
-    Key? key,
+    super.key,
     required this.formKey,
-    this.firstNameController,
-    this.lastNameController,
-    this.phoneNumberController,
-    this.countryNameController,
-    this.dobController,
-  }) : super(key: key);
+    required this.firstNameController,
+    required this.lastNameController,
+    required this.phoneNumberController,
+    required this.countryNameController,
+    required this.dobController,
+  });
 
   @override
   State<PersonalDetail> createState() => _PersonalDetailState();

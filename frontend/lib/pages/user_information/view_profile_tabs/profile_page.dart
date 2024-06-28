@@ -15,6 +15,7 @@ import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -48,174 +49,180 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              color: AppColors.deepBlue,
-              padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 30.0),
-              child: Column(
-                children: [
-                  Row(
-                    //icon notification
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () {},
-                        child: Icon(
-                          CupertinoIcons.bell,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                      ),
-                      AppSpacing.mediumHorizontal,
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SettingPage(),
-                            ),
-                          );
-                        },
-                        child: Icon(
-                          CupertinoIcons.gear,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                      ),
-                    ],
-                  ),
-                  AppSpacing.largeVertical,
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: Image(
-                          image: NetworkImage(
-                            context.watch<UserProvider>().photoUrl,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.ghostWhite,
+          ),
+          child: Column(
+            children: [
+              Container(
+                color: AppColors.deepBlue,
+                padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 30.0),
+                child: Column(
+                  children: [
+                    Row(
+                      //icon notification
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {},
+                          child: Icon(
+                            CupertinoIcons.bell,
+                            color: Colors.white,
+                            size: 26,
                           ),
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            return Text('Error loading image');
+                        ),
+                        AppSpacing.mediumHorizontal,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SettingPage(),
+                              ),
+                            );
                           },
-                        ).image,
-                        radius: 30,
-                      ),
-                      AppSpacing.mediumHorizontal,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.watch<UserProvider>().displayName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                  color: Colors.white,
-                                ),
+                          child: Icon(
+                            CupertinoIcons.gear,
+                            color: Colors.white,
+                            size: 26,
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ViewProfile(),
-                                ),
-                              );
+                        ),
+                      ],
+                    ),
+                    AppSpacing.largeVertical,
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: Image(
+                            image: NetworkImage(
+                              context.watch<UserProvider>().photoUrl,
+                            ),
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              return Text('Error loading image');
                             },
-                            child: Text(
-                              'View Profile',
+                          ).image,
+                          radius: 30,
+                        ),
+                        AppSpacing.mediumHorizontal,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.watch<UserProvider>().displayName,
                               style: Theme.of(context)
                                   .textTheme
-                                  .titleSmall!
+                                  .titleMedium!
                                   .copyWith(
-                                    color: AppColors.cream,
+                                    color: Colors.white,
                                   ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-                decoration: BoxDecoration(
-                  color: AppColors.ghostWhite,
-                ),
-                child: ListView(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.arrow_circle_down),
-                      title: Text(
-                        'Downloads',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(fontSize: 16),
-                      ),
-                      subtitle: Text('0 classes'),
-                      trailing: Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Downloads(),
-                          ),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.bookmark_border_outlined),
-                      title: Text(
-                        'All saved Classes',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(fontSize: 16),
-                      ),
-                      trailing: Icon(Icons.chevron_right),
-                      onTap: () {
-                        // Handle All saved Classes tap
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SavedClasses(),
-                          ),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.history),
-                      title: Text(
-                        'Watched History',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(fontSize: 16),
-                      ),
-                      trailing: Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => WatchHistory(),
-                          ),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text('Logout'),
-                      onTap: signUserOut,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewProfile(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'View Profile',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(
+                                      color: AppColors.cream,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.ghostWhite,
+                  ),
+                  child: ListView(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.arrow_circle_down),
+                        title: Text(
+                          'Downloads',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(fontSize: 16),
+                        ),
+                        subtitle: Text('0 classes'),
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Downloads(),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.bookmark_border_outlined),
+                        title: Text(
+                          'All saved Classes',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(fontSize: 16),
+                        ),
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          // Handle All saved Classes tap
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SavedClasses(),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.history),
+                        title: Text(
+                          'Watched History',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(fontSize: 16),
+                        ),
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WatchHistory(),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.logout),
+                        title: Text('Logout'),
+                        onTap: signUserOut,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

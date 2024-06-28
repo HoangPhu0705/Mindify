@@ -134,40 +134,43 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: AppColors.ghostWhite,
-          centerTitle: true,
-          title: const Text(
-            "Edit Profile",
-            style: TextStyle(fontSize: 20),
-          ),
-          actions: [
-            GestureDetector(
-              onTap: () async {
-                var newName = _usernameController.text;
-                await _userService.updateUsername(newName);
-                Provider.of<UserProvider>(context, listen: false)
-                    .setDisplayName(newName);
-
-                Navigator.pop(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Done",
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: AppColors.deepBlue,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: AppColors.ghostWhite,
+        centerTitle: true,
+        title: const Text(
+          "Edit Profile",
+          style: TextStyle(fontSize: 20),
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () async {
+              var newName = _usernameController.text;
+              await _userService.updateUsername(newName);
+              Provider.of<UserProvider>(context, listen: false)
+                  .setDisplayName(newName);
+    
+              Navigator.pop(context);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Done",
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: AppColors.deepBlue,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.ghostWhite,
+          ),
           child: Column(
             children: [
               FocusedMenuHolder(

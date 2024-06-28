@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/auth/main_page.dart';
+import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/profile_page.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/view_profile.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -15,6 +19,7 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(12),
@@ -27,11 +32,10 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
               const SizedBox(
                 height: 100,
               ),
-              Lottie.asset(
-                'assets/animation/request_succeed.json',
-                width: 200,
-                height: 200,
+              LottieBuilder.network(
+                "https://lottie.host/a7833d06-301b-4863-aaaa-eec4660172cf/8juU2i3Zee.json",
                 repeat: false,
+                backgroundLoading: true,
               ),
               const Text(
                 "Your application has been sent successfully!",
@@ -65,9 +69,11 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
               AppSpacing.mediumVertical,
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      ),
+                      (Route<dynamic> route) => false);
                 },
                 style: AppStyles.primaryButtonStyle,
                 child: Text("Back to Home"),

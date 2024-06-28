@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
@@ -27,7 +28,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
   final CourseService courseService = CourseService();
   final UserService userService = UserService();
 
-  late Timer _timer;
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
   late Future<void> _future;
@@ -43,6 +43,12 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   @override
   void initState() {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: AppColors.ghostWhite,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     super.initState();
     userId = userService.getUserId();
     _future = _initPage();
@@ -52,7 +58,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-    _timer.cancel();
   }
 
   Future<void> _loadSavedCourses() async {
@@ -64,9 +69,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       List<Course> courses =
           await courseService.getCoursesByIds(savedCourseIds.toList());
 
-      setState(() {
-        _savedCourses = courses;
-      });
+      _savedCourses = courses;
 
       for (var id in savedCourseIds) {
         savedCoursesNotifier.saveCourse(id);
@@ -166,7 +169,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
         SmoothPageIndicator(
           controller: _pageController,
           count: courses.length,
-          effect: ExpandingDotsEffect(
+          effect: const ExpandingDotsEffect(
             activeDotColor: AppColors.blue,
             dotHeight: 4,
           ),
@@ -207,7 +210,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
-                    builder: (context) => CourseDetail(courseId: course.id,),
+                    builder: (context) => CourseDetail(
+                      courseId: course.id,
+                    ),
                   ),
                 );
               },

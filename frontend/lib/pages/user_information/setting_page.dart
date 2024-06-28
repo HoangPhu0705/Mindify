@@ -16,17 +16,20 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.ghostWhite,
-          centerTitle: true,
-          title: const Text(
-            "Settings",
-            style: TextStyle(fontSize: 20),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.ghostWhite,
+        centerTitle: true,
+        title: const Text(
+          "Settings",
+          style: TextStyle(fontSize: 20),
         ),
-        body: SingleChildScrollView(
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.ghostWhite,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

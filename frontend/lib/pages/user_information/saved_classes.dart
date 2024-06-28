@@ -99,19 +99,23 @@ class _SavedClassesState extends State<SavedClasses> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text(
-            "All Saved Classes",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          "All Saved Classes",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        body: _isLoading
+        backgroundColor: AppColors.ghostWhite,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: AppColors.ghostWhite,
+        ),
+        child: _isLoading
             ? const MyLoading(
                 width: 30,
                 height: 30,
@@ -124,10 +128,13 @@ class _SavedClassesState extends State<SavedClasses> {
                       .where((course) => savedCourseIds.contains(course.id))
                       .toList();
                   return filteredCourses.isEmpty
-                      ? Container(
-                          color: AppColors.ghostWhite,
-                          child: const Center(
-                            child: Text('No savsed courses'),
+                      ? const Center(
+                          child: Text(
+                            'No savsed courses',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         )
                       : ListView.builder(

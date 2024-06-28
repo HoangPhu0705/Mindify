@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/auth/main_page.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/pages/splash_screen.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -22,6 +23,7 @@ class MindifyApp extends StatefulWidget {
 }
 
 class _MindifyAppState extends State<MindifyApp> {
+
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -38,9 +40,7 @@ class _MindifyAppState extends State<MindifyApp> {
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => CourseProvider()
-          ),
+        ChangeNotifierProvider(create: (context) => CourseProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -64,7 +64,7 @@ class _MindifyAppState extends State<MindifyApp> {
             labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
-        home: MainPage(),
+        home: SplashScreen(),
       ),
     );
   }

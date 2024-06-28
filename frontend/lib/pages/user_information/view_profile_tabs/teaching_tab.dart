@@ -56,9 +56,9 @@ class _TeachingTabState extends State<TeachingTab> {
             color: AppColors.deepBlue,
           );
         }
-        log(snapshot.data.toString());
         String role = snapshot.data['role'];
         bool requestSent = snapshot.data['requestSent'];
+
         return SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.all(12),
@@ -78,7 +78,7 @@ class _TeachingTabState extends State<TeachingTab> {
                   Center(
                     child: _becomeInstructor(),
                   )
-                else if (role != "teacher" && requestSent == true)
+                else if (role != "teacher")
                   _requestPending()
                 else
                   Align(
@@ -137,20 +137,22 @@ class _TeachingTabState extends State<TeachingTab> {
             ),
             AppSpacing.smallVertical,
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context, rootNavigator: true)
                     .push(
                   MaterialPageRoute(
                     builder: (context) => Introduction(),
                   ),
                 )
-                    .then((value) {
-                  SystemChrome.setSystemUIOverlayStyle(
-                    SystemUiOverlayStyle(
-                        statusBarColor: Colors.transparent,
-                        statusBarIconBrightness: Brightness.dark),
-                  );
-                });
+                    .then(
+                  (value) {
+                    SystemChrome.setSystemUIOverlayStyle(
+                      SystemUiOverlayStyle(
+                          statusBarColor: Colors.transparent,
+                          statusBarIconBrightness: Brightness.dark),
+                    );
+                  },
+                );
               },
               style: AppStyles.secondaryButtonStyle,
               child: Padding(
