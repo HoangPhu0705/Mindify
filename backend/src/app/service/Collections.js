@@ -4,6 +4,12 @@ const CourseCollection = db.collection("courses");
 const UserCollection = db.collection("users");
 const LessonCollection = db.collection("lessons");
 const RequestCollection = db.collection("requests");
+const EnrollmentCollection = db.collection("enrollments");
+const TransactionCollection = db.collection("transactions");
 
-
-module.exports = { CourseCollection, UserCollection, LessonCollection, RequestCollection };
+module.exports = { CourseCollection, 
+                    UserCollection, 
+                    LessonCollection, 
+                    RequestCollection, 
+                    EnrollmentCollection,
+                    TransactionCollection };

@@ -98,3 +98,13 @@ exports.addPriceToAllCourses = async (req, res) => {
     res.status(500).json({ message: 'Error adding price to all courses', error: error.message });
   }
 };
+
+exports.updateLessonLinkByIndex = async (req, res) => {
+  const { index, newLink } = req.body;
+  try {
+    const response = await CourseService.updateLessonLinkByIndex(index, newLink);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).send({ message: 'Error updating lessons link', error: error.message });
+  }
+};

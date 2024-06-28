@@ -15,13 +15,14 @@ router.delete('/:id', CourseController.deleteCourse);
 // router.get('/top5', CourseController.);
 router.post('/batch', CourseController.addCourses);
 router.post('/addPrice', CourseController.addPriceToAllCourses);
-
+router.post('/updateLessonLinkByIndex', CourseController.updateLessonLinkByIndex);
 // Lessons
 router.get('/:courseId/lessons', LessonController.getAllLesson);
 router.post('/:courseId/lessons', LessonController.createLesson);
 router.get('/:courseId/lessons/:lessonId', LessonController.getLessonById);
 router.patch('/:courseId/lessons/:lessonId', LessonController.updateLesson);
 router.delete('/:courseId/lessons/:lessonId', LessonController.deleteLesson);
+
 
 
 module.exports = router;

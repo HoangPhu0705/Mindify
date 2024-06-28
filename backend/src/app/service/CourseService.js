@@ -166,14 +166,41 @@ exports.addPriceToAllCourses = async () => {
     const snapshot = await CourseCollection.get();
     
     const batch = CourseCollection.firestore.batch();
+    const prices = [199000, 249000, 299000, 349000, 399000];
     
     snapshot.docs.forEach(doc => {
-      batch.update(doc.ref, { price: 39 });
+      const randomPrice = prices[Math.floor(Math.random() * prices.length)];
+      batch.update(doc.ref, { price: randomPrice });
     });
+    
     await batch.commit();
-    return { message: "Added 39$ to all courses successfully" };
+    return { message: "Added random price to all courses successfully" };
   } catch (error) {
-    console.error('Error adding price to all courses:', error);
+    console.error('Error adding random price to all courses:', error);
     throw error;
   }
 };
+
+exports.updateLessonLinkByIndex = async (index, newLink) => {
+  try {
+    const snapshot = await CourseCollection.get();
+
+    const batch = CourseCollection.firestore.batch();
+
+    snapshot.docs.forEach((doc) => {
+      const lessonsRef = doc.ref.collection('lessons');
+      lessonsRef.where('index', '==', index).get().then((lessonsSnapshot) => {
+        lessonsSnapshot.docs.forEach((lessonDoc) => {
+          batch.update(lessonDoc.ref, { link: newLink });
+        });
+      });
+    });
+
+    await batch.commit();
+    return { message: `Updated lessons with index ${index} successfully` };
+  } catch (error) {
+    console.error('Error updating lessons link:', error);
+    throw error;
+  }
+};
+

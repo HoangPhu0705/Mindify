@@ -1,16 +1,14 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/widgets/video_player_view.dart';
-import 'package:video_player/video_player.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
+import 'package:video_player/video_player.dart';
+
 class CourseDetail extends StatefulWidget {
   final String courseId;
 
@@ -26,6 +24,7 @@ class _CourseDetailState extends State<CourseDetail>
   bool isFollowed = false;
   Course? course;
   bool isLoading = true;
+  String? _currentVideoUrl;
 
   @override
   void initState() {
@@ -41,6 +40,9 @@ class _CourseDetailState extends State<CourseDetail>
       setState(() {
         course = fetchedCourse;
         isLoading = false;
+        if (course!.lessons.isNotEmpty) {
+          _currentVideoUrl = course!.lessons.first.link;
+        }
       });
     } catch (e) {
       print("Error fetching course details: $e");
@@ -56,6 +58,14 @@ class _CourseDetailState extends State<CourseDetail>
   Future<void> followUser() async {
     setState(() {
       isFollowed = !isFollowed;
+    });
+  }
+
+  void _onLessonTap(String videoUrl) {
+    print('Tapped lesson with video URL: $videoUrl');
+    setState(() {
+      _currentVideoUrl = videoUrl;
+      print('Current video URL updated to: $_currentVideoUrl');
     });
   }
 
@@ -88,10 +98,11 @@ class _CourseDetailState extends State<CourseDetail>
           : SafeArea(
               child: Column(
                 children: [
-                  VideoPlayerView(
-                    url: "https://drive.google.com/uc?export=download&id=1QwZMKcMiTWgq-XJNts-PY2Rci1LJez5B",
-                    dataSourceType: DataSourceType.network,
-                  ),
+                  if (_currentVideoUrl != null)
+                    VideoPlayerView(
+                      url: _currentVideoUrl!,
+                      dataSourceType: DataSourceType.network,
+                    ),
                   TabBar(
                     tabAlignment: TabAlignment.center,
                     isScrollable: true,
@@ -121,6 +132,7 @@ class _CourseDetailState extends State<CourseDetail>
                           isFollowed: isFollowed,
                           followUser: followUser,
                           course: course!,
+                          onLessonTap: _onLessonTap,
                         ),
                         SubmitProject(
                           course: course!,
@@ -130,6 +142,18 @@ class _CourseDetailState extends State<CourseDetail>
                           child: Text("Notes"),
                         ),
                       ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16),
+                      color: Colors.white,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text("Buy Course: ${course!.price}"),
+                      ),
                     ),
                   ),
                 ],

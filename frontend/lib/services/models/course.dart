@@ -11,6 +11,7 @@ class Course {
   bool isPublic;
   int projectNum;
   int students;
+  int price;
   String projectDescription;
   List<Lesson> lessons;
 
@@ -25,6 +26,7 @@ class Course {
     required this.isPublic,
     required this.projectNum,
     required this.students,
+    required this.price,
     required this.projectDescription,
     required this.lessons,
   });
@@ -41,6 +43,7 @@ class Course {
       isPublic: json['isPublic'] as bool,
       projectNum: json['projectNum'] as int,
       students: json['students'] as int,
+      price: json['price'] as int,
       projectDescription: json['projectDescription'] as String,
       lessons: (json['lessons'] as List<dynamic>)
           .map((lessonJson) =>
@@ -61,6 +64,7 @@ class Course {
       'isPublic': isPublic,
       'projectNum': projectNum,
       'students': students,
+      'price': price,
       'projectDescription': projectDescription,
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
     };

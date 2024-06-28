@@ -1,0 +1,1 @@
+const { CourseCollection } = require('./Collections');
