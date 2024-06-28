@@ -8,6 +8,10 @@ class Course {
   String instructorId;
   String instructorName;
   String duration;
+  bool isPublic;
+  int projectNum;
+  int students;
+  String projectDescription;
   List<Lesson> lessons;
 
   Course({
@@ -18,6 +22,10 @@ class Course {
     required this.instructorId,
     required this.instructorName,
     required this.duration,
+    required this.isPublic,
+    required this.projectNum,
+    required this.students,
+    required this.projectDescription,
     required this.lessons,
   });
 
@@ -30,6 +38,10 @@ class Course {
       instructorId: json['authorId'] as String,
       instructorName: json['author'] as String,
       duration: json['duration'] as String,
+      isPublic: json['isPublic'] as bool,
+      projectNum: json['projectNum'] as int,
+      students: json['students'] as int,
+      projectDescription: json['projectDescription'] as String,
       lessons: (json['lessons'] as List<dynamic>)
           .map((lessonJson) =>
               Lesson.fromJson(lessonJson as Map<String, dynamic>))
@@ -46,6 +58,10 @@ class Course {
       'authorId': instructorId,
       'author': instructorName,
       'duration': duration,
+      'isPublic': isPublic,
+      'projectNum': projectNum,
+      'students': students,
+      'projectDescription': projectDescription,
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
     };
   }

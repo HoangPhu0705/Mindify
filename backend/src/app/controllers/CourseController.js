@@ -89,3 +89,12 @@ exports.getRandomCourses = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+// bonus price
+exports.addPriceToAllCourses = async (req, res) => {
+  try {
+    const response = await CourseService.addPriceToAllCourses();
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding price to all courses', error: error.message });
+  }
+};

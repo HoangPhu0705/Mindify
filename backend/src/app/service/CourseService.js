@@ -1,3 +1,4 @@
+const { firestore } = require('firebase-admin');
 const { CourseCollection } = require('./Collections');
 
 exports.getAllCourses = async () => {
@@ -20,7 +21,10 @@ exports.addCourses = async (courses) => {
       const { lessons, ...courseInfo } = courseData;
       const courseRef = CourseCollection.doc();
 
-      batch.set(courseRef, courseInfo);
+      batch.set(courseRef, {
+        ...courseInfo,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
 
       lessons.forEach((lesson) => {
         const lessonRef = courseRef.collection('lessons').doc();
@@ -41,7 +45,10 @@ exports.createCourseWithLessons = async (courseData) => {
 
   try {
     const courseRef = CourseCollection.doc();
-    await courseRef.set(courseInfo);
+    await courseRef.set({
+      ...courseInfo,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+    });
 
     const lessonsPromises = lessons.map((lesson) => {
       const lessonRef = courseRef.collection('lessons').doc();
@@ -60,7 +67,10 @@ exports.createCourseWithLessons = async (courseData) => {
 exports.createCourse = async (course) => {
   try {
     const docRef = CourseCollection.doc();
-    await docRef.set(course);
+    await docRef.set({
+      ...course,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+    });
     return docRef.id;
   } catch (error) {
     console.error('Error creating course:', error);
@@ -150,3 +160,20 @@ exports.getRandomCourses = async () => {
   }
 };
 
+// bonus func
+exports.addPriceToAllCourses = async () => {
+  try {
+    const snapshot = await CourseCollection.get();
+    
+    const batch = CourseCollection.firestore.batch();
+    
+    snapshot.docs.forEach(doc => {
+      batch.update(doc.ref, { price: 39 });
+    });
+    await batch.commit();
+    return { message: "Added 39$ to all courses successfully" };
+  } catch (error) {
+    console.error('Error adding price to all courses:', error);
+    throw error;
+  }
+};

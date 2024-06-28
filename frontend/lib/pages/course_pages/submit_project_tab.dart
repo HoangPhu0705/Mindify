@@ -3,13 +3,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:getwidget/getwidget.dart';
 
 class SubmitProject extends StatefulWidget {
-  const SubmitProject({super.key});
-
+  final Course course;
+  SubmitProject({
+    Key? key,
+    required this.course,
+  }) : super(key: key);
   @override
   State<SubmitProject> createState() => _SubmitProjectState();
 }
@@ -89,12 +93,7 @@ class _SubmitProjectState extends State<SubmitProject> {
                     ),
                     AppSpacing.mediumVertical,
                     Text(
-                      '''Create a YouTube video with all the tips and tricks implemented from this class.
-Start with the thumbnail and title Work out the video concept
-Record your video with clean audio 
-Make a snappy edit
-Add a call to action and engage with your audiencess
-''',
+                      widget.course.projectDescription,
                       maxLines: 7,
                       style: TextStyle(
                         overflow: TextOverflow.ellipsis,

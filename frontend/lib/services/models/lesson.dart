@@ -1,5 +1,6 @@
 class Lesson {
   String id;
+  int index;
    String title;
    String duration;
    String link;
@@ -9,6 +10,7 @@ class Lesson {
 
   Lesson({
     required this.id,
+    required this.index,
     required this.title,
     required this.duration,
     required this.link
@@ -20,6 +22,7 @@ class Lesson {
   factory Lesson.fromJson(Map<String, dynamic> json) {
     return Lesson(
       id: json['id'],
+      index: json['index'] as int,
       title: json['title'],
       duration: json['duration'],
       link: json['link']
@@ -31,6 +34,7 @@ class Lesson {
 
   Map<String, dynamic> toJson() {
     return {
+      'index': index,
       'title': title,
       'duration': duration,
       'link': link
