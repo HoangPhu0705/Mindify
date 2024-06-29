@@ -4,12 +4,14 @@ const CourseController = require('../app/controllers/CourseController');
 const LessonController = require('../app/controllers/LessonController');
 // const {getRandomCourses} = require('../app/controllers/CourseController')
 // Courses
+// get
 router.get('/', CourseController.getAllCourses);
 router.post('/', CourseController.createCourse);
 router.get('/random', CourseController.getRandomCourses);
+router.get('/top5', CourseController.getTop5Courses);
+router.get('/newest', CourseController.getFiveNewestCourse);
 // router.post('/', CourseController.createCourseWithLessons)
 router.get('/:id', CourseController.getCourseById);
-router.get('/top5', CourseController.getTop5Courses);
 router.patch('/:id', CourseController.updateCourse);
 router.delete('/:id', CourseController.deleteCourse);
 // router.get('/top5', CourseController.);

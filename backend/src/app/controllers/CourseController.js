@@ -81,6 +81,15 @@ exports.getTop5Courses = async (req, res) => {
   }
 };
 
+exports.getFiveNewestCourse = async (req, res) => {
+  try {
+    const courses = await CourseService.getFiveNewestCourse();
+    res.status(200).json(courses);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 exports.getRandomCourses = async (req, res) => {
   try {
     const courses = await CourseService.getRandomCourses();

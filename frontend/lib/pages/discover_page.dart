@@ -30,6 +30,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
+  List<Course>? _newestCourses;
+  // List<Course>? _top5Courses;
   late Future<void> _future;
   String userId = '';
   List<Course> _savedCourses = [];
@@ -37,9 +39,27 @@ class _DiscoverPageState extends State<DiscoverPage> {
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
-    _coursesFuture = await courseService.getRandomCourses();
-    await _loadSavedCourses();
+    try {
+      _coursesFuture = await courseService.getRandomCourses();
+      _newestCourses = await courseService.getFiveNewestCourses();
+      // _top5Courses = await courseService.getTop5Courses();
+      // if (_top5Courses != null) {
+      //   for (var course in _top5Courses!) {
+      //     log("Course Title: ${course.title}");
+      //     log("Course ID: ${course.id}");
+      //     log("Course Instructor: ${course.instructorName}");
+      //     log("Course Thumbnail: ${course.thumbnail}");
+      //   }
+      // } else {
+      //   log("Top 5 courses are null.");
+      // }
+
+      await _loadSavedCourses();
+    } catch (e) {
+      log("Error in _initPage: $e");
+    }
   }
+
 
   @override
   void initState() {
@@ -115,31 +135,31 @@ class _DiscoverPageState extends State<DiscoverPage> {
               height: 30,
               color: AppColors.deepBlue,
             );
-          }
-
-          return SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text("Mindify",
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  AppSpacing.smallVertical,
-                  buildPopularCourses(_coursesFuture!),
-                  AppSpacing.mediumVertical,
-                  Column(
-                    children: [
-                      buildCarouselCourses(
-                          _coursesFuture!, "Recommend For You", userId),
-                      AppSpacing.mediumVertical,
-                      buildCarouselCourses(
-                          _coursesFuture!, "New and Trending", userId),
-                    ],
-                  ),
-                  AppSpacing.largeVertical,
-                ],
+          } else {
+            return SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text("Mindify",
+                        style: Theme.of(context).textTheme.headlineMedium),
+                    AppSpacing.smallVertical,
+                    buildPopularCourses(_coursesFuture!),
+                    AppSpacing.mediumVertical,
+                    Column(
+                      children: [
+                        buildCarouselCourses(
+                            _newestCourses!, "Recommend For You", userId),
+                        AppSpacing.mediumVertical,
+                        buildCarouselCourses(
+                            _newestCourses!, "New and Trending", userId),
+                      ],
+                    ),
+                    AppSpacing.largeVertical,
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          }
         },
       ),
     );
@@ -212,6 +232,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   MaterialPageRoute(
                     builder: (context) => CourseDetail(
                       courseId: course.id,
+                      userId: userId!,
                     ),
                   ),
                 );

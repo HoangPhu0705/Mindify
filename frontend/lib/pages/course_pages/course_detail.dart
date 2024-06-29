@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
+import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -15,8 +16,9 @@ import 'package:video_player/video_player.dart';
 
 class CourseDetail extends StatefulWidget {
   final String courseId;
+  final String userId;
 
-  const CourseDetail({super.key, required this.courseId});
+  const CourseDetail({super.key, required this.courseId, required this.userId});
 
   @override
   State<CourseDetail> createState() => _CourseDetailState();
@@ -26,7 +28,9 @@ class _CourseDetailState extends State<CourseDetail>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
+  final enrollmentService = EnrollmentService();
   bool isFollowed = false;
+  bool isEnrolled = false;
   Course? course;
   late Future<void> _futureCourseDetail;
   String _currentVideoUrl = '';
@@ -36,6 +40,7 @@ class _CourseDetailState extends State<CourseDetail>
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _futureCourseDetail = _fetchCourseDetails();
+    _checkEnrollment();
   }
 
   Future<void> _fetchCourseDetails() async {
@@ -49,6 +54,38 @@ class _CourseDetailState extends State<CourseDetail>
       });
     } catch (e) {
       print("Error fetching course details: $e");
+    }
+  }
+
+  Future<void> _checkEnrollment() async {
+    try {
+      final enrolled = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
+      setState(() {
+        isEnrolled = enrolled;
+      });
+    } catch (e) {
+      print("Error checking enrollment: $e");
+    }
+  }
+
+  Future<void> _enrollInCourse() async {
+    try {
+      final enrollmentData = {
+        'userId': widget.userId, 
+        'courseId': widget.courseId,
+      };
+
+      await enrollmentService.createEnrollment(enrollmentData);
+      setState(() {
+        isEnrolled = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Enrollment successful!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to enroll: $e')),
+      );
     }
   }
 
@@ -75,7 +112,7 @@ class _CourseDetailState extends State<CourseDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: Container(
+      bottomSheet: isEnrolled ? null : Container(
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.ghostWhite,
@@ -109,7 +146,7 @@ class _CourseDetailState extends State<CourseDetail>
             Expanded(
               child: TextButton(
                 style: AppStyles.primaryButtonStyle,
-                onPressed: () {},
+                onPressed: _enrollInCourse,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(

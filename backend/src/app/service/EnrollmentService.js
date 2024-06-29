@@ -15,3 +15,22 @@ exports.createEnrollment = async (data) => {
         throw error;
     }
 };
+
+exports.checkEnrollment = async (userId, courseId) => {
+    try {
+        const snapshot = await EnrollmentCollection
+            .where('userId', '==', userId)
+            .where('courseId', '==', courseId)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) {
+            return false; 
+        } else {
+            return true; 
+        }
+    } catch (error) {
+        console.error('Error checking enrollment:', error);
+        throw error;
+    }
+};

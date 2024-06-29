@@ -1,0 +1,35 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'package:frontend/services/models/enrollment.dart';
+
+
+class EnrollmentService {
+  final String baseUrl = "http://10.0.2.2:3000/api";
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  Future<void> createEnrollment(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/enrollments"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+      );
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create enrollment');
+    }
+  }
+
+  Future<bool> checkEnrollment(String userId, String courseId) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/enrollments/checkEnrollment?userId=$userId&courseId=$courseId"),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['isEnrolled'];
+    } else {
+      throw Exception('Failed to check enrollment');
+    }
+  }
+}

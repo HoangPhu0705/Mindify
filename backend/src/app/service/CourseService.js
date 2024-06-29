@@ -113,7 +113,7 @@ exports.deleteCourse = async (id) => {
 
 exports.getTop5Courses = async () => {
   try {
-    const snapshot = await CourseCollection.orderBy('popularity', 'desc').limit(5).get();
+    const snapshot = await CourseCollection.orderBy('students', 'desc').limit(5).get();
     const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return courses;
 
@@ -122,6 +122,24 @@ exports.getTop5Courses = async () => {
     throw error;
   }
 };
+
+exports.getFiveNewestCourse = async () => {
+  try {
+    const snapshot = await CourseCollection.orderBy('createdAt', 'desc').limit(5).get();
+    const courses = await Promise.all(
+      snapshot.docs.map(async doc => {
+        const lessonsSnapshot = await doc.ref.collection('lessons').get();
+        const lessons = lessonsSnapshot.docs.map(lessonDoc => ({ id: lessonDoc.id, ...lessonDoc.data() }));
+        return { id: doc.id, ...doc.data(), lessons };
+      })
+    );
+    return courses;
+  } catch (error) {
+    console.error('Error fetching the newest 5 courses:', error);
+    throw error;
+  }
+};
+
 
 exports.getRandomCourses = async () => {
   try {

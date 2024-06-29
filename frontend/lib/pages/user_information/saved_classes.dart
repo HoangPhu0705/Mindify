@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -21,7 +20,7 @@ class SavedClasses extends StatefulWidget {
 class _SavedClassesState extends State<SavedClasses> {
   final UserService _userService = UserService();
   final CourseService _courseService = CourseService();
-  late String userId = '';
+  String? userId;
   List<Course> _savedCourses = [];
   bool _isLoading = true;
 
@@ -34,22 +33,29 @@ class _SavedClassesState extends State<SavedClasses> {
 
   Future<void> _loadSavedCourses() async {
     try {
-      final savedCoursesNotifier =
-          Provider.of<CourseProvider>(context, listen: false);
-      Set<String> savedCourseIds = await _userService.getSavedCourses(userId);
-
-      List<Course> courses =
-          await _courseService.getCoursesByIds(savedCourseIds.toList());
-
+      // final savedCoursesNotifier =
+      //     Provider.of<CourseProvider>(context, listen: false);
+      Set<String> savedCourseIds = await _userService.getSavedCourses(userId!);
+      List<Course> courses = [];
+      log('Saved Course IDs: $savedCourseIds');
+      
+      for (String id in savedCourseIds) {
+        Course? course = await _courseService.getCourseById(id);
+        if (course != null) {
+          courses.add(course);
+        }
+      }
+      
       setState(() {
         _savedCourses = courses;
         _isLoading = false;
       });
 
-      for (var id in savedCourseIds) {
-        savedCoursesNotifier.saveCourse(id);
-      }
+      // for (var id in savedCourseIds) {
+      //   savedCoursesNotifier.saveCourse(id);
+      // }
     } catch (e) {
+      log("Error loading saved courses: $e");
       setState(() {
         _isLoading = false;
       });
@@ -83,7 +89,7 @@ class _SavedClassesState extends State<SavedClasses> {
                       TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
-                  _userService.unsaveCourseForUser(userId, courseId).then((_) {
+                  _userService.unsaveCourseForUser(userId!, courseId).then((_) {
                     Provider.of<CourseProvider>(context, listen: false)
                         .unsaveCourse(courseId);
                     Navigator.pop(context);
@@ -127,10 +133,10 @@ class _SavedClassesState extends State<SavedClasses> {
                   final filteredCourses = _savedCourses
                       .where((course) => savedCourseIds.contains(course.id))
                       .toList();
-                  return filteredCourses.isEmpty
+                  return _savedCourses.isEmpty
                       ? const Center(
                           child: Text(
-                            'No savsed courses',
+                            'No saved courses',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -146,7 +152,7 @@ class _SavedClassesState extends State<SavedClasses> {
                               title: course.title,
                               author: course.instructorName,
                               duration: course.duration,
-                              students: "30",
+                              students: course.students.toString(),
                               moreOnPress: () {
                                 _showBottomSheet(context, course.id);
                               },
