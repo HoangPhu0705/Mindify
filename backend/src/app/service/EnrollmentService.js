@@ -34,3 +34,25 @@ exports.checkEnrollment = async (userId, courseId) => {
         throw error;
     }
 };
+
+exports.getUserEnrollments = async (userId) => {
+    try {
+        const snapshot = await EnrollmentCollection
+            .where('userId', '==', userId)
+            .get();
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        const enrollments = [];
+        snapshot.forEach(doc => {
+            enrollments.push({ id: doc.id, ...doc.data() });
+        });
+
+        return enrollments;
+    } catch (error) {
+        console.error('Error getting user enrollments:', error);
+        throw error;
+    }
+};

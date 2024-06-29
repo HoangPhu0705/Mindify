@@ -1,7 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/services/functions/CourseService.dart';
+import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/functions/UserService.dart';
+import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_course.dart';
@@ -14,17 +20,47 @@ class MyCoursePage extends StatefulWidget {
 class _MyCoursesPageState extends State<MyCoursePage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  final userService = UserService();
+  final enrollmentService = EnrollmentService();
+  final courseService = CourseService();
+  List<String> courseIdEnrolled = [];
+  List<Course> enrolledCourses = [];
+  bool isLoading = true;
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    userId = userService.getUserId();
+    _fetchEnrolledCourses();
   }
 
   @override
   void dispose() {
     _tabController?.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchEnrolledCourses() async {
+    try {
+      List<Course> courses = [];
+      courseIdEnrolled = await enrollmentService.getUserEnrollments(userId);
+      log(courseIdEnrolled.toString());
+      for (String courseId in courseIdEnrolled) {
+        Course course = await courseService.getCourseById(courseId);
+        courses.add(course);
+      }
+      setState(() {
+        enrolledCourses = courses;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error fetching enrolled courses: $e');
+    }
   }
 
   @override
@@ -48,27 +84,24 @@ class _MyCoursesPageState extends State<MyCoursePage>
         child: TabBarView(
           controller: _tabController,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return MyCourseItem(
-                      imageUrl:
-                          'https://static.skillshare.com/uploads/video/thumbnails/3d4e26f38f2cb702b655467f0be55771/448-252', // Placeholder image URL
-                      title:
-                          "The Professional Repeat: A Surface Designer Guide to Print Production",
-                      author: 'Ellen Lupton',
-                      duration: '3m',
-                      students: '97.5K',
-                      moreOnPress: () {},
-                    );
-                  },
-                )
-              ],
-            ),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : enrolledCourses.isEmpty
+                    ? _emptyCourse(context)
+                    : ListView.builder(
+                        itemCount: enrolledCourses.length,
+                        itemBuilder: (context, index) {
+                          Course course = enrolledCourses[index];
+                          return MyCourseItem(
+                            imageUrl: course.thumbnail,
+                            title: course.title,
+                            author: course.instructorName,
+                            duration: course.duration,
+                            students: course.students.toString(),
+                            moreOnPress: () {},
+                          );
+                        },
+                      ),
             Center(
               child: Text('Downloads'),
             ),
@@ -80,6 +113,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
 
   Widget _emptyCourse(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(
           CupertinoIcons.play_arrow,

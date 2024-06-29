@@ -12,7 +12,6 @@ app.use(cors());
 app.use(express.json()); 
 
 
-
 route(app);
 
 

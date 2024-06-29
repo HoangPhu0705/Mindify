@@ -32,4 +32,21 @@ class EnrollmentService {
       throw Exception('Failed to check enrollment');
     }
   }
+
+  Future<List<String>> getUserEnrollments(String userId) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/enrollments/userEnrollments?userId=$userId"),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      List<String> courseIds = [];
+      for (var enrollment in data) {
+        courseIds.add(enrollment['courseId']);
+      }
+      return courseIds;
+    } else {
+      throw Exception('Failed to get user enrollments');
+    }
+  }
 }

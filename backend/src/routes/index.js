@@ -1,6 +1,6 @@
 const courseRouter = require('./courses');
 const userRouter = require('./users');
-const enrollmentRouter = require('./enrollment');
+const enrollmentRouter = require('./enrollments');
 function route(app){
     app.use('/api/courses', courseRouter)
     app.use('/api/users', userRouter)
