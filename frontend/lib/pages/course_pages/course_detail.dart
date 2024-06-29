@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
@@ -27,7 +28,6 @@ class _CourseDetailState extends State<CourseDetail>
   final courseService = CourseService();
   bool isFollowed = false;
   Course? course;
-  bool isLoading = true;
   late Future<void> _futureCourseDetail;
   String _currentVideoUrl = '';
 
@@ -43,7 +43,6 @@ class _CourseDetailState extends State<CourseDetail>
       final fetchedCourse = await courseService.getCourseById(widget.courseId);
       setState(() {
         course = fetchedCourse;
-        isLoading = false;
         if (course!.lessons.isNotEmpty) {
           _currentVideoUrl = course!.lessons.first.link;
         }
@@ -91,12 +90,20 @@ class _CourseDetailState extends State<CourseDetail>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "${course!.price.toString()} đ",
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+            FutureBuilder(
+              future: _futureCourseDetail,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  "${course!.price.toString()}đ",
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                );
+              },
             ),
             AppSpacing.mediumHorizontal,
             Expanded(
@@ -199,6 +206,3 @@ class _CourseDetailState extends State<CourseDetail>
     );
   }
 }
-
-
-
