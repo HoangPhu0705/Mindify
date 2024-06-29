@@ -122,8 +122,8 @@ class _ViewProfileState extends State<ViewProfile>
               splashFactory: NoSplash.splashFactory,
               tabs: const [
                 Tab(text: 'Profile'),
-                Tab(text: 'Achievements'),
                 Tab(text: 'Teaching'),
+                Tab(text: 'Achievement'),
               ],
               labelStyle: TextStyle(
                 color: AppColors.deepBlue,
@@ -140,8 +140,8 @@ class _ViewProfileState extends State<ViewProfile>
                 controller: _tabController,
                 children: [
                   ProfileTab(),
-                  AchievementTab(),
                   TeachingTab(),
+                  AchievementTab(),
                 ],
               ),
             ),

@@ -13,6 +13,14 @@ class AppColors {
   static const Color lighterGrey = Color(0xFFE5E5E5);
   static const Color pastelPink = Color(0xFFFFD1DC);
   static const Color deepBlue = Color(0xFF8B00FD);
+  static const gradientColors = [
+    Color(0xFF4900D5),
+    Color(0xFF0064B0),
+    Color(0xFF00A39D),
+    Color(0xFF00C892),
+    Color(0xFF00EF86),
+    Color(0xFF00FF7C),
+  ];
 
   static const Color blue = Color(0xFF7DD6FF);
   static const Color aliceBlue = Color(0xFFF0F9FF);

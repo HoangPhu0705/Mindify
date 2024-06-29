@@ -150,7 +150,7 @@ class _EditProfileState extends State<EditProfile> {
               await _userService.updateUsername(newName);
               Provider.of<UserProvider>(context, listen: false)
                   .setDisplayName(newName);
-    
+
               Navigator.pop(context);
             },
             child: Padding(
@@ -266,7 +266,12 @@ class _EditProfileState extends State<EditProfile> {
                               }
                             },
                             style: AppStyles.secondaryButtonStyle,
-                            child: Text("Change Password"),
+                            child: Text(
+                              "Save Password",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                           )
                         ],
                       ),

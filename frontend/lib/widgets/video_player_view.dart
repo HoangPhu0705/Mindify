@@ -1,17 +1,8 @@
-import 'dart:io';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:pod_player/pod_player.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-
-import 'dart:developer';
-import 'package:flutter/material.dart';
-import 'package:frontend/utils/colors.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:pod_player/pod_player.dart';
 
 class VideoPlayerView extends StatefulWidget {
@@ -19,10 +10,10 @@ class VideoPlayerView extends StatefulWidget {
   final DataSourceType dataSourceType;
 
   const VideoPlayerView({
-    Key? key,
+    super.key,
     required this.url,
     required this.dataSourceType,
-  }) : super(key: key);
+  });
 
   @override
   State<VideoPlayerView> createState() => _VideoPlayerViewState();
@@ -35,7 +26,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
   Future<void> initVideoPlayer() async {
     _podPlayerController = PodPlayerController(
       playVideoFrom: PlayVideoFrom.network(widget.url),
-      podPlayerConfig: PodPlayerConfig(
+      podPlayerConfig: const PodPlayerConfig(
         autoPlay: false,
         isLooping: false,
         videoQualityPriority: [360, 720],
@@ -71,10 +62,10 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.black,
             ),
-            child: AspectRatio(
+            child: const AspectRatio(
               aspectRatio: 16 / 9,
               child: Center(
                 child: SizedBox(
@@ -93,18 +84,18 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
         if (snapshot.connectionState == ConnectionState.done) {
           return PodVideoPlayer(
             controller: _podPlayerController,
-            podProgressBarConfig: PodProgressBarConfig(
+            podProgressBarConfig: const PodProgressBarConfig(
               padding: EdgeInsets.symmetric(horizontal: 2),
               height: 2,
               backgroundColor: Colors.white,
               playingBarColor: AppColors.cream,
               circleHandlerColor: AppColors.cream,
             ),
-            podPlayerLabels: PodPlayerLabels(),
+            podPlayerLabels: const PodPlayerLabels(),
             alwaysShowProgressBar: false,
             videoAspectRatio: 16 / 9,
             onLoading: (context) {
-              return Center(
+              return const Center(
                 child: SizedBox(
                   width: 30,
                   height: 30,
@@ -118,7 +109,9 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
           );
         }
 
-        return Center(child: Text("Failed to load video"));
+        return const Center(
+          child: Text("Failed to load video"),
+        );
       },
     );
   }

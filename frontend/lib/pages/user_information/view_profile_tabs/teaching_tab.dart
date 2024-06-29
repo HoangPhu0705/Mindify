@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/user_information/instructor/instructor_signup.dart';
@@ -67,7 +68,7 @@ class _TeachingTabState extends State<TeachingTab> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Teaching Hub',
+                  'Teacher Hub',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: Colors.black,
                         fontSize: 18,
@@ -81,17 +82,7 @@ class _TeachingTabState extends State<TeachingTab> {
                 else if (role != "teacher")
                   _requestPending()
                 else
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      "Upload your first class",
-                    ),
-                  )
+                  _startCreateClass(),
               ],
             ),
           ),
@@ -110,6 +101,81 @@ class _TeachingTabState extends State<TeachingTab> {
           fontWeight: FontWeight.w500,
         ),
         "Your requests has been sent. We will review your application and return the result later",
+      ),
+    );
+  }
+
+  Widget _startCreateClass() {
+    return Container(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * 0.12,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: AppColors.gradientColors,
+        ),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(1.5), // Width of the border
+        decoration: BoxDecoration(
+          color: Colors.white, // Background color
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                children: const [
+                  Icon(
+                    Icons.play_circle_outlined,
+                    color: AppColors.deepSpace,
+                  ),
+                  AppSpacing.smallHorizontal,
+                  Text(
+                    "Start creating a New class!",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: AppColors.deepSpace,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Wrap(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    log("mkm");
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(AppColors.deepBlue),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Create a class",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
