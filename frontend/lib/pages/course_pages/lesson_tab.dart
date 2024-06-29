@@ -9,14 +9,14 @@ class LessonTab extends StatefulWidget {
   final bool isFollowed;
   final void Function()? followUser;
   final Course course;
-  // final void Function(String) onLessonTap;
+  final void Function(String) onLessonTap;
 
   LessonTab({
     Key? key,
     required this.isFollowed,
     required this.followUser,
     required this.course,
-    // required this.onLessonTap,
+    required this.onLessonTap,
   }) : super(key: key);
 
   @override
@@ -30,7 +30,6 @@ class _LessonTabState extends State<LessonTab> {
     _sortLessonsByIndex();
   }
 
-  // this will sort the lessons by index
   void _sortLessonsByIndex() {
     widget.course.lessons.sort((a, b) => a.index.compareTo(b.index));
   }
@@ -54,9 +53,7 @@ class _LessonTabState extends State<LessonTab> {
                         ),
                   ),
                   AppSpacing.mediumVertical,
-                  // Text("${widget.course.studentsCount} Students"),
                   Text("${widget.course.students} students"),
-
                   AppSpacing.mediumVertical,
                   Text(
                     widget.course.description,
@@ -161,8 +158,10 @@ class _LessonTabState extends State<LessonTab> {
                 itemBuilder: (context, index) {
                   final lesson = widget.course.lessons[index];
                   return ListTile(
-                    onTap: () {},
-                    title: Text(lesson.title),
+                    onTap: () {
+                      widget.onLessonTap(lesson.link);
+                    },
+                    title: Text("${lesson.index + 1}: ${lesson.title}"),
                     subtitle: Text(lesson.duration),
                     leading: Icon(Icons.play_circle_filled_outlined),
                   );
@@ -175,4 +174,3 @@ class _LessonTabState extends State<LessonTab> {
     );
   }
 }
-

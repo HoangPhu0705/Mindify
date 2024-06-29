@@ -8,44 +8,31 @@ import 'package:video_player/video_player.dart';
 import 'package:pod_player/pod_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:frontend/utils/colors.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:pod_player/pod_player.dart';
+
 class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
+
   const VideoPlayerView({
-    super.key,
+    Key? key,
     required this.url,
     required this.dataSourceType,
-  });
+  }) : super(key: key);
 
   @override
   State<VideoPlayerView> createState() => _VideoPlayerViewState();
 }
 
 class _VideoPlayerViewState extends State<VideoPlayerView> {
-  // late VideoPlayerController _videoPlayerController;
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
-  String? fileName;
 
   Future<void> initVideoPlayer() async {
-    // await _videoPlayerController.initialize();
-
-    fileName = await VideoThumbnail.thumbnailFile(
-      video: widget.url,
-      thumbnailPath: (await getTemporaryDirectory()).path,
-      imageFormat: ImageFormat.PNG,
-      maxHeight: 300,
-      maxWidth: 300,
-      quality: 75,
-    );
-
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
     _podPlayerController = PodPlayerController(
       playVideoFrom: PlayVideoFrom.network(widget.url),
       podPlayerConfig: PodPlayerConfig(
@@ -55,14 +42,26 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       ),
     )..initialise();
 
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _future = initVideoPlayer();
+  }
+
+  @override
+  void didUpdateWidget(covariant VideoPlayerView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _podPlayerController.dispose();
     _future = initVideoPlayer();
   }
 
   @override
   void dispose() {
-    super.dispose();
-    // _videoPlayerController.dispose();
     _podPlayerController.dispose();
+    super.dispose();
   }
 
   @override
@@ -92,7 +91,6 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-
           return PodVideoPlayer(
             controller: _podPlayerController,
             podProgressBarConfig: PodProgressBarConfig(

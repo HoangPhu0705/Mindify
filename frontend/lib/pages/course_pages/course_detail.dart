@@ -29,6 +29,7 @@ class _CourseDetailState extends State<CourseDetail>
   Course? course;
   bool isLoading = true;
   late Future<void> _futureCourseDetail;
+  String _currentVideoUrl = '';
 
   @override
   void initState() {
@@ -43,9 +44,9 @@ class _CourseDetailState extends State<CourseDetail>
       setState(() {
         course = fetchedCourse;
         isLoading = false;
-        // if (course!.lessons.isNotEmpty) {
-        //   _currentVideoUrl = course!.lessons.first.link;
-        // }
+        if (course!.lessons.isNotEmpty) {
+          _currentVideoUrl = course!.lessons.first.link;
+        }
       });
     } catch (e) {
       print("Error fetching course details: $e");
@@ -64,13 +65,13 @@ class _CourseDetailState extends State<CourseDetail>
     });
   }
 
-  // void _onLessonTap(String videoUrl) {
-  //   print('Tapped lesson with video URL: $videoUrl');
-  //   setState(() {
-  //     _currentVideoUrl = videoUrl;
-  //     print('Current video URL updated to: $_currentVideoUrl');
-  //   });
-  // }
+  void _onLessonTap(String videoUrl) {
+    print('Tapped lesson with video URL: $videoUrl');
+    setState(() {
+      _currentVideoUrl = videoUrl;
+      print('Current video URL updated to: $_currentVideoUrl');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +92,7 @@ class _CourseDetailState extends State<CourseDetail>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "đ149.000",
+              "${course!.price.toString()} đ",
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -139,8 +140,7 @@ class _CourseDetailState extends State<CourseDetail>
         child: Column(
           children: [
             VideoPlayerView(
-              url:
-                  "https://drive.google.com/uc?export=download&id=1QwZMKcMiTWgq-XJNts-PY2Rci1LJez5B",
+              url: _currentVideoUrl,
               dataSourceType: DataSourceType.network,
             ),
             TabBar(
@@ -179,6 +179,7 @@ class _CourseDetailState extends State<CourseDetail>
                         isFollowed: isFollowed,
                         followUser: followUser,
                         course: course!,
+                        onLessonTap: _onLessonTap,
                       ),
                       SubmitProject(
                         course: course!,
@@ -198,3 +199,6 @@ class _CourseDetailState extends State<CourseDetail>
     );
   }
 }
+
+
+
