@@ -9,6 +9,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:super_cupertino_navigation_bar/super_cupertino_navigation_bar.dart';
 
 class SearchPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   int _currentSearchIndex = -1;
+  late Future<void> _future;
 
   final List<String> _popularSearches = [
     'marketing',
@@ -33,20 +35,14 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        _preloadImages();
-      },
-    );
+    _future = _preloadImages();
   }
 
-  void _preloadImages() {
+  Future<void> _preloadImages() async {
     for (String imagePath in AppConstants.categoryImage) {
       precacheImage(AssetImage(imagePath), context);
     }
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -55,86 +51,97 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       //SuperScaffold
       body: SafeArea(
-        child: SuperScaffold(
-          //App bar of super Scaffold
-          appBar: SuperAppBar(
-            backgroundColor: AppColors.ghostWhite,
-            height: 0,
-            searchBar: SuperSearchBar(
-              height: 48,
-              placeholderText: "What do you want to learn today?",
-              scrollBehavior: SearchBarScrollBehavior.pinned,
-              placeholderTextStyle: AppStyles.searchBarPlaceHolderStyle,
-              cancelTextStyle: AppStyles.cancelTextStyle,
-              onChanged: (query) {
-                log("query changed $query");
-              },
-              onSubmitted: (query) {},
-              searchResult: const SizedBox(),
-            ),
+        child: FutureBuilder(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return MyLoading(
+                  width: 30, height: 30, color: AppColors.deepBlue);
+            }
+            return SuperScaffold(
+              //App bar of super Scaffold
+              appBar: SuperAppBar(
+                backgroundColor: AppColors.ghostWhite,
+                height: 0,
+                searchBar: SuperSearchBar(
+                  height: 48,
+                  placeholderText: "What do you want to learn today?",
+                  scrollBehavior: SearchBarScrollBehavior.pinned,
+                  placeholderTextStyle: AppStyles.searchBarPlaceHolderStyle,
+                  cancelTextStyle: AppStyles.cancelTextStyle,
+                  onChanged: (query) {
+                    log("query changed $query");
+                  },
+                  onSubmitted: (query) {},
+                  searchResult: const SizedBox(),
+                ),
 
-            // Title of Super Scaffold
-            largeTitle: SuperLargeTitle(
-              enabled: true,
-              height: 50,
-              largeTitle: "Search",
-              textStyle: AppStyles.largeTitleSearchPage,
-            ),
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                //label
-                _buildLabel("Popular Searches"),
+                // Title of Super Scaffold
+                largeTitle: SuperLargeTitle(
+                  enabled: true,
+                  height: 50,
+                  largeTitle: "Search",
+                  textStyle: AppStyles.largeTitleSearchPage,
+                ),
+              ),
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    //label
+                    _buildLabel("Popular Searches"),
 
-                //Popular Searches
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: ChipList(
-                      listOfChipNames: _popularSearches,
-                      listOfChipIndicesCurrentlySelected: [_currentSearchIndex],
-                      shouldWrap: true,
-                      // padding: EdgeInsets.all(12),
-                      borderRadiiList: [20],
-                      style: TextStyle(
-                        fontSize: 14,
+                    //Popular Searches
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: ChipList(
+                          listOfChipNames: _popularSearches,
+                          listOfChipIndicesCurrentlySelected: [
+                            _currentSearchIndex
+                          ],
+                          shouldWrap: true,
+                          // padding: EdgeInsets.all(12),
+                          borderRadiiList: [20],
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                          showCheckmark: false,
+                          activeBorderColorList: [Colors.black],
+                          inactiveBgColorList: [AppColors.ghostWhite],
+                          inactiveBorderColorList: [AppColors.lightGrey],
+                          inactiveTextColorList: [Colors.black],
+                          activeTextColorList: [Colors.black],
+                          activeBgColorList: [Colors.transparent],
+                          axis: Axis.horizontal,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          extraOnToggle: (val) {
+                            _currentSearchIndex = val;
+                            setState(() {});
+                          },
+                        ),
                       ),
-                      showCheckmark: false,
-                      activeBorderColorList: [Colors.black],
-                      inactiveBgColorList: [AppColors.ghostWhite],
-                      inactiveBorderColorList: [AppColors.lightGrey],
-                      inactiveTextColorList: [Colors.black],
-                      activeTextColorList: [Colors.black],
-                      activeBgColorList: [Colors.transparent],
-                      axis: Axis.horizontal,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      extraOnToggle: (val) {
-                        _currentSearchIndex = val;
-                        setState(() {});
+                    ),
+                    AppSpacing.largeVertical,
+                    _buildLabel("Categories"),
+
+                    AppSpacing.mediumVertical,
+                    //Categories list tiles with image on the left
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: AppConstants.categories.length,
+                      itemBuilder: (context, index) {
+                        return _buildCategoryTile(
+                            categories[index], categoryImage[index]);
                       },
                     ),
-                  ),
+                    AppSpacing.largeVertical,
+                  ],
                 ),
-                AppSpacing.largeVertical,
-                _buildLabel("Categories"),
-
-                AppSpacing.mediumVertical,
-                //Categories list tiles with image on the left
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: AppConstants.categories.length,
-                  itemBuilder: (context, index) {
-                    return _buildCategoryTile(
-                        categories[index], categoryImage[index]);
-                  },
-                ),
-                AppSpacing.largeVertical,
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

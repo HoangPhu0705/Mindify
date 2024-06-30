@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/course.dart';
 
@@ -53,10 +54,6 @@ class CourseService {
     }
   }
 
-  
-
-  
-
   Future<List<Course>> getFiveNewestCourses() async {
     try {
       final response = await http.get(Uri.parse("$baseUrl/courses/newest"));
@@ -106,5 +103,23 @@ class CourseService {
       courses.add(course);
     }
     return courses;
+  }
+
+  Future<void> createCourse(var data) async {
+    try {
+      final url = Uri.parse(AppConstants.COURSE_API);
+      final response = await http.post(
+        url,
+        body: data,
+      );
+      if (response.statusCode == 201) {
+        log("Course created successfully");
+      } else {
+        throw Exception("Error creating course");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error creating course");
+    }
   }
 }

@@ -71,7 +71,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
         title: Text('My courses', style: AppStyles.largeTitleSearchPage),
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(text: 'Courses'),
             Tab(text: 'My Lists'),
           ],
@@ -103,7 +103,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
                         },
                       ),
             Center(
-              child: Text('Downloads'),
+              child: Text('Lists'),
             ),
           ],
         ),

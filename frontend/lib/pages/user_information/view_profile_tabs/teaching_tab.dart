@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/pages/course_management/choose_className.dart';
+import 'package:frontend/pages/course_management/manage_class.dart';
 import 'package:frontend/pages/user_information/instructor/instructor_signup.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
@@ -31,6 +33,7 @@ class _TeachingTabState extends State<TeachingTab> {
   @override
   void initState() {
     super.initState();
+
     _future = getUserRole();
   }
 
@@ -55,6 +58,12 @@ class _TeachingTabState extends State<TeachingTab> {
             width: 30,
             height: 30,
             color: AppColors.deepBlue,
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text("An error occurred. Please try again later"),
           );
         }
         String role = snapshot.data['role'];
@@ -153,7 +162,16 @@ class _TeachingTabState extends State<TeachingTab> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    log("mkm");
+                    Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return ChooseClassName();
+                        },
+                      ),
+                    );
                   },
                   style: ButtonStyle(
                     backgroundColor:
@@ -186,7 +204,7 @@ class _TeachingTabState extends State<TeachingTab> {
       color: AppColors.lightGrey,
       strokeCap: StrokeCap.round,
       borderType: BorderType.Rect,
-      dashPattern: [8, 4],
+      dashPattern: const [8, 4],
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         width: double.infinity,

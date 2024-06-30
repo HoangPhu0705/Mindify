@@ -32,8 +32,8 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
               const SizedBox(
                 height: 100,
               ),
-              LottieBuilder.network(
-                "https://lottie.host/a7833d06-301b-4863-aaaa-eec4660172cf/8juU2i3Zee.json",
+              LottieBuilder.asset(
+                "assets/animation/request_succeed.json",
                 repeat: false,
                 backgroundLoading: true,
               ),

@@ -40,7 +40,7 @@ export default function DashboardStatsGrid() {
 					</div>
 				</div>
 			</BoxWrapper>
-			{/* <BoxWrapper>
+			<BoxWrapper>
 				<div className="rounded-full h-12 w-12 flex items-center justify-center bg-green-600">
 					<IoCart className="text-2xl text-white" />
 				</div>
@@ -51,7 +51,7 @@ export default function DashboardStatsGrid() {
 						<span className="text-sm text-red-500 pl-2">-43</span>
 					</div>
 				</div>
-			</BoxWrapper> */}
+			</BoxWrapper>
 		</div>
 	)
 }

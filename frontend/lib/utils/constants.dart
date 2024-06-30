@@ -1,5 +1,17 @@
+import 'dart:developer';
+import 'dart:io';
+
 class AppConstants {
-  static const baseUrl = "http://10.0.2.2:3000/api";
+  static String get baseUrl {
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:3000/api";
+    } else if (Platform.isIOS) {
+      return "http://localhost:3000/api";
+    } else {
+      throw UnsupportedError("Unsupported platform");
+    }
+  }
+
   static const List<String> categories = [
     'Animation',
     'Culinary',
@@ -28,6 +40,7 @@ class AppConstants {
     'assets/images/category/writing.jpg',
   ];
 
-  static const CREATE_INSTRUCTOR_REQUEST = "$baseUrl/users/requestInstructor";
-  static const USER_API = "$baseUrl/users/";
+  static String CREATE_INSTRUCTOR_REQUEST = "$baseUrl/users/requestInstructor";
+  static String USER_API = "$baseUrl/users";
+  static String COURSE_API = "$baseUrl/courses";
 }

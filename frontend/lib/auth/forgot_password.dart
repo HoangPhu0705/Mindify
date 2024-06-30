@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_textfield.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
@@ -36,16 +37,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _resetPassword() async {
     final userService = UserService();
     try {
-      // ẩn bàn phím
+      // hide keyboard
       FocusScope.of(context).unfocus();
       await userService.resetPassword(_emailController.text);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset email sent, please check your inbox.')),
-        );
-        await Future.delayed(Duration(seconds: 2));
+        showSuccessToast(
+            context, "Password reset email sent, please check your inbox.");
+        await Future.delayed(const Duration(seconds: 2));
 
-        // về trang login
+        // Go back to login
         Navigator.of(context).pop();
       }
     } catch (e) {
@@ -56,7 +56,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
