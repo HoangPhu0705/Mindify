@@ -21,7 +21,7 @@ class UserService {
   }
 
   String getUsername() {
-    if(user.displayName == null || user.displayName!.isEmpty) {
+    if (user.displayName == null || user.displayName!.isEmpty) {
       return "Mindify Member";
     }
     return user.displayName ?? "Mindify Member";
@@ -147,8 +147,7 @@ class UserService {
 
   //get user data by id
   Future<dynamic> getUserData(String userId) async {
-    final url = Uri.parse('${AppConstants.USER_API}/$userId');
-
+    final url = Uri.parse('${AppConstants.baseUrl}/users/$userId');
     final response =
         await http.get(url, headers: {'Content-Type': 'application/json'});
     if (response.statusCode == 200) {
