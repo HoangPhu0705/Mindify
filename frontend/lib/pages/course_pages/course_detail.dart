@@ -5,6 +5,7 @@ import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -12,6 +13,7 @@ import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CourseDetail extends StatefulWidget {
@@ -79,6 +81,8 @@ class _CourseDetailState extends State<CourseDetail>
       setState(() {
         isEnrolled = true;
       });
+
+      Provider.of<EnrollmentProvider>(context, listen: false).enroll();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Enrollment successful!')),
       );
