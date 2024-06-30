@@ -20,14 +20,13 @@ class EnrollmentService {
     }
   }
 
-  Future<bool> checkEnrollment(String userId, String courseId) async {
+  Future<Map<String, dynamic>> checkEnrollment(String userId, String courseId) async {
     final response = await http.get(
       Uri.parse("$baseUrl/enrollments/checkEnrollment?userId=$userId&courseId=$courseId"),
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['isEnrolled'];
+      return jsonDecode(response.body);
     } else {
       throw Exception('Failed to check enrollment');
     }
@@ -47,6 +46,21 @@ class EnrollmentService {
       return courseIds;
     } else {
       throw Exception('Failed to get user enrollments');
+    }
+  }
+
+  Future<void> addLessonToEnrollment(String enrollmentId, String lessonId) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/enrollments/addLessonToEnrollment"),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: json.encode({'enrollmentId': enrollmentId, 'lessonId': lessonId}),
+    );
+
+    if (response.statusCode != 200) {
+      print('Response body: ${response.body}');
+      throw Exception('Failed to save lesson');
     }
   }
 }

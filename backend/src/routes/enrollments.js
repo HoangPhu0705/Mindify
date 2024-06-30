@@ -5,5 +5,6 @@ const EnrollmentController = require('../app/controllers/EnrollmentController');
 router.get('/checkEnrollment', EnrollmentController.checkEnrollment);
 router.get('/userEnrollments', EnrollmentController.getUserEnrollments);
 router.post('/', EnrollmentController.createEnrollment);
+router.post('/addLessonToEnrollment', EnrollmentController.addLessonToEnrollment);
 
 module.exports = router;

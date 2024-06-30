@@ -17,8 +17,8 @@ exports.checkEnrollment = async (req, res) => {
     }
 
     try {
-        const isEnrolled = await EnrollmentService.checkEnrollment(userId, courseId);
-        res.status(200).json({ isEnrolled });
+        const enrollmentStatus = await EnrollmentService.checkEnrollment(userId, courseId);
+        res.status(200).json(enrollmentStatus);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -34,6 +34,19 @@ exports.getUserEnrollments = async (req, res) => {
     try {
         const enrollments = await EnrollmentService.getUserEnrollments(userId);
         res.status(200).json(enrollments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.addLessonToEnrollment = async (req, res) => {
+    const { enrollmentId, lessonId } = req.body;
+    if (!enrollmentId || !lessonId) {
+        return res.status(400).json({ error: 'Missing enrollmentId or lessonId' });
+    }
+    try {
+        const response = await EnrollmentService.addLessonToEnrollment(enrollmentId, lessonId);
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
