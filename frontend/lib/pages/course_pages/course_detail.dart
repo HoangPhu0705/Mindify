@@ -7,6 +7,7 @@ import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -14,6 +15,7 @@ import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CourseDetail extends StatefulWidget {
@@ -26,8 +28,7 @@ class CourseDetail extends StatefulWidget {
   State<CourseDetail> createState() => _CourseDetailState();
 }
 
-class _CourseDetailState extends State<CourseDetail>
-    with SingleTickerProviderStateMixin {
+class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
@@ -36,6 +37,7 @@ class _CourseDetailState extends State<CourseDetail>
   Course? course;
   late Future<void> _futureCourseDetail;
   String _currentVideoUrl = '';
+  String? _enrollmentId;
 
   @override
   void initState() {
@@ -61,10 +63,10 @@ class _CourseDetailState extends State<CourseDetail>
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrolled = await enrollmentService.checkEnrollment(
-          widget.userId, widget.courseId);
+      final enrollmentStatus = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
       setState(() {
-        isEnrolled = enrolled;
+        isEnrolled = enrollmentStatus['isEnrolled'];
+        _enrollmentId = enrollmentStatus['enrollmentId'];
       });
     } catch (e) {
       log("Error checking enrollment: $e");
@@ -82,6 +84,8 @@ class _CourseDetailState extends State<CourseDetail>
       setState(() {
         isEnrolled = true;
       });
+
+      Provider.of<EnrollmentProvider>(context, listen: false).enroll();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Enrollment successful!')),
       );
@@ -91,6 +95,27 @@ class _CourseDetailState extends State<CourseDetail>
       );
     }
   }
+
+  Future<void> _saveLesson(String lessonId) async {
+  if (_enrollmentId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Enrollment ID is null. Cannot save lesson.')),
+    );
+    return;
+  }
+
+  try {
+    await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Lesson saved successfully!')),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to save lesson: $e')),
+    );
+  }
+}
+
 
   @override
   void dispose() {
@@ -105,10 +130,8 @@ class _CourseDetailState extends State<CourseDetail>
   }
 
   void _onLessonTap(String videoUrl) {
-    log('Tapped lesson with video URL: $videoUrl');
     setState(() {
       _currentVideoUrl = videoUrl;
-      log('Current video URL updated to: $_currentVideoUrl');
     });
   }
 
@@ -228,11 +251,13 @@ class _CourseDetailState extends State<CourseDetail>
                     controller: _tabController,
                     children: [
                       LessonTab(
-                        isFollowed: isFollowed,
-                        followUser: followUser,
-                        course: course!,
-                        onLessonTap: _onLessonTap,
-                      ),
+                          isFollowed: isFollowed,
+                          followUser: followUser,
+                          course: course!,
+                          isEnrolled: isEnrolled,
+                          onLessonTap: _onLessonTap,
+                          onSaveLesson: _saveLesson,
+                        ),
                       SubmitProject(
                         course: course!,
                       ),

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:frontend/services/models/course.dart';
@@ -9,14 +10,18 @@ class LessonTab extends StatefulWidget {
   final bool isFollowed;
   final void Function()? followUser;
   final Course course;
+  final bool isEnrolled;
   final void Function(String) onLessonTap;
+  final void Function(String) onSaveLesson;
 
   LessonTab({
     Key? key,
     required this.isFollowed,
     required this.followUser,
     required this.course,
+    required this.isEnrolled,
     required this.onLessonTap,
+    required this.onSaveLesson,
   }) : super(key: key);
 
   @override
@@ -157,13 +162,27 @@ class _LessonTabState extends State<LessonTab> {
                 itemCount: widget.course.lessons.length,
                 itemBuilder: (context, index) {
                   final lesson = widget.course.lessons[index];
+                  final isLessonAccessible =
+                      widget.isEnrolled || index == 0;
                   return ListTile(
-                    onTap: () {
-                      widget.onLessonTap(lesson.link);
-                    },
+                    onTap: isLessonAccessible
+                        ? () {
+                            widget.onLessonTap(lesson.link);
+                          }
+                        : null,
                     title: Text("${lesson.index + 1}: ${lesson.title}"),
                     subtitle: Text(lesson.duration),
-                    leading: const Icon(Icons.play_circle_filled_outlined),
+                    leading: Icon(isLessonAccessible
+                        ? Icons.play_circle_filled_outlined
+                        : Icons.lock),
+                    trailing: IconButton(
+                      icon: Icon(CupertinoIcons.bookmark),
+                      onPressed: isLessonAccessible
+                          ? () {
+                              widget.onSaveLesson(lesson.id);
+                            }
+                          : null,
+                    ),
                   );
                 },
               ),

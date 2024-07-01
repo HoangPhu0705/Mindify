@@ -8,9 +8,11 @@ import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
+import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_course.dart';
+import 'package:provider/provider.dart';
 
 class MyCoursePage extends StatefulWidget {
   @override
@@ -34,6 +36,12 @@ class _MyCoursesPageState extends State<MyCoursePage>
     _tabController = TabController(length: 2, vsync: this);
     userId = userService.getUserId();
     _fetchEnrolledCourses();
+    Provider.of<EnrollmentProvider>(context, listen: false).addListener(() {
+      if (Provider.of<EnrollmentProvider>(context, listen: false).isEnrolled) {
+        _fetchEnrolledCourses();
+        Provider.of<EnrollmentProvider>(context, listen: false).reset();
+      }
+    });
   }
 
   @override

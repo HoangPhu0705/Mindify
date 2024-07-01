@@ -1,6 +1,5 @@
 const { CourseCollection } = require('./Collections');
 
-// Lấy tất cả các lessons của một course
 exports.getAllLessons = async (courseId) => {
   try {
     const lessonsSnapshot = await CourseCollection.doc(courseId).collection('lessons').get();
@@ -12,7 +11,6 @@ exports.getAllLessons = async (courseId) => {
   }
 };
 
-// Tạo một lesson mới trong một course
 exports.createLesson = async (courseId, lesson) => {
   try {
     const lessonRef = CourseCollection.doc(courseId).collection('lessons').doc();
@@ -24,7 +22,6 @@ exports.createLesson = async (courseId, lesson) => {
   }
 };
 
-// Lấy một lesson theo ID từ một course
 exports.getLessonById = async (courseId, lessonId) => {
   try {
     const lessonDoc = await CourseCollection.doc(courseId).collection('lessons').doc(lessonId).get();
@@ -35,7 +32,6 @@ exports.getLessonById = async (courseId, lessonId) => {
   }
 };
 
-// Cập nhật một lesson trong một course
 exports.updateLesson = async (courseId, lessonId, updates) => {
   try {
     await CourseCollection.doc(courseId).collection('lessons').doc(lessonId).update(updates);
@@ -45,7 +41,6 @@ exports.updateLesson = async (courseId, lessonId, updates) => {
   }
 };
 
-// Xóa một lesson trong một course
 exports.deleteLesson = async (courseId, lessonId) => {
   try {
     await CourseCollection.doc(courseId).collection('lessons').doc(lessonId).delete();
