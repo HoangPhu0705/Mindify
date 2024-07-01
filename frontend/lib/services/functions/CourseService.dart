@@ -88,7 +88,6 @@ class CourseService {
     DocumentSnapshot snapshot =
         await _firestore.collection('users').doc(instructorId).get();
     if (snapshot.exists && snapshot.data() != null) {
-      log("Successfully");
       final data = snapshot.data() as Map<String, dynamic>;
       return data['displayName'];
     }
@@ -105,15 +104,19 @@ class CourseService {
     return courses;
   }
 
-  Future<void> createCourse(var data) async {
+  Future<String> createCourse(var data) async {
     try {
       final url = Uri.parse(AppConstants.COURSE_API);
       final response = await http.post(
         url,
-        body: data,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
       );
       if (response.statusCode == 201) {
-        log("Course created successfully");
+        log("Course created successfully: ${response.body}");
+        final courseId = response.body.split('"')[3];
+
+        return courseId;
       } else {
         throw Exception("Error creating course");
       }

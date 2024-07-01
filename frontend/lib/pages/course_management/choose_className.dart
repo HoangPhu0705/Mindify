@@ -44,24 +44,29 @@ class _ChooseClassNameState extends State<ChooseClassName> {
     super.dispose();
   }
 
-  Future<void> createNewCourse() async {
+  Future<String> createNewCourse() async {
     try {
       var data = {
         "courseName": _classNameController.text,
         "description": "",
-        "category": [] ,
+        "category": [],
         "students": 0,
         "projectNum": 0,
         "isPublic": false,
         "projectDescription": "",
         "thumbnail": "",
+        "price": 0,
         "author":
             FirebaseAuth.instance.currentUser!.displayName ?? "Mindify Member",
+        "authorId": FirebaseAuth.instance.currentUser!.uid,
         "duration": ""
       };
-      await courseServices.createCourse(data);
+      String result = await courseServices.createCourse(data);
+
+      return result;
     } catch (e) {
       log("Error creating course: $e");
+      throw Exception("Failed to create course");
     }
   }
 
@@ -88,10 +93,15 @@ class _ChooseClassNameState extends State<ChooseClassName> {
           onPressed: _isNameEmpty
               ? null
               : () async {
-                  await createNewCourse();
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ManageClass(),
-                  ));
+                  String newCourseId = await createNewCourse();
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ManageClass(
+                        courseId: newCourseId,
+                      ),
+                    ),
+                  );
                 },
           child: Text(
             "Create class",

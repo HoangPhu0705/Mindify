@@ -57,13 +57,13 @@ class _LessonTabState extends State<LessonTab> {
                   AppSpacing.mediumVertical,
                   Text(
                     widget.course.description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                     ),
                     maxLines: 3,
                   ),
                   AppSpacing.mediumVertical,
-                  Divider(),
+                  const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -108,7 +108,7 @@ class _LessonTabState extends State<LessonTab> {
                           transitionType: TransitionType.RIGHT_BOTTOM_ROUNDER,
                           selectedText: "Following",
                           text: 'Follow',
-                          textStyle: TextStyle(
+                          textStyle: const TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 14,
                             color: AppColors.deepBlue,
@@ -118,11 +118,11 @@ class _LessonTabState extends State<LessonTab> {
                       )
                     ],
                   ),
-                  Divider(),
+                  const Divider(),
                   AppSpacing.mediumVertical,
                   Row(
                     children: [
-                      Flexible(
+                      const Flexible(
                         flex: 2,
                         child: Divider(),
                       ),
@@ -133,7 +133,7 @@ class _LessonTabState extends State<LessonTab> {
                           style: Theme.of(context).textTheme.labelSmall,
                         )),
                       ),
-                      Flexible(
+                      const Flexible(
                         flex: 2,
                         child: Divider(),
                       ),
@@ -141,7 +141,7 @@ class _LessonTabState extends State<LessonTab> {
                   ),
                   Text(
                     "${widget.course.lessons.length} Lessons in ${widget.course.duration}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -153,7 +153,7 @@ class _LessonTabState extends State<LessonTab> {
                   bottom: MediaQuery.of(context).size.height * 0.1),
               child: ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: widget.course.lessons.length,
                 itemBuilder: (context, index) {
                   final lesson = widget.course.lessons[index];
@@ -163,7 +163,7 @@ class _LessonTabState extends State<LessonTab> {
                     },
                     title: Text("${lesson.index + 1}: ${lesson.title}"),
                     subtitle: Text(lesson.duration),
-                    leading: Icon(Icons.play_circle_filled_outlined),
+                    leading: const Icon(Icons.play_circle_filled_outlined),
                   );
                 },
               ),

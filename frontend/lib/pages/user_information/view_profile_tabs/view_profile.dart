@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/achievements_tab.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/profile_tab.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/teaching_tab.dart';
@@ -41,6 +42,12 @@ class _ViewProfileState extends State<ViewProfile>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: AppColors.ghostWhite,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     return Scaffold(
       body: SafeArea(
         child: Column(

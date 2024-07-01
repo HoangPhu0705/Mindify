@@ -14,6 +14,7 @@ class Course {
   int price;
   String projectDescription;
   List<Lesson> lessons;
+  List<String> categories = [];
 
   Course({
     required this.id,
@@ -29,6 +30,7 @@ class Course {
     required this.price,
     required this.projectDescription,
     required this.lessons,
+    required this.categories,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class Course {
           .map((lessonJson) =>
               Lesson.fromJson(lessonJson as Map<String, dynamic>))
           .toList(),
+      categories: [],
     );
   }
 

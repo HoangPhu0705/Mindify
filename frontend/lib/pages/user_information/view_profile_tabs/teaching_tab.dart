@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,8 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/course_management/choose_className.dart';
-import 'package:frontend/pages/course_management/manage_class.dart';
-import 'package:frontend/pages/user_information/instructor/instructor_signup.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -33,7 +29,6 @@ class _TeachingTabState extends State<TeachingTab> {
   @override
   void initState() {
     super.initState();
-
     _future = getUserRole();
   }
 

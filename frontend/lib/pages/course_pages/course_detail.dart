@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -53,25 +55,26 @@ class _CourseDetailState extends State<CourseDetail>
         }
       });
     } catch (e) {
-      print("Error fetching course details: $e");
+      log("Error fetching course details: $e");
     }
   }
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrolled = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
+      final enrolled = await enrollmentService.checkEnrollment(
+          widget.userId, widget.courseId);
       setState(() {
         isEnrolled = enrolled;
       });
     } catch (e) {
-      print("Error checking enrollment: $e");
+      log("Error checking enrollment: $e");
     }
   }
 
   Future<void> _enrollInCourse() async {
     try {
       final enrollmentData = {
-        'userId': widget.userId, 
+        'userId': widget.userId,
         'courseId': widget.courseId,
       };
 
@@ -102,67 +105,69 @@ class _CourseDetailState extends State<CourseDetail>
   }
 
   void _onLessonTap(String videoUrl) {
-    print('Tapped lesson with video URL: $videoUrl');
+    log('Tapped lesson with video URL: $videoUrl');
     setState(() {
       _currentVideoUrl = videoUrl;
-      print('Current video URL updated to: $_currentVideoUrl');
+      log('Current video URL updated to: $_currentVideoUrl');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: isEnrolled ? null : Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.ghostWhite,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              offset: Offset(0, -1),
-            ),
-          ],
-        ),
-        height: MediaQuery.of(context).size.height * 0.1,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder(
-              future: _futureCourseDetail,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox.shrink();
-                }
-                return Text(
-                  "${course!.price.toString()}đ",
-                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                );
-              },
-            ),
-            AppSpacing.mediumHorizontal,
-            Expanded(
-              child: TextButton(
-                style: AppStyles.primaryButtonStyle,
-                onPressed: _enrollInCourse,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Purchase",
-                    style: TextStyle(fontSize: 16),
+      bottomSheet: isEnrolled
+          ? null
+          : Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.ghostWhite,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    offset: const Offset(0, -1),
                   ),
-                ),
+                ],
               ),
-            )
-          ],
-        ),
-      ),
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FutureBuilder(
+                    future: _futureCourseDetail,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox.shrink();
+                      }
+                      return Text(
+                        "${course!.price.toString()}đ",
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      );
+                    },
+                  ),
+                  AppSpacing.mediumHorizontal,
+                  Expanded(
+                    child: TextButton(
+                      style: AppStyles.primaryButtonStyle,
+                      onPressed: _enrollInCourse,
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "Purchase",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
       appBar: AppBar(
         surfaceTintColor: AppColors.ghostWhite,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             CupertinoIcons.xmark,
           ),
           onPressed: () {
@@ -172,11 +177,11 @@ class _CourseDetailState extends State<CourseDetail>
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(CupertinoIcons.bookmark),
+            icon: const Icon(CupertinoIcons.bookmark),
           ),
           IconButton(
             onPressed: () {},
-            icon: Icon(CupertinoIcons.share),
+            icon: const Icon(CupertinoIcons.share),
           )
         ],
       ),
@@ -198,7 +203,7 @@ class _CourseDetailState extends State<CourseDetail>
                 Tab(text: 'Discussions'),
                 Tab(text: 'Notes'),
               ],
-              labelStyle: TextStyle(
+              labelStyle: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
@@ -214,7 +219,10 @@ class _CourseDetailState extends State<CourseDetail>
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const MyLoading(
-                        width: 30, height: 30, color: AppColors.deepBlue);
+                      width: 30,
+                      height: 30,
+                      color: AppColors.deepBlue,
+                    );
                   }
                   return TabBarView(
                     controller: _tabController,
