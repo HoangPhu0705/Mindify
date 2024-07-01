@@ -27,11 +27,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   UserService userService = UserService();
-
+  String? userId;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      userId = userService.getUserId();
       String displayName = userService.getUsername();
       Provider.of<UserProvider>(context, listen: false)
           .setDisplayName(displayName);
@@ -168,7 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Downloads(),
+                              builder: (context) => Downloads(userId: userId!,),
                             ),
                           );
                         },

@@ -71,3 +71,30 @@ exports.addLessonToEnrollment = async (enrollmentId, lessonId) => {
         throw error;
     }
 };
+
+exports.getDownloadedLessons = async (userId) => {
+    try {
+        const snapshot = await EnrollmentCollection
+            .where('userId', '==', userId)
+            .get();
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        const downloadedCourses = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            downloadedCourses.push({
+                courseId: data.courseId,
+                downloadedLessons: data.downloadedLessons
+            });
+        });
+
+        return downloadedCourses;
+    } catch (error) {
+        console.error('Error getting downloaded lessons:', error);
+        throw error;
+    }
+};
+

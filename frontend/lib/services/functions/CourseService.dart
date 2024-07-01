@@ -122,4 +122,17 @@ class CourseService {
       throw Exception("Error creating course");
     }
   }
+
+  //lesson
+  Future<Map<String, dynamic>> getLesson(String courseId, String lessonId) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/courses/$courseId/lessons/$lessonId"),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load lesson');
+    }
+  }
 }

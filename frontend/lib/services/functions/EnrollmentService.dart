@@ -63,4 +63,16 @@ class EnrollmentService {
       throw Exception('Failed to save lesson');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getDownloadedLessons(String userId) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/enrollments/downloadedLessons?userId=$userId"),
+    );
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to get downloaded lessons');
+    }
+  }
 }
