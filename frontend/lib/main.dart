@@ -9,6 +9,13 @@ import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show
+        GlobalCupertinoLocalizations,
+        GlobalMaterialLocalizations,
+        GlobalWidgetsLocalizations;
+import 'package:flutter_quill/flutter_quill.dart' show Document;
+import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +55,16 @@ class _MindifyAppState extends State<MindifyApp> {
         ),
       ],
       child: MaterialApp(
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          // Uncomment this line to use provide flutter quill localizations
+          // in your widgets app, otherwise the quill widgets will provide it
+          // internally:
+          // FlutterQuillLocalizations.delegate,
+        ],
+        supportedLocales: FlutterQuillLocalizations.supportedLocales,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           scaffoldBackgroundColor: AppColors.ghostWhite,

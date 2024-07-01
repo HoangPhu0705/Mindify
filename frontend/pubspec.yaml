@@ -79,6 +79,7 @@ dependencies:
   vs_scrollbar: ^1.0.0
   googleapis: ^13.1.0
   googleapis_auth: ^1.6.0
+  async_button: ^2.0.0-beta.1+2
 
 dev_dependencies:
   flutter_test:

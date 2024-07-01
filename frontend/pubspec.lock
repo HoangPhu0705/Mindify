@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  async_button:
+    dependency: "direct main"
+    description:
+      name: async_button
+      sha256: "311abcf8bb3de35b8879311a4e7045f09e1199b2a7ebaa91811be6bb1f27aebc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0-beta.1+2"
   auto_size_text:
     dependency: transitive
     description:

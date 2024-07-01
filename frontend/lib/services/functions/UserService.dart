@@ -6,15 +6,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 class UserService {
   // Chỉ nên sử dụng service này khi đã login
   User get user => FirebaseAuth.instance.currentUser!;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String baseUrl = 'http://10.0.2.2:3000/api';
+  final String baseUrl = AppConstants.baseUrl;
 
   String getUserId() {
     return user.uid;
