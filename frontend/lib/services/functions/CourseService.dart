@@ -59,13 +59,14 @@ class CourseService {
       final response = await http.get(Uri.parse("$baseUrl/courses/newest"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
+        log("5 newest Courses: $data");
         return data.map((course) => Course.fromJson(course)).toList();
       } else {
-        throw Exception("Failed to load top 5 courses");
+        throw Exception("Failed to load newest 5 courses");
       }
     } catch (e) {
       log("Error: $e");
-      throw Exception("Failed to load top 5 courses");
+      throw Exception("Failed to load 5 newest courses");
     }
   }
 
@@ -74,6 +75,7 @@ class CourseService {
       final response = await http.get(Uri.parse("$baseUrl/courses/top5"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
+        log("Top 5 Courses: $data");
         return data.map((course) => Course.fromJson(course)).toList();
       } else {
         throw Exception("Failed to load top 5 courses");
@@ -127,7 +129,8 @@ class CourseService {
   }
 
   //lesson
-  Future<Map<String, dynamic>> getLesson(String courseId, String lessonId) async {
+  Future<Map<String, dynamic>> getLesson(
+      String courseId, String lessonId) async {
     final response = await http.get(
       Uri.parse("$baseUrl/courses/$courseId/lessons/$lessonId"),
     );

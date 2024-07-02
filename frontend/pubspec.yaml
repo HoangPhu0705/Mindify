@@ -80,6 +80,8 @@ dependencies:
   googleapis: ^13.1.0
   googleapis_auth: ^1.6.0
   async_button: ^2.0.0-beta.1+2
+  flutter_downloader: ^1.7.0
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:
