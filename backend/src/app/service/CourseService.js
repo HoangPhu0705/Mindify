@@ -125,7 +125,7 @@ exports.getTop5Courses = async () => {
 
 exports.getFiveNewestCourse = async () => {
   try {
-    const snapshot = await CourseCollection.orderBy('createdAt', 'desc').limit(5).get();
+    const snapshot = await CourseCollection.where('isPublic', '==', true).orderBy('createdAt', 'desc').limit(5).get();
     const courses = await Promise.all(
       snapshot.docs.map(async doc => {
         const lessonsSnapshot = await doc.ref.collection('lessons').get();
@@ -219,6 +219,10 @@ exports.updateLessonLinkByIndex = async (index, newLink) => {
   } catch (error) {
     console.error('Error updating lessons link:', error);
     throw error;
-  }
+  };
+    
 };
+
+
+
 

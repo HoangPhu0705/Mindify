@@ -29,7 +29,7 @@ class _ManageClassState extends State<ManageClass> {
   // Controllers
   final TextEditingController _titleController = TextEditingController();
   QuillController _classDescriptionController = QuillController.basic();
-
+  ScrollController _scrollController = ScrollController();
   // Variables
   String greeting = "Hello";
   String userName =
@@ -104,6 +104,15 @@ class _ManageClassState extends State<ManageClass> {
             fontWeight: FontWeight.w700,
           ),
         ),
+        actions: [
+          Text(
+            "Save",
+            style: TextStyle(
+              color: AppColors.cream,
+              fontWeight: FontWeight.w600,
+            ),
+          )
+        ],
       ),
       body: FutureBuilder(
         future: _future,
@@ -125,171 +134,188 @@ class _ManageClassState extends State<ManageClass> {
           return SafeArea(
             child: Container(
               padding: const EdgeInsets.all(12),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            courseTitle,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .copyWith(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    AppSpacing.mediumVertical,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 3,
-                          ),
-                          decoration: const BoxDecoration(
-                            color: AppColors.cream,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(5),
+              child: Scrollbar(
+                controller: _scrollController,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              courseTitle,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium!
+                                  .copyWith(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  ),
                             ),
                           ),
-                          child: const Text(
-                            "Draft",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            log("clicked preview");
-                          },
-                          child: RichText(
-                            text: const TextSpan(
-                              children: [
-                                WidgetSpan(
-                                  child: Icon(
-                                    Icons.remove_red_eye,
-                                    size: 16,
-                                    color: AppColors.lightGrey,
-                                  ),
-                                ),
-                                WidgetSpan(
-                                  child: SizedBox(
-                                    width: 3,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: "Preview Class",
-                                  style: TextStyle(
-                                    color: AppColors.deepBlue,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    AppSpacing.smallVertical,
-                    const Divider(),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        "Video Lessons",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontWeight: FontWeight.w700,
-                        ),
+                        ],
                       ),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          log("Manage click");
-                        },
-                        child: const Text(
-                          "Manage",
+                      AppSpacing.mediumVertical,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 3,
+                            ),
+                            decoration: const BoxDecoration(
+                              color: AppColors.cream,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
+                              ),
+                            ),
+                            child: const Text(
+                              "Draft",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              log("clicked preview");
+                            },
+                            child: RichText(
+                              text: const TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    child: Icon(
+                                      Icons.remove_red_eye,
+                                      size: 16,
+                                      color: AppColors.lightGrey,
+                                    ),
+                                  ),
+                                  WidgetSpan(
+                                    child: SizedBox(
+                                      width: 3,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "Preview Class",
+                                    style: TextStyle(
+                                      color: AppColors.deepBlue,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      AppSpacing.smallVertical,
+                      const Divider(),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          "Video Lessons",
                           style: TextStyle(
-                            color: AppColors.deepBlue,
-                            fontSize: 14,
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
+                        trailing: GestureDetector(
+                          onTap: () {
+                            log("Manage click");
+                          },
+                          child: const Text(
+                            "Manage",
+                            style: TextStyle(
+                              color: AppColors.deepBlue,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        subtitle: Text("0 lesson(s)"),
                       ),
-                      subtitle: Text("0 lesson(s)"),
-                    ),
-                    const Divider(),
-                    const Center(
-                      child: Text(
-                        "Class Detail",
+                      const Divider(),
+                      AppSpacing.mediumVertical,
+                      const Text(
+                        "Class Title*",
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1,
                         ),
                       ),
-                    ),
-                    AppSpacing.mediumVertical,
-                    const Text(
-                      "Class Title*",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
+                      const Text(
+                        "Keep your title between 30 and 70 characters.",
                       ),
-                    ),
-                    const Text(
-                      "Keep your title between 30 and 70 characters.",
-                    ),
-                    AppSpacing.mediumVertical,
-                    TextFormField(
-                      controller: _titleController,
-                      onChanged: (value) {
-                        setState(() {
-                          courseTitle = value;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(10),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: const BorderSide(
-                            color: AppColors.lightGrey,
+                      AppSpacing.mediumVertical,
+                      TextFormField(
+                        controller: _titleController,
+                        onChanged: (value) {
+                          setState(() {
+                            courseTitle = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(10),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: const BorderSide(
+                              color: AppColors.lightGrey,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: const BorderSide(
+                              color: AppColors.deepBlue,
+                            ),
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: const BorderSide(
-                            color: AppColors.deepBlue,
+                        cursorColor: Colors.black,
+                      ),
+                      AppSpacing.mediumVertical,
+                      const Text(
+                        "Class Description*",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      const Text(
+                        "Minimum 100 characters. Write specific details on what should be included in your class",
+                      ),
+                      AppSpacing.smallVertical,
+                      quill.QuillToolbar.simple(
+                        configurations: QuillSimpleToolbarConfigurations(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: AppColors.lightGrey,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          multiRowsDisplay: false,
+                          showSearchButton: false,
+                          showInlineCode: false,
+                          showFontFamily: false,
+                          showSubscript: false,
+                          showSuperscript: false,
+                          showStrikeThrough: false,
+                          showIndent: false,
+                          showQuote: false,
+                          showCodeBlock: false,
+                          controller: _classDescriptionController,
+                          sharedConfigurations: const QuillSharedConfigurations(
+                            locale: Locale('en'),
                           ),
                         ),
                       ),
-                      cursorColor: Colors.black,
-                    ),
-                    AppSpacing.mediumVertical,
-                    const Text(
-                      "Class Description*",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const Text(
-                      "Minimum 100 characters. Write specific details on what should be included in your class",
-                    ),
-                    AppSpacing.smallVertical,
-                    quill.QuillToolbar.simple(
-                      configurations: QuillSimpleToolbarConfigurations(
+                      Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border.all(
@@ -297,54 +323,87 @@ class _ManageClassState extends State<ManageClass> {
                           ),
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        multiRowsDisplay: false,
-                        showSearchButton: false,
-                        showInlineCode: false,
-                        showFontFamily: false,
-                        showSubscript: false,
-                        showSuperscript: false,
-                        showStrikeThrough: false,
-                        showIndent: false,
-                        showQuote: false,
-                        showCodeBlock: false,
-                        controller: _classDescriptionController,
-                        sharedConfigurations: const QuillSharedConfigurations(
-                          locale: Locale('en'),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: AppColors.lightGrey,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      child: quill.QuillEditor.basic(
-                        // scrollController: ScrollController(),
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        child: quill.QuillEditor.basic(
+                          // scrollController: ScrollController(),
 
-                        configurations: QuillEditorConfigurations(
-                          padding: const EdgeInsets.all(10),
+                          configurations: QuillEditorConfigurations(
+                            padding: const EdgeInsets.all(10),
+                            controller: _classDescriptionController,
+                            sharedConfigurations:
+                                const QuillSharedConfigurations(
+                              locale: Locale('en'),
+                            ),
+                          ),
+                        ),
+                      ),
+                      AppSpacing.mediumVertical,
+                      const Text(
+                        "Project Description*",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      const Text(
+                        "Minimum 100 characters. Write specific details on what should be included in your class",
+                      ),
+                      AppSpacing.smallVertical,
+                      quill.QuillToolbar.simple(
+                        configurations: QuillSimpleToolbarConfigurations(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: AppColors.lightGrey,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          multiRowsDisplay: false,
+                          showSearchButton: false,
+                          showInlineCode: false,
+                          showFontFamily: false,
+                          showSubscript: false,
+                          showSuperscript: false,
+                          showStrikeThrough: false,
+                          showIndent: false,
+                          showQuote: false,
+                          showCodeBlock: false,
                           controller: _classDescriptionController,
                           sharedConfigurations: const QuillSharedConfigurations(
                             locale: Locale('en'),
                           ),
                         ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        log(_classDescriptionController.plainTextEditingValue.text);
-                      },
-                      child: Text("test"),
-                    ),
-                    Container(
-                      height: 1000,
-                    )
-                  ],
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: AppColors.lightGrey,
+                          ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        child: quill.QuillEditor.basic(
+                          // scrollController: ScrollController(),
+
+                          configurations: QuillEditorConfigurations(
+                            padding: const EdgeInsets.all(10),
+                            controller: _classDescriptionController,
+                            sharedConfigurations:
+                                const QuillSharedConfigurations(
+                              locale: Locale('en'),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1000,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -353,10 +412,4 @@ class _ManageClassState extends State<ManageClass> {
       ),
     );
   }
-
-  static var commonStyle = TextStyle(
-    fontFamily: "Poppins",
-    color: Colors.black,
-    fontSize: 16,
-  );
 }
