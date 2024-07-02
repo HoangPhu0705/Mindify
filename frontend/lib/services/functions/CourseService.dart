@@ -75,7 +75,6 @@ class CourseService {
       final response = await http.get(Uri.parse("$baseUrl/courses/top5"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        log("Top 5 Courses: $data");
         return data.map((course) => Course.fromJson(course)).toList();
       } else {
         throw Exception("Failed to load top 5 courses");

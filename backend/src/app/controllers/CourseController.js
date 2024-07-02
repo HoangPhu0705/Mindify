@@ -42,10 +42,10 @@ exports.createCourseWithLessons = async (req, res) => {
   }
 };
 
+
 exports.createCourse = async (req, res) => {
   try {
     const course = req.body;
-    console.log(course);
     const courseId = await CourseService.createCourse(course);
     res.status(201).send({ id: courseId});
   } catch (error) {

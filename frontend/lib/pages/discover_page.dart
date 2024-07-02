@@ -41,10 +41,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<void> _initPage() async {
     try {
       _coursesFuture = await courseService.getRandomCourses();
-      // _top5Courses = await courseService.getTop5Courses();
+      _top5Courses = await courseService.getTop5Courses();
       _newestCourses = await courseService.getFiveNewestCourses();
-      log("_top5Courses: $_top5Courses");
-      log("_newestCourses: $_newestCourses");
 
       await _loadSavedCourses();
     } catch (e) {
@@ -128,7 +126,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
             );
           } else if (snapshot.hasError) {
             log("FutureBuilder error: ${snapshot.error}");
-            return Center(child: Text("Error loading data"));
+            return const Center(
+              child: Text("There was a problem. Please try again later."),
+            );
           } else {
             return SafeArea(
               child: SingleChildScrollView(
@@ -142,11 +142,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     AppSpacing.mediumVertical,
                     Column(
                       children: [
-                          buildCarouselCourses(
-                              _newestCourses!, "Recommend For You", userId),
+                        buildCarouselCourses(
+                            _top5Courses!, "Recommend For You", userId),
                         AppSpacing.mediumVertical,
-                          buildCarouselCourses(
-                              _newestCourses!, "New and Trending", userId),
+                        buildCarouselCourses(
+                            _newestCourses!, "New and Trending", userId),
                       ],
                     ),
                     AppSpacing.largeVertical,

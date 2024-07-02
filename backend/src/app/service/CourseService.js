@@ -114,7 +114,13 @@ exports.deleteCourse = async (id) => {
 exports.getTop5Courses = async () => {
   try {
     const snapshot = await CourseCollection.where('isPublic', '==', true).orderBy('students', 'desc').limit(5).get();
-    const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const courses = await Promise.all(
+      snapshot.docs.map(async doc => {
+        const lessonsSnapshot = await doc.ref.collection('lessons').get();
+        const lessons = lessonsSnapshot.docs.map(lessonDoc => ({ id: lessonDoc.id, ...lessonDoc.data() }));
+        return { id: doc.id, ...doc.data(), lessons };
+      })
+    );
     return courses;
 
   } catch (error) {
