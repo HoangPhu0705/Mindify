@@ -5,6 +5,9 @@ import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class LessonTab extends StatefulWidget {
   final bool isFollowed;
@@ -29,6 +32,8 @@ class LessonTab extends StatefulWidget {
 }
 
 class _LessonTabState extends State<LessonTab> {
+  DateTime? _lastNotificationTime;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +42,30 @@ class _LessonTabState extends State<LessonTab> {
 
   void _sortLessonsByIndex() {
     widget.course.lessons.sort((a, b) => a.index.compareTo(b.index));
+  }
+
+  Future<void> _downloadLesson(String lessonLink, String lessonId) async {
+    final directory = await getExternalStorageDirectory();
+    final path = directory?.path;
+    if (path != null) {
+      await FlutterDownloader.enqueue(
+        url: lessonLink,
+        savedDir: path,
+        fileName: 'lesson_$lessonId.mp4',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+    }
+  }
+
+  bool _canUpdateNotification() {
+    final now = DateTime.now();
+    if (_lastNotificationTime == null ||
+        now.difference(_lastNotificationTime!).inSeconds > 5) {
+      _lastNotificationTime = now;
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -175,14 +204,17 @@ class _LessonTabState extends State<LessonTab> {
                     leading: Icon(isLessonAccessible
                         ? Icons.play_circle_filled_outlined
                         : Icons.lock),
-                    trailing: IconButton(
-                      icon: Icon(CupertinoIcons.bookmark),
-                      onPressed: isLessonAccessible
-                          ? () {
-                              widget.onSaveLesson(lesson.id);
-                            }
-                          : null,
-                    ),
+                    trailing: widget.isEnrolled
+                        ? IconButton(
+                            icon: Icon(Icons.download_for_offline_sharp),
+                            onPressed: isLessonAccessible
+                                ? () {
+                                    _downloadLesson(lesson.link, lesson.title);
+                                    widget.onSaveLesson(lesson.id);
+                                  }
+                                : null,
+                          )
+                        : null,
                   );
                 },
               ),
@@ -193,3 +225,4 @@ class _LessonTabState extends State<LessonTab> {
     );
   }
 }
+

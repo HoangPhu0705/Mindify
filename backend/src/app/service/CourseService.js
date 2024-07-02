@@ -113,7 +113,7 @@ exports.deleteCourse = async (id) => {
 
 exports.getTop5Courses = async () => {
   try {
-    const snapshot = await CourseCollection.orderBy('students', 'desc').limit(5).get();
+    const snapshot = await CourseCollection.where('isPublic', '==', true).orderBy('students', 'desc').limit(5).get();
     const courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return courses;
 
@@ -143,19 +143,16 @@ exports.getFiveNewestCourse = async () => {
 
 exports.getRandomCourses = async () => {
   try {
-    // First, get all course IDs
-    const snapshot = await CourseCollection.get();
+    const snapshot = await CourseCollection.where('isPublic', '==', true).get();
     const allCourseIds = snapshot.docs.map(doc => doc.id);
 
-    // Then, select 5 random IDs
     const randomCourseIds = [];
     for (let i = 0; i < 5; i++) {
       const randomIndex = Math.floor(Math.random() * allCourseIds.length);
       randomCourseIds.push(allCourseIds[randomIndex]);
-      allCourseIds.splice(randomIndex, 1); // Remove the selected ID from the array
+      allCourseIds.splice(randomIndex, 1); 
     }
 
-    // Then, get the full course data for the selected IDs
     const courses = randomCourseIds.map(async id => {
       const doc = await CourseCollection.doc(id).get();
       const lessonsSnapshot = await doc.ref.collection('lessons').get();

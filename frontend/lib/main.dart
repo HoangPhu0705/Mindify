@@ -16,10 +16,15 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalWidgetsLocalizations;
 import 'package:flutter_quill/flutter_quill.dart' show Document;
 import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FlutterDownloader.initialize(
+    debug: true, 
+    ignoreSsl: true,
+  );
   runApp(const MindifyApp());
 }
 

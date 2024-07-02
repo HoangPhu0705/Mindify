@@ -31,7 +31,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Map<String, String> instructorNames = {};
   List<Course>? _coursesFuture;
   List<Course>? _newestCourses;
-  // List<Course>? _top5Courses;
+  List<Course>? _top5Courses;
   late Future<void> _future;
   String userId = '';
   List<Course> _savedCourses = [];
@@ -41,25 +41,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<void> _initPage() async {
     try {
       _coursesFuture = await courseService.getRandomCourses();
-      _newestCourses = await courseService.getFiveNewestCourses();
       // _top5Courses = await courseService.getTop5Courses();
-      // if (_top5Courses != null) {
-      //   for (var course in _top5Courses!) {
-      //     log("Course Title: ${course.title}");
-      //     log("Course ID: ${course.id}");
-      //     log("Course Instructor: ${course.instructorName}");
-      //     log("Course Thumbnail: ${course.thumbnail}");
-      //   }
-      // } else {
-      //   log("Top 5 courses are null.");
-      // }
+      _newestCourses = await courseService.getFiveNewestCourses();
+      log("_top5Courses: $_top5Courses");
+      log("_newestCourses: $_newestCourses");
 
       await _loadSavedCourses();
     } catch (e) {
       log("Error in _initPage: $e");
     }
   }
-
 
   @override
   void initState() {
@@ -135,6 +126,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
               height: 30,
               color: AppColors.deepBlue,
             );
+          } else if (snapshot.hasError) {
+            log("FutureBuilder error: ${snapshot.error}");
+            return Center(child: Text("Error loading data"));
           } else {
             return SafeArea(
               child: SingleChildScrollView(
@@ -143,15 +137,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     Text("Mindify",
                         style: Theme.of(context).textTheme.headlineMedium),
                     AppSpacing.smallVertical,
-                    buildPopularCourses(_coursesFuture!),
+                    if (_coursesFuture != null)
+                      buildPopularCourses(_coursesFuture!),
                     AppSpacing.mediumVertical,
                     Column(
                       children: [
-                        buildCarouselCourses(
-                            _newestCourses!, "Recommend For You", userId),
+                          buildCarouselCourses(
+                              _newestCourses!, "Recommend For You", userId),
                         AppSpacing.mediumVertical,
-                        buildCarouselCourses(
-                            _newestCourses!, "New and Trending", userId),
+                          buildCarouselCourses(
+                              _newestCourses!, "New and Trending", userId),
                       ],
                     ),
                     AppSpacing.largeVertical,
@@ -199,7 +194,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   }
 
   Widget buildCarouselCourses(
-      List<Course> courses, String title, String? userId) {
+      List<Course> courses, String title, String userId) {
     return Column(
       children: [
         Padding(
@@ -232,7 +227,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   MaterialPageRoute(
                     builder: (context) => CourseDetail(
                       courseId: course.id,
-                      userId: userId!,
+                      userId: userId,
                     ),
                   ),
                 );
@@ -246,15 +241,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 numberOfLesson: course.lessons.length,
                 avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
                 isSaved: isSaved,
-                onSavePressed: userId != null
-                    ? () {
-                        if (isSaved) {
-                          unsaveCourse(userId, course.id);
-                        } else {
-                          saveCourse(userId, course.id);
-                        }
-                      }
-                    : () {}, // Truyền callback
+                onSavePressed: () {
+                  if (isSaved) {
+                    unsaveCourse(userId, course.id);
+                  } else {
+                    saveCourse(userId, course.id);
+                  }
+                },
               ),
             );
           },
