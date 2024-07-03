@@ -28,7 +28,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       color: AppColors.ghostWhite,
       child: Column(
         children: [
@@ -42,15 +42,18 @@ class _MyCourseItemState extends State<MyCourseItem> {
                 height: 60,
               ),
               AppSpacing
-                  .mediumHorizontal, // Add some space between the image and the text
+                  .mediumHorizontal, 
+                  
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.title,
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -66,13 +69,13 @@ class _MyCourseItemState extends State<MyCourseItem> {
             children: [
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.timer_sharp,
                     size: 20,
                   ),
                   Text("${widget.duration}  •"),
                   AppSpacing.smallHorizontal,
-                  Icon(
+                  const Icon(
                     Icons.person_2_outlined,
                     size: 20,
                   ),
@@ -83,14 +86,14 @@ class _MyCourseItemState extends State<MyCourseItem> {
                 onPressed: widget.moreOnPress,
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                icon: Icon(
+                icon: const Icon(
                   Icons.more_horiz_outlined,
                   size: 32,
                 ),
               )
             ],
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
     );

@@ -13,17 +13,19 @@ class _ProfileTabState extends State<ProfileTab> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'About me',
-            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'About me',
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }

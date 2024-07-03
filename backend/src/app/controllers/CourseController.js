@@ -9,6 +9,17 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
+
+exports.getPublicCourse = async (req, res) => {
+  try {
+    const courses = await CourseService.getPublicCourses();
+    res.status(200).json(courses);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+
+}
+
 exports.addCourses = async (req, res) => {
   try {
     const courses = req.body;
@@ -31,10 +42,10 @@ exports.createCourseWithLessons = async (req, res) => {
   }
 };
 
+
 exports.createCourse = async (req, res) => {
   try {
     const course = req.body;
-    console.log(course);
     const courseId = await CourseService.createCourse(course);
     res.status(201).send({ id: courseId});
   } catch (error) {
@@ -119,3 +130,5 @@ exports.updateLessonLinkByIndex = async (req, res) => {
     res.status(500).send({ message: 'Error updating lessons link', error: error.message });
   }
 };
+
+

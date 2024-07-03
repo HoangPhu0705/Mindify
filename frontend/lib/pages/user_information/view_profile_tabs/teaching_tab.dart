@@ -87,6 +87,33 @@ class _TeachingTabState extends State<TeachingTab> {
                   _requestPending()
                 else
                   _startCreateClass(),
+                AppSpacing.mediumVertical,
+                Align(
+                  alignment: Alignment.topRight,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      backgroundColor:
+                          MaterialStateProperty.all(AppColors.ghostWhite),
+                    ),
+                    child: Text(
+                      "Manage my class",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -112,7 +139,6 @@ class _TeachingTabState extends State<TeachingTab> {
   Widget _startCreateClass() {
     return Container(
       width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.12,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
@@ -154,6 +180,7 @@ class _TeachingTabState extends State<TeachingTab> {
               ),
             ),
             Wrap(
+              alignment: WrapAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -185,8 +212,9 @@ class _TeachingTabState extends State<TeachingTab> {
                     ),
                   ),
                 ),
+                AppSpacing.mediumHorizontal,
               ],
-            )
+            ),
           ],
         ),
       ),
