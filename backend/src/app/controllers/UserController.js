@@ -52,9 +52,9 @@ exports.approveInstructorRequest = async (req, res) => {
     }
 };
 
-exports.getUnapprovedRequests = async (req, res) => {
+exports.getRequests = async (req, res) => {
     try {
-        const response = await UserService.getUnapprovedRequests();
+        const response = await UserService.getRequests();
         res.status(200).json(response);
     } catch (error) {
         res.status(500).send({ message: 'Error fetching unapproved requests', error: error.message });
@@ -81,3 +81,14 @@ exports.getUserData = async (req, res) => {
         res.status(500).send({ message: 'Error fetching user data', error: error.message });
     }
 }
+
+exports.rejectInstructorRequest = async (req, res) => {
+    try {
+        const requestId = req.params.requestId;
+        const { content } = req.body; 
+        const response = await UserService.rejectInstructorRequest(requestId, content);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).send({ message: 'Error happened when rejecting request', error: error.message });
+    }
+};

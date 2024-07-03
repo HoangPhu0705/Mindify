@@ -2,19 +2,24 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Typography } from "@material-tailwind/react";
 import { Link } from 'react-router-dom';
+import RejectPopup from '../components/rejection_popup';
 
-const TABLE_HEAD = ["Full Name", "Email", "Category", "", "Detail"];
+const TABLE_HEAD = ["Full Name", "Email", "Category", "Status", "Approve", "Reject", "Detail"];
 
 const Request = () => {
   const [requests, setRequests] = useState([]);
   const [error, setError] = useState('');
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [rejectionContent, setRejectionContent] = useState('');
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/users/requests/unapproved');
+        const response = await axios.get('http://localhost:3000/api/users/requests/');
         if (Array.isArray(response.data)) {
-          setRequests(response.data);
+          const pendingRequests = response.data;
+          setRequests(pendingRequests);
         } else {
           throw new Error('Invalid data format');
         }
@@ -29,10 +34,33 @@ const Request = () => {
   const approveRequest = async (requestId) => {
     try {
       await axios.put(`http://localhost:3000/api/users/requests/${requestId}/approve`);
-      setRequests(requests.filter(request => request.id !== requestId));
+      setRequests(requests.map(request => 
+        request.id === requestId ? { ...request, status: 'Approved' } : request
+      ));
     } catch (err) {
       console.error('Error approving request', err);
     }
+  };
+
+  const rejectRequest = async () => {
+    try {
+      if (selectedRequestId && rejectionContent) {
+        await axios.put(`http://localhost:3000/api/users/requests/${selectedRequestId}/reject`, { content: rejectionContent });
+        setRequests(requests.map(request => 
+          request.id === selectedRequestId ? { ...request, status: 'Declined' } : request
+        ));
+        setPopupOpen(false);
+        setRejectionContent('');
+        alert('Request has been rejected');
+      }
+    } catch (err) {
+      console.error('Error rejecting request', err);
+    }
+  };
+
+  const handleOpenPopup = (requestId) => {
+    setSelectedRequestId(requestId);
+    setPopupOpen(true);
   };
 
   if (error) {
@@ -82,12 +110,43 @@ const Request = () => {
                 </Typography>
               </td>
               <td className="p-4">
-                <button
-                  onClick={() => approveRequest(request.id)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded"
-                >
-                  Approve
-                </button>
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {request.status}
+                </Typography>
+              </td>
+              <td className="p-4">
+                {request.status === 'Pending' ? (
+                  <button
+                    onClick={() => approveRequest(request.id)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                  >
+                    Approve
+                  </button>
+                ) : (
+                  <button
+                    className="bg-gray-300 text-white px-3 py-1 rounded cursor-not-allowed"
+                    disabled
+                  >
+                    Approve
+                  </button>
+                )}
+              </td>
+              <td className="p-4">
+                {request.status === 'Pending' ? (
+                  <button
+                    onClick={() => handleOpenPopup(request.id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Reject
+                  </button>
+                ) : (
+                  <button
+                    className="bg-gray-300 text-white px-3 py-1 rounded cursor-not-allowed"
+                    disabled
+                  >
+                    Reject
+                  </button>
+                )}
               </td>
               <td className="p-4">
                 <Link
@@ -101,6 +160,13 @@ const Request = () => {
           ))}
         </tbody>
       </table>
+
+      <RejectPopup 
+        open={popupOpen} 
+        handleOpen={() => setPopupOpen(!popupOpen)} 
+        onReject={rejectRequest} 
+        setRejectionContent={setRejectionContent} 
+      />
     </Card>
   );
 };

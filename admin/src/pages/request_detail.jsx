@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Card, Typography, Button } from "@material-tailwind/react";
+import { Card, Typography, Button, Textarea } from "@material-tailwind/react";
 
 const RequestDetail = () => {
   const { requestId } = useParams();
@@ -9,7 +9,9 @@ const RequestDetail = () => {
   const [details, setDetails] = useState(null);
   const [error, setError] = useState('');
   const [isApproved, setIsApproved] = useState(false);
+  const [isRejected, setIsRejected] = useState(false);
   const [loading, setLoading] = useState(false); 
+  const [rejectionContent, setRejectionContent] = useState('');
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -17,6 +19,7 @@ const RequestDetail = () => {
         const response = await axios.get(`http://localhost:3000/api/users/requests/${requestId}`);
         setDetails(response.data);
         setIsApproved(response.data.request.isApproved);
+        setIsRejected(response.data.request.isRejected);
       } catch (err) {
         setError('Error fetching details');
       }
@@ -35,6 +38,19 @@ const RequestDetail = () => {
     } catch (err) {
       setLoading(false);  
       console.error('Error approving request', err);
+    }
+  };
+
+  const rejectRequest = async () => {
+    setLoading(true); 
+    try {
+      await axios.put(`http://localhost:3000/api/users/requests/${requestId}/reject`, { content: rejectionContent });
+      setIsRejected(true);
+      setLoading(false);  
+      navigate('/request');  
+    } catch (err) {
+      setLoading(false);  
+      console.error('Error rejecting request', err);
     }
   };
 
@@ -75,18 +91,31 @@ const RequestDetail = () => {
         <Typography variant="h6" className="text-gray-700">
           <span className="font-bold">Topic Description:</span> {details.request.topicDescription}
         </Typography>
-        <Typography variant="h6" className="text-gray-700">
-          <span className="font-bold">Is Approved:</span> {isApproved ? "Yes" : "No"}
-        </Typography>
-        {!isApproved && (
+
+        <Textarea
+          value={rejectionContent}
+          onChange={(e) => setRejectionContent(e.target.value)}
+          label="Rejection Reason"
+        />
+
+        <div className="flex space-x-4">
           <Button
             onClick={approveRequest}
-            className="bg-blue-500 text-white mt-4"
-            disabled={loading} 
+            color="green"
+            size="sm"
+            disabled={isApproved || isRejected || loading} 
           >
-            {loading ? 'Approving...' : 'Approve'}
+            {loading ? 'Processing...' : 'Approve'}
           </Button>
-        )}
+          <Button
+            onClick={rejectRequest}
+            color="red"
+            size="sm"
+            disabled={isApproved || isRejected || loading} 
+          >
+            {loading ? 'Processing...' : 'Reject'}
+          </Button>
+        </div>
       </div>
     </Card>
   );

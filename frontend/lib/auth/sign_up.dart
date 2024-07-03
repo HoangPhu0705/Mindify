@@ -97,7 +97,6 @@ class _SignUpState extends State<SignUp> {
       Map<String, dynamic> userData = {
         'id': uid,
         'displayName': 'Mindify Member',
-        'avatar': '',
         'email': email,
         'role': 'user',
         'requestSent': false,

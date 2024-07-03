@@ -2,14 +2,15 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/course.dart';
 
 class CourseService {
-  final String baseUrl = "http://10.0.2.2:3000/api";
+  final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  DocumentSnapshot? lastDocument;
   Future<List<Course>> fetchCourses() async {
     try {
       final response = await http.get(Uri.parse("$baseUrl/courses"));
@@ -139,6 +140,44 @@ class CourseService {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load lesson');
+    }
+  }
+
+  // search
+  Future<List<Map<String, dynamic>>> searchCourses(String query,
+      {bool isNewSearch = false}) async {
+    try {
+      if (isNewSearch) lastDocument = null;
+
+      Query queryRef = _firestore.collection('courses').limit(50);
+
+      if (lastDocument != null) {
+        queryRef = queryRef.startAfterDocument(lastDocument!);
+      }
+
+      final QuerySnapshot snapshot = await queryRef.get();
+      if (snapshot.docs.isNotEmpty) {
+        lastDocument = snapshot.docs.last;
+      }
+
+      log("Snapshot: ${snapshot.docs.length} documents found");
+
+      final courses = snapshot.docs.map((doc) {
+        var courseData = doc.data() as Map<String, dynamic>;
+        courseData['id'] = doc.id;
+        return courseData;
+      }).toList();
+
+      final filteredCourses = courses.where((course) {
+        final courseName = course['courseName']?.toString().toLowerCase() ?? '';
+        return courseName.contains(query.toLowerCase());
+      }).toList();
+
+      log("Filtered Courses: $filteredCourses");
+      return filteredCourses;
+    } catch (e) {
+      log("Error searching courses: $e");
+      return [];
     }
   }
 }
