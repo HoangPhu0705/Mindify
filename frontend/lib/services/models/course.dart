@@ -16,6 +16,7 @@ class Course {
   List<Lesson> lessons;
   List<String> categories = [];
 
+  // Constructor
   Course({
     required this.id,
     required this.title,
@@ -33,6 +34,7 @@ class Course {
     required this.categories,
   });
 
+  // Factory
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       id: json['id'] as String,
@@ -47,13 +49,39 @@ class Course {
       students: json['students'] as int,
       price: json['price'] as int,
       projectDescription: json['projectDescription'] as String,
-      lessons: (json['lessons'] as List<dynamic>)
-          .map((lessonJson) =>
-              Lesson.fromJson(lessonJson as Map<String, dynamic>))
-          .toList(),
-      categories: [],
+      lessons: (json['lessons'] as List<dynamic>?)
+              ?.map((lessonJson) =>
+                  Lesson.fromJson(lessonJson as Map<String, dynamic>))
+              .toList() ??
+          [],
+      categories: (json['categories'] as List<dynamic>?)
+              ?.map((category) => category as String)
+              .toList() ??
+          [],
     );
   }
+
+  // factory Course.fromJsonWithoutLesson(Map<String, dynamic> json) {
+  //   return Course(
+  //     id: json['id'] as String,
+  //     title: json['courseName'] as String,
+  //     description: json['description'] as String,
+  //     thumbnail: json['thumbnail'] as String,
+  //     instructorId: json['authorId'] as String,
+  //     instructorName: json['author'] as String,
+  //     duration: json['duration'] as String,
+  //     isPublic: json['isPublic'] as bool,
+  //     projectNum: json['projectNum'] as int,
+  //     students: json['students'] as int,
+  //     price: json['price'] as int,
+  //     projectDescription: json['projectDescription'] as String,
+  //     lessons: [],
+  //     categories: (json['categories'] as List<dynamic>?)
+  //             ?.map((category) => category as String)
+  //             .toList() ??
+  //         [],
+  //   );
+  // }
 
   Map<String, dynamic> toJson() {
     return {
@@ -70,6 +98,7 @@ class Course {
       'price': price,
       'projectDescription': projectDescription,
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
+      'categories': categories,
     };
   }
 }

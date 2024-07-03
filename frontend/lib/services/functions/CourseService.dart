@@ -168,13 +168,70 @@ class CourseService {
 
       final filteredCourses = courses.where((course) {
         final courseName = course['courseName']?.toString().toLowerCase() ?? '';
-        return courseName.contains(query.toLowerCase());
+        final authorName = course['author']?.toString().toLowerCase() ?? '';
+        final lowerCaseQuery = query.toLowerCase();
+        return courseName.contains(lowerCaseQuery) ||
+            authorName.contains(lowerCaseQuery);
       }).toList();
 
       log("Filtered Courses: $filteredCourses");
       return filteredCourses;
     } catch (e) {
       log("Error searching courses: $e");
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
+      {bool isNewSearch = false}) async {
+    try {
+      if (isNewSearch) lastDocument = null;
+
+      // Search courses
+      Query coursesQuery = _firestore.collection('courses').limit(50);
+      if (lastDocument != null) {
+        coursesQuery = coursesQuery.startAfterDocument(lastDocument!);
+      }
+
+      final QuerySnapshot coursesSnapshot = await coursesQuery.get();
+      if (coursesSnapshot.docs.isNotEmpty) {
+        lastDocument = coursesSnapshot.docs.last;
+      }
+
+      final courses = coursesSnapshot.docs.map((doc) {
+        var courseData = doc.data() as Map<String, dynamic>;
+        courseData['id'] = doc.id;
+        return courseData;
+      }).toList();
+
+      final filteredCourses = courses.where((course) {
+        final courseName = course['courseName']?.toString().toLowerCase() ?? '';
+        final lowerCaseQuery = query.toLowerCase();
+        return courseName.contains(lowerCaseQuery);
+      }).toList();
+
+      // Search users
+      final usersSnapshot = await _firestore
+          .collection('users')
+          .where('displayName', isGreaterThanOrEqualTo: query)
+          .where('displayName', isLessThanOrEqualTo: query + '\uf8ff')
+          .get();
+
+      final users = usersSnapshot.docs.map((doc) {
+        var userData = doc.data() as Map<String, dynamic>;
+        userData['id'] = doc.id;
+        return userData;
+      }).toList();
+
+      final searchResults = [
+        ...filteredCourses,
+        ...users,
+      ];
+
+      log("Filtered Courses and Users: $searchResults");
+      return searchResults;
+    } catch (e) {
+      log("Error searching courses and users: $e");
       return [];
     }
   }
