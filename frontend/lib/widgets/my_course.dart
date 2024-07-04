@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 
@@ -79,7 +77,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
                     Icons.person_2_outlined,
                     size: 20,
                   ),
-                  Text("${widget.students}"),
+                  Text(widget.students),
                 ],
               ),
               IconButton(

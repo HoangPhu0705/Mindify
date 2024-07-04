@@ -12,6 +12,7 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:pie_menu/pie_menu.dart';
 import 'package:provider/provider.dart';
 
 class ViewProfile extends StatefulWidget {

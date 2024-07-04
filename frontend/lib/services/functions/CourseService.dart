@@ -235,4 +235,32 @@ class CourseService {
       return [];
     }
   }
+
+  Future<List<Course>> getCourseByUserId(String userId) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/courses/users/$userId"),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((course) => Course.fromJson(course)).toList();
+    } else {
+      throw Exception('Failed to load class');
+    }
+  }
+
+  Future<void> deleteCourse(String courseId) async {
+    try {
+      final url = Uri.parse("$baseUrl/courses/$courseId");
+      final response = await http.delete(url);
+      if (response.statusCode == 204) {
+        log("Course deleted successfully");
+      } else {
+        throw Exception("Error deleting course");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error deleting course");
+    }
+  }
 }

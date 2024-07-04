@@ -43,7 +43,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (mounted) {
         showSuccessToast(
             context, "Password reset email sent, please check your inbox.");
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 2),);
 
         // Go back to login
         Navigator.of(context).pop();
