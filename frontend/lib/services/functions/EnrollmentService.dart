@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/enrollment.dart';
 
 
 class EnrollmentService {
-  final String baseUrl = "http://10.0.2.2:3000/api";
+  // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   Future<void> createEnrollment(Map<String, dynamic> data) async {
     final response = await http.post(
-      Uri.parse("$baseUrl/enrollments"),
+      Uri.parse(AppConstants.ENROLLMENT_API),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(data),
       );
@@ -22,7 +23,7 @@ class EnrollmentService {
 
   Future<Map<String, dynamic>> checkEnrollment(String userId, String courseId) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/enrollments/checkEnrollment?userId=$userId&courseId=$courseId"),
+      Uri.parse("${AppConstants.ENROLLMENT_API}/checkEnrollment?userId=$userId&courseId=$courseId"),
     );
 
     if (response.statusCode == 200) {
@@ -34,7 +35,7 @@ class EnrollmentService {
 
   Future<List<String>> getUserEnrollments(String userId) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/enrollments/userEnrollments?userId=$userId"),
+      Uri.parse("${AppConstants.ENROLLMENT_API}/userEnrollments?userId=$userId"),
     );
 
     if (response.statusCode == 200) {
@@ -51,7 +52,7 @@ class EnrollmentService {
 
   Future<void> addLessonToEnrollment(String enrollmentId, String lessonId) async {
     final response = await http.post(
-      Uri.parse("$baseUrl/enrollments/addLessonToEnrollment"),
+      Uri.parse("${AppConstants.ENROLLMENT_API}/addLessonToEnrollment"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -66,7 +67,7 @@ class EnrollmentService {
 
   Future<List<Map<String, dynamic>>> getDownloadedLessons(String userId) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/enrollments/downloadedLessons?userId=$userId"),
+      Uri.parse("${AppConstants.ENROLLMENT_API}/downloadedLessons?userId=$userId"),
     );
 
     if (response.statusCode == 200) {

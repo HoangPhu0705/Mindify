@@ -43,4 +43,6 @@ class AppConstants {
   static String CREATE_INSTRUCTOR_REQUEST = "$baseUrl/users/requestInstructor";
   static String USER_API = "$baseUrl/users";
   static String COURSE_API = "$baseUrl/courses";
+  static String ENROLLMENT_API = "$baseUrl/enrollments";
+  static String FOLDER_API = "$baseUrl/folders";
 }

@@ -8,12 +8,12 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/course.dart';
 
 class CourseService {
-  final String baseUrl = AppConstants.baseUrl;
+  // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   DocumentSnapshot? lastDocument;
   Future<List<Course>> fetchCourses() async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/courses"));
+      final response = await http.get(Uri.parse(AppConstants.COURSE_API));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -28,7 +28,7 @@ class CourseService {
 
   Future<List<Course>> getRandomCourses() async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/courses/random"));
+      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/random"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -43,7 +43,7 @@ class CourseService {
 
   Future<Course> getCourseById(String id) async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/courses/$id"));
+      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/$id"));
       if (response.statusCode == 200) {
         return Course.fromJson(json.decode(response.body));
       } else {
@@ -57,7 +57,7 @@ class CourseService {
 
   Future<List<Course>> getFiveNewestCourses() async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/courses/newest"));
+      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/newest"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -72,7 +72,7 @@ class CourseService {
 
   Future<List<Course>> getTop5Courses() async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/courses/top5"));
+      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/top5"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -131,7 +131,7 @@ class CourseService {
   Future<Map<String, dynamic>> getLesson(
       String courseId, String lessonId) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/courses/$courseId/lessons/$lessonId"),
+      Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId"),
     );
 
     if (response.statusCode == 200) {
@@ -238,7 +238,7 @@ class CourseService {
 
   Future<List<Course>> getCourseByUserId(String userId) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/courses/users/$userId"),
+      Uri.parse("${AppConstants.COURSE_API}/users/$userId"),
     );
 
     if (response.statusCode == 200) {
@@ -251,7 +251,7 @@ class CourseService {
 
   Future<void> deleteCourse(String courseId) async {
     try {
-      final url = Uri.parse("$baseUrl/courses/$courseId");
+      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId");
       final response = await http.delete(url);
       if (response.statusCode == 204) {
         log("Course deleted successfully");
