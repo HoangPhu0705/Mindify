@@ -131,4 +131,20 @@ exports.updateLessonLinkByIndex = async (req, res) => {
   }
 };
 
+exports.getCourseByUserId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const course = await CourseService.getCourseByUserId(id);
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).send({ message: 'Error fetching course by user ID', error: error.message });
+  }
+}
+
+
+
+
+
+
+
 

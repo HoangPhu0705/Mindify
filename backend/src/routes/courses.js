@@ -14,6 +14,7 @@ router.get('/newest', CourseController.getFiveNewestCourse);
 router.get('/:id', CourseController.getCourseById);
 router.patch('/:id', CourseController.updateCourse);
 router.delete('/:id', CourseController.deleteCourse);
+router.get('/users/:id', CourseController.getCourseByUserId)
 router.post('/batch', CourseController.addCourses);
 router.post('/addPrice', CourseController.addPriceToAllCourses);
 router.post('/updateLessonLinkByIndex', CourseController.updateLessonLinkByIndex);

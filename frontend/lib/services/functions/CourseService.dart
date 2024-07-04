@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/course.dart';
 
 class CourseService {
-  final String baseUrl = "http://10.0.2.2:3000/api";
+  final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Course>> fetchCourses() async {
@@ -137,6 +137,34 @@ class CourseService {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load lesson');
+    }
+  }
+
+  Future<List<Course>> getCourseByUserId(String userId) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/courses/users/$userId"),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((course) => Course.fromJson(course)).toList();
+    } else {
+      throw Exception('Failed to load class');
+    }
+  }
+
+  Future<void> deleteCourse(String courseId) async {
+    try {
+      final url = Uri.parse("$baseUrl/courses/$courseId");
+      final response = await http.delete(url);
+      if (response.statusCode == 204) {
+        log("Course deleted successfully");
+      } else {
+        throw Exception("Error deleting course");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error deleting course");
     }
   }
 }

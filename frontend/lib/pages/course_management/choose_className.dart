@@ -94,11 +94,12 @@ class _ChooseClassNameState extends State<ChooseClassName> {
               ? null
               : () async {
                   String newCourseId = await createNewCourse();
-                  Navigator.pop(context);
+
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ManageClass(
                         courseId: newCourseId,
+                        isEditing: false,
                       ),
                     ),
                   );

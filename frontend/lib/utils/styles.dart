@@ -3,10 +3,10 @@ import 'package:frontend/utils/colors.dart';
 
 class AppStyles {
   static var primaryButtonStyle = ButtonStyle(
-    elevation: MaterialStateProperty.all(0),
-    backgroundColor: MaterialStateProperty.all<Color>(AppColors.cream),
-    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    elevation: WidgetStateProperty.all(0),
+    backgroundColor: WidgetStateProperty.all<Color>(AppColors.cream),
+    foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -14,10 +14,10 @@ class AppStyles {
   );
 
   static var secondaryButtonStyle = ButtonStyle(
-    elevation: MaterialStateProperty.all(0),
-    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    elevation: WidgetStateProperty.all(0),
+    backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+    foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5.0),
         side: const BorderSide(color: Colors.black),
@@ -26,9 +26,9 @@ class AppStyles {
   );
 
   static var tertiaryButtonStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+    foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
         side: const BorderSide(color: AppColors.lightGrey),
@@ -54,10 +54,10 @@ class AppStyles {
   );
 
   static var courseLabelStyle = ButtonStyle(
-    elevation: MaterialStateProperty.all(0),
-    backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    elevation: WidgetStateProperty.all(0),
+    backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+    foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50.0),
         side: const BorderSide(color: Colors.black),

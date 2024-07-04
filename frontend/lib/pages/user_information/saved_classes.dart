@@ -118,7 +118,7 @@ class _SavedClassesState extends State<SavedClasses> {
         backgroundColor: AppColors.ghostWhite,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.ghostWhite,
         ),
         child: _isLoading

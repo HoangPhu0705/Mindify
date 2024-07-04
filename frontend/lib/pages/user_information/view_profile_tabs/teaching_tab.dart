@@ -3,16 +3,21 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/course_management/choose_className.dart';
+import 'package:frontend/pages/course_management/manage_class.dart';
+import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/UserService.dart';
+import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/pages/user_information/instructor/introduction.dart';
+import 'package:frontend/widgets/class_management/my_class_item.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:pie_menu/pie_menu.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class TeachingTab extends StatefulWidget {
   const TeachingTab({super.key});
@@ -22,14 +27,21 @@ class TeachingTab extends StatefulWidget {
 }
 
 class _TeachingTabState extends State<TeachingTab> {
+  //Services
   UserService userService = UserService();
+  CourseService courseService = CourseService();
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //Variables
   late Future<dynamic> _future;
+  late dynamic userData;
+  late List<Course> userCourses;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
     super.initState();
-    _future = getUserRole();
+    _future = _initPage();
   }
 
   @override
@@ -37,10 +49,19 @@ class _TeachingTabState extends State<TeachingTab> {
     super.dispose();
   }
 
+  Future<void> _initPage() async {
+    userData = await getUserRole();
+    userCourses = await getUserCourse();
+  }
+
   Future<dynamic> getUserRole() async {
-    dynamic userData =
-        await userService.getUserData(FirebaseAuth.instance.currentUser!.uid);
+    dynamic userData = await userService.getUserData(uid);
     return userData;
+  }
+
+  Future<List<Course>> getUserCourse() async {
+    List<Course> userCourses = await courseService.getCourseByUserId(uid);
+    return userCourses;
   }
 
   @override
@@ -61,61 +82,112 @@ class _TeachingTabState extends State<TeachingTab> {
             child: Text("An error occurred. Please try again later"),
           );
         }
-        String role = snapshot.data['role'];
-        bool requestSent = snapshot.data['requestSent'];
+        String role = userData['role'];
+        bool requestSent = userData['requestSent'];
 
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Teacher Hub',
-                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                ),
-                AppSpacing.smallVertical,
-                if (requestSent == false)
-                  Center(
-                    child: _becomeInstructor(),
-                  )
-                else if (role != "teacher")
-                  _requestPending()
-                else
-                  _startCreateClass(),
-                AppSpacing.mediumVertical,
-                Align(
-                  alignment: Alignment.topRight,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(0),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(
-                            width: 1,
-                          ),
+        return PieCanvas(
+          theme: const PieTheme(
+            delayDuration: Duration.zero,
+            tooltipTextStyle: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          child: Builder(
+            builder: (context) {
+              return SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          text: 'Welcome to',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium!
+                              .copyWith(color: Colors.black),
+                          children: const [
+                            TextSpan(
+                              text: ' Teacher Hub',
+                              style: TextStyle(
+                                color: AppColors.deepBlue,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      backgroundColor:
-                          MaterialStateProperty.all(AppColors.ghostWhite),
-                    ),
-                    child: Text(
-                      "Manage my class",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
+                      AppSpacing.smallVertical,
+                      if (requestSent == false)
+                        Center(
+                          child: _becomeInstructor(),
+                        )
+                      else if (role != "teacher")
+                        _requestPending()
+                      else
+                        _startCreateClass(),
+                      AppSpacing.mediumVertical,
+                      Text(
+                        "My Classes",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
                       ),
-                    ),
+                      AppSpacing.smallVertical,
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: ListView.builder(
+                          itemCount: userCourses.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            Course course = userCourses[index];
+
+                            return MyClassItem(
+                              classTitle: course.title,
+                              onEditPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ManageClass(
+                                      courseId: course.id,
+                                      isEditing: true,
+                                    ),
+                                  ),
+                                );
+                              },
+                              onDeletePressed: () {
+                                AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.noHeader,
+                                  title: 'Delete Class',
+                                  desc:
+                                      'Are you sure you want to delete this class?',
+                                  btnCancelOnPress: () {},
+                                  btnOkOnPress: () async {
+                                    await courseService.deleteCourse(course.id);
+                                    setState(() {
+                                      userCourses.removeAt(index);
+                                    });
+                                  },
+                                ).show();
+                              },
+                              thumbnail: "",
+                              isPublic: course.isPublic,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                )
-              ],
-            ),
+                ),
+              );
+            },
           ),
         );
       },
@@ -134,6 +206,10 @@ class _TeachingTabState extends State<TeachingTab> {
         "Your requests has been sent. We will review your application and return the result later",
       ),
     );
+  }
+
+  Widget _buildButton(IconData icon) {
+    return Icon(icon);
   }
 
   Widget _startCreateClass() {
@@ -183,8 +259,8 @@ class _TeachingTabState extends State<TeachingTab> {
               alignment: WrapAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(
+                  onPressed: () async {
+                    final result = await Navigator.of(
                       context,
                       rootNavigator: true,
                     ).push(
@@ -194,11 +270,16 @@ class _TeachingTabState extends State<TeachingTab> {
                         },
                       ),
                     );
+                    if (result != null) {
+                      setState(() {
+                        userCourses.add(result);
+                      });
+                    }
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(AppColors.deepBlue),
-                    shape: MaterialStateProperty.all(
+                        WidgetStateProperty.all(AppColors.deepBlue),
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:frontend/pages/course_management/lesson_upload.dart';
 import 'package:frontend/widgets/multiline_tag.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/models/course.dart';
@@ -16,9 +17,11 @@ import 'package:textfield_tags/textfield_tags.dart';
 
 class ManageClass extends StatefulWidget {
   final String courseId;
+  final bool isEditing;
   const ManageClass({
     super.key,
     required this.courseId,
+    required this.isEditing,
   });
 
   @override
@@ -63,6 +66,8 @@ class _ManageClassState extends State<ManageClass> {
     return greeting;
   }
 
+  static const List<String> _initialTags = <String>[];
+
   @override
   void initState() {
     super.initState();
@@ -73,11 +78,9 @@ class _ManageClassState extends State<ManageClass> {
 
   @override
   void dispose() {
-    log("duspose");
     _titleController.dispose();
     _classDescriptionController.dispose();
     _projectDescriptionController.dispose();
-    _scrollController.dispose();
     stringTagController.dispose();
     super.dispose();
   }
@@ -94,23 +97,33 @@ class _ManageClassState extends State<ManageClass> {
 
   Future<void> saveCourse() async {}
 
-  static const List<String> _initialTags = <String>[];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: AppColors.deepBlue,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: FutureBuilder(
+            future: _future,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox.shrink();
+              }
+
+              Course? course = snapshot.data;
+              return IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  if (!widget.isEditing) {
+                    Navigator.pop(context);
+                  }
+                  Navigator.pop(context, course);
+                },
+              );
+            }),
         titleSpacing: 0,
         title: Text(
           "$greeting, $userName",
@@ -156,273 +169,263 @@ class _ManageClassState extends State<ManageClass> {
           return SafeArea(
             child: Container(
               padding: const EdgeInsets.all(12),
-              child: FlexibleScrollbar(
+              child: SingleChildScrollView(
                 controller: _scrollController,
-                scrollThumbBuilder: (ScrollbarInfo info) {
-                  return AnimatedContainer(
-                    width: 6,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: AppColors.deepSpace
-                          .withOpacity(info.isDragging ? 1 : 0.6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            courseTitle,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium!
+                                .copyWith(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                ),
+                          ),
+                        ),
+                      ],
                     ),
-                    duration: animationDuration,
-                  );
-                },
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              courseTitle,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium!
-                                  .copyWith(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),
+                    AppSpacing.mediumVertical,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 3,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: AppColors.cream,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5),
                             ),
                           ),
-                        ],
-                      ),
-                      AppSpacing.mediumVertical,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 3,
-                            ),
-                            decoration: const BoxDecoration(
-                              color: AppColors.cream,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(5),
-                              ),
-                            ),
-                            child: const Text(
-                              "Draft",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              log("clicked preview");
-                            },
-                            child: RichText(
-                              text: const TextSpan(
-                                children: [
-                                  WidgetSpan(
-                                    child: Icon(
-                                      Icons.remove_red_eye,
-                                      size: 16,
-                                      color: AppColors.lightGrey,
-                                    ),
-                                  ),
-                                  WidgetSpan(
-                                    child: SizedBox(
-                                      width: 3,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: "Preview Class",
-                                    style: TextStyle(
-                                      color: AppColors.deepBlue,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      AppSpacing.smallVertical,
-                      const Divider(),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text(
-                          "Video Lessons",
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        trailing: GestureDetector(
-                          onTap: () {
-                            log("Manage click");
-                          },
                           child: const Text(
-                            "Manage",
+                            "Draft",
                             style: TextStyle(
-                              color: AppColors.deepBlue,
                               fontSize: 14,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        subtitle: Text("0 lesson(s)"),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text(
-                          "Create Quiz (Optional)",
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        trailing: GestureDetector(
+                        GestureDetector(
                           onTap: () {
-                            log("Manage click");
+                            log("clicked preview");
                           },
-                          child: const Text(
-                            "Create",
-                            style: TextStyle(
-                              color: AppColors.deepBlue,
-                              fontSize: 14,
+                          child: RichText(
+                            text: const TextSpan(
+                              children: [
+                                WidgetSpan(
+                                  child: Icon(
+                                    Icons.remove_red_eye,
+                                    size: 16,
+                                    color: AppColors.lightGrey,
+                                  ),
+                                ),
+                                WidgetSpan(
+                                  child: SizedBox(
+                                    width: 3,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: "Preview Class",
+                                  style: TextStyle(
+                                    color: AppColors.deepBlue,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        subtitle: Text("0 lesson(s)"),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text(
-                          "Create Flashcard (Optional)",
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        trailing: GestureDetector(
-                          onTap: () {
-                            log("Manage click");
-                          },
-                          child: const Text(
-                            "Create",
-                            style: TextStyle(
-                              color: AppColors.deepBlue,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        subtitle: Text("0 lesson(s)"),
-                      ),
-                      const Divider(),
-                      AppSpacing.mediumVertical,
-                      const Text(
-                        "Class Title*",
+                        )
+                      ],
+                    ),
+                    AppSpacing.smallVertical,
+                    const Divider(),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        "Video Lessons",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontFamily: "Poppins",
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
                         ),
                       ),
-                      const Text(
-                        "Keep your title between 30 and 70 characters.",
-                      ),
-                      AppSpacing.mediumVertical,
-                      TextFormField(
-                        controller: _titleController,
-                        onChanged: (value) {
-                          setState(() {
-                            courseTitle = value;
-                          });
+                      trailing: GestureDetector(
+                        onTap: () {
+                          final result = Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LessonUpload(),
+                            ),
+                          );
                         },
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(10),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(
-                              color: AppColors.lightGrey,
-                            ),
+                        child: const Text(
+                          "Manage",
+                          style: TextStyle(
+                            color: AppColors.deepBlue,
+                            fontSize: 14,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(
+                        ),
+                      ),
+                      subtitle: Text("0 lesson(s)"),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        "Create Quiz (Optional)",
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          log("Manage click");
+                        },
+                        child: const Text(
+                          "Create",
+                          style: TextStyle(
+                            color: AppColors.deepBlue,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      subtitle: Text("0"),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        "Create Flashcard (Optional)",
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          log("Manage click");
+                        },
+                        child: const Text(
+                          "Create",
+                          style: TextStyle(
+                            color: AppColors.deepBlue,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      subtitle: Text("0"),
+                    ),
+                    const Divider(),
+                    AppSpacing.mediumVertical,
+                    const Text(
+                      "Class Title*",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const Text(
+                      "Keep your title between 30 and 70 characters.",
+                    ),
+                    AppSpacing.mediumVertical,
+                    TextFormField(
+                      controller: _titleController,
+                      onChanged: (value) {
+                        setState(() {
+                          courseTitle = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(10),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(
+                            color: AppColors.lightGrey,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: const BorderSide(
+                            color: AppColors.deepBlue,
+                          ),
+                        ),
+                      ),
+                      cursorColor: Colors.black,
+                    ),
+                    AppSpacing.mediumVertical,
+                    const Text(
+                      "Class Description*",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const Text(
+                      "Minimum 100 characters. Write specific details on what should be included in your class",
+                    ),
+                    AppSpacing.smallVertical,
+                    _buildQuillToolbar(_classDescriptionController),
+                    _buildQuillEditor(_classDescriptionController),
+                    AppSpacing.mediumVertical,
+                    const Text(
+                      "Project Description*",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const Text(
+                      "Minimum 100 characters. Craft a relevant and engaging project for your class",
+                    ),
+                    AppSpacing.smallVertical,
+                    _buildQuillToolbar(_projectDescriptionController),
+                    _buildQuillEditor(_projectDescriptionController),
+                    AppSpacing.mediumVertical,
+                    const Text(
+                      "Class Skills*",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const Text(
+                      "Class skills tags help students find your class. Add tags to make your class more discoverable in search results",
+                    ),
+                    AppSpacing.smallVertical,
+                    MultilineTag(controller: stringTagController),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              stringTagController.clearTags();
+                            });
+                          },
+                          child: const Text(
+                            'CLEAR ',
+                            style: TextStyle(
                               color: AppColors.deepBlue,
-                            ),
-                          ),
-                        ),
-                        cursorColor: Colors.black,
-                      ),
-                      AppSpacing.mediumVertical,
-                      const Text(
-                        "Class Description*",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const Text(
-                        "Minimum 100 characters. Write specific details on what should be included in your class",
-                      ),
-                      AppSpacing.smallVertical,
-                      _buildQuillToolbar(_classDescriptionController),
-                      _buildQuillEditor(_classDescriptionController),
-                      AppSpacing.mediumVertical,
-                      const Text(
-                        "Project Description*",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const Text(
-                        "Minimum 100 characters. Craft a relevant and engaging project for your class",
-                      ),
-                      AppSpacing.smallVertical,
-                      _buildQuillToolbar(_projectDescriptionController),
-                      _buildQuillEditor(_projectDescriptionController),
-                      AppSpacing.mediumVertical,
-                      const Text(
-                        "Class Skills*",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const Text(
-                        "Class skills tags help students find your class. Add tags to make your class more discoverable in search results",
-                      ),
-                      AppSpacing.smallVertical,
-                      MultilineTag(controller: stringTagController),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                stringTagController.clearTags();
-                              });
-                            },
-                            child: const Text(
-                              'CLEAR ',
-                              style: TextStyle(
-                                color: AppColors.deepBlue,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

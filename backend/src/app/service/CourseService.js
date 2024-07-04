@@ -226,6 +226,26 @@ exports.updateLessonLinkByIndex = async (index, newLink) => {
     
 };
 
+exports.getCourseByUserId = async (userId) => {
+  try {
+    const snapshot = await CourseCollection.where('authorId', '==', userId).get();
+    const courses = await Promise.all(
+      snapshot.docs.map(async doc => {
+        const lessonsSnapshot = await doc.ref.collection('lessons').get();
+        const lessons = lessonsSnapshot.docs.map(lessonDoc => ({ id: lessonDoc.id, ...lessonDoc.data() }));
+        return { id: doc.id, ...doc.data(), lessons };
+      })
+    );
+    return courses;
+  } catch (error) {
+    console.error('Error fetching courses by user ID:', error);
+    throw error;
+  }
+}
+
+
+
+
 
 
 
