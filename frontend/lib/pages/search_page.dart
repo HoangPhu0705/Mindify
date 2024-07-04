@@ -1,16 +1,16 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'dart:developer';
-
-import 'package:chip_list/chip_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:frontend/pages/course_pages/course_detail.dart';
+import 'package:frontend/services/functions/CourseService.dart';
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:super_cupertino_navigation_bar/super_cupertino_navigation_bar.dart';
+import 'package:chip_list/chip_list.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -21,7 +21,19 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   int _currentSearchIndex = -1;
+  final TextEditingController _searchController = TextEditingController();
+  final CourseService _courseService = CourseService();
+  final UserService userService = UserService();
+  String userId = '';
+
+  List<dynamic> _searchResults = [];
+  List<dynamic> _suggestionResults = [];
+  bool _isLoading = false;
+  bool _isLoadingMore = false;
+  bool _hasMoreData = true;
+  String _lastQuery = '';
   late Future<void> _future;
+  bool _isTyping = false;
 
   final List<String> _popularSearches = [
     'marketing',
@@ -33,9 +45,10 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    userId = userService.getUserId();
     _future = _preloadImages();
+    _searchController.addListener(_onSearchChanged);
   }
 
   Future<void> _preloadImages() async {
@@ -44,12 +57,194 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  void _onSearchChanged() {
+    if (_searchController.text.isEmpty) {
+      setState(() {
+        _isTyping = true;
+        _suggestionResults = [];
+      });
+      return;
+    }
+    setState(() {
+      _isTyping = true;
+    });
+    _onSearch(_searchController.text);
+  }
+
+  void _onSearch(String query) async {
+    if (_lastQuery == query && _suggestionResults.isNotEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+      _suggestionResults = [];
+      _lastQuery = query;
+      _hasMoreData = true;
+    });
+
+    try {
+      List<Map<String, dynamic>> courses =
+          await _courseService.searchCourses(query, isNewSearch: true);
+      setState(() {
+        _suggestionResults = courses;
+        _isLoading = false;
+        _hasMoreData = courses.length == 50;
+      });
+    } catch (e) {
+      log("Error searching courses: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _onSearchSubmit(String query) async {
+    if (_searchController.text.isEmpty) {
+      setState(() {
+        _searchResults = [];
+      });
+      return;
+    }
+    if (_lastQuery == query && _searchResults.isNotEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+      _searchResults = [];
+      _lastQuery = query;
+      _hasMoreData = true;
+      _isTyping = false;
+    });
+
+    try {
+      List<Map<String, dynamic>> courses =
+          await _courseService.searchCourses(query, isNewSearch: true);
+      setState(() {
+        _searchResults = courses;
+        _isLoading = false;
+        _hasMoreData = courses.length == 50;
+      });
+    } catch (e) {
+      log("Error searching courses: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _loadMore() async {
+    if (_isLoadingMore || !_hasMoreData) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      List<Map<String, dynamic>> moreCourses =
+          await _courseService.searchCourses(_lastQuery);
+      setState(() {
+        _searchResults.addAll(moreCourses);
+        _isLoadingMore = false;
+        _hasMoreData = moreCourses.length == 50;
+      });
+    } catch (e) {
+      log("Error loading more courses: $e");
+      setState(() {
+        _isLoadingMore = false;
+      });
+    }
+  }
+
+  Widget _buildSearchResults() {
+    if (_isLoading) {
+      return const MyLoading(width: 30, height: 30, color: AppColors.deepBlue);
+    } else if (_searchResults.isEmpty) {
+      return const Center(
+        child: Text(
+          'No courses found',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+      );
+    } else {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            _loadMore();
+          }
+          return true;
+        },
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: _searchResults.length + 1,
+          itemBuilder: (context, index) {
+            if (index == _searchResults.length) {
+              return _isLoadingMore
+                  ? const Center(child: CircularProgressIndicator())
+                  : const SizedBox.shrink();
+            }
+
+            final course = _searchResults[index];
+            return MyCourseItem(
+              imageUrl: course['thumbnail'],
+              title: course['courseName'],
+              author: course['author'],
+              duration: course['duration'],
+              students: course['students'].toString(),
+              moreOnPress: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CourseDetail(
+                  courseId: course['id'],
+                  userId: userId,
+                ),
+              ),
+            );
+          },
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildSuggestionList() {
+    if (_suggestionResults.isEmpty) {
+      return const Center(
+        child: Text(
+          'Search your courses you may like',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: _suggestionResults.length,
+      itemBuilder: (context, index) {
+        final course = _suggestionResults[index];
+        return ListTile(
+          leading: Image.network(course['thumbnail'],
+              width: 50, height: 50, fit: BoxFit.cover),
+          title: Text(course['courseName']),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CourseDetail(
+                  courseId: course['id'],
+                  userId: userId,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const categories = AppConstants.categories;
     const categoryImage = AppConstants.categoryImage;
+
     return Scaffold(
-      //SuperScaffold
       body: SafeArea(
         child: FutureBuilder(
           future: _future,
@@ -59,24 +254,26 @@ class _SearchPageState extends State<SearchPage> {
                   width: 30, height: 30, color: AppColors.deepBlue);
             }
             return SuperScaffold(
-              //App bar of super Scaffold
               appBar: SuperAppBar(
                 backgroundColor: AppColors.ghostWhite,
                 height: 0,
                 searchBar: SuperSearchBar(
+                  searchController: _searchController,
                   height: 48,
                   placeholderText: "What do you want to learn today?",
                   scrollBehavior: SearchBarScrollBehavior.pinned,
                   placeholderTextStyle: AppStyles.searchBarPlaceHolderStyle,
                   cancelTextStyle: AppStyles.cancelTextStyle,
                   onChanged: (query) {
-                    log("query changed $query");
+                    log("Query changed: $query");
                   },
-                  onSubmitted: (query) {},
-                  searchResult: const SizedBox(),
+                  onSubmitted: (query) {
+                    _onSearchSubmit(query);
+                  },
+                  searchResult: _isTyping
+                      ? _buildSuggestionList()
+                      : _buildSearchResults(),
                 ),
-
-                // Title of Super Scaffold
                 largeTitle: SuperLargeTitle(
                   enabled: true,
                   height: 50,
@@ -87,10 +284,7 @@ class _SearchPageState extends State<SearchPage> {
               body: SingleChildScrollView(
                 child: Column(
                   children: [
-                    //label
                     _buildLabel("Popular Searches"),
-
-                    //Popular Searches
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Align(
@@ -101,11 +295,8 @@ class _SearchPageState extends State<SearchPage> {
                             _currentSearchIndex
                           ],
                           shouldWrap: true,
-                          // padding: EdgeInsets.all(12),
                           borderRadiiList: [20],
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(fontSize: 14),
                           showCheckmark: false,
                           activeBorderColorList: [Colors.black],
                           inactiveBgColorList: [AppColors.ghostWhite],
@@ -122,21 +313,17 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                     ),
-                    AppSpacing.largeVertical,
-                    _buildLabel("Categories"),
-
-                    AppSpacing.mediumVertical,
-                    //Categories list tiles with image on the left
+                    _buildLabel("Browse Categories"),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: AppConstants.categories.length,
+                      itemCount: categories.length,
                       itemBuilder: (context, index) {
                         return _buildCategoryTile(
                             categories[index], categoryImage[index]);
                       },
                     ),
-                    AppSpacing.largeVertical,
+                    if (_isLoadingMore) const CircularProgressIndicator(),
                   ],
                 ),
               ),
@@ -154,9 +341,7 @@ class _SearchPageState extends State<SearchPage> {
         alignment: Alignment.centerLeft,
         child: Text(
           title,
-          style: TextStyle(
-            color: AppColors.lightGrey,
-          ),
+          style: TextStyle(color: AppColors.lightGrey),
         ),
       ),
     );
@@ -168,12 +353,12 @@ class _SearchPageState extends State<SearchPage> {
       child: ListTile(
         onTap: () {},
         leading: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0), //or 15.0
+          borderRadius: BorderRadius.circular(10.0),
           child: Container(
             height: 60.0,
             width: 60.0,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.transparent,
               image: DecorationImage(
                 image: AssetImage(image),
                 fit: BoxFit.cover,
@@ -183,7 +368,7 @@ class _SearchPageState extends State<SearchPage> {
         ),
         title: Text(
           name,
-          style: TextStyle(fontWeight: FontWeight.w500),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );

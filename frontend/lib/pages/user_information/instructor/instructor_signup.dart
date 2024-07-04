@@ -172,6 +172,7 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                     'countryName': _countryNameController.text,
                     'dob': _dobController.text,
                     'topicDescription': _topicDescription.text,
+                    'status': 'Pending',
                     'isApproved': false,
                   };
                   await _userService.sendInstructorRequest(data);

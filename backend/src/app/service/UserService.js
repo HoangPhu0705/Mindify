@@ -12,6 +12,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+const sendRejectionEmail = async (email, firstName, content) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Rejection Notification',
+        text: `Hello ${firstName},\n\nYour instructor sign-up request has been rejected.
+            \n
+            ${content}
+            \nBest regards,\nPhu Phan`
+    };
+
+    return transporter.sendMail(mailOptions);
+};
+
 const sendApprovalEmail = async (email, firstName) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -113,7 +127,7 @@ exports.approveInstructorRequest = async (requestId) => {
         const requestData = requestDoc.data();
         const userId = requestData.user_id;
 
-        await requestRef.update({ isApproved: true });
+        await requestRef.update({ isApproved: true, status: "Approved" });
 
         const userRef = UserCollection.doc(userId);
         const userDoc = await userRef.get();
@@ -139,9 +153,9 @@ exports.approveInstructorRequest = async (requestId) => {
     }
 };
 
-exports.getUnapprovedRequests = async () => {
+exports.getRequests = async () => {
     try {
-        const snapshot = await RequestCollection.where('isApproved', '==', false).get();
+        const snapshot = await RequestCollection.get();
         if (snapshot.empty) {
             return [];
         }
@@ -196,6 +210,41 @@ exports.getUserData = async (userId) => {
         return userData;
     } catch (error) {
         throw new Error(`Error when getting user data: ${error.message}`);
+    }
+};
+
+exports.rejectInstructorRequest = async (requestId, content) => {
+    try {
+        const requestRef = RequestCollection.doc(requestId);
+        const requestDoc = await requestRef.get();
+
+        if (!requestDoc.exists) {
+            throw new Error("Request doesn't exist");
+        }
+
+        const requestData = requestDoc.data();
+        const userId = requestData.user_id;
+        await requestRef.update({ status: "Declined" });
+
+
+        const userRef = UserCollection.doc(userId);
+        const userDoc = await userRef.get();
+
+        if (!userDoc.exists) {
+            throw new Error("User doesn't exist");
+        }
+
+        await userRef.update({
+            requestSent: false,
+            
+        });
+
+
+        await sendRejectionEmail(requestData.user_email, requestData.firstName, content);
+
+        return { message: 'Request rejected successfully' };
+    } catch (error) {
+        throw new Error(`Error when rejecting request: ${error.message}`);
     }
 };
 

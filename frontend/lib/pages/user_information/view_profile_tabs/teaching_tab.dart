@@ -152,7 +152,7 @@ class _TeachingTabState extends State<TeachingTab> {
                             return MyClassItem(
                               classTitle: course.title,
                               onEditPressed: () {
-                                Navigator.of(context).push(
+                                Navigator.of(context, rootNavigator: true).push(
                                   MaterialPageRoute(
                                     builder: (context) => ManageClass(
                                       courseId: course.id,
