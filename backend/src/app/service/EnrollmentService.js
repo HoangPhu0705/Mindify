@@ -11,7 +11,7 @@ exports.createEnrollment = async (data) => {
         });
         return { "enrollmentId": docRef.id };
     } catch (error) {
-        console.error('Error creating course:', error);
+        console.error('Error creating enrollment:', error);
         throw error;
     }
 };

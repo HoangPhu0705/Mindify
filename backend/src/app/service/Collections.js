@@ -6,10 +6,13 @@ const LessonCollection = db.collection("lessons");
 const RequestCollection = db.collection("requests");
 const EnrollmentCollection = db.collection("enrollments");
 const TransactionCollection = db.collection("transactions");
+const FolderCollection = db.collection("folders");
 
 module.exports = { CourseCollection, 
                     UserCollection, 
                     LessonCollection, 
                     RequestCollection, 
                     EnrollmentCollection,
-                    TransactionCollection };
+                    TransactionCollection,
+                    FolderCollection
+                 };
