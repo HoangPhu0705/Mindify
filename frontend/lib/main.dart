@@ -4,7 +4,9 @@ import 'package:frontend/auth/main_page.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/splash_screen.dart';
+import 'package:frontend/services/functions/FolderService.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
+import 'package:frontend/services/providers/FolderProvider.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -57,6 +59,9 @@ class _MindifyAppState extends State<MindifyApp> {
         ),
         ChangeNotifierProvider(
           create: (context) => EnrollmentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => FolderProvider()
         ),
       ],
       child: MaterialApp(

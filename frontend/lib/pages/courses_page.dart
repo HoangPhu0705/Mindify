@@ -1,13 +1,12 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
+import 'package:frontend/services/models/folder.dart';
+import 'package:frontend/services/providers/FolderProvider.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
@@ -42,6 +41,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
         Provider.of<EnrollmentProvider>(context, listen: false).reset();
       }
     });
+    Provider.of<FolderProvider>(context, listen: false).fetchFolders(userId);
   }
 
   @override
@@ -69,6 +69,67 @@ class _MyCoursesPageState extends State<MyCoursePage>
       });
       print('Error fetching enrolled courses: $e');
     }
+  }
+
+  void _showCreateFolderDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String folderName = '';
+        return AlertDialog(
+          title: Text('Create Folder'),
+          content: TextField(
+            onChanged: (value) {
+              folderName = value;
+            },
+            decoration: InputDecoration(hintText: "Folder Name"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('CREATE'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Provider.of<FolderProvider>(context, listen: false)
+                    .createFolder(userId, folderName);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addCourseToFolder(String courseId) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Consumer<FolderProvider>(
+          builder: (context, folderProvider, child) {
+            return folderProvider.isLoading
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: folderProvider.folders.length,
+                    itemBuilder: (context, index) {
+                      Folder folder = folderProvider.folders[index];
+                      return ListTile(
+                        title: Text(folder.name),
+                        onTap: () {
+                          folderProvider.addCourseToFolder(folder.id, courseId);
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    },
+                  );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -106,15 +167,34 @@ class _MyCoursesPageState extends State<MyCoursePage>
                             author: course.instructorName,
                             duration: course.duration,
                             students: course.students.toString(),
-                            moreOnPress: () {},
+                            moreOnPress: () => _addCourseToFolder(course.id),
                           );
                         },
                       ),
-            Center(
-              child: Text('Lists'),
+            Consumer<FolderProvider>(
+              builder: (context, folderProvider, child) {
+                return folderProvider.isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : folderProvider.folders.isEmpty
+                        ? Center(child: Text('No folders found'))
+                        : ListView.builder(
+                            itemCount: folderProvider.folders.length,
+                            itemBuilder: (context, index) {
+                              Folder folder = folderProvider.folders[index];
+                              return ListTile(
+                                title: Text(folder.name),
+                              );
+                            },
+                          );
+              },
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateFolderDialog,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.purple,
       ),
     );
   }

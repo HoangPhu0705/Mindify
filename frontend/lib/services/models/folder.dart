@@ -1,4 +1,3 @@
-
 class Folder {
   String id;
   String name;
@@ -17,7 +16,7 @@ class Folder {
       id: json['id'] as String,
       name: json['name'] as String,
       userId: json['userId'] as String,
-      courses: (json['courses'] as List<String>)
+      courses: (json['courses'] as List<dynamic>).cast<String>(),
     );
   }
 
@@ -26,7 +25,7 @@ class Folder {
       'id': id,
       'name': name,
       'userId': userId,
-      'courses': courses.toList(),
+      'courses': courses,
     };
   }
 }

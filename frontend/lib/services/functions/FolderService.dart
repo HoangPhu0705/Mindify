@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:frontend/services/models/folder.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/services/models/course.dart';
 
 class FolderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -17,31 +16,24 @@ class FolderService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception('Failed to create enrollment');
+      throw Exception('Failed to create folder');
     }
   }
 
-
-  Future<List<String>> getFoldersOfUser(String userId) async {
+  Future<List<Folder>> getFoldersOfUser(String userId) async {
     final response = await http.get(
-      Uri.parse(
-          "${AppConstants.FOLDER_API}/userFolders?userId=$userId"),
+      Uri.parse("${AppConstants.FOLDER_API}/userFolders?userId=$userId"),
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      List<String> courseIds = [];
-      for (var folder in data) {
-        courseIds.add(folder['courseId']);
-      }
-      return courseIds;
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Folder.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       throw Exception('Failed to get user folders');
     }
   }
 
-  Future<void> addCourseToFolder(
-      String folderId, String courseId) async {
+  Future<void> addCourseToFolder(String folderId, String courseId) async {
     final response = await http.post(
       Uri.parse("${AppConstants.FOLDER_API}/addCourseToFolder"),
       headers: {
