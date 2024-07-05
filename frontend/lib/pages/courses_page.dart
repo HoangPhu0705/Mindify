@@ -11,6 +11,7 @@ import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_course.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:provider/provider.dart';
 
 class MyCoursePage extends StatefulWidget {
@@ -186,7 +187,12 @@ class _MyCoursesPageState extends State<MyCoursePage>
           controller: _tabController,
           children: [
             isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: MyLoading(
+                    width: 30,
+                    height: 30,
+                    color: AppColors.deepBlue,
+                  ))
                 : enrolledCourses.isEmpty
                     ? _emptyCourse(context)
                     : ListView.builder(
@@ -207,7 +213,12 @@ class _MyCoursesPageState extends State<MyCoursePage>
                 ? Consumer<FolderProvider>(
                     builder: (context, folderProvider, child) {
                       return folderProvider.isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? Center(
+                              child: MyLoading(
+                              width: 30,
+                              height: 30,
+                              color: AppColors.deepBlue,
+                            ))
                           : folderProvider.folders.isEmpty
                               ? Center(child: Text('No folders found'))
                               : ListView.builder(
@@ -240,7 +251,12 @@ class _MyCoursesPageState extends State<MyCoursePage>
                     },
                   )
                 : isFolderLoading
-                    ? Center(child: CircularProgressIndicator())
+                    ? Center(
+                        child: MyLoading(
+                        width: 30,
+                        height: 30,
+                        color: AppColors.deepBlue,
+                      ))
                     : Column(
                         children: [
                           IconButton(
