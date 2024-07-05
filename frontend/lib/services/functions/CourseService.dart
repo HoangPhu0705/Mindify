@@ -28,7 +28,8 @@ class CourseService {
 
   Future<List<Course>> getRandomCourses() async {
     try {
-      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/random"));
+      final response =
+          await http.get(Uri.parse("${AppConstants.COURSE_API}/random"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -43,7 +44,8 @@ class CourseService {
 
   Future<Course> getCourseById(String id) async {
     try {
-      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/$id"));
+      final response =
+          await http.get(Uri.parse("${AppConstants.COURSE_API}/$id"));
       if (response.statusCode == 200) {
         return Course.fromJson(json.decode(response.body));
       } else {
@@ -57,7 +59,8 @@ class CourseService {
 
   Future<List<Course>> getFiveNewestCourses() async {
     try {
-      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/newest"));
+      final response =
+          await http.get(Uri.parse("${AppConstants.COURSE_API}/newest"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -72,7 +75,8 @@ class CourseService {
 
   Future<List<Course>> getTop5Courses() async {
     try {
-      final response = await http.get(Uri.parse("${AppConstants.COURSE_API}/top5"));
+      final response =
+          await http.get(Uri.parse("${AppConstants.COURSE_API}/top5"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((course) => Course.fromJson(course)).toList();
@@ -261,6 +265,25 @@ class CourseService {
     } catch (e) {
       log("Error: $e");
       throw Exception("Error deleting course");
+    }
+  }
+
+  Future<void> updateCourse(String courseId, var updateData) async {
+    try {
+      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId");
+      final response = await http.patch(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(updateData),
+      );
+      if (response.statusCode == 204) {
+        log("Course updated successfully");
+      } else {
+        throw Exception("Error updating course");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error updating course");
     }
   }
 }

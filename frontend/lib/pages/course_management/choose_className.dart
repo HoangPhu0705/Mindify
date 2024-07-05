@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,12 +49,16 @@ class _ChooseClassNameState extends State<ChooseClassName> {
     try {
       var data = {
         "courseName": _classNameController.text,
-        "description": "",
+        "description": jsonEncode([
+          {"insert": "\n"}
+        ]),
         "category": [],
         "students": 0,
         "projectNum": 0,
         "isPublic": false,
-        "projectDescription": "",
+        "projectDescription": jsonEncode([
+          {"insert": "\n"}
+        ]),
         "thumbnail": "",
         "price": 0,
         "author":

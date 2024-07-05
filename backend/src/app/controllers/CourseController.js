@@ -69,6 +69,7 @@ exports.getCourseById = async (req, res) => {
 exports.updateCourse = async (req, res) => {
   try {
     const updates = req.body;
+    console.log(updates);
     await CourseService.updateCourse(req.params.id, updates);
     res.sendStatus(204);
   } catch (error) {

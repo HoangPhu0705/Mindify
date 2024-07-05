@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -10,10 +12,12 @@ import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
-import 'package:flexible_scrollbar/flexible_scrollbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:collection/collection.dart';
 
 class ManageClass extends StatefulWidget {
   final String courseId;
@@ -37,7 +41,7 @@ class _ManageClassState extends State<ManageClass> {
   final QuillController _classDescriptionController = QuillController.basic();
   final QuillController _projectDescriptionController = QuillController.basic();
   final ScrollController _scrollController = ScrollController();
-  late StringTagController stringTagController;
+  final StringTagController stringTagController = StringTagController();
 
   // Variables
   String greeting = "Hello";
@@ -47,6 +51,7 @@ class _ManageClassState extends State<ManageClass> {
   late String courseTitle;
   late Future<Course> _future;
   final animationDuration = const Duration(milliseconds: 300);
+  bool _isSaved = false;
 
   String getGrettings() {
     DateTime now = DateTime.now();
@@ -73,7 +78,6 @@ class _ManageClassState extends State<ManageClass> {
     super.initState();
     greeting = getGrettings();
     _future = getCourse();
-    stringTagController = StringTagController();
   }
 
   @override
@@ -90,12 +94,51 @@ class _ManageClassState extends State<ManageClass> {
       myCourse = value;
       courseTitle = myCourse.title;
       _titleController.text = myCourse.title;
+      _classDescriptionController.document =
+          Document.fromJson(jsonDecode(myCourse.description));
+
+      _projectDescriptionController.document =
+          Document.fromJson(jsonDecode(myCourse.projectDescription));
     });
 
     return myCourse;
   }
 
-  Future<void> saveCourse() async {}
+  Future<void> saveCourse() async {
+    String classDescription =
+        jsonEncode(_classDescriptionController.document.toDelta().toJson());
+    String projectDescription =
+        jsonEncode(_projectDescriptionController.document.toDelta().toJson());
+    String title = _titleController.text;
+
+    var updatedData = {
+      "courseName": title,
+      "projectDescription": projectDescription,
+      "description": classDescription,
+      "category": stringTagController.getTags ?? [],
+    };
+
+    await courseServices.updateCourse(widget.courseId, updatedData);
+    myCourse.title = title;
+    myCourse.projectDescription = projectDescription;
+    myCourse.description = classDescription;
+    setState(() {
+      _isSaved = true;
+    });
+  }
+
+  bool _onChanged(
+      String classDescription, String projectDescription, String title) {
+    Function eq = const ListEquality().equals;
+    if (classDescription.trim() != myCourse.description.trim() ||
+        projectDescription.trim() != myCourse.projectDescription.trim() ||
+        title.trim() != myCourse.title.trim() ||
+        !eq(stringTagController.getTags, myCourse.categories)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,17 +155,50 @@ class _ManageClassState extends State<ManageClass> {
 
               Course? course = snapshot.data;
               return IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  if (!widget.isEditing) {
-                    Navigator.pop(context);
-                  }
-                  Navigator.pop(context, course);
-                },
-              );
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    String classDescription = jsonEncode(
+                        _classDescriptionController.document
+                            .toDelta()
+                            .toJson());
+
+                    String projectDescription = jsonEncode(
+                      _projectDescriptionController.document.toDelta().toJson(),
+                    );
+                    String title = _titleController.text;
+                    bool isModify =
+                        _onChanged(classDescription, projectDescription, title);
+                    log(isModify.toString());
+                    if (isModify) {
+                      bool? shouldPop = await AwesomeDialog(
+                        padding: const EdgeInsets.all(16),
+                        context: context,
+                        dialogType: DialogType.noHeader,
+                        title: 'Unsaved Changes',
+                        desc:
+                            'You have unsaved changes. Do you really want to leave?',
+                        btnCancelOnPress: () {},
+                        btnOkOnPress: () {
+                          Navigator.pop(context, true); // Pop with true value
+                        },
+                      ).show();
+
+                      if (shouldPop == true) {
+                        if (!widget.isEditing) {
+                          Navigator.pop(context);
+                        }
+                        Navigator.pop(context, course);
+                      }
+                    } else {
+                      if (!widget.isEditing) {
+                        Navigator.pop(context);
+                      }
+                      Navigator.pop(context, course);
+                    }
+                  });
             }),
         titleSpacing: 0,
         title: Text(
@@ -135,7 +211,9 @@ class _ManageClassState extends State<ManageClass> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              saveCourse();
+            },
             child: const Padding(
               padding: EdgeInsets.only(right: 8.0),
               child: Text(
@@ -166,6 +244,7 @@ class _ManageClassState extends State<ManageClass> {
               child: Text("Error: ${snapshot.error}"),
             );
           }
+
           return SafeArea(
             child: Container(
               padding: const EdgeInsets.all(12),
@@ -338,6 +417,10 @@ class _ManageClassState extends State<ManageClass> {
                     ),
                     AppSpacing.mediumVertical,
                     TextFormField(
+                      onTap: () {},
+                      onTapOutside: (event) {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
                       controller: _titleController,
                       onChanged: (value) {
                         setState(() {
@@ -393,7 +476,7 @@ class _ManageClassState extends State<ManageClass> {
                     _buildQuillEditor(_projectDescriptionController),
                     AppSpacing.mediumVertical,
                     const Text(
-                      "Class Skills*",
+                      "Class Categories*",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -401,7 +484,7 @@ class _ManageClassState extends State<ManageClass> {
                       ),
                     ),
                     const Text(
-                      "Class skills tags help students find your class. Add tags to make your class more discoverable in search results",
+                      "Class categories tags help students find your class. Add tags to make your class more discoverable in search results",
                     ),
                     AppSpacing.smallVertical,
                     MultilineTag(controller: stringTagController),
@@ -476,8 +559,11 @@ class _ManageClassState extends State<ManageClass> {
       height: MediaQuery.of(context).size.height * 0.3,
       child: quill.QuillEditor.basic(
         configurations: QuillEditorConfigurations(
+          onTapOutside: (event, focusNode) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
           padding: const EdgeInsets.all(10),
-          controller: _projectDescriptionController,
+          controller: _controller,
           sharedConfigurations: const QuillSharedConfigurations(
             locale: Locale('en'),
           ),

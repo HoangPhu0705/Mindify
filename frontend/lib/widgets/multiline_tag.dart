@@ -25,7 +25,7 @@ class _MultilineTagState extends State<MultilineTag> {
         }
         return null;
       },
-      initialTags: const [''],
+      initialTags: const [],
       inputFieldBuilder: (context, inputFieldValues) {
         return TextField(
           onTap: () {
@@ -85,7 +85,7 @@ class _MultilineTagState extends State<MultilineTag> {
                                 children: [
                                   InkWell(
                                     child: Text(
-                                      '#$tag',
+                                      '$tag',
                                       style:
                                           const TextStyle(color: Colors.white),
                                     ),

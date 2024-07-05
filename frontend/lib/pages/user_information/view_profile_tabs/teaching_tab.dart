@@ -151,8 +151,10 @@ class _TeachingTabState extends State<TeachingTab> {
 
                             return MyClassItem(
                               classTitle: course.title,
-                              onEditPressed: () {
-                                Navigator.of(context, rootNavigator: true).push(
+                              onEditPressed: () async {
+                                final result = await Navigator.of(context,
+                                        rootNavigator: true)
+                                    .push(
                                   MaterialPageRoute(
                                     builder: (context) => ManageClass(
                                       courseId: course.id,
@@ -163,12 +165,28 @@ class _TeachingTabState extends State<TeachingTab> {
                               },
                               onDeletePressed: () {
                                 AwesomeDialog(
+                                  padding: EdgeInsets.all(16),
                                   context: context,
                                   dialogType: DialogType.noHeader,
+                                  dialogBackgroundColor: AppColors.deepSpace,
                                   title: 'Delete Class',
+                                  titleTextStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   desc:
                                       'Are you sure you want to delete this class?',
                                   btnCancelOnPress: () {},
+                                  btnOkColor: AppColors.cream,
+                                  descTextStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                  buttonsTextStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
                                   btnOkOnPress: () async {
                                     await courseService.deleteCourse(course.id);
                                     setState(() {
