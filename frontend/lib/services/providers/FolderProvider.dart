@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/models/folder.dart';
 import 'package:frontend/services/functions/FolderService.dart';
+import 'package:provider/provider.dart';
 
 class FolderProvider extends ChangeNotifier {
   final FolderService _folderService = FolderService();
@@ -35,7 +36,8 @@ class FolderProvider extends ChangeNotifier {
   Future<void> addCourseToFolder(String folderId, String courseId) async {
     try {
       await _folderService.addCourseToFolder(folderId, courseId);
-      notifyListeners(); 
+      _folders.firstWhere((folder) => folder.id == folderId).courses.add(courseId);
+      notifyListeners();
     } catch (e) {
       print('Error adding course to folder: $e');
     }

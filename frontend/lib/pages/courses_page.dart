@@ -26,8 +26,11 @@ class _MyCoursesPageState extends State<MyCoursePage>
   final courseService = CourseService();
   List<String> courseIdEnrolled = [];
   List<Course> enrolledCourses = [];
+  List<Course> selectedFolderCourses = []; // Declare the list here
   bool isLoading = true;
   String userId = '';
+  Folder? selectedFolder;
+  bool isFolderLoading = false;
 
   @override
   void initState() {
@@ -132,12 +135,41 @@ class _MyCoursesPageState extends State<MyCoursePage>
     );
   }
 
+  Future<void> _showFolderCourses(Folder folder) async {
+    setState(() {
+      selectedFolder = folder;
+      isFolderLoading = true;
+    });
+
+    // Fetch detailed course information
+    List<Course> courses = [];
+    for (String courseId in folder.courses) {
+      Course course = await courseService.getCourseById(courseId);
+      courses.add(course);
+    }
+
+    setState(() {
+      selectedFolderCourses = courses;
+      isFolderLoading = false;
+    });
+  }
+
+  void _goBackToFolderList() {
+    setState(() {
+      selectedFolder = null;
+    });
+  }
+
+  // void _deleteFolder(Folder folder) {
+  //   Provider.of<FolderProvider>(context, listen: false).deleteFolder(folder.id);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.ghostWhite,
-        title: Text('My courses', style: AppStyles.largeTitleSearchPage),
+        title: Text('My Courses', style: AppStyles.largeTitleSearchPage),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -171,23 +203,68 @@ class _MyCoursesPageState extends State<MyCoursePage>
                           );
                         },
                       ),
-            Consumer<FolderProvider>(
-              builder: (context, folderProvider, child) {
-                return folderProvider.isLoading
+            selectedFolder == null
+                ? Consumer<FolderProvider>(
+                    builder: (context, folderProvider, child) {
+                      return folderProvider.isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : folderProvider.folders.isEmpty
+                              ? Center(child: Text('No folders found'))
+                              : ListView.builder(
+                                  itemCount: folderProvider.folders.length,
+                                  itemBuilder: (context, index) {
+                                    Folder folder =
+                                        folderProvider.folders[index];
+                                    return ListTile(
+                                      leading: Icon(Icons.folder),
+                                      title: Text(folder.name),
+                                      subtitle: Text(
+                                          '${folder.courses.length} courses'),
+                                      trailing: PopupMenuButton(
+                                        onSelected: (value) {
+                                          // if (value == 'delete') {
+                                          //   _deleteFolder(folder);
+                                          // }
+                                        },
+                                        itemBuilder: (context) => [
+                                          PopupMenuItem(
+                                            value: 'delete',
+                                            child: Text('Delete'),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () => _showFolderCourses(folder),
+                                    );
+                                  },
+                                );
+                    },
+                  )
+                : isFolderLoading
                     ? Center(child: CircularProgressIndicator())
-                    : folderProvider.folders.isEmpty
-                        ? Center(child: Text('No folders found'))
-                        : ListView.builder(
-                            itemCount: folderProvider.folders.length,
-                            itemBuilder: (context, index) {
-                              Folder folder = folderProvider.folders[index];
-                              return ListTile(
-                                title: Text(folder.name),
-                              );
-                            },
-                          );
-              },
-            ),
+                    : Column(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: _goBackToFolderList,
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: selectedFolderCourses.length,
+                              itemBuilder: (context, index) {
+                                Course course = selectedFolderCourses[index];
+                                return MyCourseItem(
+                                  imageUrl: course.thumbnail,
+                                  title: course.title,
+                                  author: course.instructorName,
+                                  duration: course.duration,
+                                  students: course.students.toString(),
+                                  moreOnPress: () {},
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
           ],
         ),
       ),
@@ -231,7 +308,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
           style: AppStyles.secondaryButtonStyle,
           child: Text(
             'See recommended courses',
-            style: TextStyle(fontWeight: FontWeight.w400),
+            style: TextStyle(fontSize: 16),
           ),
         ),
       ],
