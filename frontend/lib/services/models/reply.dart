@@ -1,28 +1,22 @@
-import 'package:frontend/services/models/reply.dart';
-
-class Comment {
+class Reply {
   String id;
   String userId;
   String content;
   DateTime createdAt;
-  List<Reply> replies;
 
-  Comment({
+  Reply({
     required this.id,
     required this.userId,
     required this.content,
     required this.createdAt,
-    required this.replies,
   });
 
-  factory Comment.fromJson(Map<String, dynamic> json) {
-    return Comment(
+  factory Reply.fromJson(Map<String, dynamic> json) {
+    return Reply(
       id: json['id'] as String,
       userId: json['userId'] as String,
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      replies: (json['replies'] as List<dynamic>?)
-              ?.map((replyJson) => Reply.fromJson(replyJson as Map<String, dynamic>)).toList() ?? [],
     );
   }
 
@@ -32,7 +26,6 @@ class Comment {
       'userId': userId,
       'content': content,
       'createdAt': createdAt.toIso8601String(),
-      'replies': replies.map((reply) => reply.toJson()).toList(),
     };
   }
 }

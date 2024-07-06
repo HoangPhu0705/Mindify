@@ -261,7 +261,10 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
                       SubmitProject(
                         course: course!,
                       ),
-                      Discussion(),
+                      Discussion(
+                        courseId: course!.id,
+                        isEnrolled: isEnrolled
+                      ),
                       Center(
                         child: Text("Notes"),
                       ),
