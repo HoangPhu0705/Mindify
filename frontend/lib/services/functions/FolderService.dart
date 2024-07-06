@@ -8,6 +8,15 @@ import 'package:http/http.dart' as http;
 class FolderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  final CollectionReference folders =
+      FirebaseFirestore.instance.collection('folders');
+
+  Stream<QuerySnapshot> getFolderStreamByUser(String userId) {
+    final foldersStream =
+        folders.where('userId', isEqualTo: userId).snapshots();
+    return foldersStream;
+  }
+
   Future<void> createFolder(Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse(AppConstants.FOLDER_API),
@@ -27,7 +36,9 @@ class FolderService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Folder.fromJson(json as Map<String, dynamic>)).toList();
+      return data
+          .map((json) => Folder.fromJson(json as Map<String, dynamic>))
+          .toList();
     } else {
       throw Exception('Failed to get user folders');
     }

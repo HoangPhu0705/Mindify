@@ -27,7 +27,7 @@ class FolderProvider extends ChangeNotifier {
   Future<void> createFolder(String userId, String folderName) async {
     try {
       await _folderService.createFolder({'name': folderName, 'userId': userId});
-      fetchFolders(userId); 
+      fetchFolders(userId);
     } catch (e) {
       print('Error creating folder: $e');
     }
@@ -36,7 +36,10 @@ class FolderProvider extends ChangeNotifier {
   Future<void> addCourseToFolder(String folderId, String courseId) async {
     try {
       await _folderService.addCourseToFolder(folderId, courseId);
-      _folders.firstWhere((folder) => folder.id == folderId).courses.add(courseId);
+      _folders
+          .firstWhere((folder) => folder.id == folderId)
+          .courses
+          .add(courseId);
       notifyListeners();
     } catch (e) {
       print('Error adding course to folder: $e');

@@ -4,26 +4,36 @@ import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/enrollment.dart';
 
-
 class EnrollmentService {
   // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
+  final CollectionReference enrollments =
+      FirebaseFirestore.instance.collection('enrollments');
+
+  Stream<QuerySnapshot> getEnrollmentStreamByUser(String userId) {
+    final enrollmentsStream =
+        enrollments.where('userId', isEqualTo: userId).snapshots();
+    return enrollmentsStream;
+  }
+
   Future<void> createEnrollment(Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse(AppConstants.ENROLLMENT_API),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(data),
-      );
+    );
 
     if (response.statusCode != 201) {
       throw Exception('Failed to create enrollment');
     }
   }
 
-  Future<Map<String, dynamic>> checkEnrollment(String userId, String courseId) async {
+  Future<Map<String, dynamic>> checkEnrollment(
+      String userId, String courseId) async {
     final response = await http.get(
-      Uri.parse("${AppConstants.ENROLLMENT_API}/checkEnrollment?userId=$userId&courseId=$courseId"),
+      Uri.parse(
+          "${AppConstants.ENROLLMENT_API}/checkEnrollment?userId=$userId&courseId=$courseId"),
     );
 
     if (response.statusCode == 200) {
@@ -35,7 +45,8 @@ class EnrollmentService {
 
   Future<List<String>> getUserEnrollments(String userId) async {
     final response = await http.get(
-      Uri.parse("${AppConstants.ENROLLMENT_API}/userEnrollments?userId=$userId"),
+      Uri.parse(
+          "${AppConstants.ENROLLMENT_API}/userEnrollments?userId=$userId"),
     );
 
     if (response.statusCode == 200) {
@@ -50,7 +61,8 @@ class EnrollmentService {
     }
   }
 
-  Future<void> addLessonToEnrollment(String enrollmentId, String lessonId) async {
+  Future<void> addLessonToEnrollment(
+      String enrollmentId, String lessonId) async {
     final response = await http.post(
       Uri.parse("${AppConstants.ENROLLMENT_API}/addLessonToEnrollment"),
       headers: {
@@ -67,7 +79,8 @@ class EnrollmentService {
 
   Future<List<Map<String, dynamic>>> getDownloadedLessons(String userId) async {
     final response = await http.get(
-      Uri.parse("${AppConstants.ENROLLMENT_API}/downloadedLessons?userId=$userId"),
+      Uri.parse(
+          "${AppConstants.ENROLLMENT_API}/downloadedLessons?userId=$userId"),
     );
 
     if (response.statusCode == 200) {

@@ -2,7 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/courses_page.dart';
+import 'package:frontend/pages/course_pages/courses_page.dart';
 import 'package:frontend/pages/discover_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/profile_page.dart';
 import 'package:frontend/pages/search_page.dart';
