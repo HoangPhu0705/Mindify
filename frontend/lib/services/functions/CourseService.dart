@@ -193,7 +193,7 @@ class CourseService {
       if (isNewSearch) lastDocument = null;
 
       // Search courses
-      Query coursesQuery = _firestore.collection('courses').limit(50);
+      Query coursesQuery = _firestore.collection('courses').limit(10);
       if (lastDocument != null) {
         coursesQuery = coursesQuery.startAfterDocument(lastDocument!);
       }
