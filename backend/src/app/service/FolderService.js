@@ -49,3 +49,42 @@ exports.addCourseToFolder = async (folderId, courseId) => {
         throw error;
     }
 };
+
+exports.deleteFolder = async (folderId) => {
+    try {
+        const docRef = FolderCollection.doc(folderId);
+        await docRef.delete();
+        return { "message": "Folder deleted successfully" };
+    } catch (error) {
+        console.error('Error deleting folder:', error);
+        throw error;
+    }   
+}
+
+exports.getFolderById = async (folderId) => {
+    try {
+        const doc = await FolderCollection.doc(folderId).get();
+        if (!doc.exists) {
+            return null;
+        }
+
+        return { id: doc.id, ...doc.data() };
+    } catch (error) {
+        console.error(`Error getting folder ${folderId}:`, error);
+        throw error;
+    }
+}
+
+exports.getCoursesOfFolder = async (folderId) => {
+    try {
+        const doc = await FolderCollection.doc(folderId).get();
+        if (!doc.exists) {
+            return null;
+        }
+
+        return doc.data().courses;
+    } catch (error) {
+        console.error(`Error getting courses of folder ${folderId}:`, error);
+        throw error;
+    }
+}

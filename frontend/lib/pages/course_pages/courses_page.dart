@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_pages/folder_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/FolderService.dart';
@@ -11,13 +12,14 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/folder.dart';
 import 'package:frontend/services/providers/FolderProvider.dart';
-import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class MyCoursePage extends StatefulWidget {
   @override
@@ -67,7 +69,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
         padding: const EdgeInsets.all(6),
         child: Column(
           children: [
-            Text(
+            const Text(
               "Enter your list name",
               style: TextStyle(
                 fontSize: 24,
@@ -102,46 +104,98 @@ class _MyCoursesPageState extends State<MyCoursePage>
           'userId': userId,
         };
         await folderService.createFolder(data);
+        folderNameController.clear();
       },
     ).show();
   }
 
-  // void _addCourseToFolder(String courseId) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return Consumer<FolderProvider>(
-  //         builder: (context, folderProvider, child) {
-  //           return folderProvider.isLoading
-  //               ? Center(child: CircularProgressIndicator())
-  //               : ListView.builder(
-  //                   itemCount: folderProvider.folders.length,
-  //                   itemBuilder: (context, index) {
-  //                     Folder folder = folderProvider.folders[index];
-  //                     return ListTile(
-  //                       title: Text(folder.name),
-  //                       onTap: () {
-  //                         folderProvider.addCourseToFolder(folder.id, courseId);
-  //                         Navigator.of(context).pop();
-  //                       },
-  //                     );
-  //                   },
-  //                 );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
+  void showFolderBottomSheet(BuildContext context, String courseId) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          padding: const EdgeInsets.all(16.0),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10.0),
+              topRight: Radius.circular(10.0),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Add to list',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: folderService.getFolderStreamByUser(
+                    FirebaseAuth.instance.currentUser!.uid),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<DocumentSnapshot> folders = snapshot.data!.docs;
 
-  // Future<void> _showFolderCourses(Folder folder) async {
-  //   // Fetch detailed course information
-  //   List<Course> courses = [];
-  //   for (String courseId in folder.courses) {
-  //     Course course = await courseService.getCourseById(courseId);
-  //     courses.add(course);
-  //   }
-  // }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: folders.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot document = folders[index];
+                        String folderId = document.id;
+                        Map<String, dynamic> data =
+                            folders[index].data() as Map<String, dynamic>;
+                        String folderName = data['name'];
+                        return Column(
+                          children: [
+                            ListTile(
+                              onTap: () async {
+                                //Add course to folder
 
+                                await folderService.addCourseToFolder(
+                                  folderId,
+                                  courseId,
+                                );
+                                Navigator.pop(context);
+                                showSuccessToast(
+                                    context, "Course added to list.");
+                              },
+                              contentPadding: EdgeInsets.zero,
+                              leading: const Icon(
+                                Icons.folder_open_outlined,
+                              ),
+                              title: Text(folderName),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,58 +215,20 @@ class _MyCoursesPageState extends State<MyCoursePage>
           ),
         ),
         body: SafeArea(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              //Courses tab
-              courseTab(context),
-              folderTab(context),
-            ],
+          child: Container(
+            padding: const EdgeInsets.only(
+              top: 12,
+            ),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                //Courses tab
+                courseTab(context),
+                folderTab(context),
+              ],
+            ),
           ),
         ));
-  }
-
-  Widget folderTab(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showCreateFolderDialog(context);
-        },
-        backgroundColor: AppColors.cream,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: const Icon(Icons.add),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: folderService
-            .getFolderStreamByUser(FirebaseAuth.instance.currentUser!.uid),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<DocumentSnapshot> folders = snapshot.data!.docs;
-            return ListView.builder(
-              itemCount: folders.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> data =
-                    folders[index].data() as Map<String, dynamic>;
-                String folderName = data['name'];
-                // Replace with your actual folder widget
-                return ListTile(
-                  leading: const Icon(
-                    Icons.folder,
-                  ),
-                  title: Text(folderName),
-                );
-              },
-            );
-          } else {
-            return const Center(
-              child: Text('No folders available'),
-            );
-          }
-        },
-      ),
-    );
   }
 
   Widget courseTab(BuildContext context) {
@@ -243,15 +259,17 @@ class _MyCoursesPageState extends State<MyCoursePage>
                 return ListView.builder(
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    log(courses.length.toString());
                     Course course = courses[index];
+
                     return MyCourseItem(
                       imageUrl: course.thumbnail,
                       title: course.title,
                       author: course.instructorName,
                       duration: course.duration,
                       students: course.students.toString(),
-                      moreOnPress: () {},
+                      moreOnPress: () {
+                        showFolderBottomSheet(context, course.id);
+                      },
                     );
                   },
                 );
@@ -264,6 +282,95 @@ class _MyCoursesPageState extends State<MyCoursePage>
           return _emptyCourse(context);
         }
       },
+    );
+  }
+
+  Widget folderTab(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showCreateFolderDialog(context);
+        },
+        backgroundColor: AppColors.cream,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: const Icon(Icons.add),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: folderService
+            .getFolderStreamByUser(FirebaseAuth.instance.currentUser!.uid),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List<DocumentSnapshot> folders = snapshot.data!.docs;
+            return ListView.builder(
+              itemCount: folders.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot document = folders[index];
+                String folderId = document.id;
+                Map<String, dynamic> data =
+                    folders[index].data() as Map<String, dynamic>;
+                String folderName = data['name'];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Slidable(
+                    key: const ValueKey(0),
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      dragDismissible: false,
+                      dismissible: DismissiblePane(onDismissed: () {}),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) async {
+                            await folderService.deleteFolder(folderId).then(
+                              (value) {
+                                showSuccessToast(context, "Folder deleted");
+                              },
+                            );
+                          },
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return FolderDetail(
+                                folderId: folderId,
+                                folderName: folderName,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: const BorderSide(
+                          color: AppColors.lightGrey,
+                        ),
+                      ),
+                      leading: const Icon(
+                        Icons.folder,
+                        color: Colors.blue,
+                      ),
+                      title: Text(folderName),
+                      subtitle: Text('${data['courses'].length} courses'),
+                    ),
+                  ),
+                );
+              },
+            );
+          } else {
+            return const Center(
+              child: Text('No folders available'),
+            );
+          }
+        },
+      ),
     );
   }
 

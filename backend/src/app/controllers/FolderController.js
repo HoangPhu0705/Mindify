@@ -36,3 +36,42 @@ exports.addCourseToFolder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.deleteFolder = async (req, res) => {
+    const { folderId } = req.params;
+    if (!folderId) {
+        return res.status(400).json({ error: 'Missing folderId' });
+    }
+    try {
+        const response = await FolderService.deleteFolder(folderId);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+exports.getFolderById = async (req, res) => {
+    const { folderId } = req.params;
+    if (!folderId) {
+        return res.status(400).json({ error: 'Missing folderId' });
+    }
+    try {
+        const folder = await FolderService.getFolderById(folderId);
+        res.status(200).json(folder);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+exports.getCoursesOfFolders = async (req, res) =>{
+    const { folderId } = req.params;
+    if (!folderId) {
+        return res.status(400).json({ error: 'Missing folderId' });
+    }
+    try {
+        const courses = await FolderService.getCoursesOfFolder(folderId);
+        res.status(200).json(courses);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

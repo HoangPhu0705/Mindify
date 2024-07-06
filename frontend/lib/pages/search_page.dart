@@ -189,15 +189,15 @@ class _SearchPageState extends State<SearchPage> {
               duration: course['duration'],
               students: course['students'].toString(),
               moreOnPress: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => CourseDetail(
-                  courseId: course['id'],
-                  userId: userId,
-                ),
-              ),
-            );
-          },
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CourseDetail(
+                      courseId: course['id'],
+                      userId: userId,
+                    ),
+                  ),
+                );
+              },
             );
           },
         ),
@@ -225,7 +225,7 @@ class _SearchPageState extends State<SearchPage> {
               width: 50, height: 50, fit: BoxFit.cover),
           title: Text(course['courseName']),
           onTap: () {
-            Navigator.of(context).push(
+            Navigator.of(context, rootNavigator: true).push(
               MaterialPageRoute(
                 builder: (context) => CourseDetail(
                   courseId: course['id'],
@@ -250,8 +250,11 @@ class _SearchPageState extends State<SearchPage> {
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return MyLoading(
-                  width: 30, height: 30, color: AppColors.deepBlue);
+              return const MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.deepBlue,
+              );
             }
             return SuperScaffold(
               appBar: SuperAppBar(
@@ -295,8 +298,8 @@ class _SearchPageState extends State<SearchPage> {
                             _currentSearchIndex
                           ],
                           shouldWrap: true,
-                          borderRadiiList: [20],
-                          style: TextStyle(fontSize: 14),
+                          borderRadiiList: const [20],
+                          style: const TextStyle(fontSize: 14),
                           showCheckmark: false,
                           activeBorderColorList: [Colors.black],
                           inactiveBgColorList: [AppColors.ghostWhite],
