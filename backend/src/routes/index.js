@@ -7,7 +7,6 @@ function route(app){
     app.use('/api/users', userRouter)
     app.use('/api/enrollments', enrollmentRouter)
     app.use('/api/folders', folderRouter)
-    // app.use('/api/course:courseId/lesson', lessonRouter)
 }
 
 module.exports = route

@@ -16,7 +16,7 @@ class Folder {
       id: json['id'] as String,
       name: json['name'] as String,
       userId: json['userId'] as String,
-      courses: (json['courses'] as List<dynamic>).cast<String>(),
+      courses: json['courses'] as List<String>,
     );
   }
 
