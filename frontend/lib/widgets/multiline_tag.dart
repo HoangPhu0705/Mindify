@@ -6,7 +6,12 @@ import 'package:textfield_tags/textfield_tags.dart';
 
 class MultilineTag extends StatefulWidget {
   final StringTagController controller;
-  const MultilineTag({super.key, required this.controller});
+  final List<String> initialTags;
+  const MultilineTag({
+    super.key,
+    required this.controller,
+    required this.initialTags,
+  });
 
   @override
   State<MultilineTag> createState() => _MultilineTagState();
@@ -25,7 +30,7 @@ class _MultilineTagState extends State<MultilineTag> {
         }
         return null;
       },
-      initialTags: const [],
+      initialTags: widget.initialTags,
       inputFieldBuilder: (context, inputFieldValues) {
         return TextField(
           onTap: () {

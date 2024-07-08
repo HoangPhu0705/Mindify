@@ -24,7 +24,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FlutterDownloader.initialize(
-    debug: true, 
+    debug: true,
     ignoreSsl: true,
   );
   runApp(const MindifyApp());
@@ -60,9 +60,7 @@ class _MindifyAppState extends State<MindifyApp> {
         ChangeNotifierProvider(
           create: (context) => EnrollmentProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => FolderProvider()
-        ),
+        ChangeNotifierProvider(create: (_) => FolderProvider()),
       ],
       child: MaterialApp(
         localizationsDelegates: const [

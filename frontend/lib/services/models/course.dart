@@ -1,7 +1,6 @@
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/services/models/comment.dart';
 
-
 // class Course {
 //   String id;
 //   String title;
@@ -162,7 +161,7 @@ class Course {
                   Lesson.fromJson(lessonJson as Map<String, dynamic>))
               .toList() ??
           [],
-      categories: (json['categories'] as List<dynamic>?)
+      categories: (json['category'] as List<dynamic>?)
               ?.map((category) => category as String)
               .toList() ??
           [],

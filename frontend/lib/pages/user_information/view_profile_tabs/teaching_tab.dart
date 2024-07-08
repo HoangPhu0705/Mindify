@@ -162,12 +162,18 @@ class _TeachingTabState extends State<TeachingTab> {
                                     ),
                                   ),
                                 );
+                                if (result != null) {
+                                  setState(() {
+                                    userCourses[index] = result;
+                                  });
+                                }
                               },
                               onDeletePressed: () {
                                 AwesomeDialog(
                                   padding: EdgeInsets.all(16),
                                   context: context,
                                   dialogType: DialogType.noHeader,
+                                  dialogBorderRadius: BorderRadius.circular(5),
                                   dialogBackgroundColor: AppColors.deepSpace,
                                   title: 'Delete Class',
                                   titleTextStyle: TextStyle(
@@ -176,7 +182,7 @@ class _TeachingTabState extends State<TeachingTab> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                   desc:
-                                      'Are you sure you want to delete this class?',
+                                      'Deleting this will delete all of your content?',
                                   btnCancelOnPress: () {},
                                   btnOkColor: AppColors.cream,
                                   descTextStyle: TextStyle(

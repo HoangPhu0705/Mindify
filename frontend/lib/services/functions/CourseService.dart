@@ -288,8 +288,3 @@ class CourseService {
     }
   }
 }
-
-
-
-
-
