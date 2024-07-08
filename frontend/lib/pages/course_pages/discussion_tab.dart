@@ -1,12 +1,9 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
-
 import 'dart:async';
 import 'dart:developer';
 
 import 'package:comment_tree/comment_tree.dart' as ct;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/services/functions/CourseService.dart';
+import 'package:frontend/services/functions/CommentService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/comment.dart';
 import 'package:frontend/services/models/reply.dart';
@@ -25,35 +22,28 @@ class Discussion extends StatefulWidget {
 
 class _DiscussionState extends State<Discussion> {
   final TextEditingController _commentController = TextEditingController();
-  final courseService = CourseService();
+  final commentService = CommentService();
   final userService = UserService();
   final GlobalKey _commentFieldKey = GlobalKey();
-  late StreamController<List<Comment>> _commentsStreamController;
-  String userId = '';
+  String userId = ''; // Assume you have a method to get the userId
   String? _replyToCommentId;
+  List<Comment> comments = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    userId = userService.getUserId();
-    _commentsStreamController = StreamController<List<Comment>>.broadcast();
-    _fetchComments();
+    userId = userService.getUserId(); // Replace with actual user ID fetching logic
+    _loadComments();
   }
 
-  @override
-  void dispose() {
-    _commentsStreamController.close();
-    _commentController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fetchComments() async {
-    try {
-      final comments = await courseService.getComments(widget.courseId);
-      _commentsStreamController.add(comments);
-    } catch (e) {
-      log("Error fetching comments: $e");
-    }
+  Future<void> _loadComments() async {
+    commentService.getCommentsStreamByCourse(widget.courseId).listen((data) {
+      setState(() {
+        comments = data;
+        isLoading = false;
+      });
+    });
   }
 
   Future<void> _addComment() async {
@@ -62,19 +52,12 @@ class _DiscussionState extends State<Discussion> {
     final data = {
       'userId': userId,
       'content': _commentController.text,
+      'createdAt': DateTime.now().toIso8601String(),
     };
 
     try {
       if (_replyToCommentId == null) {
-        final commentId = await courseService.createComment(widget.courseId, data);
-        final newComment = Comment(
-          id: commentId,
-          userId: userId,
-          content: data['content'] as String,
-          createdAt: DateTime.now(),
-          replies: [],
-        );
-        _updateComments((comments) => comments..add(newComment));
+        await commentService.createComment(widget.courseId, data);
       } else {
         await _addReply(_replyToCommentId!, _commentController.text);
       }
@@ -96,27 +79,10 @@ class _DiscussionState extends State<Discussion> {
     };
 
     try {
-      final replyId = await courseService.createReply(widget.courseId, commentId, data);
-      final newReply = Reply(
-        id: replyId as String,
-        userId: userId,
-        content: replyContent,
-        createdAt: DateTime.now(),
-      );
-      _updateComments((comments) {
-        final comment = comments.firstWhere((comment) => comment.id == commentId);
-        comment.replies.add(newReply);
-        return comments;
-      });
+      await commentService.createReply(widget.courseId, commentId, data);
     } catch (e) {
       log("Error adding reply: $e");
     }
-  }
-
-  void _updateComments(List<Comment> Function(List<Comment>) update) {
-    _commentsStreamController.addStream(
-      _commentsStreamController.stream.first.then((comments) => Future.value(update(comments))).asStream(),
-    );
   }
 
   @override
@@ -158,38 +124,34 @@ class _DiscussionState extends State<Discussion> {
             children: [
               Align(
                 alignment: Alignment.topLeft,
-                child: StreamBuilder<List<Comment>>(
-                  stream: _commentsStreamController.stream,
-                  builder: (context, snapshot) {
-                    final comments = snapshot.data ?? [];
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${comments.length} Discussions',
-                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        AppSpacing.mediumVertical,
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: comments.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                _buildCommentTree(context, comments[index]),
-                                Divider(color: AppColors.lighterGrey),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                child: isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${comments.length} Discussions',
+                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          AppSpacing.mediumVertical,
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: comments.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  _buildCommentTree(context, comments[index]),
+                                  Divider(color: AppColors.lighterGrey),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
               ),
             ],
           ),
@@ -275,7 +237,8 @@ class _DiscussionState extends State<Discussion> {
           ],
         );
       },
-      
+
+      // Child Comment
       contentChild: (context, data) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,7 +290,6 @@ class _DiscussionState extends State<Discussion> {
       _replyToCommentId = commentId;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Scrollable.ensureVisible(_commentFieldKey.currentContext!, duration: Duration(milliseconds: 300));
-        FocusScope.of(context).requestFocus(FocusNode());
         FocusScope.of(context).requestFocus(FocusNode());
       });
     });
