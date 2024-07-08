@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/FolderService.dart';
 import 'package:frontend/services/models/course.dart';
@@ -52,13 +54,7 @@ class _FolderDetailState extends State<FolderDetail> {
     return courseList;
   }
 
-  Future<Folder> getFolder() async {
-    Folder folder = await folderService.getFolder(widget.folderId);
-    return folder;
-  }
-
   Future<void> _initPage() async {
-    folder = await getFolder();
     _courseList = await getCourseList();
   }
 
@@ -97,13 +93,27 @@ class _FolderDetailState extends State<FolderDetail> {
                   itemBuilder: (context, index) {
                     Course course = _courseList[index];
 
-                    return MyCourseItem(
-                      imageUrl: course.thumbnail,
-                      title: course.title,
-                      author: course.instructorName,
-                      duration: course.duration,
-                      students: course.students.toString(),
-                      moreOnPress: () {},
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return CourseDetail(
+                                  courseId: course.id,
+                                  userId:
+                                      FirebaseAuth.instance.currentUser!.uid);
+                            },
+                          ),
+                        );
+                      },
+                      child: MyCourseItem(
+                        imageUrl: course.thumbnail,
+                        title: course.title,
+                        author: course.instructorName,
+                        duration: course.duration,
+                        students: course.students.toString(),
+                        moreOnPress: () {},
+                      ),
                     );
                   },
                 );

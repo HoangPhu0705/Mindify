@@ -301,12 +301,12 @@ class _SearchPageState extends State<SearchPage> {
                           borderRadiiList: const [20],
                           style: const TextStyle(fontSize: 14),
                           showCheckmark: false,
-                          activeBorderColorList: [Colors.black],
-                          inactiveBgColorList: [AppColors.ghostWhite],
-                          inactiveBorderColorList: [AppColors.lightGrey],
-                          inactiveTextColorList: [Colors.black],
-                          activeTextColorList: [Colors.black],
-                          activeBgColorList: [Colors.transparent],
+                          activeBorderColorList: const [Colors.black],
+                          inactiveBgColorList: const [AppColors.ghostWhite],
+                          inactiveBorderColorList: const [AppColors.lightGrey],
+                          inactiveTextColorList: const [Colors.black],
+                          activeTextColorList: const [Colors.black],
+                          activeBgColorList: const [Colors.transparent],
                           axis: Axis.horizontal,
                           mainAxisAlignment: MainAxisAlignment.start,
                           extraOnToggle: (val) {
@@ -316,10 +316,11 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                     ),
-                    _buildLabel("Browse Categories"),
+                    _buildLabel("Categories"),
+                    AppSpacing.mediumVertical,
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         return _buildCategoryTile(
@@ -339,12 +340,12 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildLabel(String title) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, top: 16),
+      padding: const EdgeInsets.only(left: 16, top: 16),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
           title,
-          style: TextStyle(color: AppColors.lightGrey),
+          style: const TextStyle(color: AppColors.lightGrey),
         ),
       ),
     );
@@ -352,7 +353,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildCategoryTile(String name, String image) {
     return Container(
-      margin: EdgeInsets.only(bottom: 30),
+      margin: const EdgeInsets.only(bottom: 30),
       child: ListTile(
         onTap: () {},
         leading: ClipRRect(
@@ -371,7 +372,10 @@ class _SearchPageState extends State<SearchPage> {
         ),
         title: Text(
           name,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
         ),
       ),
     );

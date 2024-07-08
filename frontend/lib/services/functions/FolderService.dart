@@ -88,7 +88,6 @@ class FolderService {
     final response = await http.get(
       Uri.parse("${AppConstants.FOLDER_API}/$folderId/courses"),
     );
-
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.toList();

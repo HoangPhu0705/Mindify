@@ -122,6 +122,7 @@ class _ManageClassState extends State<ManageClass> {
     myCourse.title = title;
     myCourse.projectDescription = projectDescription;
     myCourse.description = classDescription;
+
     setState(() {
       _isSaved = true;
     });
