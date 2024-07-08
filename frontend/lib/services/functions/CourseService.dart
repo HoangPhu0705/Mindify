@@ -287,6 +287,7 @@ class CourseService {
       throw Exception("Error updating course");
     }
   }
+
   Future<List<Comment>> getComments(String courseId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/$courseId/comments"),
@@ -324,7 +325,8 @@ class CourseService {
 
   Future<void> createReply(String courseId, String commentId, var data) async {
     try {
-      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/comments/$commentId/replies");
+      final url = Uri.parse(
+          "${AppConstants.COURSE_API}/$courseId/comments/$commentId/replies");
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -340,9 +342,31 @@ class CourseService {
       throw Exception("Error creating reply");
     }
   }
+
+  Stream<QuerySnapshot> getLessonStreamByCourse(String courseId) {
+    return _firestore
+        .collection('courses')
+        .doc(courseId)
+        .collection('lessons')
+        .snapshots();
+  }
+
+  Future<void> createLesson(String courseId, var data) async {
+    try {
+      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons");
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 201) {
+        log("Lesson created successfully: ${response.body}");
+      } else {
+        throw Exception("Error creating lesson");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error creating lesson");
+    }
+  }
 }
-
-
-
-
-

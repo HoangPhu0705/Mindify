@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/lesson_upload.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/multiline_tag.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/models/course.dart';
@@ -71,7 +72,7 @@ class _ManageClassState extends State<ManageClass> {
     return greeting;
   }
 
-  static const List<String> _initialTags = <String>[];
+  List<String> _initialTags = <String>[];
 
   @override
   void initState() {
@@ -94,11 +95,13 @@ class _ManageClassState extends State<ManageClass> {
       myCourse = value;
       courseTitle = myCourse.title;
       _titleController.text = myCourse.title;
-      _classDescriptionController.document =
-          Document.fromJson(jsonDecode(myCourse.description));
+      _classDescriptionController.document = Document.fromJson(
+        jsonDecode(myCourse.description),
+      );
 
       _projectDescriptionController.document =
           Document.fromJson(jsonDecode(myCourse.projectDescription));
+      _initialTags = myCourse.categories;
     });
 
     return myCourse;
@@ -110,7 +113,6 @@ class _ManageClassState extends State<ManageClass> {
     String projectDescription =
         jsonEncode(_projectDescriptionController.document.toDelta().toJson());
     String title = _titleController.text;
-
     var updatedData = {
       "courseName": title,
       "projectDescription": projectDescription,
@@ -122,10 +124,7 @@ class _ManageClassState extends State<ManageClass> {
     myCourse.title = title;
     myCourse.projectDescription = projectDescription;
     myCourse.description = classDescription;
-
-    setState(() {
-      _isSaved = true;
-    });
+    myCourse.categories = stringTagController.getTags ?? [];
   }
 
   bool _onChanged(
@@ -153,8 +152,6 @@ class _ManageClassState extends State<ManageClass> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SizedBox.shrink();
               }
-
-              Course? course = snapshot.data;
               return IconButton(
                   icon: const Icon(
                     Icons.arrow_back,
@@ -172,7 +169,9 @@ class _ManageClassState extends State<ManageClass> {
                     String title = _titleController.text;
                     bool isModify =
                         _onChanged(classDescription, projectDescription, title);
-                    log(isModify.toString());
+                    Course? course = myCourse;
+                    log(myCourse.title);
+
                     if (isModify) {
                       bool? shouldPop = await AwesomeDialog(
                         padding: const EdgeInsets.all(16),
@@ -187,7 +186,7 @@ class _ManageClassState extends State<ManageClass> {
                         },
                       ).show();
 
-                      if (shouldPop == true) {
+                      if (shouldPop == true && context.mounted) {
                         if (!widget.isEditing) {
                           Navigator.pop(context);
                         }
@@ -214,12 +213,13 @@ class _ManageClassState extends State<ManageClass> {
           GestureDetector(
             onTap: () {
               saveCourse();
+              showSuccessToast(context, "Saved");
             },
-            child: const Padding(
-              padding: EdgeInsets.only(right: 8.0),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
               child: Text(
-                "Save",
-                style: TextStyle(
+                _isSaved ? "Saved" : "Save",
+                style: const TextStyle(
                   color: AppColors.cream,
                   fontWeight: FontWeight.w700,
                 ),
@@ -343,7 +343,9 @@ class _ManageClassState extends State<ManageClass> {
                           final result = Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const LessonUpload(),
+                              builder: (context) => LessonUpload(
+                                courseId: widget.courseId,
+                              ),
                             ),
                           );
                         },
@@ -488,7 +490,10 @@ class _ManageClassState extends State<ManageClass> {
                       "Class categories tags help students find your class. Add tags to make your class more discoverable in search results",
                     ),
                     AppSpacing.smallVertical,
-                    MultilineTag(controller: stringTagController),
+                    MultilineTag(
+                      controller: stringTagController,
+                      initialTags: _initialTags,
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Align(

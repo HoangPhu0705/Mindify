@@ -206,7 +206,7 @@ class _LessonTabState extends State<LessonTab> {
                         : Icons.lock),
                     trailing: widget.isEnrolled
                         ? IconButton(
-                            icon: Icon(Icons.download_for_offline_sharp),
+                            icon: const Icon(Icons.download_for_offline_sharp),
                             onPressed: isLessonAccessible? () {
                                     _downloadLesson(lesson.link, lesson.title);
                                     widget.onSaveLesson(lesson.id);
