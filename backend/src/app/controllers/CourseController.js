@@ -148,4 +148,12 @@ exports.getCourseByUserId = async (req, res) => {
 
 
 
+exports.updateLessonCountForCourses = async (req, res) => {
+  try {
+    const response = await CourseService.updateLessonCountForCourses();
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating lesson count for courses', error: error.message });
+  }
+};
 
