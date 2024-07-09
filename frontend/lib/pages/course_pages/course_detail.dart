@@ -117,21 +117,15 @@ class _CourseDetailState extends State<CourseDetail>
 
   Future<void> _saveLesson(String lessonId) async {
     if (_enrollmentId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Enrollment ID is null. Cannot save lesson.')),
-      );
+      showErrorToast(context, 'You have to purchase this course first');
       return;
     }
 
     try {
       await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lesson saved successfully!')),
-      );
+      showSuccessToast(context, 'Lesson saved successfully!');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save lesson: $e')),
-      );
+      showErrorToast(context, 'Failed to save lesson');
     }
   }
 
