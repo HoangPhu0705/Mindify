@@ -287,4 +287,30 @@ class CourseService {
       throw Exception("Error updating course");
     }
   }
+  Stream<QuerySnapshot> getLessonStreamByCourse(String courseId) {
+    return _firestore
+        .collection('courses')
+        .doc(courseId)
+        .collection('lessons')
+        .snapshots();
+  }
+
+  Future<void> createLesson(String courseId, var data) async {
+    try {
+      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons");
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 201) {
+        log("Lesson created successfully: ${response.body}");
+      } else {
+        throw Exception("Error creating lesson");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error creating lesson");
+    }
+  }
 }
