@@ -11,6 +11,7 @@ import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
@@ -28,7 +29,8 @@ class CourseDetail extends StatefulWidget {
   State<CourseDetail> createState() => _CourseDetailState();
 }
 
-class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderStateMixin {
+class _CourseDetailState extends State<CourseDetail>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
@@ -63,7 +65,8 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrollmentStatus = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
+      final enrollmentStatus = await enrollmentService.checkEnrollment(
+          widget.userId, widget.courseId);
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
         _enrollmentId = enrollmentStatus['enrollmentId'];
@@ -97,25 +100,21 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
   }
 
   Future<void> _saveLesson(String lessonId) async {
-  if (_enrollmentId == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Enrollment ID is null. Cannot save lesson.')),
-    );
-    return;
-  }
+    if (_enrollmentId == null) {
+      showErrorToast(context, 'You have to purchase this course first');
+      return;
+    }
 
-  try {
-    await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Lesson saved successfully!')),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to save lesson: $e')),
-    );
+    try {
+      await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Lesson saved successfully!')),
+      // );
+      showSuccessToast(context, 'Lesson saved successfully!');
+    } catch (e) {
+      showErrorToast(context, 'Failed to save lesson');
+    }
   }
-}
-
 
   @override
   void dispose() {
@@ -251,20 +250,17 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
                     controller: _tabController,
                     children: [
                       LessonTab(
-                          isFollowed: isFollowed,
-                          followUser: followUser,
-                          course: course!,
-                          isEnrolled: isEnrolled,
-                          onLessonTap: _onLessonTap,
-                          onSaveLesson: _saveLesson,
-                        ),
+                        isFollowed: isFollowed,
+                        followUser: followUser,
+                        course: course!,
+                        isEnrolled: isEnrolled,
+                        onLessonTap: _onLessonTap,
+                        onSaveLesson: _saveLesson,
+                      ),
                       SubmitProject(
                         course: course!,
                       ),
-                      Discussion(
-                        courseId: course!.id,
-                        isEnrolled: isEnrolled
-                      ),
+                      Discussion(courseId: course!.id, isEnrolled: isEnrolled),
                       Center(
                         child: Text("Notes"),
                       ),

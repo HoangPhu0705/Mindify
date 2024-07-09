@@ -5,12 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:frontend/pages/course_management/edit_video.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:frontend/utils/toasts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pie_menu/pie_menu.dart';
+import 'package:video_player/video_player.dart';
 
 class LessonUpload extends StatefulWidget {
   final String courseId;
@@ -28,10 +33,34 @@ class _LessonUploadState extends State<LessonUpload> {
   CourseService courseService = CourseService();
 
   //Variables
-  PlatformFile? pickedVideo;
+  XFile? pickedVideo;
   UploadTask? uploadTask;
+  Duration? videoDuration;
 
-  Future<void> selectFile() async {
+  //Controllers
+  final videoTitleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    videoTitleController.dispose();
+    super.dispose();
+  }
+
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
+  }
+
+  final ImagePicker _picker = ImagePicker();
+
+  void _pickVideo() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.video,
       allowMultiple: false,
@@ -39,15 +68,31 @@ class _LessonUploadState extends State<LessonUpload> {
 
     if (result == null) return;
 
+    final pickedFile = result.files.first;
+    final file = XFile(pickedFile.path!);
+
+    XFile video = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => VideoEditor(file: file),
+      ),
+    );
+
+    final videoPlayerController = VideoPlayerController.file(File(video.path));
+    await videoPlayerController.initialize();
+    videoDuration = videoPlayerController.value.duration;
+
     setState(() {
-      pickedVideo = result.files.first;
+      pickedVideo = video;
     });
+    await uploadVideo();
   }
 
   Future<void> uploadVideo() async {
     // upload video to firebase
-    final path = 'video_lessons/${pickedVideo!.name}';
-    final file = File(pickedVideo!.path!);
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = 'video_lessons/$timestamp';
+    final file = File(pickedVideo!.path);
 
     final ref = FirebaseStorage.instance.ref().child(path);
     setState(() {
@@ -56,24 +101,26 @@ class _LessonUploadState extends State<LessonUpload> {
     final snapshot = await uploadTask!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
 
-    log("url download $urlDownload");
     setState(() {
       uploadTask = null;
     });
 
     var data = {
-      "duration": "1:34",
+      "duration": formatDuration(videoDuration!),
       "index": 1,
       "link": urlDownload,
       "title": pickedVideo!.name,
+      "timestamp": timestamp,
     };
 
     await courseService.createLesson(widget.courseId, data);
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Future<void> deleteLesson(
+      String courseId, String lessonId, String videoPath) async {
+    await courseService.deleteLesson(courseId, lessonId);
+    final ref = FirebaseStorage.instance.ref().child(videoPath);
+    await ref.delete();
   }
 
   @override
@@ -164,6 +211,8 @@ class _LessonUploadState extends State<LessonUpload> {
                                         .data() as Map<String, dynamic>;
                                     String lessonTitle = data['title'];
                                     String duration = data['duration'];
+                                    String timestamp = data['timestamp'];
+                                    videoTitleController.text = lessonTitle;
                                     return Container(
                                       margin: const EdgeInsets.only(bottom: 10),
                                       decoration: BoxDecoration(
@@ -173,13 +222,52 @@ class _LessonUploadState extends State<LessonUpload> {
                                         borderRadius: BorderRadius.circular(5),
                                       ),
                                       child: ListTile(
-                                        trailing: const Icon(Icons.more_horiz),
+                                        trailing: PopupMenuButton(
+                                          offset: const Offset(10, -20),
+                                          padding: const EdgeInsets.all(5),
+                                          constraints:
+                                              const BoxConstraints.expand(
+                                            width: 50,
+                                            height: 100,
+                                          ),
+                                          icon: const Icon(
+                                              Icons.more_horiz_outlined),
+                                          color: AppColors.deepBlue,
+                                          elevation: 0,
+                                          itemBuilder: (context) => [
+                                            PopupMenuItem(
+                                              child: const Icon(
+                                                Icons.edit_outlined,
+                                                color: Colors.white,
+                                              ),
+                                              onTap: () async {},
+                                            ),
+                                            PopupMenuItem(
+                                              child: const Icon(
+                                                Icons.delete_forever,
+                                                color: Colors.red,
+                                              ),
+                                              onTap: () async {
+                                                final videoPath =
+                                                    'video_lessons/$timestamp';
+                                                await deleteLesson(
+                                                  widget.courseId,
+                                                  lessonId,
+                                                  videoPath,
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                         leading: const Icon(
                                           Icons.video_library,
                                           color: AppColors.deepBlue,
                                         ),
-                                        title: Text(
-                                          lessonTitle,
+                                        title: TextField(
+                                          readOnly: true,
+                                          decoration: InputDecoration.collapsed(
+                                              hintText: lessonTitle),
+                                          controller: videoTitleController,
                                           maxLines: 2,
                                           style: const TextStyle(
                                             overflow: TextOverflow.ellipsis,
@@ -209,8 +297,10 @@ class _LessonUploadState extends State<LessonUpload> {
                       const Divider(),
                       GestureDetector(
                         onTap: () async {
-                          await selectFile();
-                          await uploadVideo();
+                          // await selectFile();
+                          // await uploadVideo();
+
+                          _pickVideo();
                         },
                         child: const Icon(
                           Icons.add_circle_outline_outlined,
@@ -238,7 +328,7 @@ class _LessonUploadState extends State<LessonUpload> {
   Widget buildProgress() => StreamBuilder(
         stream: uploadTask?.snapshotEvents,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && uploadTask != null) {
             final data = snapshot.data!;
             double progress = data.bytesTransferred / data.totalBytes;
             return SizedBox(
@@ -254,6 +344,7 @@ class _LessonUploadState extends State<LessonUpload> {
                     ),
                   ),
                   LinearPercentIndicator(
+                    animateFromLastPercent: true,
                     percent: progress,
                     barRadius: const Radius.circular(10),
                     progressColor: AppColors.cream,
@@ -268,3 +359,32 @@ class _LessonUploadState extends State<LessonUpload> {
         },
       );
 }
+
+
+
+  // Future<void> selectFile() async {
+  //   final result = await FilePicker.platform.pickFiles(
+  //     type: FileType.video,
+  //     allowMultiple: false,
+  //   );
+
+  //   if (result == null) return;
+
+  //   final pickedFile = result.files.first;
+  //   final file = XFile(pickedFile.path!);
+
+  //   // final videoPlayerController = VideoPlayerController.file(file);
+  //   // await videoPlayerController.initialize();
+  //   // final duration = videoPlayerController.value.duration;
+
+  //   // if (duration > const Duration(minutes: 20) && mounted) {
+  //   //   showSuccessToast(
+  //   //       context, "You can't upload video longer than 20 minutes");
+  //   //   return;
+  //   // }
+
+  //   setState(() {
+  //     pickedVideo = pickedFile;
+  //     // videoDuration = duration;
+  //   });
+  // }

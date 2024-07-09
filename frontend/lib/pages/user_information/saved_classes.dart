@@ -37,15 +37,14 @@ class _SavedClassesState extends State<SavedClasses> {
       //     Provider.of<CourseProvider>(context, listen: false);
       Set<String> savedCourseIds = await _userService.getSavedCourses(userId!);
       List<Course> courses = [];
-      log('Saved Course IDs: $savedCourseIds');
-      
+
       for (String id in savedCourseIds) {
         Course? course = await _courseService.getCourseById(id);
         if (course != null) {
           courses.add(course);
         }
       }
-      
+
       setState(() {
         _savedCourses = courses;
         _isLoading = false;
