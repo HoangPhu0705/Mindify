@@ -238,7 +238,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 specialization: "Filmmaker and Youtuber",
                 courseName: course.title,
                 time: course.duration,
-                numberOfLesson: course.lessons.length,
+                numberOfLesson: course.lessonNum,
                 avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
                 isSaved: isSaved,
                 onSavePressed: () {

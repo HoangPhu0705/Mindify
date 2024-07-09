@@ -120,7 +120,7 @@ class Course {
   List<Lesson> lessons;
   List<String> categories = [];
   List<Comment> comments = [];
-
+  int lessonNum;
   // Constructor
   Course({
     required this.id,
@@ -138,6 +138,7 @@ class Course {
     required this.lessons,
     required this.categories,
     required this.comments,
+    required this.lessonNum,
   });
 
   // Factory
@@ -169,6 +170,32 @@ class Course {
                   Comment.fromJson(commentJson as Map<String, dynamic>))
               .toList() ??
           [],
+      lessonNum: json['lessonNum']
+    );
+  }
+
+  factory Course.fromJsonWithoutLesson(Map<String, dynamic> json) {
+    return Course(
+      id: json['id'] as String,
+      title: json['courseName'] as String,
+      description: json['description'] as String,
+      thumbnail: json['thumbnail'] as String,
+      instructorId: json['authorId'] as String,
+      instructorName: json['author'] as String,
+      duration: json['duration'] as String,
+      isPublic: json['isPublic'] as bool,
+      projectNum: json['projectNum'] as int,
+      students: json['students'] as int,
+      price: json['price'] as int,
+      projectDescription: json['projectDescription'] as String,
+      lessons: [],
+      categories: (json['category'] as List<dynamic>?)
+              ?.map((category) => category as String)
+              .toList() ??
+          [],
+      comments: [],
+      lessonNum: json['lessonNum']
+
     );
   }
 
@@ -189,6 +216,7 @@ class Course {
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
       'categories': categories,
       'comments': comments.map((comment) => comment.toJson()).toList(),
+      'lessonNum': lessonNum,
     };
   }
 }
