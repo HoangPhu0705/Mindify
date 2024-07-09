@@ -139,9 +139,58 @@ class _LessonUploadState extends State<LessonUpload> {
                             stream: courseService
                                 .getLessonStreamByCourse(widget.courseId),
                             builder: (context, snapshot) {
-                              List<DocumentSnapshot> lessons =
-                                  snapshot.data!.docs;
-                              if (lessons.isEmpty) {
+                              if (snapshot.hasData) {
+                                List<DocumentSnapshot> lessons =
+                                    snapshot.data!.docs;
+                                if (lessons.isEmpty) {
+                                  return const Center(
+                                    child: Text(
+                                      "Your class need videos",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return ListView.builder(
+                                  itemCount: lessons.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot document = lessons[index];
+                                    String lessonId = document.id;
+                                    Map<String, dynamic> data = lessons[index]
+                                        .data() as Map<String, dynamic>;
+                                    String lessonTitle = data['title'];
+                                    String duration = data['duration'];
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: AppColors.lightGrey,
+                                        ),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: ListTile(
+                                        trailing: const Icon(Icons.more_horiz),
+                                        leading: const Icon(
+                                          Icons.video_library,
+                                          color: AppColors.deepBlue,
+                                        ),
+                                        title: Text(
+                                          lessonTitle,
+                                          maxLines: 2,
+                                          style: const TextStyle(
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        subtitle: Text(duration),
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else {
                                 return const Center(
                                   child: Text(
                                     "Your class need videos",
@@ -152,43 +201,6 @@ class _LessonUploadState extends State<LessonUpload> {
                                   ),
                                 );
                               }
-
-                              return ListView.builder(
-                                itemCount: lessons.length,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  DocumentSnapshot document = lessons[index];
-                                  String lessonId = document.id;
-                                  Map<String, dynamic> data = lessons[index]
-                                      .data() as Map<String, dynamic>;
-                                  String lessonTitle = data['title'];
-                                  String duration = data['duration'];
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: AppColors.lightGrey,
-                                      ),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: ListTile(
-                                      trailing: const Icon(Icons.more_horiz),
-                                      leading: const Icon(
-                                        Icons.video_library,
-                                        color: AppColors.deepBlue,
-                                      ),
-                                      title: Text(
-                                        lessonTitle,
-                                        maxLines: 2,
-                                        style: const TextStyle(
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      subtitle: Text(duration),
-                                    ),
-                                  );
-                                },
-                              );
                             },
                           ),
                         ),
