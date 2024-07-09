@@ -11,15 +11,12 @@ class CommentService {
   final CollectionReference comments =
       FirebaseFirestore.instance.collection('courses');
 
-  Stream<List<Comment>> getCommentsStreamByCourse(String courseId) {
-    return comments.doc(courseId).collection('comments').snapshots().asyncMap((snapshot) async {
-      List<Comment> comments = [];
-      for (var doc in snapshot.docs) {
-        List<Reply> replies = await getReplies(courseId, doc.id);
-        comments.add(Comment.fromJson(doc.data() as Map<String, dynamic>)..replies = replies);
-      }
-      return comments;
-    });
+  Stream<QuerySnapshot> getCommentsStreamByCourse(String courseId) {
+    return comments.doc(courseId).collection('comments').orderBy("createdAt", descending: false).snapshots();
+  }
+
+  Stream<QuerySnapshot> getReplieStreamByComment(String courseId, String commentId){
+    return comments.doc(courseId).collection('comments').doc(commentId).collection('replies').snapshots();
   }
 
   Future<List<Reply>> getReplies(String courseId, String commentId) async {

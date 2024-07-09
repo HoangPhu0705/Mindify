@@ -250,8 +250,23 @@ exports.updateLessonCountForCourses = async () => {
   }
 };
 
-
-
-
-
-
+exports.changeTheInstructorId = async () => {
+  try {
+    const snapshot = await CourseCollection.get();
+    
+    const batch = CourseCollection.firestore.batch();
+    const instructorId = ["K0TVyBUIYiag23kc7DQrlrplF853", "JODO8VMzDWfGmcsYgNqNrNrLrt22",
+                          "AMAVeLkYQeW1q6U0ZPka5k8FLeL2"];
+    
+    snapshot.docs.forEach(doc => {
+      const randomId = instructorId[Math.floor(Math.random() * instructorId.length)];
+      batch.update(doc.ref, { authorId: randomId });
+    });
+    
+    await batch.commit();
+    return { message: "Added random id to all courses successfully" };
+  } catch (error) {
+    console.error('Error adding random id to all courses:', error);
+    throw error;
+  }
+};

@@ -189,7 +189,7 @@ class Course {
       price: json['price'] as int,
       projectDescription: json['projectDescription'] as String,
       lessons: [],
-      categories: (json['categories'] as List<dynamic>?)
+      categories: (json['category'] as List<dynamic>?)
               ?.map((category) => category as String)
               .toList() ??
           [],

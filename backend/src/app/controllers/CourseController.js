@@ -155,3 +155,11 @@ exports.updateLessonCountForCourses = async (req, res) => {
   }
 };
 
+exports.changeTheInstructorId = async (req, res) => {
+  try {
+    const response = await CourseService.changeTheInstructorId();
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding author Id to all courses', error: error.message });
+  }
+};

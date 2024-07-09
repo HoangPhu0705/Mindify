@@ -4,7 +4,7 @@ class Comment {
   String id;
   String userId;
   String content;
-  DateTime createdAt;
+  String createdAt;
   List<Reply> replies;
 
   Comment({
@@ -20,7 +20,7 @@ class Comment {
       id: json['id'] as String,
       userId: json['userId'] as String,
       content: json['content'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: (json['createdAt'] as String),
       replies: (json['replies'] as List<dynamic>?)
               ?.map((replyJson) => Reply.fromJson(replyJson as Map<String, dynamic>)).toList() ?? [],
     );
@@ -31,7 +31,7 @@ class Comment {
       'id': id,
       'userId': userId,
       'content': content,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt,
       'replies': replies.map((reply) => reply.toJson()).toList(),
     };
   }

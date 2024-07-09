@@ -19,6 +19,7 @@ router.patch('/:id', CourseController.updateCourse);
 router.delete('/:id', CourseController.deleteCourse);
 router.post('/batch', CourseController.addCourses);
 router.post('/addPrice', CourseController.addPriceToAllCourses);
+router.post('/changeId', CourseController.changeTheInstructorId);
 router.post('/updateLessonLinkByIndex', CourseController.updateLessonLinkByIndex);
 router.post('/updateLessonCount', CourseController.updateLessonCountForCourses);
 router.post('/:id/comments', CommentController.createComment);
