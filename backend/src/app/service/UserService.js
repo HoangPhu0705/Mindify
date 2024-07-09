@@ -1,5 +1,6 @@
 const { UserCollection, RequestCollection } = require('./Collections');
 const nodemailer = require('nodemailer');
+const admin = require('firebase-admin');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -248,3 +249,58 @@ exports.rejectInstructorRequest = async (requestId, content) => {
     }
 };
 
+exports.followUser = async (userId, followUserId) => {
+    const userRef = UserCollection.doc(userId);
+    const followUserRef = UserCollection.doc(followUserId);
+
+    const [userDoc, followUserDoc] = await Promise.all([userRef.get(), followUserRef.get()]);
+
+    if (!userDoc.exists) {
+        throw new Error("User doesn't exist");
+    }
+
+    if (!followUserDoc.exists) {
+        throw new Error("User to follow doesn't exist");
+    }
+
+    await admin.firestore().runTransaction(async (transaction) => {
+        const userData = userDoc.data();
+        const followUserData = followUserDoc.data();
+
+        const updatedFollowingUser = userData.followingUser || [];
+        if (!updatedFollowingUser.includes(followUserId)) {
+            updatedFollowingUser.push(followUserId);
+            transaction.update(userRef, {
+                followingUser: updatedFollowingUser,
+                followingNum: admin.firestore.FieldValue.increment(1)
+            });
+        }
+
+        const updatedFollowerUser = followUserData.followerUser || [];
+        if (!updatedFollowerUser.includes(userId)) {
+            updatedFollowerUser.push(userId);
+            transaction.update(followUserRef, {
+                followerUser: updatedFollowerUser,
+                followerNum: admin.firestore.FieldValue.increment(1)
+            });
+        }
+    });
+};
+
+exports.updateUsers = async () => {
+    const usersSnapshot = await UserCollection.get();
+    const batch = admin.firestore().batch();
+
+    usersSnapshot.forEach((doc) => {
+        const userRef = UserCollection.doc(doc.id);
+        batch.update(userRef, {
+            followerUser: [],
+            followingUser: [],
+            followerNum: 0,
+            followingNum: 0
+        });
+    });
+
+    await batch.commit();
+    console.log("All users updated successfully");
+};
