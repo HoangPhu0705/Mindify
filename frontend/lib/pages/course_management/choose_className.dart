@@ -64,7 +64,8 @@ class _ChooseClassNameState extends State<ChooseClassName> {
         "author":
             FirebaseAuth.instance.currentUser!.displayName ?? "Mindify Member",
         "authorId": FirebaseAuth.instance.currentUser!.uid,
-        "duration": ""
+        "duration": "",
+        "lessonNum": 0,
       };
       String result = await courseServices.createCourse(data);
 

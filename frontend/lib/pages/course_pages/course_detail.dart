@@ -11,6 +11,7 @@ import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
@@ -29,7 +30,8 @@ class CourseDetail extends StatefulWidget {
   State<CourseDetail> createState() => _CourseDetailState();
 }
 
-class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderStateMixin {
+class _CourseDetailState extends State<CourseDetail>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
@@ -68,7 +70,8 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrollmentStatus = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
+      final enrollmentStatus = await enrollmentService.checkEnrollment(
+          widget.userId, widget.courseId);
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
         _enrollmentId = enrollmentStatus['enrollmentId'];
@@ -276,18 +279,15 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
                           isFollowed: isFollowed,
                           instructorId: course!.instructorId,
                           userId: userId,
-                          course: course!,
-                          isEnrolled: isEnrolled,
-                          onLessonTap: _onLessonTap,
-                          onSaveLesson: _saveLesson,
-                        ),
+                        course: course!,
+                        isEnrolled: isEnrolled,
+                        onLessonTap: _onLessonTap,
+                        onSaveLesson: _saveLesson,
+                      ),
                       SubmitProject(
                         course: course!,
                       ),
-                      Discussion(
-                        courseId: course!.id,
-                        isEnrolled: isEnrolled
-                      ),
+                      Discussion(courseId: course!.id, isEnrolled: isEnrolled),
                       Center(
                         child: Text("Notes"),
                       ),

@@ -33,7 +33,9 @@ class CourseService {
           await http.get(Uri.parse("${AppConstants.COURSE_API}/random"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        return data.map((course) => Course.fromJsonWithoutLesson(course)).toList();
+        return data
+            .map((course) => Course.fromJsonWithoutLesson(course))
+            .toList();
       } else {
         throw Exception("Failed to load random courses");
       }
@@ -64,7 +66,9 @@ class CourseService {
           await http.get(Uri.parse("${AppConstants.COURSE_API}/newest"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        return data.map((course) => Course.fromJsonWithoutLesson(course)).toList();
+        return data
+            .map((course) => Course.fromJsonWithoutLesson(course))
+            .toList();
       } else {
         throw Exception("Failed to load newest 5 courses");
       }
@@ -80,7 +84,9 @@ class CourseService {
           await http.get(Uri.parse("${AppConstants.COURSE_API}/top5"));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        return data.map((course) => Course.fromJsonWithoutLesson(course)).toList();
+        return data
+            .map((course) => Course.fromJsonWithoutLesson(course))
+            .toList();
       } else {
         throw Exception("Failed to load top 5 courses");
       }
@@ -152,7 +158,7 @@ class CourseService {
     try {
       if (isNewSearch) lastDocument = null;
 
-      Query queryRef = _firestore.collection('courses').limit(50);
+      Query queryRef = _firestore.collection('courses').limit(10);
 
       if (lastDocument != null) {
         queryRef = queryRef.startAfterDocument(lastDocument!);
@@ -247,6 +253,7 @@ class CourseService {
     );
 
     if (response.statusCode == 200) {
+      log(response.body);
       List<dynamic> data = json.decode(response.body);
       return data.map((course) => Course.fromJson(course)).toList();
     } else {
@@ -287,6 +294,7 @@ class CourseService {
       throw Exception("Error updating course");
     }
   }
+
   Stream<QuerySnapshot> getLessonStreamByCourse(String courseId) {
     return _firestore
         .collection('courses')
@@ -311,6 +319,22 @@ class CourseService {
     } catch (e) {
       log("Error: $e");
       throw Exception("Error creating lesson");
+    }
+  }
+
+  Future<void> deleteLesson(String courseId, String lessonId) async {
+    try {
+      final url =
+          Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
+      final response = await http.delete(url);
+      if (response.statusCode == 204) {
+        log("Lesson deleted successfully");
+      } else {
+        throw Exception("Error deleting lesson");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error deleting lesson");
     }
   }
 }

@@ -42,7 +42,7 @@ class _ManageClassState extends State<ManageClass> {
   final QuillController _classDescriptionController = QuillController.basic();
   final QuillController _projectDescriptionController = QuillController.basic();
   final ScrollController _scrollController = ScrollController();
-  final StringTagController stringTagController = StringTagController();
+  late StringTagController stringTagController;
 
   // Variables
   String greeting = "Hello";
@@ -79,6 +79,7 @@ class _ManageClassState extends State<ManageClass> {
     super.initState();
     greeting = getGrettings();
     _future = getCourse();
+    stringTagController = StringTagController();
   }
 
   @override
