@@ -308,6 +308,24 @@ exports.followUser = async (userId, followUserId) => {
     });
 };
 
+exports.checkIfUserFollows = async (userId, followUserId) => {
+    try {
+        const userRef = UserCollection.doc(userId);
+        const userDoc = await userRef.get();
+
+        if (!userDoc.exists) {
+            throw new Error("User doesn't exist");
+        }
+
+        const userData = userDoc.data();
+        const followingUser = userData.followingUser || [];
+
+        return followingUser.includes(followUserId);
+    } catch (error) {
+        throw new Error(`Error when checking if user follows: ${error.message}`);
+    }
+};
+
 exports.updateUsers = async () => {
     const usersSnapshot = await UserCollection.get();
     const batch = admin.firestore().batch();

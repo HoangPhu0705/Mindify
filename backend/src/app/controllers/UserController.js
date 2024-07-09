@@ -109,6 +109,23 @@ exports.followUser = async (req, res) => {
     }
 };
 
+exports.checkIfUserFollows = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const followUserId = req.query.userId;
+
+        if (!userId || !followUserId) {
+            return res.status(400).json({ message: "Missing userId or followUserId" });
+        }
+
+        const isFollowing = await UserService.checkIfUserFollows(userId, followUserId);
+        res.status(200).json({ isFollowing });
+    } catch (error) {
+        res.status(500).send({ message: 'Error happened when checking follow status', error: error.message });
+    }
+};
+
+
 exports.updateUsers = async (req, res) => {
     try {
         await UserService.updateUsers();

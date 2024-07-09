@@ -172,7 +172,7 @@ class UserService {
   }
 
   Future<void> followUser(String userId, String followUserId) async {
-    final url = Uri.parse('$baseUrl/users/$userId/follow');
+    final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/follow');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -183,4 +183,27 @@ class UserService {
       throw Exception('Failed to follow user');
     }
   }
+
+  Future<bool> checkIfUserFollows(String userId, String followUserId) async {
+  final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/checkFollow?userId=$followUserId');
+  try {
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      log("Check follow response: $jsonResponse");
+      return jsonResponse['isFollowing'] as bool;
+    } else {
+      log("Failed to check follow status: ${response.statusCode}");
+      throw Exception('Failed to check follow status');
+    }
+  } catch (e) {
+    log("Error checking follow status: $e");
+    throw e;
+  }
+}
+
 }

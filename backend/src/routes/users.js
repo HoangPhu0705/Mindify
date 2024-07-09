@@ -5,6 +5,7 @@ const UserController = require('../app/controllers/UserController');
 router.get('/requests/', UserController.getRequests);
 router.get('/:userId', UserController.getUserData);
 router.get('/:userId/savedCourses', UserController.getSavedCourses);
+router.get('/:userId/checkFollow', UserController.checkIfUserFollows);
 router.post('/updateUsers', UserController.updateUsers);
 router.post('/:userId/follow', UserController.followUser);
 router.post('/:userId/saveCourse', UserController.saveCourseForUser);
