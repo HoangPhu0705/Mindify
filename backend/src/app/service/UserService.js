@@ -284,6 +284,27 @@ exports.followUser = async (userId, followUserId) => {
                 followerNum: admin.firestore.FieldValue.increment(1)
             });
         }
+
+        const deviceToken = followUserData.deviceToken;
+        if (deviceToken) {
+            const message = {
+                notification: {
+                    title: 'New Follower',
+                    body: `${userData.displayName} has followed you.`
+                },
+                token: deviceToken
+            };
+
+            await admin.messaging().send(message);
+        }
+
+        // save to firestore
+        const notificationsRef = UserCollection.doc(followUserId).collection('notifications');
+        await notificationsRef.add({
+            title: 'New Follower',
+            body: `${userData.displayName} has followed you.`,
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
     });
 };
 

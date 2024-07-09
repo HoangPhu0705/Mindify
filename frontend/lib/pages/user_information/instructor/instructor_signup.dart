@@ -62,17 +62,18 @@ class InstructorSignUpState extends State<InstructorSignUp> {
   @override
   void initState() {
     // TODO: implement initState
+    
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: AppColors.deepSpace,
         statusBarIconBrightness: Brightness.light,
       ),
     );
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     //Form keys
 
     final GlobalKey<FormState> formKeyPage1 = GlobalKey<FormState>();
