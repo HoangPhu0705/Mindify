@@ -30,7 +30,6 @@ class _DiscussionState extends State<Discussion> {
   final GlobalKey _commentFieldKey = GlobalKey();
   String userId = '';
   String? _replyToCommentId;
-  List<Comment> comments = [];
   bool isLoading = true;
 
   @override
@@ -115,70 +114,79 @@ class _DiscussionState extends State<Discussion> {
       body: StreamBuilder<QuerySnapshot>(
           stream: commentService.getCommentsStreamByCourse(widget.courseId),
           builder: (context, snapshot) {
-            List<DocumentSnapshot> comments = snapshot.data!.docs;
-            // log(comm.toList().toString());
-            if (snapshot.hasData) {
-              return SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(
-                      8, 12, 8, MediaQuery.of(context).size.height * 0.07),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${comments.length} Discussions',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            AppSpacing.mediumVertical,
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: comments.length,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot doc = comments[index];
-                                //           DocumentSnapshot document = folders[index];
-                                // String folderId = document.id;
-                                // Map<String, dynamic> data =
-                                //     folders[index].data() as Map<String, dynamic>;
-                                // String folderName = data['name'];
-                                String commentId = doc.id;
-                                Map<String, dynamic> data = comments[index]
-                                    .data() as Map<String, dynamic>;
-                                Comment comment = Comment(
-                                    id: commentId,
-                                    content: data['content'],
-                                    userId: data['userId'],
-                                    createdAt: data['createdAt'],
-                                    replies: []);
-                                return Column(
-                                  children: [
-                                    _buildCommentTree(context, comment),
-                                    Divider(color: AppColors.lighterGrey),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }else{
-              return MyLoading(width: 30, height: 30, color: AppColors.deepBlue);
+            if (!snapshot.hasData) {
+              return MyLoading(
+                  width: 30, height: 30, color: AppColors.deepBlue);
             }
+            List<DocumentSnapshot> commentDocs = snapshot.data!.docs;
+            return SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(
+                    8, 12, 8, MediaQuery.of(context).size.height * 0.07),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${commentDocs.length} Discussions',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          AppSpacing.mediumVertical,
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: commentDocs.length,
+                            itemBuilder: (context, index) {
+                              DocumentSnapshot doc = commentDocs[index];
+                              String commentId = doc.id;
+                              Map<String, dynamic> data =
+                                  doc.data() as Map<String, dynamic>;
+
+                              return StreamBuilder<QuerySnapshot>(
+                                  stream: commentService.getReplieStreamByComment(
+                                      widget.courseId, commentId),
+                                  builder: (context, replySnapshot) {
+                                    if (!replySnapshot.hasData) {
+                                      return SizedBox.shrink();
+                                    }
+                                    List<DocumentSnapshot> replyDocs =
+                                        replySnapshot.data!.docs;
+                                    List<Reply> replies = replyDocs
+                                        .map((doc) => Reply.fromJson(
+                                            doc.data() as Map<String, dynamic>))
+                                        .toList();
+                                    Comment comment = Comment(
+                                        id: commentId,
+                                        content: data['content'],
+                                        userId: data['userId'],
+                                        createdAt: data['createdAt'],
+                                        replies: replies);
+                                    return Column(
+                                      children: [
+                                        _buildCommentTree(context, comment),
+                                        Divider(color: AppColors.lighterGrey),
+                                      ],
+                                    );
+                                  });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }),
     );
   }
@@ -204,8 +212,6 @@ class _DiscussionState extends State<Discussion> {
         ),
         preferredSize: Size.fromRadius(12),
       ),
-
-      // Root Comment
       contentRoot: (context, data) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,8 +266,6 @@ class _DiscussionState extends State<Discussion> {
           ],
         );
       },
-
-      // Child Comment
       contentChild: (context, data) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
