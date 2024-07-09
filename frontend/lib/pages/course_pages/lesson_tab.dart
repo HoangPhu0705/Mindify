@@ -8,10 +8,12 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:frontend/services/functions/UserService.dart'; // Import UserService
 
 class LessonTab extends StatefulWidget {
-  final bool isFollowed;
-  final void Function()? followUser;
+  bool isFollowed;
+  final String instructorId;
+  final String userId;
   final Course course;
   final bool isEnrolled;
   final void Function(String) onLessonTap;
@@ -20,7 +22,8 @@ class LessonTab extends StatefulWidget {
   LessonTab({
     Key? key,
     required this.isFollowed,
-    required this.followUser,
+    required this.instructorId,
+    required this.userId,
     required this.course,
     required this.isEnrolled,
     required this.onLessonTap,
@@ -33,6 +36,7 @@ class LessonTab extends StatefulWidget {
 
 class _LessonTabState extends State<LessonTab> {
   DateTime? _lastNotificationTime;
+  final userService = UserService(); // Create an instance of UserService
 
   @override
   void initState() {
@@ -66,6 +70,20 @@ class _LessonTabState extends State<LessonTab> {
       return true;
     }
     return false;
+  }
+
+  Future<void> _followUser() async {
+    try {
+      await userService.followUser(widget.userId, widget.instructorId);
+      setState(() {
+        // Toggle the isFollowed state
+        widget.isFollowed = !widget.isFollowed;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to follow user: $e')),
+      );
+    }
   }
 
   @override
@@ -129,7 +147,7 @@ class _LessonTabState extends State<LessonTab> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: AnimatedButton(
-                          onPress: widget.followUser,
+                          onPress: _followUser, // Call _followUser
                           isSelected: widget.isFollowed,
                           width: 100,
                           height: 40,
@@ -224,4 +242,3 @@ class _LessonTabState extends State<LessonTab> {
     );
   }
 }
-

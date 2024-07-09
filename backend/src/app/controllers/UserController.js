@@ -92,3 +92,28 @@ exports.rejectInstructorRequest = async (req, res) => {
         res.status(500).send({ message: 'Error happened when rejecting request', error: error.message });
     }
 };
+
+exports.followUser = async (req, res) => {
+    const { userId } = req.params;
+    const { followUserId } = req.body;
+
+    if (!userId || !followUserId) {
+        return res.status(400).json({ message: "Missing userId or followUserId" });
+    }
+
+    try {
+        await UserService.followUser(userId, followUserId);
+        res.status(200).json({ message: "Successfully followed the user" });
+    } catch (error) {
+        res.status(500).json({ message: `Error when following user: ${error.message}` });
+    }
+};
+
+exports.updateUsers = async (req, res) => {
+    try {
+        await UserService.updateUsers();
+        res.status(200).json({ message: 'All users updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: `Error when updating users: ${error.message}` });
+    }
+};

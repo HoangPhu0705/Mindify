@@ -16,6 +16,7 @@ import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
+import 'package:frontend/services/functions/UserService.dart'; // Import UserService
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -34,16 +35,19 @@ class _CourseDetailState extends State<CourseDetail>
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
+  final userService = UserService(); // Create an instance of UserService
   bool isFollowed = false;
   bool isEnrolled = false;
   Course? course;
   late Future<void> _futureCourseDetail;
   String _currentVideoUrl = '';
   String? _enrollmentId;
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
+    userId = userService.getUserId();
     _tabController = TabController(length: 4, vsync: this);
     _futureCourseDetail = _fetchCourseDetails();
     _checkEnrollment();
@@ -123,9 +127,16 @@ class _CourseDetailState extends State<CourseDetail>
   }
 
   Future<void> followUser() async {
-    setState(() {
-      isFollowed = !isFollowed;
-    });
+    try {
+      await userService.followUser(userId, course!.instructorId); // Follow the instructor
+      setState(() {
+        isFollowed = !isFollowed;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to follow user: $e')),
+      );
+    }
   }
 
   void _onLessonTap(String videoUrl) {
@@ -251,7 +262,8 @@ class _CourseDetailState extends State<CourseDetail>
                     children: [
                       LessonTab(
                         isFollowed: isFollowed,
-                        followUser: followUser,
+                        instructorId: course!.instructorId, 
+                          userId: userId,
                         course: course!,
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,

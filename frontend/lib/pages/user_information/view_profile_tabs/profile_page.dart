@@ -8,6 +8,7 @@ import 'package:frontend/auth/sign_in.dart';
 import 'package:frontend/pages/user_information/downloads.dart';
 import 'package:frontend/pages/user_information/saved_classes.dart';
 import 'package:frontend/pages/user_information/setting_page.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/notification_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/view_profile.dart';
 import 'package:frontend/pages/user_information/watch_history.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -66,7 +67,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NotificationsPage(),
+                              ),
+                            );
+                          },
                           child: Icon(
                             CupertinoIcons.bell,
                             color: Colors.white,

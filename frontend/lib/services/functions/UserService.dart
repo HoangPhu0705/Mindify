@@ -170,4 +170,17 @@ class UserService {
       throw Exception("Failed to update user");
     }
   }
+
+  Future<void> followUser(String userId, String followUserId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/follow');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'followUserId': followUserId}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to follow user');
+    }
+  }
 }
