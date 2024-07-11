@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
+import 'package:frontend/pages/course_pages/payment_page.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
@@ -30,8 +31,7 @@ class CourseDetail extends StatefulWidget {
   State<CourseDetail> createState() => _CourseDetailState();
 }
 
-class _CourseDetailState extends State<CourseDetail>
-    with SingleTickerProviderStateMixin {
+class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
@@ -70,8 +70,7 @@ class _CourseDetailState extends State<CourseDetail>
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrollmentStatus = await enrollmentService.checkEnrollment(
-          widget.userId, widget.courseId);
+      final enrollmentStatus = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
         _enrollmentId = enrollmentStatus['enrollmentId'];
@@ -89,29 +88,6 @@ class _CourseDetailState extends State<CourseDetail>
       });
     } catch (e) {
       log("Error checking follow status: $e");
-    }
-  }
-
-  Future<void> _enrollInCourse() async {
-    try {
-      final enrollmentData = {
-        'userId': widget.userId,
-        'courseId': widget.courseId,
-      };
-
-      await enrollmentService.createEnrollment(enrollmentData);
-      setState(() {
-        isEnrolled = true;
-      });
-
-      Provider.of<EnrollmentProvider>(context, listen: false).enroll();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Enrollment successful!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to enroll: $e')),
-      );
     }
   }
 
@@ -154,6 +130,19 @@ class _CourseDetailState extends State<CourseDetail>
     });
   }
 
+  void _navigateToPaymentScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentPage(
+          userId: widget.userId,
+          courseId: widget.courseId,
+          price: course!.price,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,7 +182,7 @@ class _CourseDetailState extends State<CourseDetail>
                   Expanded(
                     child: TextButton(
                       style: AppStyles.primaryButtonStyle,
-                      onPressed: _enrollInCourse,
+                      onPressed: _navigateToPaymentScreen,
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(

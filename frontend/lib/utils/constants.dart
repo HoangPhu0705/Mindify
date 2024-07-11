@@ -46,4 +46,6 @@ class AppConstants {
   static String COURSE_API = "$baseUrl/courses";
   static String ENROLLMENT_API = "$baseUrl/enrollments";
   static String FOLDER_API = "$baseUrl/folders";
+  static String TRANSACTION_API = "$baseUrl/transactions";
+  static String PUBLIC_KEY_STRIPE = "pk_test_51Pb0VgRpFmvp1gYpQh2OcBekwGa5WM8ZY3Ongr1A7P0O0LZdqJuYAcVI8H6Qzc4otSnxLiEFlleuWgd3CFXE2Jic008mnJLbrJ";
 }

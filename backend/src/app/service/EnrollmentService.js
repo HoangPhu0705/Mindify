@@ -6,6 +6,7 @@ exports.createEnrollment = async (data) => {
         const docRef = EnrollmentCollection.doc();
         await docRef.set({
             ...data,
+            status: "enrolled",
             enrollmentDay: firestore.FieldValue.serverTimestamp(),
             downloadedLessons: []
         });
