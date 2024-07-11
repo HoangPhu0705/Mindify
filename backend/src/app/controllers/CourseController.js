@@ -163,3 +163,18 @@ exports.changeTheInstructorId = async (req, res) => {
     res.status(500).json({ message: 'Error adding author Id to all courses', error: error.message });
   }
 };
+
+exports.updateAllLessonLinksController = async (req, res) => {
+  const { newLink } = req.body;
+
+  if (!newLink) {
+    return res.status(400).json({ error: "newLink is required" });
+  }
+
+  try {
+    const result = await CourseService.updateAllLessonLinks(newLink);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

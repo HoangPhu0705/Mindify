@@ -11,6 +11,7 @@ router.post('/', CourseController.createCourse);
 router.get('/random', CourseController.getRandomCourses);
 router.get('/top5', CourseController.getTop5Courses);
 router.get('/newest', CourseController.getFiveNewestCourse);
+// router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);
 router.get('/users/:id', CourseController.getCourseByUserId)
 // router.post('/', CourseController.createCourseWithLessons)
 router.get('/:id', CourseController.getCourseById);

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:frontend/services/functions/PaymentService.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:frontend/utils/constants.dart';
 
@@ -27,9 +28,7 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   void initState() {
     super.initState();
-    // Set the publishable key for Stripe
     Stripe.publishableKey = AppConstants.PUBLIC_KEY_STRIPE;
-    // Optionally set the stripe account ID
     Stripe.instance.applySettings();
   }
 
@@ -46,22 +45,29 @@ class _PaymentPageState extends State<PaymentPage> {
                   Map<String, dynamic> paymentInfo = await paymentService.createPaymentIntent(widget.userId, widget.courseId);
                   if (paymentInfo['paymentIntent'] != "" && paymentInfo['paymentIntent'] != null) {
                     String _intent = paymentInfo['paymentIntent'];
+                    String _intentId = paymentInfo['paymentIntentId']; // Store the ID
                     await Stripe.instance.initPaymentSheet(
                       paymentSheetParameters: SetupPaymentSheetParameters(
                         paymentIntentClientSecret: _intent,
                         merchantDisplayName: "Mindify",
                         customerId: paymentInfo['customer'],
                         customerEphemeralKeySecret: paymentInfo['ephemeralKey'],
-                        
                       ),
                     );
+
                     await Stripe.instance.presentPaymentSheet();
+
+                    try {
+                      Map<String, dynamic> confirmation = await paymentService.confirmPayment(_intentId); // Use the ID here
+                      showSuccessToast(context, 'Payment successful: ${confirmation['success']}');
+                    } catch (e) {
+                      log('Confirmation error: $e');
+                      showErrorToast(context, 'Payment confirmation error: $e');
+                    }
                   }
                 } catch (e) {
-                  log(e.toString());
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Payment error: $e')),
-                  );
+                  log('Payment intent error: $e');
+                  showErrorToast(context, 'Payment intent error: $e');
                 }
               },
               text: "Stripe Payment",

@@ -270,3 +270,25 @@ exports.changeTheInstructorId = async () => {
     throw error;
   }
 };
+
+exports.updateAllLessonLinks = async (newLink) => {
+  try {
+    const snapshot = await CourseCollection.get();
+    const batch = CourseCollection.firestore.batch();
+
+    for (const doc of snapshot.docs) {
+      const lessonsRef = doc.ref.collection('lessons');
+      const lessonsSnapshot = await lessonsRef.get();
+
+      lessonsSnapshot.docs.forEach((lessonDoc) => {
+        batch.update(lessonDoc.ref, { link: newLink });
+      });
+    }
+
+    await batch.commit();
+    return { message: "All lesson links updated successfully" };
+  } catch (error) {
+    console.error('Error updating lesson links:', error);
+    throw error;
+  }
+};
