@@ -750,7 +750,7 @@ packages:
     source: hosted
     version: "4.6.6"
   get_thumbnail_video:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: get_thumbnail_video
       sha256: "22058c1055dbcdcbaee4f80d52197deeb83fd04ae78839e9a656a5bfb58ed95a"

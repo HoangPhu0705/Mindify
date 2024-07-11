@@ -67,6 +67,8 @@ class _ManageClassState extends State<ManageClass> {
       greeting = "Good Evening";
     } else if (hours >= 21 && hours <= 24) {
       greeting = "Good Night";
+    } else {
+      greeting = "Hello";
     }
 
     return greeting;

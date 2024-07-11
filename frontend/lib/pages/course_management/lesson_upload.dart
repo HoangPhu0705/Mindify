@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_wasm/ffmpeg_wasm.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,9 +14,12 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:frontend/utils/toasts.dart';
+import 'package:get_thumbnail_video/index.dart';
+import 'package:get_thumbnail_video/video_thumbnail.dart';
+import 'package:getwidget/components/shimmer/gf_shimmer.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:pie_menu/pie_menu.dart';
 import 'package:video_player/video_player.dart';
 
 class LessonUpload extends StatefulWidget {
@@ -58,8 +63,6 @@ class _LessonUploadState extends State<LessonUpload> {
     return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  final ImagePicker _picker = ImagePicker();
-
   void _pickVideo() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.video,
@@ -86,6 +89,26 @@ class _LessonUploadState extends State<LessonUpload> {
       pickedVideo = video;
     });
     await uploadVideo();
+  }
+
+  Future<XFile?> getThumbnail(String videoUrl) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final thumbnailPath = await VideoThumbnail.thumbnailFile(
+        video: videoUrl,
+        thumbnailPath: tempDir.path,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: 50,
+        quality: 75,
+      );
+
+      if (thumbnailPath != null) {
+        return thumbnailPath;
+      }
+    } catch (e) {
+      print('Error generating thumbnail: $e');
+    }
+    return null;
   }
 
   Future<void> uploadVideo() async {
@@ -212,69 +235,109 @@ class _LessonUploadState extends State<LessonUpload> {
                                     String lessonTitle = data['title'];
                                     String duration = data['duration'];
                                     String timestamp = data['timestamp'];
+
+                                    String videoUrl = data['link'];
+
                                     videoTitleController.text = lessonTitle;
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: AppColors.lightGrey,
-                                        ),
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: ListTile(
-                                        trailing: PopupMenuButton(
-                                          offset: const Offset(10, -20),
-                                          padding: const EdgeInsets.all(5),
-                                          constraints:
-                                              const BoxConstraints.expand(
-                                            width: 50,
-                                            height: 100,
-                                          ),
-                                          icon: const Icon(
-                                              Icons.more_horiz_outlined),
-                                          color: AppColors.deepBlue,
-                                          elevation: 0,
-                                          itemBuilder: (context) => [
-                                            PopupMenuItem(
-                                              child: const Icon(
-                                                Icons.edit_outlined,
-                                                color: Colors.white,
-                                              ),
-                                              onTap: () async {},
+                                    return FutureBuilder(
+                                      future: getThumbnail(videoUrl),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return GFShimmer(
+                                            child: Column(
+                                              children: [
+                                                emptyBlock(context),
+                                                AppSpacing.mediumVertical,
+                                              ],
                                             ),
-                                            PopupMenuItem(
-                                              child: const Icon(
-                                                Icons.delete_forever,
-                                                color: Colors.red,
+                                          );
+                                        }
+                                        log(snapshot.data.toString());
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: AppColors.lightGrey,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
                                               ),
-                                              onTap: () async {
-                                                final videoPath =
-                                                    'video_lessons/$timestamp';
-                                                await deleteLesson(
-                                                  widget.courseId,
-                                                  lessonId,
-                                                  videoPath,
-                                                );
-                                              },
+                                              child: ListTile(
+                                                trailing: PopupMenuButton(
+                                                  offset: const Offset(10, -20),
+                                                  padding:
+                                                      const EdgeInsets.all(5),
+                                                  constraints:
+                                                      const BoxConstraints
+                                                          .expand(
+                                                    width: 50,
+                                                    height: 100,
+                                                  ),
+                                                  icon: const Icon(
+                                                    Icons.more_horiz_outlined,
+                                                  ),
+                                                  color: AppColors.deepBlue,
+                                                  elevation: 0,
+                                                  itemBuilder: (context) => [
+                                                    PopupMenuItem(
+                                                      child: const Icon(
+                                                        Icons.edit_outlined,
+                                                        color: Colors.white,
+                                                      ),
+                                                      onTap: () async {},
+                                                    ),
+                                                    PopupMenuItem(
+                                                      child: const Icon(
+                                                        Icons.delete_forever,
+                                                        color: Colors.red,
+                                                      ),
+                                                      onTap: () async {
+                                                        final videoPath =
+                                                            'video_lessons/$timestamp';
+                                                        await deleteLesson(
+                                                          widget.courseId,
+                                                          lessonId,
+                                                          videoPath,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                leading: snapshot.hasData
+                                                    ? Image.file(
+                                                        File(snapshot
+                                                            .data!.path),
+                                                        fit: BoxFit.cover,
+                                                        width: 50,
+                                                        height: 50,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.video_library,
+                                                        color:
+                                                            AppColors.deepBlue,
+                                                      ),
+                                                title: TextField(
+                                                  readOnly: true,
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                    hintText: lessonTitle,
+                                                  ),
+                                                  maxLines: 2,
+                                                  style: const TextStyle(
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                subtitle: Text(duration),
+                                              ),
                                             ),
                                           ],
-                                        ),
-                                        leading: const Icon(
-                                          Icons.video_library,
-                                          color: AppColors.deepBlue,
-                                        ),
-                                        title: TextField(
-                                          readOnly: true,
-                                          decoration: InputDecoration.collapsed(
-                                              hintText: lessonTitle),
-                                          controller: videoTitleController,
-                                          maxLines: 2,
-                                          style: const TextStyle(
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        subtitle: Text(duration),
-                                      ),
+                                        );
+                                      },
                                     );
                                   },
                                 );
@@ -297,9 +360,6 @@ class _LessonUploadState extends State<LessonUpload> {
                       const Divider(),
                       GestureDetector(
                         onTap: () async {
-                          // await selectFile();
-                          // await uploadVideo();
-
                           _pickVideo();
                         },
                         child: const Icon(
@@ -338,9 +398,6 @@ class _LessonUploadState extends State<LessonUpload> {
                   Center(
                     child: Text(
                       "${(100 * progress).roundToDouble()}%",
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
                     ),
                   ),
                   LinearPercentIndicator(
@@ -358,33 +415,45 @@ class _LessonUploadState extends State<LessonUpload> {
           }
         },
       );
+
+  Widget emptyBlock(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 54,
+            height: 46,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  height: 8,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: 8,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  height: 8,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
-
-
-
-  // Future<void> selectFile() async {
-  //   final result = await FilePicker.platform.pickFiles(
-  //     type: FileType.video,
-  //     allowMultiple: false,
-  //   );
-
-  //   if (result == null) return;
-
-  //   final pickedFile = result.files.first;
-  //   final file = XFile(pickedFile.path!);
-
-  //   // final videoPlayerController = VideoPlayerController.file(file);
-  //   // await videoPlayerController.initialize();
-  //   // final duration = videoPlayerController.value.duration;
-
-  //   // if (duration > const Duration(minutes: 20) && mounted) {
-  //   //   showSuccessToast(
-  //   //       context, "You can't upload video longer than 20 minutes");
-  //   //   return;
-  //   // }
-
-  //   setState(() {
-  //     pickedVideo = pickedFile;
-  //     // videoDuration = duration;
-  //   });
-  // }
