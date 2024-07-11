@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
@@ -8,7 +9,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:frontend/services/functions/UserService.dart'; // Import UserService
+import 'package:frontend/services/functions/UserService.dart'; 
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
@@ -36,16 +37,28 @@ class LessonTab extends StatefulWidget {
 
 class _LessonTabState extends State<LessonTab> {
   DateTime? _lastNotificationTime;
-  final userService = UserService(); // Create an instance of UserService
+  final userService = UserService();
 
   @override
   void initState() {
     super.initState();
     _sortLessonsByIndex();
+    _checkIfFollowed();
   }
 
   void _sortLessonsByIndex() {
     widget.course.lessons.sort((a, b) => a.index.compareTo(b.index));
+  }
+
+  Future<void> _checkIfFollowed() async {
+    try {
+      bool followed = await userService.checkIfUserFollows(widget.userId, widget.instructorId);
+      setState(() {
+        widget.isFollowed = followed;
+      });
+    } catch (e) {
+      log("Error checking follow status: $e");
+    }
   }
 
   Future<void> _downloadLesson(String lessonLink, String lessonId) async {
@@ -76,8 +89,7 @@ class _LessonTabState extends State<LessonTab> {
     try {
       await userService.followUser(widget.userId, widget.instructorId);
       setState(() {
-        // Toggle the isFollowed state
-        widget.isFollowed = !widget.isFollowed;
+        widget.isFollowed = true;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +159,7 @@ class _LessonTabState extends State<LessonTab> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: AnimatedButton(
-                          onPress: _followUser, // Call _followUser
+                          onPress: _followUser,
                           isSelected: widget.isFollowed,
                           width: 100,
                           height: 40,
@@ -209,8 +221,7 @@ class _LessonTabState extends State<LessonTab> {
                 itemCount: widget.course.lessons.length,
                 itemBuilder: (context, index) {
                   final lesson = widget.course.lessons[index];
-                  final isLessonAccessible =
-                      widget.isEnrolled || index == 0;
+                  final isLessonAccessible = widget.isEnrolled || index == 0;
                   return ListTile(
                     onTap: isLessonAccessible
                         ? () {
@@ -225,7 +236,8 @@ class _LessonTabState extends State<LessonTab> {
                     trailing: widget.isEnrolled
                         ? IconButton(
                             icon: const Icon(Icons.download_for_offline_sharp),
-                            onPressed: isLessonAccessible? () {
+                            onPressed: isLessonAccessible
+                                ? () {
                                     _downloadLesson(lesson.link, lesson.title);
                                     widget.onSaveLesson(lesson.id);
                                   }

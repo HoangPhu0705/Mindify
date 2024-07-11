@@ -16,7 +16,7 @@ import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
-import 'package:frontend/services/functions/UserService.dart'; // Import UserService
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -35,7 +35,7 @@ class _CourseDetailState extends State<CourseDetail>
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
-  final userService = UserService(); // Create an instance of UserService
+  final userService = UserService();
   bool isFollowed = false;
   bool isEnrolled = false;
   Course? course;
@@ -51,6 +51,7 @@ class _CourseDetailState extends State<CourseDetail>
     _tabController = TabController(length: 4, vsync: this);
     _futureCourseDetail = _fetchCourseDetails();
     _checkEnrollment();
+    _checkIfFollowed(); // Check if the user follows the instructor
   }
 
   Future<void> _fetchCourseDetails() async {
@@ -77,6 +78,17 @@ class _CourseDetailState extends State<CourseDetail>
       });
     } catch (e) {
       log("Error checking enrollment: $e");
+    }
+  }
+
+  Future<void> _checkIfFollowed() async {
+    try {
+      bool followed = await userService.checkIfUserFollows(userId, widget.userId);
+      setState(() {
+        isFollowed = followed;
+      });
+    } catch (e) {
+      log("Error checking follow status: $e");
     }
   }
 
@@ -111,9 +123,6 @@ class _CourseDetailState extends State<CourseDetail>
 
     try {
       await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Lesson saved successfully!')),
-      // );
       showSuccessToast(context, 'Lesson saved successfully!');
     } catch (e) {
       showErrorToast(context, 'Failed to save lesson');
@@ -128,7 +137,7 @@ class _CourseDetailState extends State<CourseDetail>
 
   Future<void> followUser() async {
     try {
-      await userService.followUser(userId, course!.instructorId); // Follow the instructor
+      await userService.followUser(userId, course!.instructorId);
       setState(() {
         isFollowed = !isFollowed;
       });
@@ -261,8 +270,8 @@ class _CourseDetailState extends State<CourseDetail>
                     controller: _tabController,
                     children: [
                       LessonTab(
-                        isFollowed: isFollowed,
-                        instructorId: course!.instructorId, 
+                          isFollowed: isFollowed,
+                          instructorId: course!.instructorId,
                           userId: userId,
                         course: course!,
                         isEnrolled: isEnrolled,
