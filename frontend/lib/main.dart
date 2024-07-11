@@ -28,10 +28,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FlutterDownloader.initialize(
-    debug: true,
-    ignoreSsl: true,
-  );
+  // await FlutterDownloader.initialize(
+  //   debug: true,
+  //   ignoreSsl: true,
+  // );
   runApp(const MindifyApp());
 }
 

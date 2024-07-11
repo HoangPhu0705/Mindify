@@ -43,8 +43,10 @@ class _PaymentPageState extends State<PaymentPage> {
             GFButton(
               onPressed: () async {
                 try {
-                  Map<String, dynamic> paymentInfo = await paymentService.createPaymentIntent(widget.userId, widget.courseId);
-                  if (paymentInfo['paymentIntent'] != "" && paymentInfo['paymentIntent'] != null) {
+                  Map<String, dynamic> paymentInfo = await paymentService
+                      .createPaymentIntent(widget.userId, widget.courseId);
+                  if (paymentInfo['paymentIntent'] != "" &&
+                      paymentInfo['paymentIntent'] != null) {
                     String _intent = paymentInfo['paymentIntent'];
                     await Stripe.instance.initPaymentSheet(
                       paymentSheetParameters: SetupPaymentSheetParameters(
@@ -52,7 +54,6 @@ class _PaymentPageState extends State<PaymentPage> {
                         merchantDisplayName: "Mindify",
                         customerId: paymentInfo['customer'],
                         customerEphemeralKeySecret: paymentInfo['ephemeralKey'],
-                        
                       ),
                     );
                     await Stripe.instance.presentPaymentSheet();

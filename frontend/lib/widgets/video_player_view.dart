@@ -32,7 +32,6 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
         videoQualityPriority: [360, 720],
       ),
     )..initialise();
-
     setState(() {});
   }
 
