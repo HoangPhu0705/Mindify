@@ -31,7 +31,8 @@ class CourseDetail extends StatefulWidget {
   State<CourseDetail> createState() => _CourseDetailState();
 }
 
-class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderStateMixin {
+class _CourseDetailState extends State<CourseDetail>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
   final enrollmentService = EnrollmentService();
@@ -70,7 +71,8 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrollmentStatus = await enrollmentService.checkEnrollment(widget.userId, widget.courseId);
+      final enrollmentStatus = await enrollmentService.checkEnrollment(
+          widget.userId, widget.courseId);
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
         _enrollmentId = enrollmentStatus['enrollmentId'];
@@ -82,7 +84,8 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
 
   Future<void> _checkIfFollowed() async {
     try {
-      bool followed = await userService.checkIfUserFollows(userId, widget.userId);
+      bool followed =
+          await userService.checkIfUserFollows(userId, widget.userId);
       setState(() {
         isFollowed = followed;
       });
@@ -147,7 +150,7 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       bottomSheet: isEnrolled
-          ? null
+          ? const SizedBox.shrink()
           : Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -259,9 +262,9 @@ class _CourseDetailState extends State<CourseDetail> with SingleTickerProviderSt
                     controller: _tabController,
                     children: [
                       LessonTab(
-                          isFollowed: isFollowed,
-                          instructorId: course!.instructorId,
-                          userId: userId,
+                        isFollowed: isFollowed,
+                        instructorId: course!.instructorId,
+                        userId: userId,
                         course: course!,
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,

@@ -42,8 +42,10 @@ class _PaymentPageState extends State<PaymentPage> {
             GFButton(
               onPressed: () async {
                 try {
-                  Map<String, dynamic> paymentInfo = await paymentService.createPaymentIntent(widget.userId, widget.courseId);
-                  if (paymentInfo['paymentIntent'] != "" && paymentInfo['paymentIntent'] != null) {
+                  Map<String, dynamic> paymentInfo = await paymentService
+                      .createPaymentIntent(widget.userId, widget.courseId);
+                  if (paymentInfo['paymentIntent'] != "" &&
+                      paymentInfo['paymentIntent'] != null) {
                     String _intent = paymentInfo['paymentIntent'];
                     String _intentId = paymentInfo['paymentIntentId']; // Store the ID
                     await Stripe.instance.initPaymentSheet(
