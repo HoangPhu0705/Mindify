@@ -16,10 +16,10 @@ class VideoPlayerView extends StatefulWidget {
   });
 
   @override
-  State<VideoPlayerView> createState() => _VideoPlayerViewState();
+  State<VideoPlayerView> createState() => VideoPlayerViewState();
 }
 
-class _VideoPlayerViewState extends State<VideoPlayerView> {
+class VideoPlayerViewState extends State<VideoPlayerView> {
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
 
@@ -27,7 +27,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
     _podPlayerController = PodPlayerController(
       playVideoFrom: PlayVideoFrom.network(widget.url),
       podPlayerConfig: const PodPlayerConfig(
-        autoPlay: false,
+        autoPlay: true,
         isLooping: false,
         videoQualityPriority: [360, 720],
       ),
@@ -42,16 +42,15 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
   }
 
   @override
-  void didUpdateWidget(covariant VideoPlayerView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _podPlayerController.dispose();
-    _future = initVideoPlayer();
-  }
-
-  @override
   void dispose() {
     _podPlayerController.dispose();
     super.dispose();
+  }
+
+  void goToVideo(String url) {
+    _podPlayerController.changeVideo(
+      playVideoFrom: PlayVideoFrom.network(url),
+    );
   }
 
   @override

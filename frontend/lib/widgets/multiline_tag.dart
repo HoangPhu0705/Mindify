@@ -67,6 +67,7 @@ class _MultilineTagState extends State<MultilineTag> {
                         top: 8,
                         bottom: 8,
                         left: 8,
+                        right: 50,
                       ),
                       child: Wrap(
                           runSpacing: 4.0,
@@ -90,7 +91,7 @@ class _MultilineTagState extends State<MultilineTag> {
                                 children: [
                                   InkWell(
                                     child: Text(
-                                      '$tag',
+                                      tag,
                                       style:
                                           const TextStyle(color: Colors.white),
                                     ),

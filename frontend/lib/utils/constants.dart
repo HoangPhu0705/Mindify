@@ -4,8 +4,8 @@ import 'dart:io';
 class AppConstants {
   static String get baseUrl {
     if (Platform.isAndroid) {
-      return "http://10.0.2.2:3000/api";
-      // return "http://localhost:3000/api"; //test for physical devices
+      // return "http://10.0.2.2:3000/api";
+      return "http://localhost:3000/api"; //test for physical devices
     } else if (Platform.isIOS) {
       return "http://localhost:3000/api";
     } else {
@@ -47,5 +47,6 @@ class AppConstants {
   static String ENROLLMENT_API = "$baseUrl/enrollments";
   static String FOLDER_API = "$baseUrl/folders";
   static String TRANSACTION_API = "$baseUrl/transactions";
-  static String PUBLIC_KEY_STRIPE = "pk_test_51Pb0VgRpFmvp1gYpQh2OcBekwGa5WM8ZY3Ongr1A7P0O0LZdqJuYAcVI8H6Qzc4otSnxLiEFlleuWgd3CFXE2Jic008mnJLbrJ";
+  static String PUBLIC_KEY_STRIPE =
+      "pk_test_51Pb0VgRpFmvp1gYpQh2OcBekwGa5WM8ZY3Ongr1A7P0O0LZdqJuYAcVI8H6Qzc4otSnxLiEFlleuWgd3CFXE2Jic008mnJLbrJ";
 }

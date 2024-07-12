@@ -337,4 +337,23 @@ class CourseService {
       throw Exception("Error deleting lesson");
     }
   }
+
+  Future<void> updateLesson(String courseId, String lessonId, var data) async {
+    try {
+      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
+      final response = await http.patch(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 204) {
+        log("Lesson updated successfully");
+      } else {
+        throw Exception("Error updating lesson");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error updating lesson");
+    }
+  }
 }

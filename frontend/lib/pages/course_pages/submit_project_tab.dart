@@ -94,7 +94,7 @@ class _SubmitProjectState extends State<SubmitProject> {
                     AppSpacing.mediumVertical,
                     Text(
                       widget.course.projectDescription,
-                      maxLines: 7,
+                      maxLines: 6,
                       style: TextStyle(
                         overflow: TextOverflow.ellipsis,
                       ),

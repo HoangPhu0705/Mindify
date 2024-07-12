@@ -9,7 +9,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:frontend/services/functions/UserService.dart'; 
+import 'package:frontend/services/functions/UserService.dart';
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
@@ -17,7 +17,8 @@ class LessonTab extends StatefulWidget {
   final String userId;
   final Course course;
   final bool isEnrolled;
-  final void Function(String) onLessonTap;
+  final int currentVideoIndex;
+  final void Function(String, int) onLessonTap;
   final void Function(String) onSaveLesson;
 
   LessonTab({
@@ -29,6 +30,7 @@ class LessonTab extends StatefulWidget {
     required this.isEnrolled,
     required this.onLessonTap,
     required this.onSaveLesson,
+    required this.currentVideoIndex,
   }) : super(key: key);
 
   @override
@@ -52,7 +54,8 @@ class _LessonTabState extends State<LessonTab> {
 
   Future<void> _checkIfFollowed() async {
     try {
-      bool followed = await userService.checkIfUserFollows(widget.userId, widget.instructorId);
+      bool followed = await userService.checkIfUserFollows(
+          widget.userId, widget.instructorId);
       setState(() {
         widget.isFollowed = followed;
       });
@@ -222,28 +225,64 @@ class _LessonTabState extends State<LessonTab> {
                 itemBuilder: (context, index) {
                   final lesson = widget.course.lessons[index];
                   final isLessonAccessible = widget.isEnrolled || index == 0;
-                  return ListTile(
-                    onTap: isLessonAccessible
-                        ? () {
-                            widget.onLessonTap(lesson.link);
-                          }
-                        : null,
-                    title: Text("${lesson.index + 1}: ${lesson.title}"),
-                    subtitle: Text(lesson.duration),
-                    leading: Icon(isLessonAccessible
-                        ? Icons.play_circle_filled_outlined
-                        : Icons.lock),
-                    trailing: widget.isEnrolled
-                        ? IconButton(
-                            icon: const Icon(Icons.download_for_offline_sharp),
-                            onPressed: isLessonAccessible
-                                ? () {
-                                    _downloadLesson(lesson.link, lesson.title);
-                                    widget.onSaveLesson(lesson.id);
-                                  }
-                                : null,
-                          )
-                        : null,
+
+                  return Container(
+                    margin: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: ListTile(
+                      tileColor: lesson.index == widget.currentVideoIndex
+                          ? AppColors.deepSpace
+                          : Colors.white,
+                      onTap: isLessonAccessible
+                          ? () {
+                              widget.onLessonTap(lesson.link, lesson.index);
+                            }
+                          : null,
+                      title: Text(
+                        "${lesson.index + 1}: ${lesson.title}",
+                        style: TextStyle(
+                          color: lesson.index == widget.currentVideoIndex
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      subtitle: Text(
+                        lesson.duration,
+                        style: TextStyle(
+                          color: lesson.index == widget.currentVideoIndex
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      leading: Icon(
+                        isLessonAccessible
+                            ? Icons.play_circle_outline_outlined
+                            : Icons.lock,
+                        size: 30,
+                        color: lesson.index == widget.currentVideoIndex
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      trailing: widget.isEnrolled
+                          ? IconButton(
+                              icon: Icon(
+                                Icons.download_for_offline_outlined,
+                                size: 30,
+                                color: lesson.index == widget.currentVideoIndex
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                              onPressed: isLessonAccessible
+                                  ? () {
+                                      _downloadLesson(
+                                          lesson.link, lesson.title);
+                                      widget.onSaveLesson(lesson.id);
+                                    }
+                                  : null,
+                            )
+                          : null,
+                    ),
                   );
                 },
               ),

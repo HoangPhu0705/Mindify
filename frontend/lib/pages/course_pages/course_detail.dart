@@ -40,26 +40,27 @@ class _CourseDetailState extends State<CourseDetail>
   bool isFollowed = false;
   bool isEnrolled = false;
   Course? course;
-  late Future<void> _futureCourseDetail;
   String _currentVideoUrl = '';
+  int _currentVideoIndex = 0;
   String? _enrollmentId;
   String userId = '';
+  late Future<void> _future;
+
+  final GlobalKey<VideoPlayerViewState> _videoPlayerKey =
+      GlobalKey<VideoPlayerViewState>();
 
   @override
   void initState() {
     super.initState();
     userId = userService.getUserId();
     _tabController = TabController(length: 4, vsync: this);
-    _futureCourseDetail = _fetchCourseDetails();
-    _checkEnrollment();
-    _checkIfFollowed(); // Check if the user follows the instructor
+    _future = _initCourseDetailPage();
   }
 
   Future<void> _fetchCourseDetails() async {
     try {
-      final fetchedCourse = await courseService.getCourseById(widget.courseId);
-      setState(() {
-        course = fetchedCourse;
+      await courseService.getCourseById(widget.courseId).then((value) {
+        course = value;
         if (course!.lessons.isNotEmpty) {
           _currentVideoUrl = course!.lessons.first.link;
         }
@@ -94,6 +95,12 @@ class _CourseDetailState extends State<CourseDetail>
     }
   }
 
+  Future<void> _initCourseDetailPage() async {
+    await _fetchCourseDetails();
+    await _checkEnrollment();
+    await _checkIfFollowed();
+  }
+
   Future<void> _saveLesson(String lessonId) async {
     if (_enrollmentId == null) {
       showErrorToast(context, 'You have to purchase this course first');
@@ -121,16 +128,19 @@ class _CourseDetailState extends State<CourseDetail>
         isFollowed = !isFollowed;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to follow user: $e')),
-      );
+      if (mounted) {
+        showSuccessToast(context, 'Failed to follow user');
+      }
+      log(e.toString());
     }
   }
 
-  void _onLessonTap(String videoUrl) {
+  void _onLessonTap(String videoUrl, int index) {
     setState(() {
       _currentVideoUrl = videoUrl;
+      _currentVideoIndex = index;
     });
+    _videoPlayerKey.currentState?.goToVideo(videoUrl);
   }
 
   void _navigateToPaymentScreen() {
@@ -148,117 +158,114 @@ class _CourseDetailState extends State<CourseDetail>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomSheet: isEnrolled
-          ? const SizedBox.shrink()
-          : Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.ghostWhite,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    offset: const Offset(0, -1),
-                  ),
-                ],
+    return FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.deepBlue,
               ),
-              height: MediaQuery.of(context).size.height * 0.1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FutureBuilder(
-                    future: _futureCourseDetail,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox.shrink();
-                      }
-                      return Text(
+            ),
+          );
+        }
+        return Scaffold(
+          bottomSheet: isEnrolled
+              ? const SizedBox.shrink()
+              : Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.ghostWhite,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        offset: const Offset(0, -1),
+                      ),
+                    ],
+                  ),
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
                         "${course!.price.toString()}đ",
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
-                      );
-                    },
-                  ),
-                  AppSpacing.mediumHorizontal,
-                  Expanded(
-                    child: TextButton(
-                      style: AppStyles.primaryButtonStyle,
-                      onPressed: _navigateToPaymentScreen,
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Purchase",
-                          style: TextStyle(fontSize: 16),
-                        ),
                       ),
-                    ),
-                  )
-                ],
+                      AppSpacing.mediumHorizontal,
+                      Expanded(
+                        child: TextButton(
+                          style: AppStyles.primaryButtonStyle,
+                          onPressed: _navigateToPaymentScreen,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "Purchase",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+          appBar: AppBar(
+            surfaceTintColor: AppColors.ghostWhite,
+            leading: IconButton(
+              icon: const Icon(
+                CupertinoIcons.xmark,
               ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-      appBar: AppBar(
-        surfaceTintColor: AppColors.ghostWhite,
-        leading: IconButton(
-          icon: const Icon(
-            CupertinoIcons.xmark,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(CupertinoIcons.bookmark),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(CupertinoIcons.share),
-          )
-        ],
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            VideoPlayerView(
-              url: _currentVideoUrl,
-              dataSourceType: DataSourceType.network,
-            ),
-            TabBar(
-              tabAlignment: TabAlignment.center,
-              isScrollable: true,
-              controller: _tabController,
-              splashFactory: NoSplash.splashFactory,
-              tabs: const [
-                Tab(text: 'Lessons'),
-                Tab(text: 'Projects'),
-                Tab(text: 'Discussions'),
-                Tab(text: 'Notes'),
-              ],
-              labelStyle: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(CupertinoIcons.bookmark),
               ),
-              unselectedLabelColor: Colors.black,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicatorColor: Colors.black,
-              indicatorWeight: 3,
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: _futureCourseDetail,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const MyLoading(
-                      width: 30,
-                      height: 30,
-                      color: AppColors.deepBlue,
-                    );
-                  }
-                  return TabBarView(
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(CupertinoIcons.share),
+              )
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                VideoPlayerView(
+                  key: _videoPlayerKey,
+                  url: _currentVideoUrl,
+                  dataSourceType: DataSourceType.network,
+                ),
+                TabBar(
+                  tabAlignment: TabAlignment.center,
+                  isScrollable: true,
+                  controller: _tabController,
+                  splashFactory: NoSplash.splashFactory,
+                  tabs: const [
+                    Tab(text: 'Lessons'),
+                    Tab(text: 'Projects'),
+                    Tab(text: 'Discussions'),
+                    Tab(text: 'Notes'),
+                  ],
+                  labelStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                  unselectedLabelColor: Colors.black,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorColor: Colors.black,
+                  indicatorWeight: 3,
+                ),
+                Expanded(
+                  child: TabBarView(
                     controller: _tabController,
                     children: [
                       LessonTab(
@@ -266,6 +273,7 @@ class _CourseDetailState extends State<CourseDetail>
                         instructorId: course!.instructorId,
                         userId: userId,
                         course: course!,
+                        currentVideoIndex: _currentVideoIndex,
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,
                         onSaveLesson: _saveLesson,
@@ -273,18 +281,21 @@ class _CourseDetailState extends State<CourseDetail>
                       SubmitProject(
                         course: course!,
                       ),
-                      Discussion(courseId: course!.id, isEnrolled: isEnrolled),
-                      Center(
+                      Discussion(
+                        courseId: course!.id,
+                        isEnrolled: isEnrolled,
+                      ),
+                      const Center(
                         child: Text("Notes"),
                       ),
                     ],
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -303,17 +303,17 @@ class _MyCoursesPageState extends State<MyCoursePage>
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<DocumentSnapshot> folders = snapshot.data!.docs;
-            return ListView.builder(
-              itemCount: folders.length,
-              itemBuilder: (context, index) {
-                DocumentSnapshot document = folders[index];
-                String folderId = document.id;
-                Map<String, dynamic> data =
-                    folders[index].data() as Map<String, dynamic>;
-                String folderName = data['name'];
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Slidable(
+            return Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ListView.builder(
+                itemCount: folders.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot document = folders[index];
+                  String folderId = document.id;
+                  Map<String, dynamic> data =
+                      folders[index].data() as Map<String, dynamic>;
+                  String folderName = data['name'];
+                  return Slidable(
                     key: const ValueKey(0),
                     endActionPane: ActionPane(
                       motion: const ScrollMotion(),
@@ -328,41 +328,54 @@ class _MyCoursesPageState extends State<MyCoursePage>
                               },
                             );
                           },
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.red,
+                          icon: Icons.folder_delete_outlined,
+                          label: "Remove",
                         ),
                       ],
                     ),
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return FolderDetail(
-                                folderId: folderId,
-                                folderName: folderName,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: const BorderSide(
-                          color: AppColors.lightGrey,
+                    child: Container(
+                      margin: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: AppColors.ghostWhite,
+                        border: const Border(
+                          top: BorderSide(color: AppColors.deepSpace, width: 1),
+                          left:
+                              BorderSide(color: AppColors.deepSpace, width: 1),
+                          bottom:
+                              BorderSide(color: AppColors.deepSpace, width: 5),
+                          right:
+                              BorderSide(color: AppColors.deepSpace, width: 4),
                         ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      leading: const Icon(
-                        Icons.folder,
-                        color: Colors.blue,
+                      child: ListTile(
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return FolderDetail(
+                                  folderId: folderId,
+                                  folderName: folderName,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        leading: const Icon(
+                          Icons.folder_open_outlined,
+                          color: AppColors.deepSpace,
+                          size: 30,
+                        ),
+                        title: Text(folderName),
+                        subtitle: Text('${data['courses'].length} courses'),
                       ),
-                      title: Text(folderName),
-                      subtitle: Text('${data['courses'].length} courses'),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           } else {
             return const Center(

@@ -20,7 +20,6 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalWidgetsLocalizations;
 import 'package:flutter_quill/flutter_quill.dart' show Document;
 import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
-import 'package:flutter_downloader/flutter_downloader.dart';
 // import 'package:stripe_payment/stripe_payment.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 
