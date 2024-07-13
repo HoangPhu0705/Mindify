@@ -275,7 +275,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               child: CourseCard(
                 thumbnail: course.thumbnail,
                 instructor: instructor?['displayName'] ?? 'Unknown',
-                specialization: instructor?['profession'] ?? 'Unknown',
+                specialization: instructor?['profession'] ?? 'Mindify Instructor',
                 courseName: course.title,
                 time: course.duration,
                 numberOfLesson: course.lessonNum,

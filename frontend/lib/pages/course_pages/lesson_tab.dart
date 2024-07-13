@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
@@ -40,10 +41,13 @@ class LessonTab extends StatefulWidget {
 class _LessonTabState extends State<LessonTab> {
   DateTime? _lastNotificationTime;
   final userService = UserService();
+  Map<String, dynamic> instructorInfo = {};
+  Uint8List? instructorAvatar;
 
   @override
   void initState() {
     super.initState();
+    _getInstructorInfo();
     _sortLessonsByIndex();
     _checkIfFollowed();
   }
@@ -61,6 +65,17 @@ class _LessonTabState extends State<LessonTab> {
       });
     } catch (e) {
       log("Error checking follow status: $e");
+    }
+  }
+
+  Future<void> _getInstructorInfo() async {
+    final info = await userService.getUserInfoById(widget.course.instructorId);
+    if (info != null) {
+      final avatar = await userService.getProfileImage(widget.course.instructorId);
+      setState(() {
+        instructorInfo = info;
+        instructorAvatar = avatar;
+      });
     }
   }
 
@@ -138,20 +153,24 @@ class _LessonTabState extends State<LessonTab> {
                         children: [
                           CircleAvatar(
                             maxRadius: 24,
-                            backgroundImage: NetworkImage(
-                                "https://avatar.iran.liara.run/public/boy"),
+                            backgroundImage: instructorAvatar != null
+                                ? MemoryImage(instructorAvatar!) as ImageProvider
+                                : Image.network(
+                        "https://i.ibb.co/tZxYspW/default-avatar.png") as ImageProvider,
                           ),
                           AppSpacing.smallHorizontal,
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.course.instructorName,
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                instructorInfo['displayName'] ?? 'Unknown',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                "Filmmaker and Youtuber",
-                                style: TextStyle(
+                                instructorInfo['profession'] ??
+                                    "Mindify Instructor",
+                                style: const TextStyle(
                                   fontSize: 13,
                                 ),
                               ),
