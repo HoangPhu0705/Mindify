@@ -1,6 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +17,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:toastification/toastification.dart';
@@ -67,19 +73,86 @@ class _SignInState extends State<SignIn> {
     }
   }
 
+  Future<File> getImageFileFromAssets(String path) async {
+    try {
+      final byteData = await rootBundle.load('assets/$path');
+      final file = File('${(await getTemporaryDirectory()).path}/$path');
+      await file.create(recursive: true); // Ensure the directory exists
+      await file.writeAsBytes(byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      return file;
+    } catch (e) {
+      log("Error loading asset: $e");
+      rethrow;
+    }
+  }
+
   void signInGoogle() async {
+  try {
     GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+    if (gUser == null) {
+      showErrorToast("Google sign-in aborted.");
+      return;
+    }
 
-    GoogleSignInAuthentication? gAuth = await gUser?.authentication;
-
+    GoogleSignInAuthentication gAuth = await gUser.authentication;
     AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: gAuth?.accessToken,
-      idToken: gAuth?.idToken,
+      accessToken: gAuth.accessToken,
+      idToken: gAuth.idToken,
     );
 
     UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
+
+    User? user = userCredential.user;
+
+    if (user != null) {
+      String uid = user.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!userDoc.exists) {
+        // Add to Firestore
+        Map<String, dynamic> userData = {
+          'id': uid,
+          'displayName': user.displayName ?? 'Mindify Member',
+          'email': user.email,
+          'role': 'user',
+          'requestSent': false,
+          'followerNum': 0,
+          'followingNum': 0,
+          'followingUser': [],
+          'followerUser': [],
+          'savedClasses': [],
+        };
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set(userData);
+
+        // Upload default avatar
+        try {
+          File defaultImageFile =
+              await getImageFileFromAssets("images/default_avatar.png");
+          Uint8List defaultImage = await defaultImageFile.readAsBytes();
+          final storageRef = FirebaseStorage.instance.ref();
+          final imageRef = storageRef.child('avatars/user_$uid');
+          await imageRef.putData(defaultImage);
+          var photoUrl = (await imageRef.getDownloadURL()).toString();
+          await user.updatePhotoURL(photoUrl);
+        } catch (e) {
+          log("Error uploading avatar: $e");
+        }
+      }
+    }
+  } catch (e) {
+    log("Error during Google sign-in: $e");
+    showErrorToast("Error during Google sign-in: $e");
   }
+}
+
 
   void showErrorToast(String message) {
     toastification.show(

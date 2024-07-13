@@ -2,9 +2,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+
 
 class CourseCard extends StatefulWidget {
   final String thumbnail;
@@ -13,9 +13,9 @@ class CourseCard extends StatefulWidget {
   final String courseName;
   final String time;
   final int numberOfLesson;
-  final String avatar;
+  final Widget avatar;
   final VoidCallback onSavePressed;
-  final bool isSaved; // New parameter to indicate if the course is saved
+  final bool isSaved;
 
   const CourseCard({
     Key? key,
@@ -27,7 +27,7 @@ class CourseCard extends StatefulWidget {
     required this.numberOfLesson,
     required this.avatar,
     required this.onSavePressed,
-    required this.isSaved, // Initialize the new parameter
+    required this.isSaved,
   }) : super(key: key);
 
   @override
@@ -81,7 +81,9 @@ class _CourseCardState extends State<CourseCard> {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: NetworkImage(widget.avatar),
+                            backgroundImage: widget.avatar is Image
+                                ? (widget.avatar as Image).image
+                                : NetworkImage("https://i.ibb.co/tZxYspW/default-avatar.png"),
                           ),
                           AppSpacing.mediumHorizontal,
                           Column(
@@ -166,4 +168,3 @@ class _CourseCardState extends State<CourseCard> {
     );
   }
 }
-

@@ -28,7 +28,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   final CourseService courseService = CourseService();
   final UserService userService = UserService();
 
-  Map<String, String> instructorNames = {};
+  Map<String, Map<String, dynamic>> instructorInfo = {};
   List<Course>? _coursesFuture;
   List<Course>? _newestCourses;
   List<Course>? _top5Courses;
@@ -45,9 +45,47 @@ class _DiscoverPageState extends State<DiscoverPage> {
       _newestCourses = await courseService.getFiveNewestCourses();
 
       await _loadSavedCourses();
+      await _loadInstructorInfo();
     } catch (e) {
       log("Error in _initPage: $e");
     }
+  }
+
+  Future<void> _loadInstructorInfo() async {
+    if (_coursesFuture != null) {
+      for (var course in _coursesFuture!) {
+        if (!instructorInfo.containsKey(course.instructorId)) {
+          final info = await userService.getUserInfoById(course.instructorId);
+          if (info != null) {
+            final avatar = await userService.getProfileImage(course.instructorId);
+            instructorInfo[course.instructorId] = {...info, 'avatar': avatar};
+          }
+        }
+      }
+    }
+    if (_top5Courses != null) {
+      for (var course in _top5Courses!) {
+        if (!instructorInfo.containsKey(course.instructorId)) {
+          final info = await userService.getUserInfoById(course.instructorId);
+          if (info != null) {
+            final avatar = await userService.getProfileImage(course.instructorId);
+            instructorInfo[course.instructorId] = {...info, 'avatar': avatar};
+          }
+        }
+      }
+    }
+    if (_newestCourses != null) {
+      for (var course in _newestCourses!) {
+        if (!instructorInfo.containsKey(course.instructorId)) {
+          final info = await userService.getUserInfoById(course.instructorId);
+          if (info != null) {
+            final avatar = await userService.getProfileImage(course.instructorId);
+            instructorInfo[course.instructorId] = {...info, 'avatar': avatar};
+          }
+        }
+      }
+    }
+    setState(() {});
   }
 
   @override
@@ -172,10 +210,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
             onPageChanged: (value) {},
             itemBuilder: (context, index) {
               final course = courses[index];
+              final instructor = instructorInfo[course.instructorId];
               return PopularCourse(
                 imageUrl: course.thumbnail,
                 courseName: course.title,
-                instructor: course.instructorName,
+                instructor: instructor?['displayName'] ?? 'Unknown',
               );
             },
           ),
@@ -218,6 +257,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {
             final course = courses[index];
+            final instructor = instructorInfo[course.instructorId];
 
             final isSaved =
                 Provider.of<CourseProvider>(context).isCourseSaved(course.id);
@@ -234,18 +274,21 @@ class _DiscoverPageState extends State<DiscoverPage> {
               },
               child: CourseCard(
                 thumbnail: course.thumbnail,
-                instructor: course.instructorName,
-                specialization: "Filmmaker and Youtuber",
+                instructor: instructor?['displayName'] ?? 'Unknown',
+                specialization: instructor?['profession'] ?? 'Unknown',
                 courseName: course.title,
                 time: course.duration,
                 numberOfLesson: course.lessonNum,
-                avatar: "https://i.ibb.co/tZxYspW/default-avatar.png",
+                avatar: instructor?['avatar'] != null
+                    ? Image.memory(instructor!['avatar'])
+                    : Image.network(
+                        "https://i.ibb.co/tZxYspW/default-avatar.png"),
                 isSaved: isSaved,
-                onSavePressed: () {
+                onSavePressed: () async {
                   if (isSaved) {
-                    unsaveCourse(userId, course.id);
+                    await unsaveCourse(userId, course.id);
                   } else {
-                    saveCourse(userId, course.id);
+                    await saveCourse(userId, course.id);
                   }
                 },
               ),
