@@ -300,6 +300,7 @@ class CourseService {
         .collection('courses')
         .doc(courseId)
         .collection('lessons')
+        .orderBy('index')
         .snapshots();
   }
 

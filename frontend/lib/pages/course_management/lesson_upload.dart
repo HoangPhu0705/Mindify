@@ -244,7 +244,8 @@ class _LessonUploadState extends State<LessonUpload> {
                                     ),
                                   );
                                 }
-                                return ListView.builder(
+                                return ReorderableListView.builder(
+                                  onReorder: (oldIndex, newIndex) {},
                                   itemCount: lessons.length,
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
@@ -256,119 +257,110 @@ class _LessonUploadState extends State<LessonUpload> {
                                     String duration = data['duration'];
                                     String timestamp = data['timestamp'];
                                     lessonIndex = lessons.length;
-
-                                    return Column(
-                                      children: [
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: AppColors.lightGrey,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: ListTile(
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                              horizontal: 5,
-                                            ),
-                                            trailing: PopupMenuButton(
-                                              offset: const Offset(10, -20),
-                                              padding: const EdgeInsets.all(5),
-                                              constraints:
-                                                  const BoxConstraints.expand(
-                                                width: 50,
-                                                height: 100,
-                                              ),
-                                              icon: const Icon(
-                                                Icons.more_horiz_outlined,
-                                              ),
-                                              color: AppColors.deepBlue,
-                                              elevation: 0,
-                                              itemBuilder: (context) => [
-                                                PopupMenuItem(
-                                                  child: const Icon(
-                                                    Icons.edit_outlined,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      editingLessonId =
-                                                          lessonId;
-                                                      videoTitleController
-                                                          .text = lessonTitle;
-                                                      focusNode.requestFocus();
-                                                    });
-                                                  },
-                                                ),
-                                                PopupMenuItem(
-                                                  child: const Icon(
-                                                    Icons.delete_forever,
-                                                    color: Colors.red,
-                                                  ),
-                                                  onTap: () async {
-                                                    final videoPath =
-                                                        'video_lessons/$timestamp';
-                                                    await deleteLesson(
-                                                      widget.courseId,
-                                                      lessonId,
-                                                      videoPath,
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                            leading: const Icon(
-                                              Icons.video_library_outlined,
-                                              size: 30,
-                                            ),
-                                            title: editingLessonId == lessonId
-                                                ? TextField(
-                                                    onSubmitted: (value) {
-                                                      courseService
-                                                          .updateLesson(
-                                                        widget.courseId,
-                                                        lessonId,
-                                                        {'title': value},
-                                                      );
-                                                      setState(() {
-                                                        editingLessonId = null;
-                                                      });
-                                                    },
-                                                    controller:
-                                                        videoTitleController,
-                                                    focusNode: focusNode,
-                                                    decoration: InputDecoration
-                                                        .collapsed(
-                                                      hintText: lessonTitle,
-                                                      hintStyle:
-                                                          const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.black,
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                    maxLines: 2,
-                                                    style: const TextStyle(
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  )
-                                                : Text(
-                                                    lessonTitle,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                            subtitle: Text(duration),
-                                          ),
+                                    
+                                    return Container(
+                                      key: ValueKey(lessonId),
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: AppColors.lightGrey,
                                         ),
-                                      ],
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: ListTile(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                        ),
+                                        trailing: PopupMenuButton(
+                                          offset: const Offset(10, -20),
+                                          padding: const EdgeInsets.all(5),
+                                          constraints:
+                                              const BoxConstraints.expand(
+                                            width: 50,
+                                            height: 100,
+                                          ),
+                                          icon: const Icon(
+                                            Icons.more_horiz_outlined,
+                                          ),
+                                          color: AppColors.deepBlue,
+                                          elevation: 0,
+                                          itemBuilder: (context) => [
+                                            PopupMenuItem(
+                                              child: const Icon(
+                                                Icons.edit_outlined,
+                                                color: Colors.white,
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  editingLessonId = lessonId;
+                                                  videoTitleController.text =
+                                                      lessonTitle;
+                                                  focusNode.requestFocus();
+                                                });
+                                              },
+                                            ),
+                                            PopupMenuItem(
+                                              child: const Icon(
+                                                Icons.delete_forever,
+                                                color: Colors.red,
+                                              ),
+                                              onTap: () async {
+                                                final videoPath =
+                                                    'video_lessons/$timestamp';
+                                                await deleteLesson(
+                                                  widget.courseId,
+                                                  lessonId,
+                                                  videoPath,
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        leading: const Icon(
+                                          Icons.video_library_outlined,
+                                          size: 30,
+                                        ),
+                                        title: editingLessonId == lessonId
+                                            ? TextField(
+                                                onSubmitted: (value) {
+                                                  courseService.updateLesson(
+                                                    widget.courseId,
+                                                    lessonId,
+                                                    {'title': value},
+                                                  );
+                                                  setState(() {
+                                                    editingLessonId = null;
+                                                  });
+                                                },
+                                                controller:
+                                                    videoTitleController,
+                                                focusNode: focusNode,
+                                                decoration:
+                                                    const InputDecoration
+                                                        .collapsed(
+                                                  hintText: "Video title",
+                                                  hintStyle: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                maxLines: 2,
+                                                style: const TextStyle(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              )
+                                            : Text(
+                                                lessonTitle,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                        subtitle: Text(duration),
+                                      ),
                                     );
                                   },
                                 );
