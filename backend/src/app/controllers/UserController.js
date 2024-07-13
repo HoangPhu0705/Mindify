@@ -134,3 +134,14 @@ exports.updateUsers = async (req, res) => {
         res.status(500).json({ error: `Error when updating users: ${error.message}` });
     }
 };
+
+exports.getUserNameAndAvatar = async (req, res) => {
+    try{
+        const userId = req.params.userId;
+        const response = await UserService.getUserNameAndAvatar(userId);
+        res.status(200).json(response);
+    }catch(e){
+        res.status(500).json({ error: `Error getting name and avatar ${error.message}` });
+
+    }
+}

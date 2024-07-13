@@ -21,17 +21,17 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-class CourseDetail extends StatefulWidget {
+class PreviewClass extends StatefulWidget {
   final String courseId;
   final String userId;
 
-  const CourseDetail({super.key, required this.courseId, required this.userId});
+  const PreviewClass({super.key, required this.courseId, required this.userId});
 
   @override
-  State<CourseDetail> createState() => _CourseDetailState();
+  State<PreviewClass> createState() => _PreviewClassState();
 }
 
-class _CourseDetailState extends State<CourseDetail>
+class _PreviewClassState extends State<PreviewClass>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final courseService = CourseService();
@@ -143,18 +143,7 @@ class _CourseDetailState extends State<CourseDetail>
     _videoPlayerKey.currentState?.goToVideo(videoUrl);
   }
 
-  void _navigateToPaymentScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentPage(
-          userId: widget.userId,
-          courseId: widget.courseId,
-          price: course!.price,
-        ),
-      ),
-    );
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -173,47 +162,6 @@ class _CourseDetailState extends State<CourseDetail>
           );
         }
         return Scaffold(
-          bottomSheet: isEnrolled
-              ? const SizedBox.shrink()
-              : Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.ghostWhite,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        offset: const Offset(0, -1),
-                      ),
-                    ],
-                  ),
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${course!.price.toString()}đ",
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                      AppSpacing.mediumHorizontal,
-                      Expanded(
-                        child: TextButton(
-                          style: AppStyles.primaryButtonStyle,
-                          onPressed: _navigateToPaymentScreen,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "Purchase",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
           appBar: AppBar(
             surfaceTintColor: AppColors.ghostWhite,
             leading: IconButton(
@@ -224,16 +172,6 @@ class _CourseDetailState extends State<CourseDetail>
                 Navigator.pop(context);
               },
             ),
-            actions: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(CupertinoIcons.bookmark),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(CupertinoIcons.share),
-              )
-            ],
           ),
           body: SafeArea(
             child: Column(
@@ -269,7 +207,7 @@ class _CourseDetailState extends State<CourseDetail>
                     controller: _tabController,
                     children: [
                       LessonTab(
-                        isPreviewing: false,
+                        isPreviewing: true,
                         isFollowed: isFollowed,
                         instructorId: course!.instructorId,
                         userId: userId,

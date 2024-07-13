@@ -15,6 +15,7 @@ import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/popular_course.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -27,6 +28,10 @@ class DiscoverPage extends StatefulWidget {
 class _DiscoverPageState extends State<DiscoverPage> {
   final CourseService courseService = CourseService();
   final UserService userService = UserService();
+
+  //Controllers
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   Map<String, Map<String, dynamic>> instructorInfo = {};
   List<Course>? _coursesFuture;
@@ -57,8 +62,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         if (!instructorInfo.containsKey(course.instructorId)) {
           final info = await userService.getUserInfoById(course.instructorId);
           if (info != null) {
-            final avatar = await userService.getProfileImage(course.instructorId);
-            instructorInfo[course.instructorId] = {...info, 'avatar': avatar};
+            final data =
+                await userService.getAvatarAndDisplayName(course.instructorId);
+
+            instructorInfo[course.instructorId] = {
+              ...info,
+              'avatar': data!["photoUrl"],
+              'displayName': data["displayName"],
+            };
           }
         }
       }
@@ -68,8 +79,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         if (!instructorInfo.containsKey(course.instructorId)) {
           final info = await userService.getUserInfoById(course.instructorId);
           if (info != null) {
-            final avatar = await userService.getProfileImage(course.instructorId);
-            instructorInfo[course.instructorId] = {...info, 'avatar': avatar};
+            final data =
+                await userService.getAvatarAndDisplayName(course.instructorId);
+
+            instructorInfo[course.instructorId] = {
+              ...info,
+              'avatar': data!["photoUrl"],
+              'displayName': data["displayName"],
+            };
           }
         }
       }
@@ -79,8 +96,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         if (!instructorInfo.containsKey(course.instructorId)) {
           final info = await userService.getUserInfoById(course.instructorId);
           if (info != null) {
-            final avatar = await userService.getProfileImage(course.instructorId);
-            instructorInfo[course.instructorId] = {...info, 'avatar': avatar};
+            final data =
+                await userService.getAvatarAndDisplayName(course.instructorId);
+
+            instructorInfo[course.instructorId] = {
+              ...info,
+              'avatar': data!["photoUrl"],
+              'displayName': data["displayName"],
+            };
           }
         }
       }
@@ -149,6 +172,18 @@ class _DiscoverPageState extends State<DiscoverPage> {
     }
   }
 
+  void _onRefresh() async {
+    setState(() {
+      _future = _initPage();
+    });
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,26 +204,31 @@ class _DiscoverPageState extends State<DiscoverPage> {
             );
           } else {
             return SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text("Mindify",
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    AppSpacing.smallVertical,
-                    if (_coursesFuture != null)
-                      buildPopularCourses(_coursesFuture!),
-                    AppSpacing.mediumVertical,
-                    Column(
-                      children: [
-                        buildCarouselCourses(
-                            _top5Courses!, "Recommend For You", userId),
-                        AppSpacing.mediumVertical,
-                        buildCarouselCourses(
-                            _newestCourses!, "New and Trending", userId),
-                      ],
-                    ),
-                    AppSpacing.largeVertical,
-                  ],
+              child: SmartRefresher(
+                onLoading: _onLoading,
+                onRefresh: _onRefresh,
+                controller: _refreshController,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text("Mindify",
+                          style: Theme.of(context).textTheme.headlineMedium),
+                      AppSpacing.smallVertical,
+                      if (_coursesFuture != null)
+                        buildPopularCourses(_coursesFuture!),
+                      AppSpacing.mediumVertical,
+                      Column(
+                        children: [
+                          buildCarouselCourses(
+                              _top5Courses!, "Recommend For You", userId),
+                          AppSpacing.mediumVertical,
+                          buildCarouselCourses(
+                              _newestCourses!, "New and Trending", userId),
+                        ],
+                      ),
+                      AppSpacing.largeVertical,
+                    ],
+                  ),
                 ),
               ),
             );
@@ -280,7 +320,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 time: course.duration,
                 numberOfLesson: course.lessonNum,
                 avatar: instructor?['avatar'] != null
-                    ? Image.memory(instructor!['avatar'])
+                    ? Image.network(instructor!['avatar'])
                     : Image.network(
                         "https://i.ibb.co/tZxYspW/default-avatar.png"),
                 isSaved: isSaved,

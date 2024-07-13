@@ -90,7 +90,9 @@ class _EditProfileState extends State<EditProfile> {
     final imageRef = storageRef.child('avatars/user_$userId');
     await imageRef.putData(_selectedImage);
     var photoUrl = (await imageRef.getDownloadURL()).toString();
-    Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
+    }
     await _userService.updateAvatar(photoUrl);
   }
 

@@ -84,6 +84,23 @@ class UserService {
     }
   }
 
+  Future<Map<String, dynamic>?> getAvatarAndDisplayName(String uid) async {
+    try {
+      final url = Uri.parse('${AppConstants.USER_API}/auth/$uid');
+      final response =
+          await http.get(url, headers: {'Content-Type': 'application/json'});
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        return jsonResponse;
+      } else {
+        log("Error fetching user info");
+      }
+    } catch (e) {
+      print("Error fetching user info: $e");
+      return null;
+    }
+  }
+
   Future<void> resetPassword(String email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -185,25 +202,25 @@ class UserService {
   }
 
   Future<bool> checkIfUserFollows(String userId, String followUserId) async {
-  final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/checkFollow?userId=$followUserId');
-  try {
-    final response = await http.get(
-      url,
-      headers: {'Content-Type': 'application/json'},
-    );
+    final url = Uri.parse(
+        '${AppConstants.baseUrl}/users/$userId/checkFollow?userId=$followUserId');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      log("Check follow response: $jsonResponse");
-      return jsonResponse['isFollowing'] as bool;
-    } else {
-      log("Failed to check follow status: ${response.statusCode}");
-      throw Exception('Failed to check follow status');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        log("Check follow response: $jsonResponse");
+        return jsonResponse['isFollowing'] as bool;
+      } else {
+        log("Failed to check follow status: ${response.statusCode}");
+        throw Exception('Failed to check follow status');
+      }
+    } catch (e) {
+      log("Error checking follow status: $e");
+      throw e;
     }
-  } catch (e) {
-    log("Error checking follow status: $e");
-    throw e;
   }
-}
-
 }

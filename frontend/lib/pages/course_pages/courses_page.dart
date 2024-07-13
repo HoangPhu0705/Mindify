@@ -2,8 +2,10 @@ import 'dart:developer';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/pages/course_pages/folder_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
@@ -261,15 +263,27 @@ class _MyCoursesPageState extends State<MyCoursePage>
                   itemBuilder: (context, index) {
                     Course course = courses[index];
 
-                    return MyCourseItem(
-                      imageUrl: course.thumbnail,
-                      title: course.title,
-                      author: course.instructorName,
-                      duration: course.duration,
-                      students: course.students.toString(),
-                      moreOnPress: () {
-                        showFolderBottomSheet(context, course.id);
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (context) => CourseDetail(
+                              courseId: course.id,
+                              userId: FirebaseAuth.instance.currentUser!.uid,
+                            ),
+                          ),
+                        );
                       },
+                      child: MyCourseItem(
+                        imageUrl: course.thumbnail,
+                        title: course.title,
+                        author: course.instructorName,
+                        duration: course.duration,
+                        students: course.students.toString(),
+                        moreOnPress: () {
+                          showFolderBottomSheet(context, course.id);
+                        },
+                      ),
                     );
                   },
                 );

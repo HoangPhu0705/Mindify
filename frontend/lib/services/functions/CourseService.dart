@@ -158,7 +158,10 @@ class CourseService {
     try {
       if (isNewSearch) lastDocument = null;
 
-      Query queryRef = _firestore.collection('courses').limit(10);
+      Query queryRef = _firestore
+          .collection('courses')
+          .where('isPublic', isEqualTo: true)
+          .limit(30);
 
       if (lastDocument != null) {
         queryRef = queryRef.startAfterDocument(lastDocument!);
@@ -300,6 +303,7 @@ class CourseService {
         .collection('courses')
         .doc(courseId)
         .collection('lessons')
+        .orderBy('index')
         .snapshots();
   }
 
@@ -340,7 +344,8 @@ class CourseService {
 
   Future<void> updateLesson(String courseId, String lessonId, var data) async {
     try {
-      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
+      final url =
+          Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
       final response = await http.patch(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -355,5 +360,15 @@ class CourseService {
       log("Error: $e");
       throw Exception("Error updating lesson");
     }
+  }
+
+  Future<void> updateLessonIndex(
+      String courseId, String lessonId, int newIndex) async {
+    await FirebaseFirestore.instance
+        .collection('courses')
+        .doc(courseId)
+        .collection('lessons')
+        .doc(lessonId)
+        .update({'index': newIndex});
   }
 }

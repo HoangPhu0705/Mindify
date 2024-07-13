@@ -27,7 +27,7 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.ghostWhite,
           ),
           child: Column(
@@ -45,7 +45,7 @@ class _SettingPageState extends State<SettingPage> {
                   );
                 },
               ),
-              Divider(),
+              const Divider(),
               _buildSectionTitle("Notification"),
               _buildListTileNotify(
                 "Learning reminders",
@@ -54,15 +54,15 @@ class _SettingPageState extends State<SettingPage> {
                   log("notify");
                 },
               ),
-              Divider(),
+              const Divider(),
               _buildSectionTitle("About"),
               _buildListTile(
                 "Terms of Service",
                 Icons.chevron_right_outlined,
                 () {},
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
+              const Padding(
+                padding: EdgeInsets.only(left: 15.0),
                 child: Divider(),
               ),
               _buildListTile(
@@ -70,8 +70,8 @@ class _SettingPageState extends State<SettingPage> {
                 Icons.chevron_right_outlined,
                 () {},
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
+              const Padding(
+                padding: EdgeInsets.only(left: 15.0),
                 child: Divider(),
               ),
               _buildListTile(
@@ -79,8 +79,8 @@ class _SettingPageState extends State<SettingPage> {
                 Icons.chevron_right_outlined,
                 () {},
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
+              const Padding(
+                padding: EdgeInsets.only(left: 15.0),
                 child: Divider(),
               ),
               _buildListTileDeleteAccount(
@@ -89,7 +89,7 @@ class _SettingPageState extends State<SettingPage> {
                   log("Delete Account");
                 },
               ),
-              Divider(),
+              const Divider(),
             ],
           ),
         ),

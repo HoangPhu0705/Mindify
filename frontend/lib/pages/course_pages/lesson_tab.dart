@@ -14,6 +14,7 @@ import 'package:frontend/services/functions/UserService.dart';
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
+  bool isPreviewing;
   final String instructorId;
   final String userId;
   final Course course;
@@ -25,6 +26,7 @@ class LessonTab extends StatefulWidget {
   LessonTab({
     Key? key,
     required this.isFollowed,
+    required this.isPreviewing,
     required this.instructorId,
     required this.userId,
     required this.course,

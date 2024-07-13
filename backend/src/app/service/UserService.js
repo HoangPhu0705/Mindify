@@ -333,3 +333,16 @@ exports.updateUsers = async () => {
     await batch.commit();
     console.log("All users updated successfully");
 };
+
+exports.getUserNameAndAvatar = async (uid) => {
+    try {
+        const userRecord = await admin.auth().getUser(uid);
+        const displayName = userRecord.displayName;
+        const photoUrl = userRecord.photoURL;
+
+        return { displayName, photoUrl };
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        throw error;
+    }
+}
