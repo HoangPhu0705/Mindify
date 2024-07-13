@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/lesson_upload.dart';
+import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/multiline_tag.dart';
 import 'package:frontend/services/functions/CourseService.dart';
@@ -299,7 +301,15 @@ class _ManageClassState extends State<ManageClass> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            log("clicked preview");
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CourseDetail(
+                                  courseId: widget.courseId,
+                                  userId:
+                                      FirebaseAuth.instance.currentUser!.uid,
+                                ),
+                              ),
+                            );
                           },
                           child: RichText(
                             text: const TextSpan(
@@ -332,36 +342,46 @@ class _ManageClassState extends State<ManageClass> {
                     ),
                     AppSpacing.smallVertical,
                     const Divider(),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        "Video Lessons",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          final result = Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LessonUpload(
-                                courseId: widget.courseId,
+                    StreamBuilder<QuerySnapshot>(
+                        stream: courseServices
+                            .getLessonStreamByCourse(widget.courseId),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            int lessonNum = snapshot.data!.docs.length;
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: const Text(
+                                "Video Lessonsss",
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Manage",
-                          style: TextStyle(
-                            color: AppColors.deepBlue,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      subtitle: Text("0 lesson(s)"),
-                    ),
+                              trailing: GestureDetector(
+                                onTap: () {
+                                  final result = Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LessonUpload(
+                                        courseId: widget.courseId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Manage",
+                                  style: TextStyle(
+                                    color: AppColors.deepBlue,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              subtitle: Text("$lessonNum lesson(s)"),
+                            );
+                          } else {
+                            return SizedBox.shrink();
+                          }
+                        }),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text(

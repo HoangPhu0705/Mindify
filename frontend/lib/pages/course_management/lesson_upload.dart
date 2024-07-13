@@ -140,12 +140,38 @@ class _LessonUploadState extends State<LessonUpload> {
     await courseService.createLesson(widget.courseId, data);
   }
 
-  Future<void> deleteLesson(
-      String courseId, String lessonId, String videoPath) async {
+  Future<void> deleteLesson(String courseId, String lessonId, String videoPath) async {
+  try {
     await courseService.deleteLesson(courseId, lessonId);
+
     final ref = FirebaseStorage.instance.ref().child(videoPath);
     await ref.delete();
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('courses')
+        .doc(courseId)
+        .collection('lessons')
+        .orderBy('index')
+        .get();
+
+    int deletedIndex = snapshot.docs.indexWhere((doc) => doc.id == lessonId);
+
+    for (int i = deletedIndex; i < snapshot.docs.length; i++) {
+      await FirebaseFirestore.instance
+          .collection('courses')
+          .doc(courseId)
+          .collection('lessons')
+          .doc(snapshot.docs[i].id)
+          .update({'index': i});
+    }
+
+    log("Lesson deleted successfully");
+  } catch (e) {
+    print("Error: $e");
+    throw Exception("Error deleting lesson");
   }
+}
+
 
   void _onFocusChange() {
     if (!focusNode.hasFocus && editingLessonId != null) {
@@ -158,6 +184,30 @@ class _LessonUploadState extends State<LessonUpload> {
         editingLessonId = null;
       });
     }
+  }
+
+  Future<void> updateLessonIndex(String lessonId, int newIndex) async {
+    // Update the index field in Firestore
+    await FirebaseFirestore.instance
+        .collection('courses')
+        .doc(widget.courseId)
+        .collection('lessons')
+        .doc(lessonId)
+        .update({'index': newIndex});
+  }
+
+  void reorderData(List<DocumentSnapshot> list, int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final DocumentSnapshot item = list.removeAt(oldIndex);
+      list.insert(newIndex, item);
+
+      for (int i = 0; i < list.length; i++) {
+        updateLessonIndex(list[i].id, i);
+      }
+    });
   }
 
   @override
@@ -245,7 +295,9 @@ class _LessonUploadState extends State<LessonUpload> {
                                   );
                                 }
                                 return ReorderableListView.builder(
-                                  onReorder: (oldIndex, newIndex) {},
+                                  onReorder: (oldIndex, newIndex) {
+                                    reorderData(lessons, oldIndex, newIndex);
+                                  },
                                   itemCount: lessons.length,
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
@@ -257,7 +309,7 @@ class _LessonUploadState extends State<LessonUpload> {
                                     String duration = data['duration'];
                                     String timestamp = data['timestamp'];
                                     lessonIndex = lessons.length;
-                                    
+
                                     return Container(
                                       key: ValueKey(lessonId),
                                       margin: const EdgeInsets.only(bottom: 10),
@@ -333,6 +385,8 @@ class _LessonUploadState extends State<LessonUpload> {
                                                     editingLessonId = null;
                                                   });
                                                 },
+                                                textInputAction:
+                                                    TextInputAction.done,
                                                 controller:
                                                     videoTitleController,
                                                 focusNode: focusNode,

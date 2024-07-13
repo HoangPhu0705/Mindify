@@ -155,7 +155,11 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSearchResults() {
     if (_isLoading) {
-      return const MyLoading(width: 30, height: 30, color: AppColors.deepBlue);
+      return const MyLoading(
+        width: 30,
+        height: 30,
+        color: AppColors.deepBlue,
+      );
     } else if (_searchResults.isEmpty) {
       return const Center(
         child: Text(
@@ -177,7 +181,9 @@ class _SearchPageState extends State<SearchPage> {
           itemBuilder: (context, index) {
             if (index == _searchResults.length) {
               return _isLoadingMore
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
                   : const SizedBox.shrink();
             }
 

@@ -1,17 +1,7 @@
 const { UserCollection, RequestCollection } = require('./Collections');
-const nodemailer = require('nodemailer');
+const { transporter } = require('../../utils/sender.util')
 const admin = require('firebase-admin');
 require('dotenv').config();
-
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-    }
-});
 
 const sendRejectionEmail = async (email, firstName, content) => {
     const mailOptions = {
@@ -343,3 +333,16 @@ exports.updateUsers = async () => {
     await batch.commit();
     console.log("All users updated successfully");
 };
+
+exports.getUserNameAndAvatar = async (uid) => {
+    try {
+        const userRecord = await admin.auth().getUser(uid);
+        const displayName = userRecord.displayName;
+        const photoUrl = userRecord.photoURL;
+
+        return { displayName, photoUrl };
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        throw error;
+    }
+}
