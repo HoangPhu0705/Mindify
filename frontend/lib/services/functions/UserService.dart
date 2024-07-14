@@ -96,9 +96,10 @@ class UserService {
         log("Error fetching user info");
       }
     } catch (e) {
-      print("Error fetching user info: $e");
+      log("Error fetching user info: $e");
       return null;
     }
+    return null;
   }
 
   Future<void> resetPassword(String email) async {

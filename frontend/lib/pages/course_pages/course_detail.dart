@@ -109,9 +109,9 @@ class _CourseDetailState extends State<CourseDetail>
 
     try {
       await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
-      showSuccessToast(context, 'Lesson saved successfully!');
+      if (mounted) showSuccessToast(context, 'Lesson saved successfully!');
     } catch (e) {
-      showErrorToast(context, 'Failed to save lesson');
+      if (mounted) showErrorToast(context, 'Failed to save lesson');
     }
   }
 
