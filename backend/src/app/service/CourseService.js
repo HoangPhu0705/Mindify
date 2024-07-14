@@ -292,3 +292,31 @@ exports.updateAllLessonLinks = async (newLink) => {
     throw error;
   }
 };
+
+exports.updateCourseDescriptions = async () => {
+  try {
+    const snapshot = await CourseCollection.get();
+
+    const batch = CourseCollection.firestore.batch();
+
+    snapshot.docs.forEach(doc => {
+      const courseData = doc.data();
+      const projectDescription = courseData.projectDescription || '';
+      const description = courseData.description || '';
+
+      const updatedProjectDescription = JSON.stringify([{ "insert": `${projectDescription}\n` }]);
+      const updatedDescription = JSON.stringify([{ "insert": `${description}\n` }]);
+
+      batch.update(doc.ref, {
+        projectDescription: updatedProjectDescription,
+        description: updatedDescription
+      });
+    });
+
+    await batch.commit();
+    return { message: "Updated descriptions for all courses successfully" };
+  } catch (error) {
+    console.error('Error updating course descriptions:', error);
+    throw error;
+  }
+};

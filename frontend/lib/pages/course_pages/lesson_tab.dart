@@ -8,7 +8,6 @@ import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:frontend/utils/toasts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:frontend/services/functions/UserService.dart';
@@ -45,8 +44,7 @@ class _LessonTabState extends State<LessonTab> {
   DateTime? _lastNotificationTime;
   final userService = UserService();
   Map<String, dynamic> instructorInfo = {};
-  String instructorAvatar = "";
-  String instructorName = "";
+  Uint8List? instructorAvatar;
 
   @override
   void initState() {
@@ -75,12 +73,10 @@ class _LessonTabState extends State<LessonTab> {
   Future<void> _getInstructorInfo() async {
     final info = await userService.getUserInfoById(widget.course.instructorId);
     if (info != null) {
-      final data =
-          await userService.getAvatarAndDisplayName(widget.course.instructorId);
+      final avatar = await userService.getProfileImage(widget.course.instructorId);
       setState(() {
-        instructorInfo = {...info};
-        instructorAvatar = data!['photoUrl'];
-        instructorName = data['displayName'];
+        instructorInfo = info;
+        instructorAvatar = avatar;
       });
     }
   }
@@ -116,8 +112,9 @@ class _LessonTabState extends State<LessonTab> {
         widget.isFollowed = true;
       });
     } catch (e) {
-      log(e.toString());
-      if (mounted) showErrorToast(context, 'Failed to follow user');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to follow user: $e')),
+      );
     }
   }
 
@@ -158,10 +155,10 @@ class _LessonTabState extends State<LessonTab> {
                         children: [
                           CircleAvatar(
                             maxRadius: 24,
-                            backgroundImage: instructorAvatar.isNotEmpty
-                                ? NetworkImage(instructorAvatar)
-                                : const NetworkImage(
-                                    "https://i.ibb.co/tZxYspW/default-avatar.png"),
+                            backgroundImage: instructorAvatar != null
+                                ? MemoryImage(instructorAvatar!) as ImageProvider
+                                : Image.network(
+                        "https://i.ibb.co/tZxYspW/default-avatar.png") as ImageProvider,
                           ),
                           AppSpacing.smallHorizontal,
                           Column(

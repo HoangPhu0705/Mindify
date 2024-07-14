@@ -11,12 +11,14 @@ router.post('/', CourseController.createCourse);
 router.get('/random', CourseController.getRandomCourses);
 router.get('/top5', CourseController.getTop5Courses);
 router.get('/newest', CourseController.getFiveNewestCourse);
-// router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);
+router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);
 router.get('/users/:id', CourseController.getCourseByUserId)
 // router.post('/', CourseController.createCourseWithLessons)
 router.get('/:id', CourseController.getCourseById);
 router.get('/:id/comments', CommentController.showComments);
+router.patch('/update-descriptions', CourseController.updateCourseDescriptions);
 router.patch('/:id', CourseController.updateCourse);
+
 router.delete('/:id', CourseController.deleteCourse);
 router.post('/batch', CourseController.addCourses);
 router.post('/addPrice', CourseController.addPriceToAllCourses);

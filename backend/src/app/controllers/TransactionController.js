@@ -28,26 +28,25 @@ exports.confirmPayment = async (req, res) => {
     }
 };
 // VNPAY
-exports.createVNPayPayment = async (req, res) => {
-    const { courseId, userId } = req.body;
-    if (!courseId || !userId) {
-        return res.status(400).json({ error: 'Missing courseId or userId' });
+exports.createVnpayPaymentUrl = async (req, res) => {
+    const { courseId, userId, amount } = req.body;
+    if (!courseId || !userId || !amount) {
+        return res.status(400).json({ error: 'Missing courseId, userId, or amount' });
     }
 
     try {
-        const paymentData = await TransactionService.createVNPayPayment(courseId, userId);
-        res.status(201).json(paymentData);
+        const paymentUrl = await TransactionService.createVnpayPaymentUrl(courseId, userId, amount);
+        res.status(201).json({ paymentUrl });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-exports.confirmVNPayPayment = async (req, res) => {
-    const vnpParams = req.query;
-
+exports.verifyVnpayPayment = async (req, res) => {
     try {
-        const enrollment = await TransactionService.confirmVNPayPayment(vnpParams);
-        res.status(200).json(enrollment);
+        const vnpParams = req.query;
+        const result = await TransactionService.verifyVnpayPayment(vnpParams);
+        res.status(result.success ? 200 : 400).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

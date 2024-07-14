@@ -8,9 +8,11 @@ router.get('/auth/:userId', UserController.getUserNameAndAvatar);
 
 router.get('/:userId/savedCourses', UserController.getSavedCourses);
 router.get('/:userId/checkFollow', UserController.checkIfUserFollows);
+router.get('/:userId/watchedHistories', UserController.getWatchedHistories);
 router.post('/updateUsers', UserController.updateUsers);
 router.post('/:userId/follow', UserController.followUser);
 router.post('/:userId/saveCourse', UserController.saveCourseForUser);
+router.patch('/:userId/watchedHistories', UserController.addToWatchedHistory);
 router.post('/:userId/unsaveCourse', UserController.unsaveCourseForUser);
 router.post('/requestInstructor', UserController.createInstructorSignUpRequest)
 router.get('/requests/:requestId', UserController.getRequestDetails);

@@ -224,4 +224,28 @@ class UserService {
       throw e;
     }
   }
+  Future<List<dynamic>> getWatchedHistories(String userId) async {
+    final response = await http.get(Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load watched histories');
+    }
+  }
+
+  Future<void> addToWatchedHistories(String userId, String lessonId, int time) async {
+    final response = await http.patch(
+      Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'lessonId': lessonId,
+        'time': time,
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update watched history');
+    }
+  }
 }

@@ -5,6 +5,6 @@ const TransactionController = require('../app/controllers/TransactionController'
 router.post('/createPaymentIntent', TransactionController.createPaymentIntent);
 router.post('/confirmPayment', TransactionController.confirmPayment);
 // VNPay
-router.post('/createVNPayPayment', TransactionController.createVNPayPayment);
-router.get('/confirmVNPayPayment', TransactionController.confirmVNPayPayment);
+router.post('/createVnpayPaymentUrl', TransactionController.createVnpayPaymentUrl);
+router.get('/vnpay_return', TransactionController.verifyVnpayPayment);
 module.exports = router;

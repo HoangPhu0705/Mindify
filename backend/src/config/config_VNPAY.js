@@ -9,6 +9,6 @@ const configVNP = {
 
 module.exports = { configVNP }
 
-VNP_TMNCODE = 'QI175EPT'
-VNP_HASHSECRET = '3MF54PG26IDXQMISGJQ4MQU13PXD8TJN'
-VNP_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
+// VNP_TMNCODE = 'QI175EPT'
+// VNP_HASHSECRET = '3MF54PG26IDXQMISGJQ4MQU13PXD8TJN'
+// VNP_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'

@@ -5,8 +5,6 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_textfield.dart';
-import 'package:provider/provider.dart';
-import 'package:frontend/services/providers/UserProvider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override

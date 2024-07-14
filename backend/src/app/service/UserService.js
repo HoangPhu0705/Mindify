@@ -346,3 +346,48 @@ exports.getUserNameAndAvatar = async (uid) => {
         throw error;
     }
 }
+
+exports.getWatchedHistories = async (userId) => {
+    try {
+        const userSnapshot = await UserCollection.doc(userId).collection('watchedHistories').get();
+        
+        if (userSnapshot.empty) {
+            return [];
+        }
+        
+        const watchedHistories = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return watchedHistories;
+    } catch (error) {
+        console.error("Error fetching watched histories:", error);
+        throw error;
+    }
+}
+
+
+exports.addToWatchedHistories = async (userId, lessonId, time, timestamp) => {
+    try {
+        const userRef = UserCollection.doc(userId);
+        const watchedHistoriesRef = userRef.collection('watchedHistories').doc(lessonId);
+
+        await admin.firestore().runTransaction(async (transaction) => {
+            const watchedHistoryDoc = await transaction.get(watchedHistoriesRef);
+            if (watchedHistoryDoc.exists) {
+                transaction.update(watchedHistoriesRef, {
+                    time: time,
+                    timestamp: timestamp
+                });
+            } else {
+                transaction.set(watchedHistoriesRef, {
+                    lessonId: lessonId,
+                    time: time,
+                    timestamp: timestamp
+                });
+            }
+        });
+
+        return { message: "Watched history added/updated successfully" };
+    } catch (error) {
+        console.error("Error adding to watched histories:", error);
+        throw error;
+    }
+};

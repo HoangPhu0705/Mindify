@@ -145,3 +145,31 @@ exports.getUserNameAndAvatar = async (req, res) => {
 
     }
 }
+
+exports.getWatchedHistories = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const watchHistory = await UserService.getWatchedHistories(userId);
+        res.status(200).json(watchHistory);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.addToWatchedHistory = async (req, res) => {
+    const { userId } = req.params;
+    const { lessonId, time } = req.body;
+
+    if (!lessonId || !time) {
+        return res.status(400).json({ message: 'lessonId and time are required' });
+    }
+
+    try {
+        const timestamp = new Date();
+        const result = await UserService.addToWatchedHistories(userId, lessonId, time, timestamp);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error adding watched history:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};

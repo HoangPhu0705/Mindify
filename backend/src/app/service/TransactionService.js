@@ -79,111 +79,99 @@ exports.confirmPayment = async (paymentIntentId) => {
 };
 
 // VNPAY
-exports.createVNPayPayment = async (courseId, userId) => {
-    try {
-        const courseDoc = await CourseCollection.doc(courseId).get();
-        if (!courseDoc.exists) {
-            throw new Error('Course not found');
-        }
+exports.createVnpayPaymentUrl = async (courseId, userId, amount) => {
+    const tmnCode = configVNP.vnp_TmnCode;
+    const secretKey = configVNP.vnp_HashSecret;
+    const vnpUrl = configVNP.vnp_Url;
+    const returnUrl = configVNP.vnp_ReturnUrl;
 
-        const course = courseDoc.data();
-        const amount = course.price * 100;
-        const orderId = Date.now().toString();
-        const createDate = moment().format('YYYYMMDDHHmmss');
+    const createDate = moment().format('YYYYMMDDHHmmss');
+    const orderId = moment().format('YYYYMMDDHHmmss');
+    const orderInfo = `Payment for course ${courseId}`;
+    const orderType = 'topup';
+    const locale = 'vn';
+    const currCode = 'VND';
 
-        const vnp_Params = {
-            vnp_Version: '2.0.0',
-            vnp_TmnCode: configVNP.vnp_TmnCode,
-            vnp_Amount: amount,
-            vnp_Command: 'pay',
-            vnp_CreateDate: createDate,
-            vnp_CurrCode: 'VND',
-            vnp_IpAddr: '127.0.0.1',
-            vnp_Locale: 'vn',
-            vnp_OrderInfo: `Thanh toan khoa hoc ${courseId}`,
-            vnp_OrderType: 'billpayment',
-            vnp_TxnRef: orderId,
-        };
+    const vnpParams = {
+        vnp_Version: '2.1.0',
+        vnp_Command: 'pay',
+        vnp_TmnCode: tmnCode,
+        vnp_Amount: (amount * 100).toString(), // Amount in VNPAY is in smallest currency unit
+        vnp_CreateDate: createDate,
+        vnp_CurrCode: currCode,
+        vnp_IpAddr: '127.0.0.1',
+        vnp_Locale: locale,
+        vnp_OrderInfo: orderInfo,
+        vnp_OrderType: orderType,
+        vnp_ReturnUrl: returnUrl,
+        vnp_TxnRef: orderId,
+        vnp_ExpireDate: moment().add(15, 'minutes').format('YYYYMMDDHHmmss')
+    };
 
-        vnp_Params.vnp_SecureHash = createSecureHash(vnp_Params);
+    const sortedParams = Object.keys(vnpParams).sort().reduce((result, key) => {
+        result[key] = vnpParams[key];
+        return result;
+    }, {});
 
-        const paymentUrl = `${configVNP.vnp_Url}?${querystring.stringify(vnp_Params)}`;
+    const signData = querystring.stringify(sortedParams, { encode: false });
+    const hmac = crypto.createHmac('sha512', secretKey);
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    sortedParams['vnp_SecureHash'] = signed;
+    const paymentUrl = vnpUrl + '?' + querystring.stringify(sortedParams, { encode: false });
 
-        await TransactionCollection.doc(orderId).set({
-            courseId,
-            userId,
-            payment: 'VNPay',
-            status: 'pending',
-            amount: course.price,
-            currency: 'vnd',
-            createdAt: firestore.FieldValue.serverTimestamp(),
-        });
+    await TransactionCollection.doc(orderId).set({
+        courseId,
+        userId,
+        payment: "VNPAY",
+        status: 'pending',
+        amount: amount,
+        currency: 'vnd',
+        createdAt: firestore.FieldValue.serverTimestamp(),
+    });
 
-        return {
-            paymentUrl,
-            orderId,
-            amount: course.price,
-            currency: 'vnd',
-        };
-    } catch (error) {
-        console.error('Error creating VNPay payment:', error);
-        throw error;
-    }
+    return paymentUrl;
 };
 
-function createSecureHash(vnp_Params) {
-    const signData = querystring.stringify(vnp_Params, { encode: false });
+exports.verifyVnpayPayment = async (vnpParams) => {
+    const secureHash = vnpParams['vnp_SecureHash'];
+    delete vnpParams['vnp_SecureHash'];
+    delete vnpParams['vnp_SecureHashType'];
+
+    const sortedParams = Object.keys(vnpParams).sort().reduce((result, key) => {
+        result[key] = vnpParams[key];
+        return result;
+    }, {});
+
+    const signData = querystring.stringify(sortedParams, { encode: false });
     const hmac = crypto.createHmac('sha512', configVNP.vnp_HashSecret);
-    return hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
-}
+    const signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest('hex');
 
-exports.confirmVNPayPayment = async (vnpParams) => {
-    try {
-        const secureHash = vnpParams['vnp_SecureHash'];
-        delete vnpParams['vnp_SecureHash'];
+    if (secureHash === signed) {
+        const responseCode = vnpParams['vnp_ResponseCode'];
+        const transactionRef = vnpParams['vnp_TxnRef'];
+        if (responseCode === '00') {
+            const { courseId, userId } = vnpParams['vnp_OrderInfo'].split(' ');
 
-        const sortedParams = {};
-        const sortedKeys = Object.keys(vnpParams).sort();
-        sortedKeys.forEach(key => {
-            sortedParams[key] = vnpParams[key];
-        });
+            const enrollment = await EnrollmentService.createEnrollment({ userId, courseId, paymentIntentId: transactionRef });
 
-        const querystring = new URLSearchParams(sortedParams).toString();
-        const hashData = crypto.createHmac('sha512', configVNP.vnp_HashSecret).update(querystring).digest('hex');
-
-        if (secureHash !== hashData) {
-            throw new Error('Invalid secure hash');
-        }
-
-        const transactionDoc = await TransactionCollection.doc(vnpParams['vnp_TxnRef']).get();
-        if (!transactionDoc.exists) {
-            throw new Error('Transaction not found');
-        }
-
-        const transaction = transactionDoc.data();
-        if (vnpParams['vnp_ResponseCode'] === '00') {
-            const { courseId, userId } = transaction;
-
-            const enrollment = await EnrollmentService.createEnrollment({ userId, courseId, paymentIntentId: vnpParams['vnp_TxnRef'] });
-
-            await TransactionCollection.doc(vnpParams['vnp_TxnRef']).update({
+            await TransactionCollection.doc(transactionRef).update({
                 status: 'succeeded',
-                amount: vnpParams['vnp_Amount'],
-                currency: 'vnd',
+                amount: vnpParams['vnp_Amount'] / 100,
+                currency: vnpParams['vnp_CurrCode'],
                 enrollmentId: enrollment.enrollmentId,
                 confirmedAt: firestore.FieldValue.serverTimestamp(),
             });
 
-            return { success: true, enrollmentId: enrollment.enrollmentId };
+            return { success: true, message: 'Payment successful', enrollmentId: enrollment.enrollmentId };
         } else {
-            await TransactionCollection.doc(vnpParams['vnp_TxnRef']).update({
+            await TransactionCollection.doc(transactionRef).update({
                 status: 'failed',
             });
 
-            throw new Error('Payment not succeeded');
+            return { success: false, message: 'Payment failed', vnpParams };
         }
-    } catch (error) {
-        console.error('Error confirming VNPay payment:', error);
-        throw error;
+    } else {
+        return { success: false, message: 'Invalid signature' };
     }
 };
+

@@ -178,3 +178,14 @@ exports.updateAllLessonLinksController = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateCourseDescriptions = async (req, res, next) => {
+  // const { courseId } = req.params; // If courseId is needed
+  try {
+    const result = await CourseService.updateCourseDescriptions();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error updating course descriptions:', error);
+    res.status(500).json({ error: 'Failed to update course descriptions' });
+  }
+};
