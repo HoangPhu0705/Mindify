@@ -204,7 +204,10 @@ class _MyCoursesPageState extends State<MyCoursePage>
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.ghostWhite,
-          title: Text('My Courses', style: AppStyles.largeTitleSearchPage),
+          title: Text(
+            'My Courses',
+            style: AppStyles.largeTitleSearchPage,
+          ),
           bottom: TabBar(
             controller: _tabController,
             tabs: const [

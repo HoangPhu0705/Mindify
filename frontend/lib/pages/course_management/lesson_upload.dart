@@ -167,7 +167,7 @@ class _LessonUploadState extends State<LessonUpload> {
 
     log("Lesson deleted successfully");
   } catch (e) {
-    print("Error: $e");
+    log("Error: $e");
     throw Exception("Error deleting lesson");
   }
 }

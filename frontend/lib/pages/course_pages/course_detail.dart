@@ -178,7 +178,7 @@ class _CourseDetailState extends State<CourseDetail>
               : Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.ghostWhite,
+                    color: AppColors.deepSpace,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
@@ -195,6 +195,7 @@ class _CourseDetailState extends State<CourseDetail>
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                       ),
                       AppSpacing.mediumHorizontal,

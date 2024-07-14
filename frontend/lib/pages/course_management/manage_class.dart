@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/lesson_upload.dart';
+import 'package:frontend/pages/course_management/preview_class.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/multiline_tag.dart';
@@ -303,7 +304,7 @@ class _ManageClassState extends State<ManageClass> {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => CourseDetail(
+                                builder: (context) => PreviewClass(
                                   courseId: widget.courseId,
                                   userId:
                                       FirebaseAuth.instance.currentUser!.uid,
@@ -351,7 +352,7 @@ class _ManageClassState extends State<ManageClass> {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               title: const Text(
-                                "Video Lessonsss",
+                                "Video Lessons",
                                 style: TextStyle(
                                   fontFamily: "Poppins",
                                   fontWeight: FontWeight.w700,
@@ -359,7 +360,7 @@ class _ManageClassState extends State<ManageClass> {
                               ),
                               trailing: GestureDetector(
                                 onTap: () {
-                                  final result = Navigator.push(
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => LessonUpload(
@@ -379,7 +380,7 @@ class _ManageClassState extends State<ManageClass> {
                               subtitle: Text("$lessonNum lesson(s)"),
                             );
                           } else {
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           }
                         }),
                     ListTile(
@@ -575,7 +576,7 @@ class _ManageClassState extends State<ManageClass> {
     );
   }
 
-  Widget _buildQuillEditor(QuillController _controller) {
+  Widget _buildQuillEditor(QuillController controller) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -592,7 +593,7 @@ class _ManageClassState extends State<ManageClass> {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           padding: const EdgeInsets.all(10),
-          controller: _controller,
+          controller: controller,
           sharedConfigurations: const QuillSharedConfigurations(
             locale: Locale('en'),
           ),

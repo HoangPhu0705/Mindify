@@ -8,13 +8,13 @@ import 'package:pod_player/pod_player.dart';
 class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
-  final int current;
+  // final int current;
 
   const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
-    required this.current
+    // required this.current
   });
 
   @override
@@ -41,7 +41,7 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
   void initState() {
     super.initState();
     _future = initVideoPlayer();
-    _loadAndSeekToStartTime();
+    // _loadAndSeekToStartTime();
   }
 
   @override
@@ -56,11 +56,11 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     );
   }
 
-  Future<void> _loadAndSeekToStartTime() async {
-    if (widget.current != 0) {
-      _podPlayerController.videoSeekTo(Duration(seconds: widget.current.toInt()));
-    }
-  }
+  // Future<void> _loadAndSeekToStartTime() async {
+  //   if (widget.current != 0) {
+  //     _podPlayerController.videoSeekTo(Duration(seconds: widget.current.toInt()));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

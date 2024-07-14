@@ -121,20 +121,6 @@ class _PreviewClassState extends State<PreviewClass>
     super.dispose();
   }
 
-  Future<void> followUser() async {
-    try {
-      await userService.followUser(userId, course!.instructorId);
-      setState(() {
-        isFollowed = !isFollowed;
-      });
-    } catch (e) {
-      if (mounted) {
-        showSuccessToast(context, 'Failed to follow user');
-      }
-      log(e.toString());
-    }
-  }
-
   void _onLessonTap(String videoUrl, int index) {
     setState(() {
       _currentVideoUrl = videoUrl;
@@ -142,8 +128,6 @@ class _PreviewClassState extends State<PreviewClass>
     });
     _videoPlayerKey.currentState?.goToVideo(videoUrl);
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
