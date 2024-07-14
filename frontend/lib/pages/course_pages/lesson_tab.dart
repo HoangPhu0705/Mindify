@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
@@ -12,6 +15,7 @@ import 'package:frontend/utils/toasts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:frontend/services/functions/UserService.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
@@ -47,13 +51,20 @@ class _LessonTabState extends State<LessonTab> {
   Map<String, dynamic> instructorInfo = {};
   String instructorAvatar = "";
   String instructorName = "";
+  ScrollController scrollController = ScrollController();
+  FocusNode focusNode = FocusNode(canRequestFocus: false);
+  QuillController quillController = QuillController.basic();
 
   @override
   void initState() {
     super.initState();
     _getInstructorInfo();
     _sortLessonsByIndex();
-    _checkIfFollowed();
+
+    if (widget.isPreviewing) _checkIfFollowed();
+    quillController.document = Document.fromJson(
+      jsonDecode(widget.course.description),
+    );
   }
 
   void _sortLessonsByIndex() {
@@ -142,12 +153,27 @@ class _LessonTabState extends State<LessonTab> {
                   AppSpacing.mediumVertical,
                   Text("${widget.course.students} students"),
                   AppSpacing.mediumVertical,
-                  Text(
-                    widget.course.description,
-                    style: const TextStyle(
-                      overflow: TextOverflow.ellipsis,
+                  _buildQuillEditor(
+                    quillController,
+                    scrollController,
+                    false,
+                  ),
+                  AppSpacing.mediumVertical,
+                  Align(
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () {
+                        showAllDescription(context);
+                      },
+                      child: const Text(
+                        "Show all",
+                        style: TextStyle(
+                          color: AppColors.deepBlue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    maxLines: 3,
                   ),
                   AppSpacing.mediumVertical,
                   const Divider(),
@@ -168,7 +194,9 @@ class _LessonTabState extends State<LessonTab> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                instructorInfo['displayName'] ?? 'Unknown',
+                                instructorName.isEmpty
+                                    ? 'Mindify Member'
+                                    : instructorName,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
@@ -183,30 +211,34 @@ class _LessonTabState extends State<LessonTab> {
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: AnimatedButton(
-                          onPress: _followUser,
-                          isSelected: widget.isFollowed,
-                          width: 100,
-                          height: 40,
-                          borderColor: AppColors.deepBlue,
-                          borderWidth: 1,
-                          borderRadius: 50,
-                          backgroundColor: Colors.transparent,
-                          selectedBackgroundColor: AppColors.deepBlue,
-                          selectedTextColor: Colors.white,
-                          transitionType: TransitionType.RIGHT_BOTTOM_ROUNDER,
-                          selectedText: "Following",
-                          text: 'Follow',
-                          textStyle: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14,
-                            color: AppColors.deepBlue,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      )
+                      !widget.isPreviewing
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: AnimatedButton(
+                                onPress:
+                                    widget.isPreviewing ? () {} : _followUser,
+                                isSelected: widget.isFollowed,
+                                width: 100,
+                                height: 40,
+                                borderColor: AppColors.deepBlue,
+                                borderWidth: 1,
+                                borderRadius: 50,
+                                backgroundColor: Colors.transparent,
+                                selectedBackgroundColor: AppColors.deepBlue,
+                                selectedTextColor: Colors.white,
+                                transitionType:
+                                    TransitionType.RIGHT_BOTTOM_ROUNDER,
+                                selectedText: "Following",
+                                text: 'Follow',
+                                textStyle: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  color: AppColors.deepBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink()
                     ],
                   ),
                   const Divider(),
@@ -258,13 +290,13 @@ class _LessonTabState extends State<LessonTab> {
                       tileColor: lesson.index == widget.currentVideoIndex
                           ? AppColors.deepSpace
                           : Colors.white,
-                      onTap: isLessonAccessible
+                      onTap: isLessonAccessible || widget.isPreviewing
                           ? () {
                               widget.onLessonTap(lesson.link, lesson.index);
                             }
                           : null,
                       title: Text(
-                        "${lesson.index + 1}: ${lesson.title}",
+                        "${lesson.index + 1}. ${lesson.title}",
                         style: TextStyle(
                           color: lesson.index == widget.currentVideoIndex
                               ? Colors.white
@@ -280,7 +312,7 @@ class _LessonTabState extends State<LessonTab> {
                         ),
                       ),
                       leading: Icon(
-                        isLessonAccessible
+                        isLessonAccessible || widget.isPreviewing
                             ? Icons.play_circle_outline_outlined
                             : Icons.lock,
                         size: 30,
@@ -314,6 +346,80 @@ class _LessonTabState extends State<LessonTab> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildQuillEditor(QuillController controller,
+      ScrollController scrollController, bool showAll) {
+    return Container(
+      width: double.infinity,
+      height: showAll
+          ? MediaQuery.of(context).size.height * 0.7
+          : MediaQuery.of(context).size.height * 0.1,
+      child: quill.QuillEditor.basic(
+        scrollController: scrollController,
+        configurations: QuillEditorConfigurations(
+          controller: controller,
+          scrollPhysics: showAll ? null : const NeverScrollableScrollPhysics(),
+          autoFocus: false,
+          scrollable: true,
+          showCursor: false,
+          sharedConfigurations: const QuillSharedConfigurations(
+            locale: Locale('en'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showAllDescription(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.9,
+            padding: const EdgeInsets.all(16.0),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+            ),
+            child: Column(
+              children: [
+                AppBar(
+                  leading: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                      )),
+                  title: const Text(
+                    "Class Description",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: _buildQuillEditor(
+                    quillController,
+                    scrollController,
+                    true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

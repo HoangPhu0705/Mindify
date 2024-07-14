@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_tree/comment_tree.dart' as ct;
 import 'package:flutter/material.dart';
@@ -16,8 +15,11 @@ class Discussion extends StatefulWidget {
   final String courseId;
   final bool isEnrolled;
 
-  const Discussion(
-      {super.key, required this.courseId, required this.isEnrolled});
+  const Discussion({
+    super.key,
+    required this.courseId,
+    required this.isEnrolled,
+  });
 
   @override
   State<Discussion> createState() => _DiscussionState();
@@ -87,7 +89,7 @@ class _DiscussionState extends State<Discussion> {
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
-              offset: Offset(0, -1),
+              offset: const Offset(0, -1),
             ),
           ],
         ),
@@ -97,7 +99,7 @@ class _DiscussionState extends State<Discussion> {
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.ghostWhite,
-            contentPadding: EdgeInsets.all(12),
+            contentPadding: const EdgeInsets.all(12),
             hintText: _replyToCommentId == null
                 ? 'Start a discussion...'
                 : 'Replying...',
@@ -106,7 +108,10 @@ class _DiscussionState extends State<Discussion> {
                 Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16),
             suffixIcon: IconButton(
               onPressed: _addComment,
-              icon: Icon(Icons.send, color: AppColors.deepBlue),
+              icon: const Icon(
+                Icons.send,
+                color: AppColors.deepBlue,
+              ),
             ),
           ),
         ),
@@ -115,8 +120,11 @@ class _DiscussionState extends State<Discussion> {
           stream: commentService.getCommentsStreamByCourse(widget.courseId),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return MyLoading(
-                  width: 30, height: 30, color: AppColors.deepBlue);
+              return const MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.deepBlue,
+              );
             }
             List<DocumentSnapshot> commentDocs = snapshot.data!.docs;
             return SingleChildScrollView(
@@ -153,8 +161,9 @@ class _DiscussionState extends State<Discussion> {
                                   doc.data() as Map<String, dynamic>;
 
                               return StreamBuilder<QuerySnapshot>(
-                                  stream: commentService.getReplieStreamByComment(
-                                      widget.courseId, commentId),
+                                  stream:
+                                      commentService.getReplieStreamByComment(
+                                          widget.courseId, commentId),
                                   builder: (context, replySnapshot) {
                                     if (!replySnapshot.hasData) {
                                       return SizedBox.shrink();
