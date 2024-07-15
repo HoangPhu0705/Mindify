@@ -156,6 +156,11 @@ class _CourseDetailState extends State<CourseDetail>
     );
   }
 
+  Future<void> _handleTimeUpdate(int time) async {
+    final lessonId = course!.lessons[_currentVideoIndex].id;
+    await userService.addToWatchedHistories(widget.userId, lessonId, time);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -243,6 +248,8 @@ class _CourseDetailState extends State<CourseDetail>
                   key: _videoPlayerKey,
                   url: _currentVideoUrl,
                   dataSourceType: DataSourceType.network,
+                  current: 0,
+                  onTimeUpdate: _handleTimeUpdate, // Add this line
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,

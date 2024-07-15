@@ -224,6 +224,7 @@ class UserService {
       throw e;
     }
   }
+  // watched history
   Future<List<dynamic>> getWatchedHistories(String userId) async {
     final response = await http.get(Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'));
     if (response.statusCode == 200) {

@@ -391,3 +391,19 @@ exports.addToWatchedHistories = async (userId, lessonId, time, timestamp) => {
         throw error;
     }
 };
+
+exports.goToVideoWatched = async (userId, lessonId) => {
+    try {
+        const watchedHistoryRef = UserCollection.doc(userId).collection('watchedHistories').doc(lessonId);
+        const watchedHistoryDoc = await watchedHistoryRef.get();
+
+        if (!watchedHistoryDoc.exists) {
+            throw new Error("Lesson not found in watched history");
+        }
+
+        return { lesson: watchedHistoryDoc.data() };
+    } catch (error) {
+        console.error("Error retrieving watched lesson:", error);
+        throw new Error(`Error retrieving watched lesson: ${error.message}`);
+    }
+};
