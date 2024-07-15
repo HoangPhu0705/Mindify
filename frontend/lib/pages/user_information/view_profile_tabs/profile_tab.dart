@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:chip_list/chip_list.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   UserService userService = UserService();
-  List<dynamic> followedTopic = [];
+  List<String> followedTopic = [];
 
   @override
   void initState() {
@@ -38,7 +39,9 @@ class _ProfileTabState extends State<ProfileTab> {
       return;
     }
 
-    followedTopic = data["followedTopic"];
+    List<dynamic> topicData = data["followedTopic"];
+    followedTopic = List<String>.from(topicData);
+    log(followedTopic.toString());
   }
 
   @override
@@ -67,7 +70,28 @@ class _ProfileTabState extends State<ProfileTab> {
                       .copyWith(color: Colors.black),
                 ),
                 AppSpacing.mediumVertical,
-                followedTopic.isEmpty ? _emptySkills() : Text("cos ne"),
+                followedTopic.isEmpty
+                    ? _emptySkills()
+                    : Align(
+                        alignment: Alignment.topLeft,
+                        child: ChipList(
+                          listOfChipNames: followedTopic,
+                          listOfChipIndicesCurrentlySelected: [],
+                          shouldWrap: true,
+                          borderRadiiList: const [20],
+                          style: const TextStyle(fontSize: 14),
+                          showCheckmark: false,
+                          activeBorderColorList: const [Colors.black],
+                          inactiveBgColorList: const [AppColors.ghostWhite],
+                          inactiveBorderColorList: const [AppColors.lightGrey],
+                          inactiveTextColorList: const [Colors.black],
+                          activeTextColorList: const [Colors.black],
+                          activeBgColorList: const [Colors.transparent],
+                          axis: Axis.horizontal,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          extraOnToggle: (val) {},
+                        ),
+                      ),
               ],
             );
           },
