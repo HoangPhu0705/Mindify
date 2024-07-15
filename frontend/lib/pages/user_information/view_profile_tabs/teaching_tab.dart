@@ -232,9 +232,7 @@ class _TeachingTabState extends State<TeachingTab> {
     );
   }
 
-  Widget _buildButton(IconData icon) {
-    return Icon(icon);
-  }
+
 
   Widget _startCreateClass() {
     return Container(

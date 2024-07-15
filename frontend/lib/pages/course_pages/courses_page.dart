@@ -296,7 +296,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
             },
           );
         } else {
-          return _emptyCourse(context);
+          return const SizedBox.shrink();
         }
       },
     );

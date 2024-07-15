@@ -377,13 +377,13 @@ class _LessonTabState extends State<LessonTab> {
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
+      backgroundColor: AppColors.ghostWhite,
       builder: (context) {
         return SafeArea(
           child: Container(
             height: MediaQuery.of(context).size.height * 0.9,
             padding: const EdgeInsets.all(16.0),
             decoration: const BoxDecoration(
-              color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
@@ -392,6 +392,7 @@ class _LessonTabState extends State<LessonTab> {
             child: Column(
               children: [
                 AppBar(
+                  backgroundColor: AppColors.ghostWhite,
                   leading: IconButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -407,6 +408,7 @@ class _LessonTabState extends State<LessonTab> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  centerTitle: true,
                 ),
                 SingleChildScrollView(
                   child: _buildQuillEditor(

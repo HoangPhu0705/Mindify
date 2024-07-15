@@ -256,7 +256,6 @@ class CourseService {
     );
 
     if (response.statusCode == 200) {
-      log(response.body);
       List<dynamic> data = json.decode(response.body);
       return data.map((course) => Course.fromJson(course)).toList();
     } else {
@@ -370,5 +369,24 @@ class CourseService {
         .collection('lessons')
         .doc(lessonId)
         .update({'index': newIndex});
+  }
+
+  Future<Map<String, dynamic>> getCategoryCourses(dynamic categories) async {
+    try {
+      final url = Uri.parse("${AppConstants.COURSE_API}/categories");
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(categories),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception("Failed to load courses: ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error getting course by categories");
+    }
   }
 }

@@ -13,6 +13,17 @@ class AppStyles {
     ),
   );
 
+  static var disabledButton = ButtonStyle(
+    elevation: WidgetStateProperty.all(0),
+    backgroundColor: WidgetStateProperty.all<Color>(AppColors.lighterGrey),
+    foregroundColor: WidgetStateProperty.all<Color>(AppColors.lightGrey),
+    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    ),
+  );
+
   static var secondaryButtonStyle = ButtonStyle(
     elevation: WidgetStateProperty.all(0),
     backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),

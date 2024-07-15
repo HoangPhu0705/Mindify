@@ -320,3 +320,38 @@ exports.updateCourseDescriptions = async () => {
     throw error;
   }
 };
+
+exports.getCoursesByCategory = async (userCategories) => {
+  try {
+    // Assuming userCategories is an array of categories the user is interested in
+    const snapshot = await CourseCollection.where('isPublic', '==', true).get();
+    console
+    
+    // Initialize a result object with categories as keys and empty arrays as values
+    const result = userCategories.reduce((acc, category) => {
+      acc[category] = [];
+      return acc;
+    }, {});
+    
+    snapshot.docs.forEach(doc => {
+      const courseData = doc.data();
+      if (Array.isArray(courseData.category)) {
+        userCategories.forEach(category => {
+          const matches = courseData.category.some(courseCategory => 
+            courseCategory.toLowerCase().includes(category.toLowerCase())
+          );
+          if (matches) {
+            result[category].push({ id: doc.id, ...courseData });
+          }
+        });
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching courses by category:', error);
+    throw error;
+  }
+};
+
+
