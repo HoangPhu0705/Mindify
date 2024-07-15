@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
+import 'dart:developer' as dev;
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -30,9 +31,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
   final UserService userService = UserService();
 
   //Controllers
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  //Variables
   Map<String, Map<String, dynamic>> instructorInfo = {};
   List<Course>? _coursesFuture;
   List<Course>? _newestCourses;
@@ -40,7 +42,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
   late Future<void> _future;
   String userId = '';
   List<Course> _savedCourses = [];
-
+  Map<String, dynamic>? _categoryCourses;
+  List<dynamic> categories = [];
+  List<String> randomQuotes = [
+    "Because you follow ",
+    "Succeed in ",
+    "Thrive in "
+  ];
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
@@ -51,9 +59,27 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
       await _loadSavedCourses();
       await _loadInstructorInfo();
+      await _loadCoursesByCategory();
     } catch (e) {
-      log("Error in _initPage: $e");
+      dev.log("Error in _initPage: $e");
     }
+  }
+
+  Future<void> _loadCoursesByCategory() async {
+    String uid = userService.getUserId();
+    Map<String, dynamic>? userInfo = await userService.getUserInfoById(uid);
+
+    if (userInfo == null && mounted) {
+      showErrorToast(context, "There are some errors occurred");
+      return;
+    }
+
+    categories = userInfo!['followedTopic'];
+    var requestBody = {
+      "categories": categories,
+    };
+    _categoryCourses = await courseService.getCategoryCourses(requestBody);
+    dev.log(_categoryCourses.toString());
   }
 
   Future<void> _loadInstructorInfo() async {
@@ -64,7 +90,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           if (info != null) {
             final data =
                 await userService.getAvatarAndDisplayName(course.instructorId);
-
+            dev.log(data.toString());
             instructorInfo[course.instructorId] = {
               ...info,
               'avatar': data!["photoUrl"],
@@ -145,30 +171,39 @@ class _DiscoverPageState extends State<DiscoverPage> {
         savedCoursesNotifier.saveCourse(id);
       }
     } catch (e) {
-      log("Error loading saved courses: $e");
+      dev.log("Error loading saved courses: $e");
     }
   }
 
   Future<void> saveCourse(String userId, String courseId) async {
     try {
       await userService.saveCourseForUser(userId, courseId);
-      Provider.of<CourseProvider>(context, listen: false).saveCourse(courseId);
-      showSavedSuccessToast(context, "Course saved!");
+      if (mounted) {
+        Provider.of<CourseProvider>(context, listen: false)
+            .saveCourse(courseId);
+        showSavedSuccessToast(context, "Course saved!");
+      }
     } catch (e) {
-      log("Error saving course: $e");
-      showErrorToast(context, "Failed to save course");
+      dev.log("Error saving course: $e");
+      if (mounted) {
+        showErrorToast(context, "Failed to save course");
+      }
     }
   }
 
   Future<void> unsaveCourse(String userId, String courseId) async {
     try {
       await userService.unsaveCourseForUser(userId, courseId);
-      Provider.of<CourseProvider>(context, listen: false)
-          .unsaveCourse(courseId);
-      showSuccessToast(context, "Removed saved course");
+      if (mounted) {
+        Provider.of<CourseProvider>(context, listen: false)
+            .unsaveCourse(courseId);
+        showSuccessToast(context, "Removed saved course");
+      }
     } catch (e) {
-      log("Error unsaving course: $e");
-      showErrorToast(context, "Failed to unsave course");
+      dev.log("Error unsaving course: $e");
+      if (mounted) {
+        showErrorToast(context, "Failed to unsave course");
+      }
     }
   }
 
@@ -198,7 +233,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               color: AppColors.deepBlue,
             );
           } else if (snapshot.hasError) {
-            log("FutureBuilder error: ${snapshot.error}");
+            dev.log("FutureBuilder error: ${snapshot.error}");
             return const Center(
               child: Text("There was a problem. Please try again later."),
             );
@@ -216,14 +251,42 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       AppSpacing.smallVertical,
                       if (_coursesFuture != null)
                         buildPopularCourses(_coursesFuture!),
-                      AppSpacing.mediumVertical,
                       Column(
                         children: [
                           buildCarouselCourses(
-                              _top5Courses!, "Recommend For You", userId),
-                          AppSpacing.mediumVertical,
+                            _top5Courses!,
+                            "Recommend For You",
+                            userId,
+                          ),
                           buildCarouselCourses(
-                              _newestCourses!, "New and Trending", userId),
+                            _newestCourses!,
+                            "New and Trending",
+                            userId,
+                          ),
+                          AppSpacing.mediumVertical,
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              String quotes = randomQuotes[
+                                  Random().nextInt(randomQuotes.length)];
+
+                              String categoryName = categories[index];
+                              List<dynamic> courseList =
+                                  _categoryCourses![categoryName];
+                              List<Course> courseByCategory = courseList
+                                  .map((course) => Course.fromJson(course))
+                                  .toList();
+                              return courseByCategory.isEmpty
+                                  ? const SizedBox.shrink()
+                                  : buildCarouselCourses(
+                                      courseByCategory,
+                                      "$quotes $categoryName",
+                                      userId,
+                                    );
+                            },
+                          ),
                         ],
                       ),
                       AppSpacing.largeVertical,
@@ -254,7 +317,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               return PopularCourse(
                 imageUrl: course.thumbnail,
                 courseName: course.title,
-                instructor: instructor?['displayName'] ?? 'Unknown',
+                instructor: instructor?['displayName'] ?? 'Mindify Member',
               );
             },
           ),
@@ -276,13 +339,17 @@ class _DiscoverPageState extends State<DiscoverPage> {
       List<Course> courses, String title, String userId) {
     return Column(
       children: [
-        Padding(
+        Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 2,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
             ],
           ),
@@ -315,7 +382,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
               child: CourseCard(
                 thumbnail: course.thumbnail,
                 instructor: instructor?['displayName'] ?? 'Unknown',
-                specialization: instructor?['profession'] ?? 'Mindify Instructor',
+                specialization:
+                    instructor?['profession'] ?? 'Mindify Instructor',
                 courseName: course.title,
                 time: course.duration,
                 numberOfLesson: course.lessonNum,
@@ -335,6 +403,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             );
           },
         ),
+        AppSpacing.mediumVertical,
       ],
     );
   }

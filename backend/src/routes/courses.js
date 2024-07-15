@@ -9,6 +9,7 @@ const CommentController = require('../app/controllers/CommentController');
 router.get('/', CourseController.getAllCourses);
 router.post('/', CourseController.createCourse);
 router.get('/random', CourseController.getRandomCourses);
+router.post('/categories', CourseController.getCoursesByCategory);
 router.get('/top5', CourseController.getTop5Courses);
 router.get('/newest', CourseController.getFiveNewestCourse);
 router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);

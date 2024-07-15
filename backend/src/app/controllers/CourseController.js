@@ -189,3 +189,13 @@ exports.updateCourseDescriptions = async (req, res, next) => {
     res.status(500).json({ error: 'Failed to update course descriptions' });
   }
 };
+
+exports.getCoursesByCategory = async (req, res) => {
+  try {
+    const userCategories = req.body.categories; 
+    const response = await CourseService.getCoursesByCategory(userCategories);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).send({ message: 'Error happened when getting courses by category', error: error.message });
+  }
+};

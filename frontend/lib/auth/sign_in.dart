@@ -88,71 +88,68 @@ class _SignInState extends State<SignIn> {
   }
 
   void signInGoogle() async {
-  try {
-    GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-    if (gUser == null) {
-      showErrorToast("Google sign-in aborted.");
-      return;
-    }
+    try {
+      GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+      if (gUser == null) {
+        showErrorToast("Google sign-in aborted.");
+        return;
+      }
 
-    GoogleSignInAuthentication gAuth = await gUser.authentication;
-    AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: gAuth.accessToken,
-      idToken: gAuth.idToken,
-    );
+      GoogleSignInAuthentication gAuth = await gUser.authentication;
+      AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: gAuth.accessToken,
+        idToken: gAuth.idToken,
+      );
 
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-    User? user = userCredential.user;
+      User? user = userCredential.user;
 
-    if (user != null) {
-      String uid = user.uid;
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      if (user != null) {
+        String uid = user.uid;
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-      if (!userDoc.exists) {
-        // Add to Firestore
-        Map<String, dynamic> userData = {
-          'id': uid,
-          'displayName': user.displayName ?? 'Mindify Member',
-          'email': user.email,
-          'role': 'user',
-          'requestSent': false,
-          'followerNum': 0,
-          'followingNum': 0,
-          'followingUser': [],
-          'followerUser': [],
-          'savedClasses': [],
-        };
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .set(userData);
+        if (!userDoc.exists) {
+          // Add to Firestore
+          Map<String, dynamic> userData = {
+            'id': uid,
+            'displayName': user.displayName ?? 'Mindify Member',
+            'email': user.email,
+            'role': 'user',
+            'requestSent': false,
+            'followerNum': 0,
+            'followingNum': 0,
+            'followingUser': [],
+            'followerUser': [],
+            'savedClasses': [],
+          };
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(uid)
+              .set(userData);
 
-        // Upload default avatar
-        try {
-          File defaultImageFile =
-              await getImageFileFromAssets("images/default_avatar.png");
-          Uint8List defaultImage = await defaultImageFile.readAsBytes();
-          final storageRef = FirebaseStorage.instance.ref();
-          final imageRef = storageRef.child('avatars/user_$uid');
-          await imageRef.putData(defaultImage);
-          var photoUrl = (await imageRef.getDownloadURL()).toString();
-          await user.updatePhotoURL(photoUrl);
-        } catch (e) {
-          log("Error uploading avatar: $e");
+          // Upload default avatar
+          try {
+            File defaultImageFile =
+                await getImageFileFromAssets("images/default_avatar.png");
+            Uint8List defaultImage = await defaultImageFile.readAsBytes();
+            final storageRef = FirebaseStorage.instance.ref();
+            final imageRef = storageRef.child('avatars/user_$uid');
+            await imageRef.putData(defaultImage);
+            var photoUrl = (await imageRef.getDownloadURL()).toString();
+            await user.updatePhotoURL(photoUrl);
+          } catch (e) {
+            log("Error uploading avatar: $e");
+          }
         }
       }
+    } catch (e) {
+      log("Error during Google sign-in: $e");
+      showErrorToast("Error during Google sign-in");
     }
-  } catch (e) {
-    log("Error during Google sign-in: $e");
-    showErrorToast("Error during Google sign-in: $e");
   }
-}
-
 
   void showErrorToast(String message) {
     toastification.show(

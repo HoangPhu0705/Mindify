@@ -224,8 +224,10 @@ class UserService {
       throw e;
     }
   }
+
   Future<List<dynamic>> getWatchedHistories(String userId) async {
-    final response = await http.get(Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'));
+    final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -233,7 +235,8 @@ class UserService {
     }
   }
 
-  Future<void> addToWatchedHistories(String userId, String lessonId, int time) async {
+  Future<void> addToWatchedHistories(
+      String userId, String lessonId, int time) async {
     final response = await http.patch(
       Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
       headers: <String, String>{
@@ -246,6 +249,23 @@ class UserService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to update watched history');
+    }
+  }
+
+  Future<void> updateUserFollowedTopics(String userId, var data) async {
+    try {
+      DocumentReference userRef = _firestore.collection('users').doc(userId);
+      DocumentSnapshot userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        throw Exception('User not found');
+      }
+
+      await userRef.update({
+        "followedTopic": data,
+      });
+    } catch (e) {
+      log("Error $e");
+      throw Exception("Failed to update user");
     }
   }
 }

@@ -98,6 +98,7 @@ dependencies:
   firebase_messaging: ^14.9.4
   get_thumbnail_video: ^0.6.1
   flutter_stripe: ^8.0.0
+  selectable_container: ^1.0.7
   
 dev_dependencies:
   flutter_test:
