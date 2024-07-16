@@ -398,7 +398,7 @@ class _ManageClassState extends State<ManageClass> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CreateQuiz(),
+                              builder: (context) => CreateQuiz(courseId: myCourse.id),
                             ),
                           );
                         },

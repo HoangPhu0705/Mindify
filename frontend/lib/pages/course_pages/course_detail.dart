@@ -91,7 +91,7 @@ class _CourseDetailState extends State<CourseDetail>
   Future<void> _checkIfFollowed() async {
     try {
       bool followed =
-          await userService.checkIfUserFollows(userId, widget.userId);
+          await userService.checkIfUserFollows(userId, course!.instructorId);
       setState(() {
         isFollowed = followed;
       });

@@ -309,7 +309,9 @@ exports.checkIfUserFollows = async (userId, followUserId) => {
 
         const userData = userDoc.data();
         const followingUser = userData.followingUser || [];
-
+        console.log(followingUser);
+        console.log(followUserId);
+        console.log( followingUser.includes(followUserId));
         return followingUser.includes(followUserId);
     } catch (error) {
         throw new Error(`Error when checking if user follows: ${error.message}`);

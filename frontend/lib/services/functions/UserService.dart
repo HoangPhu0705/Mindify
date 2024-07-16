@@ -190,6 +190,7 @@ class UserService {
   }
 
   Future<void> followUser(String userId, String followUserId) async {
+    try{
     final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/follow');
     final response = await http.post(
       url,
@@ -199,6 +200,9 @@ class UserService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to follow user');
+    }}catch(e){
+      log("Error $e");
+      throw Exception("Failed to follow user");
     }
   }
 
