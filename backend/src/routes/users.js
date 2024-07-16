@@ -13,6 +13,7 @@ router.get('/:userId/watchedHistories/time', UserController.getWatchedTime);
 router.get('/:userId/watchedHistories/:lessonId', UserController.goToVideoWatched);
 router.post('/updateUsers', UserController.updateUsers);
 router.post('/:userId/follow', UserController.followUser);
+router.post('/:userId/unfollow', UserController.unfollowUser);
 router.post('/:userId/saveCourse', UserController.saveCourseForUser);
 router.patch('/:userId/watchedHistories', UserController.addToWatchedHistory);
 router.post('/:userId/unsaveCourse', UserController.unsaveCourseForUser);

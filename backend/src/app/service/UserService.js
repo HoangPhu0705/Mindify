@@ -318,6 +318,47 @@ exports.checkIfUserFollows = async (userId, followUserId) => {
     }
 };
 
+exports.unfollowUser = async (userId, unfollowUserId) => {
+    const userRef = UserCollection.doc(userId);
+    const unfollowUserRef = UserCollection.doc(unfollowUserId);
+
+    const [userDoc, unfollowUserDoc] = await Promise.all([userRef.get(), unfollowUserRef.get()]);
+
+    if (!userDoc.exists) {
+        throw new Error("User doesn't exist");
+    }
+
+    if (!unfollowUserDoc.exists) {
+        throw new Error("User to unfollow doesn't exist");
+    }
+
+    await admin.firestore().runTransaction(async (transaction) => {
+        const userData = userDoc.data();
+        const unfollowUserData = unfollowUserDoc.data();
+
+        const updatedFollowingUser = userData.followingUser || [];
+        const updatedFollowerUser = unfollowUserData.followerUser || [];
+
+        if (updatedFollowingUser.includes(unfollowUserId)) {
+            const index = updatedFollowingUser.indexOf(unfollowUserId);
+            updatedFollowingUser.splice(index, 1);
+            transaction.update(userRef, {
+                followingUser: updatedFollowingUser,
+                followingNum: admin.firestore.FieldValue.increment(-1)
+            });
+        }
+
+        if (updatedFollowerUser.includes(userId)) {
+            const index = updatedFollowerUser.indexOf(userId);
+            updatedFollowerUser.splice(index, 1);
+            transaction.update(unfollowUserRef, {
+                followerUser: updatedFollowerUser,
+                followerNum: admin.firestore.FieldValue.increment(-1)
+            });
+        }
+    });
+};
+
 exports.updateUsers = async () => {
     const usersSnapshot = await UserCollection.get();
     const batch = admin.firestore().batch();

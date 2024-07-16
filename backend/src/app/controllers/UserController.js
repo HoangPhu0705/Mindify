@@ -125,6 +125,21 @@ exports.checkIfUserFollows = async (req, res) => {
     }
 };
 
+exports.unfollowUser = async (req, res) => {
+    const { userId } = req.params;
+    const { unfollowUserId } = req.body;
+
+    if (!userId || !unfollowUserId) {
+        return res.status(400).json({ message: "Missing userId or unfollowUserId" });
+    }
+
+    try {
+        await UserService.unfollowUser(userId, unfollowUserId);
+        res.status(200).json({ message: "Successfully unfollowed the user" });
+    } catch (error) {
+        res.status(500).json({ message: `Error when unfollowing user: ${error.message}` });
+    }
+};
 
 exports.updateUsers = async (req, res) => {
     try {
