@@ -34,8 +34,7 @@ class _WatchHistoryState extends State<WatchHistory> {
               watchedHistories = histories;
 
     } catch (e) {
-      setState(() {});
-      // Handle error appropriately here, e.g., show a snackbar
+      log(e.toString());
     }
   }
 

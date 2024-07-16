@@ -4,15 +4,19 @@ import Dashboard from "./pages/dashboard"
 import Lecturer from "./pages/lecturer"
 import Request from "./pages/request"
 import RequestDetail from "./pages/request_detail"
+import AdminLogin from "./pages/login";
+import ProtectedRoute from "./pages/protectedRoute";
+
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/" element={<Layout/>}>
-          <Route index element={<Dashboard/>} />
-          <Route path="/lecturer" element={<Lecturer/>} />
-          <Route path="/request" element={<Request/>} />
-          <Route path="/request/:requestId" element={<RequestDetail/>} />
+          <Route index element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/lecturer" element={<ProtectedRoute><Lecturer /></ProtectedRoute>} />
+          <Route path="/request" element={<ProtectedRoute><Request /></ProtectedRoute>} />
+          <Route path="/request/:requestId" element={<ProtectedRoute><RequestDetail /></ProtectedRoute>} />
         </Route>
       </Routes>
     </Router>
