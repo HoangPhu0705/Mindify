@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:frontend/pages/course_management/create_quiz.dart';
 import 'package:frontend/pages/course_management/lesson_upload.dart';
 import 'package:frontend/pages/course_management/preview_class.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
@@ -394,7 +395,12 @@ class _ManageClassState extends State<ManageClass> {
                       ),
                       trailing: GestureDetector(
                         onTap: () {
-                          log("Manage click");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreateQuiz(),
+                            ),
+                          );
                         },
                         child: const Text(
                           "Create",
