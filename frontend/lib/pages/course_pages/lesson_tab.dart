@@ -132,6 +132,18 @@ class _LessonTabState extends State<LessonTab> {
     }
   }
 
+  Future<void> _unfollowUser() async {
+    try {
+      await userService.unfollowUser(widget.userId, widget.instructorId);
+      setState(() {
+        widget.isFollowed = false;
+      });
+    } catch (e) {
+      log(e.toString());
+      if (mounted) showErrorToast(context, 'Failed to unfollow user');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,7 +228,9 @@ class _LessonTabState extends State<LessonTab> {
                               padding: const EdgeInsets.all(8.0),
                               child: AnimatedButton(
                                 onPress:
-                                    widget.isPreviewing ? () {} : _followUser,
+                                     widget.isFollowed
+                                ? _unfollowUser
+                                : _followUser,
                                 isSelected: widget.isFollowed,
                                 width: 100,
                                 height: 40,
