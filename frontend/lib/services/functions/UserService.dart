@@ -235,7 +235,7 @@ class UserService {
   }
 
   Future<void> addToWatchedHistories(
-      String userId, String lessonId, int time) async {
+      String userId, String courseId, String lessonId, int time) async {
     final response = await http.patch(
       Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
       headers: <String, String>{
@@ -243,6 +243,7 @@ class UserService {
       },
       body: jsonEncode(<String, dynamic>{
         'lessonId': lessonId,
+        'courseId': courseId,
         'time': time,
       }),
     );
@@ -250,6 +251,38 @@ class UserService {
       throw Exception('Failed to update watched history');
     }
   }
+
+  Future<int?> getWatchedTime(String userId, String courseId, String lessonId) async {
+  try {
+    final uri = Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories/time')
+        .replace(queryParameters: {
+      'courseId': courseId,
+      'lessonId': lessonId,
+    });
+
+    log('Requesting URL: $uri');
+
+    final response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log('Response data: ${data['time']}');
+      return data['time'];
+    } else {
+      log('Failed to get watched time. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    log('Error in getWatchedTime: $e');
+    return null;
+  }
+}
 
   Future<void> updateUserFollowedTopics(String userId, var data) async {
     try {

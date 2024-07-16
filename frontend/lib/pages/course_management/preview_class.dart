@@ -126,7 +126,7 @@ class _PreviewClassState extends State<PreviewClass>
       _currentVideoUrl = videoUrl;
       _currentVideoIndex = index;
     });
-    _videoPlayerKey.currentState?.goToVideo(videoUrl);
+    _videoPlayerKey.currentState?.goToVideo(videoUrl, 0);
   }
 
   @override
@@ -163,8 +163,7 @@ class _PreviewClassState extends State<PreviewClass>
                 VideoPlayerView(
                   key: _videoPlayerKey,
                   url: _currentVideoUrl,
-                  dataSourceType: DataSourceType.network,
-                  current: 1, onTimeUpdate: (int ) {  },
+                  dataSourceType: DataSourceType.network, currentTime: 0, onTimeUpdate: (int value) {  },
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,

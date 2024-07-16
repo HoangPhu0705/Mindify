@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:getwidget/getwidget.dart';
 
@@ -10,6 +11,14 @@ class WatchHistory extends StatefulWidget {
 }
 
 class _WatchHistoryState extends State<WatchHistory> {
+  final userService = UserService();
+  String userId = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userId = userService.getUserId();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(

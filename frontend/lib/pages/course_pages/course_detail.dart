@@ -42,6 +42,7 @@ class _CourseDetailState extends State<CourseDetail>
   Course? course;
   String _currentVideoUrl = '';
   int _currentVideoIndex = 0;
+  int _currentVideoTime = 0;
   String? _enrollmentId;
   String userId = '';
   late Future<void> _future;
@@ -62,7 +63,11 @@ class _CourseDetailState extends State<CourseDetail>
       await courseService.getCourseById(widget.courseId).then((value) {
         course = value;
         if (course!.lessons.isNotEmpty) {
-          _currentVideoUrl = course!.lessons.first.link;
+          _currentVideoIndex = course!.lessons.firstWhere((lesson) => lesson.index == 0).index;
+          log("index "+ _currentVideoIndex.toString());
+          _currentVideoUrl = course!.lessons.firstWhere((lesson) => lesson.index == 0).link;
+          log("index "+ _currentVideoUrl);
+
         }
       });
     } catch (e) {
@@ -99,6 +104,12 @@ class _CourseDetailState extends State<CourseDetail>
     await _fetchCourseDetails();
     await _checkEnrollment();
     await _checkIfFollowed();
+    // Get watched time for the current lesson
+    if (course!.lessons.isNotEmpty) {
+      _currentVideoTime = await userService.getWatchedTime(widget.userId, widget.courseId, course!.lessons.firstWhere((lesson) => lesson.index == _currentVideoIndex).id) ?? 0;
+      log(course!.lessons.firstWhere((lesson) => lesson.index == _currentVideoIndex).id.toString());
+      log(_currentVideoTime.toString());
+    }
   }
 
   Future<void> _saveLesson(String lessonId) async {
@@ -109,16 +120,25 @@ class _CourseDetailState extends State<CourseDetail>
 
     try {
       await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
-      if (mounted) showSuccessToast(context, 'Lesson saved successfully!');
+      showSuccessToast(context, 'Lesson saved successfully!');
     } catch (e) {
-      if (mounted) showErrorToast(context, 'Failed to save lesson');
+      showErrorToast(context, 'Failed to save lesson');
     }
   }
 
   @override
   void dispose() {
+    _saveWatchedTime();
     _tabController?.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveWatchedTime() async {
+    try {
+      await userService.addToWatchedHistories(widget.userId, widget.courseId, course!.lessons[_currentVideoIndex].id, _currentVideoTime);
+    } catch (e) {
+      log("Error saving watched time: $e");
+    }
   }
 
   Future<void> followUser() async {
@@ -135,12 +155,13 @@ class _CourseDetailState extends State<CourseDetail>
     }
   }
 
-  void _onLessonTap(String videoUrl, int index) {
+  void _onLessonTap(String videoUrl, int index) async {
     setState(() {
       _currentVideoUrl = videoUrl;
       _currentVideoIndex = index;
     });
-    _videoPlayerKey.currentState?.goToVideo(videoUrl);
+    _currentVideoTime = await userService.getWatchedTime(widget.userId, widget.courseId, course!.lessons[_currentVideoIndex].id) ?? 0;
+    _videoPlayerKey.currentState?.goToVideo(videoUrl, _currentVideoTime!);
   }
 
   void _navigateToPaymentScreen() {
@@ -154,11 +175,6 @@ class _CourseDetailState extends State<CourseDetail>
         ),
       ),
     );
-  }
-
-  Future<void> _handleTimeUpdate(int time) async {
-    final lessonId = course!.lessons[_currentVideoIndex].id;
-    await userService.addToWatchedHistories(widget.userId, lessonId, time);
   }
 
   @override
@@ -183,7 +199,7 @@ class _CourseDetailState extends State<CourseDetail>
               : Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.deepSpace,
+                    color: AppColors.ghostWhite,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
@@ -200,7 +216,6 @@ class _CourseDetailState extends State<CourseDetail>
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
                             ),
                       ),
                       AppSpacing.mediumHorizontal,
@@ -248,8 +263,10 @@ class _CourseDetailState extends State<CourseDetail>
                   key: _videoPlayerKey,
                   url: _currentVideoUrl,
                   dataSourceType: DataSourceType.network,
-                  current: 0,
-                  onTimeUpdate: _handleTimeUpdate, // Add this line
+                  currentTime: _currentVideoTime,
+                  onTimeUpdate: (time) {
+                    _currentVideoTime = time;
+                  },
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,
@@ -277,7 +294,6 @@ class _CourseDetailState extends State<CourseDetail>
                     controller: _tabController,
                     children: [
                       LessonTab(
-                        isPreviewing: false,
                         isFollowed: isFollowed,
                         instructorId: course!.instructorId,
                         userId: userId,
@@ -285,7 +301,7 @@ class _CourseDetailState extends State<CourseDetail>
                         currentVideoIndex: _currentVideoIndex,
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,
-                        onSaveLesson: _saveLesson,
+                        onSaveLesson: _saveLesson, isPreviewing: false,
                       ),
                       SubmitProject(
                         course: course!,

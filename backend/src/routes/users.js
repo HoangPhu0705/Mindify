@@ -9,6 +9,7 @@ router.get('/auth/:userId', UserController.getUserNameAndAvatar);
 router.get('/:userId/savedCourses', UserController.getSavedCourses);
 router.get('/:userId/checkFollow', UserController.checkIfUserFollows);
 router.get('/:userId/watchedHistories', UserController.getWatchedHistories);
+router.get('/:userId/watchedHistories/time', UserController.getWatchedTime);
 router.get('/:userId/watchedHistories/:lessonId', UserController.goToVideoWatched);
 router.post('/updateUsers', UserController.updateUsers);
 router.post('/:userId/follow', UserController.followUser);

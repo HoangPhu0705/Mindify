@@ -158,15 +158,15 @@ exports.getWatchedHistories = async (req, res) => {
 
 exports.addToWatchedHistory = async (req, res) => {
     const { userId } = req.params;
-    const { lessonId, time } = req.body;
+    const { lessonId, courseId, time } = req.body;
 
-    if (!lessonId || !time) {
-        return res.status(400).json({ message: 'lessonId and time are required' });
+    if (!lessonId || !time || !courseId) {
+        return res.status(400).json({ message: 'lessonId courseId and time are required' });
     }
 
     try {
         const timestamp = new Date();
-        const result = await UserService.addToWatchedHistories(userId, lessonId, time, timestamp);
+        const result = await UserService.addToWatchedHistories(userId, courseId, lessonId, time, timestamp);
         res.status(200).json(result);
     } catch (error) {
         console.error('Error adding watched history:', error);
@@ -183,5 +183,27 @@ exports.goToVideoWatched = async (req, res) => {
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getWatchedTime = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { courseId, lessonId } = req.query;
+
+        if (!userId || !courseId || !lessonId) {
+            return res.status(400).json({ error: 'Missing required parameters' });
+        }
+
+        const time = await UserService.getWatchedTime(userId, courseId, lessonId);
+
+        if (time === null) {
+            return res.status(404).json({ error: 'Watched history not found' });
+        }
+
+        res.status(200).json({ time });
+    } catch (error) {
+        console.error("Error in getWatchedTimeController:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };

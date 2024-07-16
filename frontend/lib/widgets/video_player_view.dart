@@ -1,23 +1,20 @@
 import 'dart:developer';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:video_player/video_player.dart';
 import 'package:pod_player/pod_player.dart';
-
 
 class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
-  int current;
-  final Function(int) onTimeUpdate;
+  final int currentTime;
+  final ValueChanged<int> onTimeUpdate;
 
-  VideoPlayerView({
+  const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
-    required this.current,
+    required this.currentTime,
     required this.onTimeUpdate,
   });
 
@@ -28,61 +25,51 @@ class VideoPlayerView extends StatefulWidget {
 class VideoPlayerViewState extends State<VideoPlayerView> {
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
-  Timer? _timer;
-  bool _isDisposed = false;
+  late int _currentVideoTime;
 
   Future<void> initVideoPlayer() async {
     _podPlayerController = PodPlayerController(
       playVideoFrom: PlayVideoFrom.network(widget.url),
-      podPlayerConfig: const PodPlayerConfig(
+      podPlayerConfig: PodPlayerConfig(
         autoPlay: true,
         isLooping: false,
         videoQualityPriority: [360, 720],
       ),
-    )..initialise();
-    _podPlayerController.addListener(_handlePositionChange);
+    );
+    await _podPlayerController.initialise();
+    await _podPlayerController.videoSeekTo(Duration(seconds: widget.currentTime));
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
+    _currentVideoTime = widget.currentTime;
+    log(_currentVideoTime.toString());
     _future = initVideoPlayer();
-    _loadAndSeekToStartTime();
-    _startTimer();
+    _podPlayerController.addListener(_updateTime);
+  }
+
+  void _updateTime() {
+    final currentTime = _podPlayerController.currentVideoPosition.inSeconds;
+    if (currentTime != _currentVideoTime) {
+      _currentVideoTime = currentTime;
+      widget.onTimeUpdate(currentTime);
+    }
   }
 
   @override
   void dispose() {
-    _isDisposed = true;
-    _timer?.cancel();
+    _podPlayerController.removeListener(_updateTime);
     _podPlayerController.dispose();
     super.dispose();
   }
 
-  void goToVideo(String url) {
+  void goToVideo(String url, int time) {
     _podPlayerController.changeVideo(
       playVideoFrom: PlayVideoFrom.network(url),
     );
-  }
-
-  Future<void> _loadAndSeekToStartTime() async {
-    if (widget.current != 0) {
-      _podPlayerController.videoSeekTo(Duration(seconds: widget.current.toInt()));
-    }
-  }
-
-  void _handlePositionChange() {
-    setState(() {
-      widget.current = _podPlayerController.videoPlayerValue!.position.inSeconds;
-    });
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
-      if (!_isDisposed) {
-        widget.onTimeUpdate(widget.current);
-      }
-    });
+    _podPlayerController.videoSeekTo(Duration(seconds: time));
   }
 
   @override

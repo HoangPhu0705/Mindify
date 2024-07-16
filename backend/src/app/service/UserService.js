@@ -1,4 +1,4 @@
-const { UserCollection, RequestCollection } = require('./Collections');
+const { UserCollection, RequestCollection, CourseCollection } = require('./Collections');
 const { transporter } = require('../../utils/sender.util')
 const admin = require('firebase-admin');
 require('dotenv').config();
@@ -354,17 +354,54 @@ exports.getWatchedHistories = async (userId) => {
         if (userSnapshot.empty) {
             return [];
         }
-        
-        const watchedHistories = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const watchedHistories = await Promise.all(userSnapshot.docs.map(async (doc) => {
+            const historyData = doc.data();
+            const courseDetails = await getCourseAndLessonDetail(historyData.courseId, historyData.lessonId);
+            return {
+                ...historyData,
+                // lessonId: doc.id,
+                title: courseDetails.title,
+                authorName: courseDetails.author,
+                thumbnail: courseDetails.thumbnail,
+            };
+        }));
+
         return watchedHistories;
     } catch (error) {
         console.error("Error fetching watched histories:", error);
         throw error;
     }
-}
+};
+
+const getCourseAndLessonDetail = async (courseId, lessonId) => {
+    try {
+        const courseRef = CourseCollection.doc(courseId);
+        const courseDoc = await courseRef.get();
+        if (!courseDoc.exists) {
+            throw new Error("Course doesn't exist");
+        }
+
+        const courseData = courseDoc.data();
+        const lessonRef = courseRef.collection('lessons').doc(lessonId);
+        const lessonDoc = await lessonRef.get();
+        if (!lessonDoc.exists) {
+            throw new Error("Lesson doesn't exist");
+        }
+
+        const lessonData = lessonDoc.data();
+        return {
+            title: lessonData.title,
+            author: courseData.author,
+            thumbnail: courseData.thumbnail,
+        };
+    } catch (error) {
+        throw new Error(`Error fetching course and lesson details: ${error.message}`);
+    }
+};
 
 
-exports.addToWatchedHistories = async (userId, lessonId, time, timestamp) => {
+exports.addToWatchedHistories = async (userId, courseId, lessonId, time, timestamp) => {
     try {
         const userRef = UserCollection.doc(userId);
         const watchedHistoriesRef = userRef.collection('watchedHistories').doc(lessonId);
@@ -379,6 +416,7 @@ exports.addToWatchedHistories = async (userId, lessonId, time, timestamp) => {
             } else {
                 transaction.set(watchedHistoriesRef, {
                     lessonId: lessonId,
+                    courseId: courseId,
                     time: time,
                     timestamp: timestamp
                 });
@@ -405,5 +443,28 @@ exports.goToVideoWatched = async (userId, lessonId) => {
     } catch (error) {
         console.error("Error retrieving watched lesson:", error);
         throw new Error(`Error retrieving watched lesson: ${error.message}`);
+    }
+};
+
+exports.getWatchedTime = async (userId, courseId, lessonId) => {
+    try {
+        const watchedHistoryRef = UserCollection.doc(userId)
+            .collection('watchedHistories')
+            .where('courseId', '==', courseId)
+            .where('lessonId', '==', lessonId);
+        
+        const watchedHistorySnapshot = await watchedHistoryRef.get();
+
+        if (watchedHistorySnapshot.empty) {
+            return null;
+        }
+
+        const watchedHistoryDoc = watchedHistorySnapshot.docs[0];
+        const watchedHistoryData = watchedHistoryDoc.data();
+
+        return watchedHistoryData.time;
+    } catch (error) {
+        console.error("Error fetching watched time:", error);
+        throw new Error(`Error fetching watched time: ${error.message}`);
     }
 };
