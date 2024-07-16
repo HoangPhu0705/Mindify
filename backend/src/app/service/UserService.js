@@ -256,7 +256,8 @@ exports.followUser = async (userId, followUserId) => {
     await admin.firestore().runTransaction(async (transaction) => {
         const userData = userDoc.data();
         const followUserData = followUserDoc.data();
-
+        const userRecord = await admin.auth().getUser(userData.id);
+        const displayName = userRecord.displayName;
         const updatedFollowingUser = userData.followingUser || [];
         if (!updatedFollowingUser.includes(followUserId)) {
             updatedFollowingUser.push(followUserId);
@@ -290,9 +291,10 @@ exports.followUser = async (userId, followUserId) => {
 
         // save to firestore
         const notificationsRef = UserCollection.doc(followUserId).collection('notifications');
+        console.log(displayName);
         await notificationsRef.add({
             title: 'New Follower',
-            body: `${userData.displayName} has followed you.`,
+            body: `${displayName} has followed you.`,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
     });
