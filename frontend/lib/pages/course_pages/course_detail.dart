@@ -42,7 +42,7 @@ class _CourseDetailState extends State<CourseDetail>
   Course? course;
   String _currentVideoUrl = '';
   int _currentVideoIndex = 0;
-  int _currentVideoTime = 0;
+  int _currentTime = 0;
   String? _enrollmentId;
   String userId = '';
   late Future<void> _future;
@@ -63,15 +63,35 @@ class _CourseDetailState extends State<CourseDetail>
       await courseService.getCourseById(widget.courseId).then((value) {
         course = value;
         if (course!.lessons.isNotEmpty) {
-          _currentVideoIndex = course!.lessons.firstWhere((lesson) => lesson.index == 0).index;
-          log("index "+ _currentVideoIndex.toString());
-          _currentVideoUrl = course!.lessons.firstWhere((lesson) => lesson.index == 0).link;
-          log("index "+ _currentVideoUrl);
-
+          _currentVideoUrl =
+              course!.lessons.where((lesson) => lesson.index == 0).first.link;
         }
       });
     } catch (e) {
       log("Error fetching course details: $e");
+    }
+  }
+
+  Future<void> _getWatchingData() async {
+    try {
+      final data = await userService.getWatchedHistories(userId);
+      final courseHistory = data
+          .where((course) => course['courseId'] == widget.courseId)
+          .toList();
+      log(courseHistory.toString());
+      if (courseHistory.isNotEmpty) {
+        final time = courseHistory[0]["time"];
+        final lessonIndex = courseHistory[0]["index"];
+        final url = courseHistory[0]["lessonUrl"];
+        setState(() {
+          _currentVideoIndex = lessonIndex;
+          _currentVideoUrl = url;
+          _currentTime = time;
+        });
+      }
+    } catch (e) {
+      log("$e");
+      throw Exception(e);
     }
   }
 
@@ -104,12 +124,7 @@ class _CourseDetailState extends State<CourseDetail>
     await _fetchCourseDetails();
     await _checkEnrollment();
     await _checkIfFollowed();
-    // Get watched time for the current lesson
-    if (course!.lessons.isNotEmpty) {
-      _currentVideoTime = await userService.getWatchedTime(widget.userId, widget.courseId, course!.lessons.firstWhere((lesson) => lesson.index == _currentVideoIndex).id) ?? 0;
-      log(course!.lessons.firstWhere((lesson) => lesson.index == _currentVideoIndex).id.toString());
-      log(_currentVideoTime.toString());
-    }
+    await _getWatchingData();
   }
 
   Future<void> _saveLesson(String lessonId) async {
@@ -120,22 +135,27 @@ class _CourseDetailState extends State<CourseDetail>
 
     try {
       await enrollmentService.addLessonToEnrollment(_enrollmentId!, lessonId);
-      showSuccessToast(context, 'Lesson saved successfully!');
+      if (mounted) {
+        showSuccessToast(context, 'Lesson saved successfully!');
+      }
     } catch (e) {
-      showErrorToast(context, 'Failed to save lesson');
+      if (mounted) {
+        showErrorToast(context, 'Failed to save lesson');
+      }
     }
   }
 
   @override
   void dispose() {
-    _saveWatchedTime();
     _tabController?.dispose();
+    // _videoPlayerKey.currentState!.dispose();
     super.dispose();
   }
 
-  Future<void> _saveWatchedTime() async {
+  Future<void> _saveWatchedTime(int time) async {
     try {
-      await userService.addToWatchedHistories(widget.userId, widget.courseId, course!.lessons[_currentVideoIndex].id, _currentVideoTime);
+      await userService.addToWatchedHistories(widget.userId, widget.courseId,
+          course!.lessons[_currentVideoIndex].id, time);
     } catch (e) {
       log("Error saving watched time: $e");
     }
@@ -160,8 +180,8 @@ class _CourseDetailState extends State<CourseDetail>
       _currentVideoUrl = videoUrl;
       _currentVideoIndex = index;
     });
-    _currentVideoTime = await userService.getWatchedTime(widget.userId, widget.courseId, course!.lessons[_currentVideoIndex].id) ?? 0;
-    _videoPlayerKey.currentState?.goToVideo(videoUrl, _currentVideoTime!);
+
+    _videoPlayerKey.currentState?.goToVideo(videoUrl);
   }
 
   void _navigateToPaymentScreen() {
@@ -241,8 +261,12 @@ class _CourseDetailState extends State<CourseDetail>
               icon: const Icon(
                 CupertinoIcons.xmark,
               ),
-              onPressed: () {
-                Navigator.pop(context);
+              onPressed: () async {
+                int time = _videoPlayerKey.currentState!.getCurrentTime();
+                await _saveWatchedTime(time);
+                if (mounted) {
+                  Navigator.pop(context);
+                }
               },
             ),
             actions: [
@@ -263,10 +287,7 @@ class _CourseDetailState extends State<CourseDetail>
                   key: _videoPlayerKey,
                   url: _currentVideoUrl,
                   dataSourceType: DataSourceType.network,
-                  currentTime: _currentVideoTime,
-                  onTimeUpdate: (time) {
-                    _currentVideoTime = time;
-                  },
+                  currentTime: _currentTime,
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,
@@ -301,7 +322,8 @@ class _CourseDetailState extends State<CourseDetail>
                         currentVideoIndex: _currentVideoIndex,
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,
-                        onSaveLesson: _saveLesson, isPreviewing: false,
+                        onSaveLesson: _saveLesson,
+                        isPreviewing: false,
                       ),
                       SubmitProject(
                         course: course!,

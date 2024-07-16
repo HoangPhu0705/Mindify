@@ -8,14 +8,12 @@ class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
   final int currentTime;
-  final ValueChanged<int> onTimeUpdate;
 
   const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
     required this.currentTime,
-    required this.onTimeUpdate,
   });
 
   @override
@@ -25,51 +23,48 @@ class VideoPlayerView extends StatefulWidget {
 class VideoPlayerViewState extends State<VideoPlayerView> {
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
-  late int _currentVideoTime;
 
   Future<void> initVideoPlayer() async {
     _podPlayerController = PodPlayerController(
       playVideoFrom: PlayVideoFrom.network(widget.url),
-      podPlayerConfig: PodPlayerConfig(
+      podPlayerConfig: const PodPlayerConfig(
         autoPlay: true,
         isLooping: false,
         videoQualityPriority: [360, 720],
       ),
     );
     await _podPlayerController.initialise();
-    await _podPlayerController.videoSeekTo(Duration(seconds: widget.currentTime));
+    seekToPeriod(
+      Duration(seconds: widget.currentTime),
+    );
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _currentVideoTime = widget.currentTime;
-    log(_currentVideoTime.toString());
     _future = initVideoPlayer();
-    _podPlayerController.addListener(_updateTime);
-  }
-
-  void _updateTime() {
-    final currentTime = _podPlayerController.currentVideoPosition.inSeconds;
-    if (currentTime != _currentVideoTime) {
-      _currentVideoTime = currentTime;
-      widget.onTimeUpdate(currentTime);
-    }
   }
 
   @override
   void dispose() {
-    _podPlayerController.removeListener(_updateTime);
     _podPlayerController.dispose();
     super.dispose();
   }
 
-  void goToVideo(String url, int time) {
+  void goToVideo(String url) {
     _podPlayerController.changeVideo(
       playVideoFrom: PlayVideoFrom.network(url),
     );
-    _podPlayerController.videoSeekTo(Duration(seconds: time));
+  }
+
+  int getCurrentTime() {
+    int currentTime = _podPlayerController.currentVideoPosition.inSeconds;
+    return currentTime;
+  }
+
+  void seekToPeriod(Duration duration) {
+    _podPlayerController.videoSeekTo(duration);
   }
 
   @override

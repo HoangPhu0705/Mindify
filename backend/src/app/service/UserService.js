@@ -364,6 +364,9 @@ exports.getWatchedHistories = async (userId) => {
                 title: courseDetails.title,
                 authorName: courseDetails.author,
                 thumbnail: courseDetails.thumbnail,
+                index: courseDetails.index,
+                lessonUrl: courseDetails.lessonUrl,
+                
             };
         }));
 
@@ -390,10 +393,13 @@ const getCourseAndLessonDetail = async (courseId, lessonId) => {
         }
 
         const lessonData = lessonDoc.data();
+        console.log(lessonData);
         return {
             title: lessonData.title,
             author: courseData.author,
             thumbnail: courseData.thumbnail,
+            index: lessonData.index,
+            lessonUrl: lessonData.link,
         };
     } catch (error) {
         throw new Error(`Error fetching course and lesson details: ${error.message}`);
@@ -404,12 +410,13 @@ const getCourseAndLessonDetail = async (courseId, lessonId) => {
 exports.addToWatchedHistories = async (userId, courseId, lessonId, time, timestamp) => {
     try {
         const userRef = UserCollection.doc(userId);
-        const watchedHistoriesRef = userRef.collection('watchedHistories').doc(lessonId);
+        const watchedHistoriesRef = userRef.collection('watchedHistories').doc(courseId);
 
         await admin.firestore().runTransaction(async (transaction) => {
             const watchedHistoryDoc = await transaction.get(watchedHistoriesRef);
             if (watchedHistoryDoc.exists) {
                 transaction.update(watchedHistoriesRef, {
+                    lessonId: lessonId,
                     time: time,
                     timestamp: timestamp
                 });
