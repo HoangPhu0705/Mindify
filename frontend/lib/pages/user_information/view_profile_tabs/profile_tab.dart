@@ -76,7 +76,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         alignment: Alignment.topLeft,
                         child: ChipList(
                           listOfChipNames: followedTopic,
-                          listOfChipIndicesCurrentlySelected: [],
+                          listOfChipIndicesCurrentlySelected: const [],
                           shouldWrap: true,
                           borderRadiiList: const [20],
                           style: const TextStyle(fontSize: 14),
