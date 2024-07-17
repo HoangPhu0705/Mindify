@@ -389,4 +389,8 @@ class CourseService {
       throw Exception("Error getting course by categories");
     }
   }
+
+  // Future<Map<String, dynamic>> getLessonById(String courseId, String lessonId){
+  //   return ;
+  // }
 }

@@ -164,6 +164,7 @@ class _PreviewClassState extends State<PreviewClass>
                   key: _videoPlayerKey,
                   url: _currentVideoUrl,
                   dataSourceType: DataSourceType.network,
+                  currentTime: 0,
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,

@@ -79,7 +79,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       "categories": categories,
     };
     _categoryCourses = await courseService.getCategoryCourses(requestBody);
-    dev.log(_categoryCourses.toString());
+    // dev.log(_categoryCourses.toString());
   }
 
   Future<void> _loadInstructorInfo() async {

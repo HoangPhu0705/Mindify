@@ -190,6 +190,7 @@ class UserService {
   }
 
   Future<void> followUser(String userId, String followUserId) async {
+    try{
     final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/follow');
     final response = await http.post(
       url,
@@ -199,6 +200,9 @@ class UserService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to follow user');
+    }}catch(e){
+      log("Error $e");
+      throw Exception("Failed to follow user");
     }
   }
 
@@ -225,6 +229,24 @@ class UserService {
     }
   }
 
+  Future<void> unfollowUser(String userId, String followUserId) async {
+    try {
+      final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/unfollow');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'unfollowUserId': followUserId}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to unfollow user');
+      }
+    } catch (e) {
+      log("Error $e");
+      throw Exception("Failed to unfollow user");
+    }
+  }
+
   Future<List<dynamic>> getWatchedHistories(String userId) async {
     final response = await http.get(
         Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'));
@@ -236,7 +258,7 @@ class UserService {
   }
 
   Future<void> addToWatchedHistories(
-      String userId, String lessonId, int time) async {
+      String userId, String courseId, String lessonId, int time) async {
     final response = await http.patch(
       Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
       headers: <String, String>{
@@ -244,6 +266,7 @@ class UserService {
       },
       body: jsonEncode(<String, dynamic>{
         'lessonId': lessonId,
+        'courseId': courseId,
         'time': time,
       }),
     );
@@ -251,6 +274,38 @@ class UserService {
       throw Exception('Failed to update watched history');
     }
   }
+
+  Future<int?> getWatchedTime(String userId, String courseId, String lessonId) async {
+  try {
+    final uri = Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories/time')
+        .replace(queryParameters: {
+      'courseId': courseId,
+      'lessonId': lessonId,
+    });
+
+    log('Requesting URL: $uri');
+
+    final response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log('Response data: ${data['time']}');
+      return data['time'];
+    } else {
+      log('Failed to get watched time. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    log('Error in getWatchedTime: $e');
+    return null;
+  }
+}
 
   Future<void> updateUserFollowedTopics(String userId, var data) async {
     try {

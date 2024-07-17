@@ -1,4 +1,4 @@
-const { UserCollection, RequestCollection } = require('./Collections');
+const { UserCollection, RequestCollection, CourseCollection } = require('./Collections');
 const { transporter } = require('../../utils/sender.util')
 const admin = require('firebase-admin');
 require('dotenv').config();
@@ -256,7 +256,8 @@ exports.followUser = async (userId, followUserId) => {
     await admin.firestore().runTransaction(async (transaction) => {
         const userData = userDoc.data();
         const followUserData = followUserDoc.data();
-
+        const userRecord = await admin.auth().getUser(userData.id);
+        const displayName = userRecord.displayName;
         const updatedFollowingUser = userData.followingUser || [];
         if (!updatedFollowingUser.includes(followUserId)) {
             updatedFollowingUser.push(followUserId);
@@ -290,9 +291,10 @@ exports.followUser = async (userId, followUserId) => {
 
         // save to firestore
         const notificationsRef = UserCollection.doc(followUserId).collection('notifications');
+        console.log(displayName);
         await notificationsRef.add({
             title: 'New Follower',
-            body: `${userData.displayName} has followed you.`,
+            body: `${displayName} has followed you.`,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
     });
@@ -309,11 +311,54 @@ exports.checkIfUserFollows = async (userId, followUserId) => {
 
         const userData = userDoc.data();
         const followingUser = userData.followingUser || [];
-
+        console.log(followingUser);
+        console.log(followUserId);
+        console.log( followingUser.includes(followUserId));
         return followingUser.includes(followUserId);
     } catch (error) {
         throw new Error(`Error when checking if user follows: ${error.message}`);
     }
+};
+
+exports.unfollowUser = async (userId, unfollowUserId) => {
+    const userRef = UserCollection.doc(userId);
+    const unfollowUserRef = UserCollection.doc(unfollowUserId);
+
+    const [userDoc, unfollowUserDoc] = await Promise.all([userRef.get(), unfollowUserRef.get()]);
+
+    if (!userDoc.exists) {
+        throw new Error("User doesn't exist");
+    }
+
+    if (!unfollowUserDoc.exists) {
+        throw new Error("User to unfollow doesn't exist");
+    }
+
+    await admin.firestore().runTransaction(async (transaction) => {
+        const userData = userDoc.data();
+        const unfollowUserData = unfollowUserDoc.data();
+
+        const updatedFollowingUser = userData.followingUser || [];
+        const updatedFollowerUser = unfollowUserData.followerUser || [];
+
+        if (updatedFollowingUser.includes(unfollowUserId)) {
+            const index = updatedFollowingUser.indexOf(unfollowUserId);
+            updatedFollowingUser.splice(index, 1);
+            transaction.update(userRef, {
+                followingUser: updatedFollowingUser,
+                followingNum: admin.firestore.FieldValue.increment(-1)
+            });
+        }
+
+        if (updatedFollowerUser.includes(userId)) {
+            const index = updatedFollowerUser.indexOf(userId);
+            updatedFollowerUser.splice(index, 1);
+            transaction.update(unfollowUserRef, {
+                followerUser: updatedFollowerUser,
+                followerNum: admin.firestore.FieldValue.increment(-1)
+            });
+        }
+    });
 };
 
 exports.updateUsers = async () => {
@@ -354,31 +399,76 @@ exports.getWatchedHistories = async (userId) => {
         if (userSnapshot.empty) {
             return [];
         }
-        
-        const watchedHistories = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const watchedHistories = await Promise.all(userSnapshot.docs.map(async (doc) => {
+            const historyData = doc.data();
+            const courseDetails = await getCourseAndLessonDetail(historyData.courseId, historyData.lessonId);
+            return {
+                ...historyData,
+                // lessonId: doc.id,
+                title: courseDetails.title,
+                authorName: courseDetails.author,
+                thumbnail: courseDetails.thumbnail,
+                index: courseDetails.index,
+                lessonUrl: courseDetails.lessonUrl,
+                
+            };
+        }));
+
         return watchedHistories;
     } catch (error) {
         console.error("Error fetching watched histories:", error);
         throw error;
     }
-}
+};
+
+const getCourseAndLessonDetail = async (courseId, lessonId) => {
+    try {
+        const courseRef = CourseCollection.doc(courseId);
+        const courseDoc = await courseRef.get();
+        if (!courseDoc.exists) {
+            throw new Error("Course doesn't exist");
+        }
+
+        const courseData = courseDoc.data();
+        const lessonRef = courseRef.collection('lessons').doc(lessonId);
+        const lessonDoc = await lessonRef.get();
+        if (!lessonDoc.exists) {
+            throw new Error("Lesson doesn't exist");
+        }
+
+        const lessonData = lessonDoc.data();
+        console.log(lessonData);
+        return {
+            title: lessonData.title,
+            author: courseData.author,
+            thumbnail: courseData.thumbnail,
+            index: lessonData.index,
+            lessonUrl: lessonData.link,
+        };
+    } catch (error) {
+        throw new Error(`Error fetching course and lesson details: ${error.message}`);
+    }
+};
 
 
-exports.addToWatchedHistories = async (userId, lessonId, time, timestamp) => {
+exports.addToWatchedHistories = async (userId, courseId, lessonId, time, timestamp) => {
     try {
         const userRef = UserCollection.doc(userId);
-        const watchedHistoriesRef = userRef.collection('watchedHistories').doc(lessonId);
+        const watchedHistoriesRef = userRef.collection('watchedHistories').doc(courseId);
 
         await admin.firestore().runTransaction(async (transaction) => {
             const watchedHistoryDoc = await transaction.get(watchedHistoriesRef);
             if (watchedHistoryDoc.exists) {
                 transaction.update(watchedHistoriesRef, {
+                    lessonId: lessonId,
                     time: time,
                     timestamp: timestamp
                 });
             } else {
                 transaction.set(watchedHistoriesRef, {
                     lessonId: lessonId,
+                    courseId: courseId,
                     time: time,
                     timestamp: timestamp
                 });
@@ -389,5 +479,44 @@ exports.addToWatchedHistories = async (userId, lessonId, time, timestamp) => {
     } catch (error) {
         console.error("Error adding to watched histories:", error);
         throw error;
+    }
+};
+
+exports.goToVideoWatched = async (userId, lessonId) => {
+    try {
+        const watchedHistoryRef = UserCollection.doc(userId).collection('watchedHistories').doc(lessonId);
+        const watchedHistoryDoc = await watchedHistoryRef.get();
+
+        if (!watchedHistoryDoc.exists) {
+            throw new Error("Lesson not found in watched history");
+        }
+
+        return { lesson: watchedHistoryDoc.data() };
+    } catch (error) {
+        console.error("Error retrieving watched lesson:", error);
+        throw new Error(`Error retrieving watched lesson: ${error.message}`);
+    }
+};
+
+exports.getWatchedTime = async (userId, courseId, lessonId) => {
+    try {
+        const watchedHistoryRef = UserCollection.doc(userId)
+            .collection('watchedHistories')
+            .where('courseId', '==', courseId)
+            .where('lessonId', '==', lessonId);
+        
+        const watchedHistorySnapshot = await watchedHistoryRef.get();
+
+        if (watchedHistorySnapshot.empty) {
+            return null;
+        }
+
+        const watchedHistoryDoc = watchedHistorySnapshot.docs[0];
+        const watchedHistoryData = watchedHistoryDoc.data();
+
+        return watchedHistoryData.time;
+    } catch (error) {
+        console.error("Error fetching watched time:", error);
+        throw new Error(`Error fetching watched time: ${error.message}`);
     }
 };

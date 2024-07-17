@@ -2,19 +2,18 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:video_player/video_player.dart';
 import 'package:pod_player/pod_player.dart';
 
 class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
-  // final int current;
+  final int currentTime;
 
   const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
-    // required this.current
+    required this.currentTime,
   });
 
   @override
@@ -33,7 +32,11 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
         isLooping: false,
         videoQualityPriority: [360, 720],
       ),
-    )..initialise();
+    );
+    await _podPlayerController.initialise();
+    seekToPeriod(
+      Duration(seconds: widget.currentTime),
+    );
     setState(() {});
   }
 
@@ -41,7 +44,6 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
   void initState() {
     super.initState();
     _future = initVideoPlayer();
-    // _loadAndSeekToStartTime();
   }
 
   @override
@@ -56,11 +58,14 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     );
   }
 
-  // Future<void> _loadAndSeekToStartTime() async {
-  //   if (widget.current != 0) {
-  //     _podPlayerController.videoSeekTo(Duration(seconds: widget.current.toInt()));
-  //   }
-  // }
+  int getCurrentTime() {
+    int currentTime = _podPlayerController.currentVideoPosition.inSeconds;
+    return currentTime;
+  }
+
+  void seekToPeriod(Duration duration) {
+    _podPlayerController.videoSeekTo(duration);
+  }
 
   @override
   Widget build(BuildContext context) {
