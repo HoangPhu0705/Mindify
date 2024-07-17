@@ -1,8 +1,9 @@
 const { initializeApp } = require('firebase/app');
 const { getAuth, signInWithEmailAndPassword } = require('firebase/auth');
+const { generateToken } = require('../../utils/jwt.util');
+const { UserCollection, CourseCollection } = require('./Collections')
 const dotenv = require('dotenv');
 const admin = require('firebase-admin');
-const jwt = require('jsonwebtoken');
 
 dotenv.config();
 
@@ -44,13 +45,49 @@ const loginUser = async (email, password) => {
     }
 };
 
-const generateToken = (uid) => {
-    return jwt.sign({ uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
-};
-
 const logout = async () => {
     await auth.signOut();
     console.log('User logged out successfully.');
 }
 
-module.exports = { loginUser, logout };
+// User management
+const getAllUsersPaginated = async (limit, startAfter) => {
+    try {
+        let query = UserCollection.orderBy('email').limit(limit);
+        if (startAfter) {
+            const startAfterDoc = await UserCollection.doc(startAfter).get();
+            query = query.startAfter(startAfterDoc);
+        }
+        const snapshot = await query.get();
+        const users = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        return users;
+    } catch (error) {
+        console.error('Error getting users: ', error);
+        throw new Error('Error getting users: ' + error.message);
+    }
+};
+
+// Course management
+const getAllCoursesPaginated = async (limit, startAfter) => {
+    try {
+        let query = CourseCollection.orderBy('courseName').limit(limit);
+        if (startAfter) {
+            const startAfterDoc = await CourseCollection.doc(startAfter).get();
+            query = query.startAfter(startAfterDoc);
+        }
+        const snapshot = await query.get();
+        const courses = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        return courses;
+    } catch (error) {
+        console.error('Error getting courses: ', error);
+        throw new Error('Error getting courses: ' + error.message);
+    }
+};
+
+module.exports = { loginUser, logout, getAllUsersPaginated, getAllCoursesPaginated };

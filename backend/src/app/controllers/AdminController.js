@@ -1,4 +1,4 @@
-const { loginUser, logout } = require('../service/AdminService');
+const { loginUser, logout, getAllUsersPaginated, getAllCoursesPaginated } = require('../service/AdminService');
 
 
 class AdminController {
@@ -27,6 +27,26 @@ class AdminController {
             res.status(500).json({ message: error.message });
         }
     }
+
+    showAllUsers = async (req, res) => {
+        const { limit, startAfter } = req.query;
+        try {
+            const users = await getAllUsersPaginated(parseInt(limit), startAfter);
+            res.status(200).json(users);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    };
+
+    showAllCourses = async (req, res) => {
+        const { limit, startAfter } = req.query;
+        try {
+            const courses = await getAllCoursesPaginated(parseInt(limit), startAfter);
+            res.status(200).json(courses);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    };
 
 }
 

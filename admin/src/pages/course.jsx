@@ -1,7 +1,132 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Card, Typography, Button, Select, MenuItem } from "@material-tailwind/react";
 
-export default function Course() {
+const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Actions"];
+
+const CourseManagement = () => {
+  const [courses, setCourses] = useState([]);
+  const [coursePage, setCoursePage] = useState({ limit: 10, startAfter: null });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [coursePage, currentPage]);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/admin/courses-management', {
+        params: { limit: coursePage.limit, startAfter: coursePage.startAfter }
+      });
+      setCourses(response.data);
+    } catch (error) {
+      console.error('Error fetching courses: ', error);
+    }
+  };
+
+  const handleAcceptCourse = (courseId) => {
+    // Accept course logic here
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    // Cập nhật startAfter dựa trên newPage
+    const startAfter = (newPage - 1) * coursePage.limit;
+    setCoursePage({ ...coursePage, startAfter });
+  };
+
+  const handleLimitChange = (event) => {
+    setCoursePage({ ...coursePage, limit: event.target.value, startAfter: null });
+    setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi số lượng hiển thị
+  };
+
+  const renderTable = (headers, data) => (
+    <table className="w-full min-w-max table-auto text-left">
+      <thead>
+        <tr>
+          {headers.map((head) => (
+            <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+              <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">
+                {head}
+              </Typography>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item) => (
+          <tr key={item.id} className="even:bg-blue-gray-50/50">
+            <td className="p-4">
+              <Typography variant="small" color="blue-gray" className="font-normal">
+                {item.courseName}
+              </Typography>
+            </td>
+            <td className="p-4">
+              <Typography variant="small" color="blue-gray" className="font-normal">
+                {item.author}
+              </Typography>
+            </td>
+            <td className="p-4">
+              <Typography variant="small" color="blue-gray" className="font-normal">
+                {item.lessonNum}
+              </Typography>
+            </td>
+            <td className="p-4">
+              <Button color="cyan" onClick={() => handleAcceptCourse(item.id)}>
+                Detail
+              </Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return (
-    <div>course</div>
-  )
-}
+    <Card className="h-full w-full overflow-scroll">
+      <div className="py-6 px-4 md:px-6 xl:px-7.5 bg-gray-100 dark:bg-gray-800">
+        <Typography variant="h4" color="black" className="dark:text-white">
+          Course Management
+        </Typography>
+        <div className="flex justify-between items-center mb-4">
+          <Typography variant="h6" color="black" className="dark:text-white">
+            Show
+          </Typography>
+          <Select
+            value={coursePage.limit}
+            onChange={handleLimitChange}
+            className="ml-2"
+          >
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+          </Select>
+        </div>
+        {renderTable(COURSE_TABLE_HEAD, courses)}
+        <div className="flex justify-between items-center mt-4">
+          <Button
+            color="blue"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Typography variant="small" color="blue-gray" className="font-normal">
+            Page {currentPage} of {totalPages}
+          </Typography>
+          <Button
+            color="blue"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default CourseManagement;
+

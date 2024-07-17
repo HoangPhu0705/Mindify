@@ -6,7 +6,7 @@ const transactionRouter = require('./transactions')
 const quizRouter = require('./quizzes')
 const adminAuthRouter = require('./adminAuth')
 function route(app){
-    app.use('/auth', adminAuthRouter)
+    app.use('/admin', adminAuthRouter)
     app.use('/api/courses', courseRouter)
     app.use('/api/users', userRouter)
     app.use('/api/enrollments', enrollmentRouter)

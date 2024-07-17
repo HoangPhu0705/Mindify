@@ -8,7 +8,8 @@ import {
   PaperAirplaneIcon,
   UserCircleIcon,
   Cog6ToothIcon,
-  PowerIcon
+  PowerIcon,
+  AcademicCapIcon // Icon cho Course Management
 } from "@heroicons/react/24/solid";
 
 export default function Sidebar() {
@@ -16,7 +17,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/auth/admin-logout");
+      await axios.get("http://localhost:3000/admin/admin-logout");
       localStorage.removeItem("token");
       navigate("/admin-login");
     } catch (error) {
@@ -41,12 +42,21 @@ export default function Sidebar() {
           </ListItem>
         </Link>
 
-        <Link to="/lecturer">
+        <Link to="/user-management">
           <ListItem className={`hover:bg-[#062137] hover:text-white`}>
             <ListItemPrefix>
               <UserGroupIcon className="h-5 w-5" />
             </ListItemPrefix>
             User Management
+          </ListItem>
+        </Link>
+
+        <Link to="/course-management">
+          <ListItem className={`hover:bg-[#062137] hover:text-white`}>
+            <ListItemPrefix>
+              <AcademicCapIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Course Management
           </ListItem>
         </Link>
 

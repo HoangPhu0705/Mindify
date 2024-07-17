@@ -23,7 +23,7 @@ function Login1() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/auth/admin-login",
+        "http://localhost:3000/admin/admin-login",
         { email, password }
       );
       localStorage.setItem("token", response.data.token);
