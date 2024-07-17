@@ -12,12 +12,10 @@ import {
   Typography,
 } from "@material-tailwind/react";
 
-// @icons
-import { CpuChipIcon } from "@heroicons/react/24/solid";
-
 function Login1() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // state error
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -32,6 +30,7 @@ function Login1() {
       navigate("/");
     } catch (error) {
       console.error("Error logging in: ", error);
+      setErrorMessage("Invalid email or password. Please try again.");
     }
   };
 
@@ -57,6 +56,15 @@ function Login1() {
               onSubmit={handleLogin}
               className="flex flex-col gap-4 md:mt-12"
             >
+              {errorMessage && (
+                <Typography
+                  variant="small"
+                  color="red"
+                  className="text-center mb-4"
+                >
+                  {errorMessage}
+                </Typography>
+              )}
               <div>
                 <label htmlFor="email">
                   <Typography
