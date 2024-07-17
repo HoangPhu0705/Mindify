@@ -41,7 +41,6 @@ class _ProfileTabState extends State<ProfileTab> {
 
     List<dynamic> topicData = data["followedTopic"];
     followedTopic = List<String>.from(topicData);
-    log(followedTopic.toString());
   }
 
   @override
@@ -72,25 +71,51 @@ class _ProfileTabState extends State<ProfileTab> {
                 AppSpacing.mediumVertical,
                 followedTopic.isEmpty
                     ? _emptySkills()
-                    : Align(
-                        alignment: Alignment.topLeft,
-                        child: ChipList(
-                          listOfChipNames: followedTopic,
-                          listOfChipIndicesCurrentlySelected: const [],
-                          shouldWrap: true,
-                          borderRadiiList: const [20],
-                          style: const TextStyle(fontSize: 14),
-                          showCheckmark: false,
-                          activeBorderColorList: const [Colors.black],
-                          inactiveBgColorList: const [AppColors.ghostWhite],
-                          inactiveBorderColorList: const [AppColors.lightGrey],
-                          inactiveTextColorList: const [Colors.black],
-                          activeTextColorList: const [Colors.black],
-                          activeBgColorList: const [Colors.transparent],
-                          axis: Axis.horizontal,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          extraOnToggle: (val) {},
-                        ),
+                    : Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: ChipList(
+                              listOfChipNames: followedTopic,
+                              listOfChipIndicesCurrentlySelected: const [],
+                              shouldWrap: true,
+                              borderRadiiList: const [20],
+                              style: const TextStyle(fontSize: 14),
+                              showCheckmark: false,
+                              activeBorderColorList: const [Colors.black],
+                              inactiveBgColorList: const [AppColors.ghostWhite],
+                              inactiveBorderColorList: const [
+                                AppColors.lightGrey
+                              ],
+                              inactiveTextColorList: const [Colors.black],
+                              activeTextColorList: const [Colors.black],
+                              activeBgColorList: const [Colors.transparent],
+                              axis: Axis.horizontal,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              extraOnToggle: (val) {},
+                            ),
+                          ),
+                          AppSpacing.mediumVertical,
+                          GestureDetector(
+                            onTap: () async {
+                              await Navigator.of(context, rootNavigator: true)
+                                  .push(
+                                MaterialPageRoute(
+                                  builder: (context) => const FollowSkills(),
+                                ),
+                              );
+                            },
+                            child: const Center(
+                              child: Text(
+                                "Change topics",
+                                style: TextStyle(
+                                  color: AppColors.deepBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
               ],
             );

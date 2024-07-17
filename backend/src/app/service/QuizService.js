@@ -43,3 +43,13 @@ exports.deleteQuiz = async (quizId) => {
         throw error;
     }
 };
+
+exports.updateQuiz = async (quizId, data) => {
+    try{
+        await QuizCollection.doc(quizId).update(data);
+        return {success: true}
+    }catch (error) {
+        console.error('Error updating quiz:', error);
+        throw error;
+    }
+}

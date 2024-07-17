@@ -62,7 +62,8 @@ class _PreviewClassState extends State<PreviewClass>
       await courseService.getCourseById(widget.courseId).then((value) {
         course = value;
         if (course!.lessons.isNotEmpty) {
-          _currentVideoUrl = course!.lessons.first.link;
+          _currentVideoUrl =
+              course!.lessons.where((lesson) => lesson.index == 0).first.link;
         }
       });
     } catch (e) {

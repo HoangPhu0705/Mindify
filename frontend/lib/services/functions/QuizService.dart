@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class QuizService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/quizzes';
+  static String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final CollectionReference quizzes =
@@ -45,8 +47,8 @@ class QuizService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      print('Failed to fetch quizzes. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      log('Failed to fetch quizzes. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
       return [];
     }
   }
@@ -56,6 +58,26 @@ class QuizService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete quiz');
+    }
+  }
+
+  Future<void> updateQuiz(String quizId, var data) async {
+    final url = Uri.parse('$baseUrl/quizzes/$quizId');
+    try {
+      final response = await http.patch(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonDecode(data),
+      );
+      if (response.statusCode == 200) {
+        log("Quiz updated");
+      } else {
+        throw Exception('Failed to update quiz');
+      }
+    } catch (e) {
+      throw Exception('Failed to update quiz');
     }
   }
 }

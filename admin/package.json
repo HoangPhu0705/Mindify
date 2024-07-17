@@ -17,8 +17,10 @@
     "axios": "^1.7.2",
     "classnames": "^2.5.1",
     "cors": "^2.8.5",
+    "date-fns": "^3.6.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
+    "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
     "react-icons": "^5.2.1",
     "react-router-dom": "^6.23.1"

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
@@ -146,15 +147,26 @@ class _SavedClassesState extends State<SavedClasses> {
                           itemCount: filteredCourses.length,
                           itemBuilder: (context, index) {
                             final course = filteredCourses[index];
-                            return MyCourseItem(
-                              imageUrl: course.thumbnail,
-                              title: course.title,
-                              author: course.instructorName,
-                              duration: course.duration,
-                              students: course.students.toString(),
-                              moreOnPress: () {
-                                _showBottomSheet(context, course.id);
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context, rootNavigator: true).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CourseDetail(
+                                        courseId: course.id,
+                                        userId: _userService.getUserId()),
+                                  ),
+                                );
                               },
+                              child: MyCourseItem(
+                                imageUrl: course.thumbnail,
+                                title: course.title,
+                                author: course.instructorName,
+                                duration: course.duration,
+                                students: course.students.toString(),
+                                moreOnPress: () {
+                                  _showBottomSheet(context, course.id);
+                                },
+                              ),
                             );
                           },
                         );

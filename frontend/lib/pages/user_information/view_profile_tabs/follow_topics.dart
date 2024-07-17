@@ -70,6 +70,10 @@ class _FollowSkillsState extends State<FollowSkills> {
                     ? null
                     : () async {
                         await updateFollowTopic(skillsSelected);
+
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
                       },
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),

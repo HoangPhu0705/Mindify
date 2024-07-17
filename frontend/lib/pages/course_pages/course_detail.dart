@@ -78,7 +78,6 @@ class _CourseDetailState extends State<CourseDetail>
       final courseHistory = data
           .where((course) => course['courseId'] == widget.courseId)
           .toList();
-      log(courseHistory.toString());
       if (courseHistory.isNotEmpty) {
         final time = courseHistory[0]["time"];
         final lessonIndex = courseHistory[0]["index"];

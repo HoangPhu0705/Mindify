@@ -256,37 +256,40 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           buildCarouselCourses(
                             _top5Courses!,
                             "Recommend For You",
+                            "",
                             userId,
                           ),
                           buildCarouselCourses(
                             _newestCourses!,
                             "New and Trending",
+                            "",
                             userId,
                           ),
                           AppSpacing.mediumVertical,
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: categories.length,
-                            itemBuilder: (context, index) {
-                              String quotes = randomQuotes[
-                                  Random().nextInt(randomQuotes.length)];
+                          // ListView.builder(
+                          //   shrinkWrap: true,
+                          //   physics: const NeverScrollableScrollPhysics(),
+                          //   itemCount: categories.length,
+                          //   itemBuilder: (context, index) {
+                          //     String quotes = randomQuotes[
+                          //         Random().nextInt(randomQuotes.length)];
 
-                              String categoryName = categories[index];
-                              List<dynamic> courseList =
-                                  _categoryCourses![categoryName];
-                              List<Course> courseByCategory = courseList
-                                  .map((course) => Course.fromJson(course))
-                                  .toList();
-                              return courseByCategory.isEmpty
-                                  ? const SizedBox.shrink()
-                                  : buildCarouselCourses(
-                                      courseByCategory,
-                                      "$quotes $categoryName",
-                                      userId,
-                                    );
-                            },
-                          ),
+                          //     String categoryName = categories[index];
+                          //     List<dynamic> courseList =
+                          //         _categoryCourses![categoryName];
+                          //     List<Course> courseByCategory = courseList
+                          //         .map((course) => Course.fromJson(course))
+                          //         .toList();
+                          //     return courseByCategory.isEmpty
+                          //         ? const SizedBox.shrink()
+                          //         : buildCarouselCourses(
+                          //             courseByCategory,
+                          //             quotes,
+                          //             categoryName,
+                          //             userId,
+                          //           );
+                          //   },
+                          // ),
                         ],
                       ),
                       AppSpacing.largeVertical,
@@ -314,10 +317,22 @@ class _DiscoverPageState extends State<DiscoverPage> {
             itemBuilder: (context, index) {
               final course = courses[index];
               final instructor = instructorInfo[course.instructorId];
-              return PopularCourse(
-                imageUrl: course.thumbnail,
-                courseName: course.title,
-                instructor: instructor?['displayName'] ?? 'Mindify Member',
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                      builder: (context) => CourseDetail(
+                        courseId: course.id,
+                        userId: userId,
+                      ),
+                    ),
+                  );
+                },
+                child: PopularCourse(
+                  imageUrl: course.thumbnail,
+                  courseName: course.title,
+                  instructor: instructor?['displayName'] ?? 'Mindify Member',
+                ),
               );
             },
           ),
@@ -336,7 +351,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   }
 
   Widget buildCarouselCourses(
-      List<Course> courses, String title, String userId) {
+      List<Course> courses, String quote, String title, String userId) {
     return Column(
       children: [
         Container(
@@ -345,10 +360,19 @@ class _DiscoverPageState extends State<DiscoverPage> {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  title,
-                  maxLines: 2,
-                  style: Theme.of(context).textTheme.titleLarge,
+                child: RichText(
+                  text: TextSpan(
+                    text: quote,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    children: [
+                      TextSpan(
+                        text: title,
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              color: AppColors.deepBlue,
+                            ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],
