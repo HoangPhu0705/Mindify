@@ -44,4 +44,10 @@ const generateToken = (uid) => {
     return jwt.sign({ uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
-module.exports = { loginUser };
+
+const logout = async () => {
+    await auth.signOut();
+    console.log('User logged out successfully.');
+}
+
+module.exports = { loginUser, logout };
