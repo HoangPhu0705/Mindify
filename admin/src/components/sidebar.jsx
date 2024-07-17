@@ -17,6 +17,7 @@ export default function Sidebar() {
   const handleLogout = async () => {
     try {
       await axios.get("http://localhost:3000/auth/admin-logout");
+      localStorage.removeItem("token");
       navigate("/admin-login");
     } catch (error) {
       console.error("Error logging out: ", error);
