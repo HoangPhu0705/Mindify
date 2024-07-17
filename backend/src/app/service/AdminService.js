@@ -29,11 +29,15 @@ const loginUser = async (email, password) => {
 
         console.log('ID token obtained, verifying token...');
         const decodedToken = await admin.auth().verifyIdToken(idToken);
-
         const uid = decodedToken.uid;
-        console.log('Token verified, generating JWT...');
-        const token = generateToken(uid);
-        return { uid, token };
+
+        if (decodedToken.admin) {
+            console.log('User is an admin, generating JWT...');
+            const token = generateToken(uid);
+            return { uid, token };
+        } else {
+            throw new Error('User does not have admin privileges.');
+        }
     } catch (error) {
         console.error('Error logging in:', error);
         throw new Error('Error logging in: ' + error.message);
@@ -43,7 +47,6 @@ const loginUser = async (email, password) => {
 const generateToken = (uid) => {
     return jwt.sign({ uid }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
-
 
 const logout = async () => {
     await auth.signOut();
