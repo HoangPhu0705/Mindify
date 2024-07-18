@@ -1,4 +1,5 @@
 const { initializeApp } = require('firebase/app');
+// const { getAuth } = require('firebase-admin/auth');
 const { getAuth, signInWithEmailAndPassword } = require('firebase/auth');
 const { generateToken } = require('../../utils/jwt.util');
 const { UserCollection, CourseCollection } = require('./Collections')
@@ -59,11 +60,22 @@ const getAllUsersPaginated = async (limit, startAfter) => {
             query = query.startAfter(startAfterDoc);
         }
         const snapshot = await query.get();
-        const users = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
+        const totalCountSnapshot = await UserCollection.get();
+        const totalCount = totalCountSnapshot.size;
+
+        const users = await Promise.all(snapshot.docs.map(async (doc) => {
+            const userData = doc.data();
+            const userRecord = await admin.auth().getUser(doc.id);
+            return {
+                id: doc.id,
+                email: userData.email,
+                displayName: userData.displayName,
+                role: userData.role,
+                disabled: userRecord.disabled,
+            };
         }));
-        return users;
+
+        return users ;
     } catch (error) {
         console.error('Error getting users: ', error);
         throw new Error('Error getting users: ' + error.message);
@@ -79,15 +91,47 @@ const getAllCoursesPaginated = async (limit, startAfter) => {
             query = query.startAfter(startAfterDoc);
         }
         const snapshot = await query.get();
+        const totalCountSnapshot = await CourseCollection.get();
+        const totalCount = totalCountSnapshot.size;
+
         const courses = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
-        return courses;
+        return { courses, totalCount };
     } catch (error) {
         console.error('Error getting courses: ', error);
         throw new Error('Error getting courses: ' + error.message);
     }
 };
+// lock user
+const lockUser = async (uid) => {
+    try {
+        await admin.auth().updateUser(uid, {
+            disabled: true
+        });
+        return `Successfully lock user ${uid}`;
+    } catch (error) {
+        throw new Error('Error when lock user: ' + error.message);
+    }
+};
 
-module.exports = { loginUser, logout, getAllUsersPaginated, getAllCoursesPaginated };
+// unlock user
+const unlockUser = async (uid) => {
+    try {
+        await admin.auth().updateUser(uid, {
+            disabled: false
+        });
+        return `Successfully unlocked user ${uid}`;
+    } catch (error) {
+        throw new Error('Error when unlocking user: ' + error.message);
+    }
+};
+
+module.exports = { loginUser, 
+                    logout, 
+                    getAllUsersPaginated, 
+                    getAllCoursesPaginated, 
+                    lockUser, 
+                    unlockUser 
+                };

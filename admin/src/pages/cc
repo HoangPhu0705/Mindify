@@ -1,0 +1,13 @@
+var data = {
+                    'user_id': FirebaseAuth.instance.currentUser!.uid,
+                    'user_email': FirebaseAuth.instance.currentUser!.email,
+                    'category': _currentCategory,
+                    'firstName': _firstNameController.text,
+                    'lastName': _lastNameController.text,
+                    'phoneNumber': _phoneNumberController.text,
+                    'countryName': _countryNameController.text,
+                    'dob': _dobController.text,
+                    'topicDescription': _topicDescription.text,
+                    'status': 'Pending',
+                    'isApproved': false,
+                  };
