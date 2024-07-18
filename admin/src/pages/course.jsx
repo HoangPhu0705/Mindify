@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, Typography, Button, Select, MenuItem } from "@material-tailwind/react";
+import { Card, Typography, Button, Select, MenuItem, Option } from "@material-tailwind/react";
 
 const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Actions"];
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
-  const [coursePage, setCoursePage] = useState({ limit: 10, startAfter: null });
+  const [coursePage, setCoursePage] = useState({ limit: 5, startAfter: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -25,20 +25,20 @@ const CourseManagement = () => {
     }
   };
 
-  const handleAcceptCourse = (courseId) => {
-    // Accept course logic here
+  const goToCourseDetail = (courseId) => {
+    // Add the logic to navigate to the course detail page
   };
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    // Cập nhật startAfter dựa trên newPage
     const startAfter = (newPage - 1) * coursePage.limit;
     setCoursePage({ ...coursePage, startAfter });
   };
 
-  const handleLimitChange = (event) => {
-    setCoursePage({ ...coursePage, limit: event.target.value, startAfter: null });
-    setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi số lượng hiển thị
+  const handleLimitChange = (value) => {
+    console.log("các")
+    setCoursePage({ ...coursePage, limit: Number(value), startAfter: null });
+    setCurrentPage(1); 
   };
 
   const renderTable = (headers, data) => (
@@ -73,7 +73,7 @@ const CourseManagement = () => {
               </Typography>
             </td>
             <td className="p-4">
-              <Button color="cyan" onClick={() => handleAcceptCourse(item.id)}>
+              <Button color="cyan" onClick={() => goToCourseDetail(item.id)}>
                 Detail
               </Button>
             </td>
@@ -94,13 +94,14 @@ const CourseManagement = () => {
             Show
           </Typography>
           <Select
-            value={coursePage.limit}
-            onChange={handleLimitChange}
+            value={String(coursePage.limit)}
+            onChange={(e) => handleLimitChange(e)}
             className="ml-2"
           >
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={20}>20</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
+            <Option value="5">5</Option>
+            <Option value="10">10</Option>
+            {/* <Option value="20">20</Option>
+            <Option value="50">50</Option> */}
           </Select>
         </div>
         {renderTable(COURSE_TABLE_HEAD, courses)}
@@ -129,4 +130,3 @@ const CourseManagement = () => {
 };
 
 export default CourseManagement;
-
