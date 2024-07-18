@@ -6,9 +6,10 @@ import Lecturer from "./pages/lecturer";
 import Request from "./pages/request";
 import RequestDetail from "./pages/request_detail";
 import AdminLogin from "./pages/login";
-import ProtectedRoute from "./pages/protectedRoute";
+import ProtectedRoute from "./pages/protected_route";
 import UserManagement from "./pages/user"; 
 import CourseManagement from "./pages/course"; 
+import CourseDetail from "./pages/course_detail";
 
 export default function App() {
   return (
@@ -18,8 +19,9 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/lecturer" element={<ProtectedRoute><Lecturer /></ProtectedRoute>} />
-          <Route path="/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} /> {/* Thêm route cho UserManagement */}
-          <Route path="/course-management" element={<ProtectedRoute><CourseManagement /></ProtectedRoute>} /> {/* Thêm route cho CourseManagement */}
+          <Route path="/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} /> 
+          <Route path="/course-management" element={<ProtectedRoute><CourseManagement /></ProtectedRoute>} /> 
+          <Route path="/course/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
           <Route path="/request" element={<ProtectedRoute><Request /></ProtectedRoute>} />
           <Route path="/request/:requestId" element={<ProtectedRoute><RequestDetail /></ProtectedRoute>} />
         </Route>

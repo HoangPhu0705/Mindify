@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Card, Typography, Button, Select, Option } from "@material-tailwind/react";
+import { Card, Typography, Button, Select, Option, Spinner } from "@material-tailwind/react";
 
 const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Actions"];
 
@@ -9,12 +10,16 @@ const CourseManagement = () => {
   const [coursePage, setCoursePage] = useState({ limit: 5, startAfter: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourses();
   }, [coursePage, currentPage]);
 
   const fetchCourses = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:3000/admin/courses-management', {
         params: { limit: coursePage.limit, startAfter: coursePage.startAfter }
@@ -24,11 +29,13 @@ const CourseManagement = () => {
       setTotalPages(Math.ceil(totalCount / coursePage.limit));
     } catch (error) {
       console.error('Error fetching courses: ', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const goToCourseDetail = (courseId) => {
-    // Add the logic to navigate to the course detail page
+    navigate(`/course/${courseId}`);
   };
 
   const handlePageChange = (newPage) => {
@@ -103,7 +110,13 @@ const CourseManagement = () => {
             <Option value="10">10</Option>
           </Select>
         </div>
-        {renderTable(COURSE_TABLE_HEAD, courses)}
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <Spinner color="blue" />
+          </div>
+        ) : (
+          renderTable(COURSE_TABLE_HEAD, courses)
+        )}
         <div className="flex justify-between items-center mt-4">
           <Button
             color="blue"
