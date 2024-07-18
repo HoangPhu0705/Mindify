@@ -59,6 +59,8 @@ const getAllUsersPaginated = async (limit, startAfter) => {
             query = query.startAfter(startAfterDoc);
         }
         const snapshot = await query.get();
+        const totalCountSnapshot = await UserCollection.get();
+        const totalCount = totalCountSnapshot.size;
         const users = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -79,11 +81,14 @@ const getAllCoursesPaginated = async (limit, startAfter) => {
             query = query.startAfter(startAfterDoc);
         }
         const snapshot = await query.get();
+        const totalCountSnapshot = await CourseCollection.get();
+        const totalCount = totalCountSnapshot.size;
+        
         const courses = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
-        return courses;
+        return { courses, totalCount };
     } catch (error) {
         console.error('Error getting courses: ', error);
         throw new Error('Error getting courses: ' + error.message);

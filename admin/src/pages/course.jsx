@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, Typography, Button, Select, MenuItem, Option } from "@material-tailwind/react";
+import { Card, Typography, Button, Select, Option } from "@material-tailwind/react";
 
 const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Actions"];
 
@@ -19,7 +19,9 @@ const CourseManagement = () => {
       const response = await axios.get('http://localhost:3000/admin/courses-management', {
         params: { limit: coursePage.limit, startAfter: coursePage.startAfter }
       });
-      setCourses(response.data);
+      const { courses, totalCount } = response.data;
+      setCourses(courses);
+      setTotalPages(Math.ceil(totalCount / coursePage.limit));
     } catch (error) {
       console.error('Error fetching courses: ', error);
     }
@@ -30,13 +32,12 @@ const CourseManagement = () => {
   };
 
   const handlePageChange = (newPage) => {
+    const startAfter = courses[coursePage.limit - 1]?.id || null;
     setCurrentPage(newPage);
-    const startAfter = (newPage - 1) * coursePage.limit;
     setCoursePage({ ...coursePage, startAfter });
   };
 
   const handleLimitChange = (value) => {
-    console.log("các")
     setCoursePage({ ...coursePage, limit: Number(value), startAfter: null });
     setCurrentPage(1); 
   };
@@ -100,8 +101,6 @@ const CourseManagement = () => {
           >
             <Option value="5">5</Option>
             <Option value="10">10</Option>
-            {/* <Option value="20">20</Option>
-            <Option value="50">50</Option> */}
           </Select>
         </div>
         {renderTable(COURSE_TABLE_HEAD, courses)}

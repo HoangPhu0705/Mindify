@@ -41,8 +41,8 @@ class AdminController {
     showAllCourses = async (req, res) => {
         const { limit, startAfter } = req.query;
         try {
-            const courses = await getAllCoursesPaginated(parseInt(limit), startAfter);
-            res.status(200).json(courses);
+            const {courses, totalCount} = await getAllCoursesPaginated(parseInt(limit), startAfter);
+            res.status(200).json({courses, totalCount});
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
