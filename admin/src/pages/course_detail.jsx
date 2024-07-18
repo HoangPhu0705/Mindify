@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Spinner, Button } from "@material-tailwind/react";
-import VideoPlayer from '../components/video_player'; 
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -52,7 +51,17 @@ const CourseDetail = () => {
     <Card className="h-full w-full overflow-scroll p-6">
       <div className="flex flex-col md:flex-row">
         <div className="flex-2">
-          {selectedLesson && <VideoPlayer videoLink={selectedLesson.link} />}
+          {selectedLesson && (
+            <video
+              key={selectedLesson.id} // Force re-render by changing key
+              className="h-full w-full rounded-lg object-fit"
+              controls
+              autoPlay
+            >
+              <source src={selectedLesson.link} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          )}
           <Typography variant="h3" color="black" className="mb-4">{course.courseName}</Typography>
           <Typography variant="h5" color="black" className="mb-2">Author: {course.author}</Typography>
           <Typography variant="h6" color="black" className="mb-4">Lessons: {course.lessonNum}</Typography>
