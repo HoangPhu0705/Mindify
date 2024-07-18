@@ -192,7 +192,26 @@ class _QuizDetailState extends State<QuizDetail> {
                       shrinkWrap: true,
                       itemCount: documents.length,
                       itemBuilder: (context, index) {
-                        return Text("snnd");
+                        DocumentSnapshot question = documents[index];
+                        String questionId = question.id;
+                        Map<String, dynamic> questionData =
+                            question.data() as Map<String, dynamic>;
+                        return ListTile(
+                          title: Text(
+                            questionData["question"],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                        );
                       },
                     );
                   })

@@ -3,14 +3,15 @@ import 'dart:io';
 
 class AppConstants {
   static String get baseUrl {
-    if (Platform.isAndroid) {
-      return "http://10.0.2.2:3000/api";
-      // return "http://localhost:3000/api"; //test for physical devices
-    } else if (Platform.isIOS) {
-      return "http://localhost:3000/api";
-    } else {
-      throw UnsupportedError("Unsupported platform");
-    }
+    // if (Platform.isAndroid) {
+    //   // return "http://10.0.2.2:3000/api";
+    //   return "http://localhost:3000/api"; //test for physical devices
+    // } else if (Platform.isIOS) {
+    //   return "http://localhost:3000/api";
+    // } else {
+    //   throw UnsupportedError("Unsupported platform");
+    // }
+    return "https://mindify-backend.onrender.com/api";
   }
 
   static const List<String> categories = [
