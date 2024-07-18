@@ -11,7 +11,7 @@ class AppConstants {
     // } else {
     //   throw UnsupportedError("Unsupported platform");
     // }
-    return "https://mindify-backend.onrender.com/api";
+    return "https://mindifyhost.onrender.com/api";
   }
 
   static const List<String> categories = [
