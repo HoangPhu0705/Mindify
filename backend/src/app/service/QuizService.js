@@ -15,6 +15,23 @@ exports.createQuiz = async (data) => {
     }
 };
 
+
+exports.addQuestionToQuiz = async (quizId, questionData) => {
+    try {
+        const questionsCollection = QuizCollection.doc(quizId).collection('questions');
+        const questionRef = questionsCollection.doc();
+        await questionRef.set({
+            ...questionData,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+        });
+        return questionRef.id;
+    } catch (error) {
+        console.error('Error adding question to quiz:', error);
+        throw error;
+    }
+};
+
+
 exports.getQuizzesByCourseId = async (courseId) => {
     try {
         const quizzesSnapshot = await QuizCollection.where('courseId', '==', courseId).get();

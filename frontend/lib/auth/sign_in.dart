@@ -257,7 +257,7 @@ class _SignInState extends State<SignIn> {
                                 ), // Trang đích
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               "Forgot password?",
                               style: TextStyle(fontWeight: FontWeight.w300),
                             ),
@@ -311,7 +311,7 @@ class _SignInState extends State<SignIn> {
                       AppSpacing.mediumVertical,
                       Row(
                         children: [
-                          Flexible(
+                          const Flexible(
                             flex: 2,
                             child: Divider(),
                           ),
@@ -322,7 +322,7 @@ class _SignInState extends State<SignIn> {
                               style: Theme.of(context).textTheme.labelMedium,
                             )),
                           ),
-                          Flexible(
+                          const Flexible(
                             flex: 2,
                             child: Divider(),
                           ),
@@ -335,7 +335,7 @@ class _SignInState extends State<SignIn> {
                           Buttons.google,
                           text: "Login with Google",
                           onPressed: signInGoogle,
-                          padding: EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

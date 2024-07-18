@@ -5,7 +5,7 @@ import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class QuizService {
-  static String baseUrl = AppConstants.baseUrl;
+  static String baseUrl = AppConstants.QUIZZES_API;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final CollectionReference quizzes =
@@ -17,7 +17,12 @@ class QuizService {
     return quizzesStream;
   }
 
+  Stream<QuerySnapshot> getQuestionsStreamByQuiz(String quizId) {
+    return quizzes.doc(quizId).collection('questions').snapshots();
+  }
+
   Future<String?> createQuiz(Map<String, dynamic> quizData) async {
+    log(baseUrl);
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: <String, String>{
@@ -62,14 +67,14 @@ class QuizService {
   }
 
   Future<void> updateQuiz(String quizId, var data) async {
-    final url = Uri.parse('$baseUrl/quizzes/$quizId');
+    final url = Uri.parse('$baseUrl/$quizId');
     try {
       final response = await http.patch(
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonDecode(data),
+        body: jsonEncode(data),
       );
       if (response.statusCode == 200) {
         log("Quiz updated");
@@ -78,6 +83,26 @@ class QuizService {
       }
     } catch (e) {
       throw Exception('Failed to update quiz');
+    }
+  }
+
+  Future<void> addQuestionsToQuiz(String quizId, var questionData) async {
+    final url = Uri.parse('$baseUrl/$quizId/questions');
+    try {
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(questionData),
+      );
+      if (response.statusCode == 201) {
+        log("Questions added to quiz");
+      } else {
+        throw Exception('Failed to add questions to quiz');
+      }
+    } catch (e) {
+      throw Exception('Failed to add questions to quiz');
     }
   }
 }

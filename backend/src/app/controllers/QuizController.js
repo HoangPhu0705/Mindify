@@ -12,6 +12,20 @@ exports.createQuiz = async (req, res) => {
   }
 };
 
+exports.addQuestionToQuiz = async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    const question = req.body;
+    const questionId = await QuizService.addQuestionToQuiz(quizId, question);
+    res.status(201).send({ id: questionId });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Error adding question to quiz", error: error.message });
+  }
+
+}
+
 exports.getQuizzesByCourseId = async (req, res) => {
   try {
     const { courseId } = req.params;
