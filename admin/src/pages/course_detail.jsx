@@ -53,7 +53,7 @@ const CourseDetail = () => {
         <div className="flex-2">
           {selectedLesson && (
             <video
-              key={selectedLesson.id} // Force re-render by changing key
+              key={selectedLesson.id}
               className="h-full w-full rounded-lg object-fit"
               controls
               autoPlay
