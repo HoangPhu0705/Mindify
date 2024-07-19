@@ -24,7 +24,7 @@ class CreateQuiz extends StatefulWidget {
 
 class _CreateQuizState extends State<CreateQuiz> {
   final TextEditingController _quizNameController = TextEditingController();
-  final quizService = QuizService();
+  final quizzService = QuizService();
 
   @override
   void initState() {
@@ -78,8 +78,9 @@ class _CreateQuizState extends State<CreateQuiz> {
           Map<String, dynamic> quizData = {
             'name': quizName,
             'courseId': widget.courseId,
+            'totalQuestions': 0,
           };
-          String? quizId = await quizService.createQuiz(quizData);
+          String? quizId = await quizzService.createQuiz(quizData);
           if (quizId != null) {
             _quizNameController.clear();
             showSuccessToast(context, "Quiz created successfully.");
@@ -103,6 +104,15 @@ class _CreateQuizState extends State<CreateQuiz> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 32,
+          ),
+        ),
         centerTitle: true,
         title: const Text(
           'Quiz maker',
@@ -140,7 +150,8 @@ class _CreateQuizState extends State<CreateQuiz> {
               ),
               AppSpacing.mediumVertical,
               StreamBuilder<QuerySnapshot>(
-                  stream: quizService.getQuizzesStreamByCourse(widget.courseId),
+                  stream:
+                      quizzService.getQuizzesStreamByCourse(widget.courseId),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       List<DocumentSnapshot> quizzes = snapshot.data!.docs;
@@ -155,6 +166,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                           Map<String, dynamic> data =
                               quizzes[index].data() as Map<String, dynamic>;
                           String quizName = data['name'];
+                          int totalQuestions = data['totalQuestions'];
                           return Slidable(
                             key: ValueKey(quizId),
                             endActionPane: ActionPane(
@@ -163,7 +175,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                               children: [
                                 SlidableAction(
                                   onPressed: (context) async {
-                                    await quizService.deleteQuiz(quizId);
+                                    await quizzService.deleteQuiz(quizId);
                                     showSuccessToast(context, "Quiz deleted");
                                   },
                                   backgroundColor: Colors.transparent,
@@ -190,8 +202,9 @@ class _CreateQuizState extends State<CreateQuiz> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: ListTile(
-                                onTap: () {
-                                  Navigator.of(context).push(
+                                onTap: () async {
+                                  final result =
+                                      await Navigator.of(context).push(
                                     MaterialPageRoute(builder: (context) {
                                       return QuizDetail(
                                         quizId: quizId,
@@ -199,6 +212,13 @@ class _CreateQuizState extends State<CreateQuiz> {
                                       );
                                     }),
                                   );
+                                  if (result != null &&
+                                      result != totalQuestions) {
+                                    var data = {
+                                      "totalQuestions": result,
+                                    };
+                                    await quizzService.updateQuiz(quizId, data);
+                                  }
                                 },
                                 splashColor: Colors.transparent,
                                 leading: const Icon(
@@ -207,7 +227,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                                   size: 30,
                                 ),
                                 title: Text(quizName),
-                                subtitle: Text('Questions: 0'),
+                                subtitle: Text('Questions: $totalQuestions'),
                               ),
                             ),
                           );

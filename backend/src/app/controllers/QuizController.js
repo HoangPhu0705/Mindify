@@ -77,4 +77,14 @@ exports.updateQuestion = async (req, res) => {
   }
 };
 
+exports.deleteQuestion = async (req, res) => {
+  try {
+    await QuizService.deleteQuestion(req.params.quizId, req.params.questionId);
+    res.status(205).json({ message: "Question deleted successfully" });
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update question" });
+  }
+}
+
 

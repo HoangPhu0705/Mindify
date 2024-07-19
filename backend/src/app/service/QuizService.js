@@ -95,3 +95,15 @@ exports.updateQuestion = async (quizId, questionId, data) => {
         throw error;
     }
 };
+
+
+exports.deleteQuestion = async (quizId, questionId) => {
+    try {
+        const questionRef = QuizCollection.doc(quizId).collection('questions').doc(questionId);
+        await questionRef.delete();
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting question:', error);
+        throw error;
+    }
+}

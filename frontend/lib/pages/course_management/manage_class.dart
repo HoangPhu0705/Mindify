@@ -177,7 +177,6 @@ class _ManageClassState extends State<ManageClass> {
                     bool isModify =
                         _onChanged(classDescription, projectDescription, title);
                     Course? course = myCourse;
-                    log(myCourse.title);
 
                     if (isModify) {
                       bool? shouldPop = await AwesomeDialog(

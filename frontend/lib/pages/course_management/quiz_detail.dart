@@ -26,13 +26,14 @@ class QuizDetail extends StatefulWidget {
 
 class _QuizDetailState extends State<QuizDetail> {
   //Services
-  QuizService quizService = QuizService();
+  QuizService quizzService = QuizService();
 
   //Variables
   bool isEditting = false;
   final quizNameController = TextEditingController();
   FocusNode focusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  int totalQuestions = 0;
 
   @override
   void initState() {
@@ -83,6 +84,15 @@ class _QuizDetailState extends State<QuizDetail> {
         ),
       ),
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context, totalQuestions);
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 32,
+          ),
+        ),
         title: const Text(
           "Edit quiz",
           style: TextStyle(
@@ -149,7 +159,7 @@ class _QuizDetailState extends State<QuizDetail> {
 
                         //Update the quiz name
                         if (_formKey.currentState!.validate()) {
-                          quizService.updateQuiz(widget.quizId, data);
+                          quizzService.updateQuiz(widget.quizId, data);
                           setState(() {});
                         } else {
                           setState(() {
@@ -219,10 +229,11 @@ class _QuizDetailState extends State<QuizDetail> {
                 ],
               ),
               StreamBuilder<QuerySnapshot>(
-                  stream: quizService.getQuestionsStreamByQuiz(widget.quizId),
+                  stream: quizzService.getQuestionsStreamByQuiz(widget.quizId),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       List<DocumentSnapshot> documents = snapshot.data!.docs;
+                      totalQuestions = documents.length;
                       return ListView.builder(
                         shrinkWrap: true,
                         itemCount: documents.length,
@@ -332,6 +343,7 @@ class _QuizDetailState extends State<QuizDetail> {
                 ),
                 onTap: () {
                   // Handle delete action
+                  quizzService.deleteQuestion(widget.quizId, questionId);
                   Navigator.pop(context);
                   // Add your delete logic here
                 },

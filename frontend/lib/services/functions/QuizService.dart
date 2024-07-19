@@ -140,10 +140,29 @@ class QuizService {
       if (response.statusCode == 204) {
         log("Question updated $questionId");
       } else {
-        throw Exception('Failed to retreive question detail');
+        throw Exception('Failed to update question detail');
       }
     } catch (e) {
-      throw Exception('Failed to retreive question detail');
+      throw Exception('Failed to update question detail');
+    }
+  }
+
+  Future<void> deleteQuestion(String quizId, String questionId) async {
+    final url = Uri.parse('$baseUrl/$quizId/questions/$questionId');
+    try {
+      final response = await http.delete(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 205) {
+        log("Question deletedd $questionId");
+      } else {
+        throw Exception('Failed to delete question');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete question');
     }
   }
 }
