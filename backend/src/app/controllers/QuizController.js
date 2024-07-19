@@ -56,3 +56,25 @@ exports.updateQuiz = async (req, res) => {
     res.status(500).json({ error: "Failed to update quiz" });
   }
 };
+
+exports.getQuestionById = async (req, res) => {
+  try {
+    const questionData = await QuizService.getQuestionById(req.params.quizId, req.params.questionId);
+    res.status(200).send(questionData);
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update quiz" });
+  }
+}
+
+exports.updateQuestion = async (req, res) => {
+  try {
+    await QuizService.updateQuestion(req.params.quizId, req.params.questionId, req.body);
+    res.status(204).json({ message: "Question updated successfully" });
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update question" });
+  }
+};
+
+

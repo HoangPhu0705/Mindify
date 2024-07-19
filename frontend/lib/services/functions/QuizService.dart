@@ -105,4 +105,45 @@ class QuizService {
       throw Exception('Failed to add questions to quiz');
     }
   }
+
+  Future<Map<String, dynamic>> getQuestionById(
+      String quizId, String questionId) async {
+    final url = Uri.parse('$baseUrl/$quizId/questions/$questionId');
+    try {
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception('Failed to retreive question detail');
+      }
+    } catch (e) {
+      throw Exception('Failed to retreive question detail');
+    }
+  }
+
+  Future<void> updateQuestion(
+      String quizId, String questionId, var data) async {
+    final url = Uri.parse('$baseUrl/$quizId/questions/$questionId');
+    try {
+      final response = await http.patch(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 204) {
+        log("Question updated $questionId");
+      } else {
+        throw Exception('Failed to retreive question detail');
+      }
+    } catch (e) {
+      throw Exception('Failed to retreive question detail');
+    }
+  }
 }

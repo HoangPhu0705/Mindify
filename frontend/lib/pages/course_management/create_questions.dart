@@ -1,19 +1,25 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
+import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/images.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateQuestions extends StatefulWidget {
   final String quizId;
-  const CreateQuestions({
+  final String questionId;
+  CreateQuestions({
     Key? key,
     required this.quizId,
+    required this.questionId,
   }) : super(key: key);
 
   @override
@@ -23,6 +29,9 @@ class CreateQuestions extends StatefulWidget {
 class _CreateQuestionsState extends State<CreateQuestions> {
   //Variables
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Map<String, dynamic>? questionData;
+  late Future<void> _future;
+  String? questionImage;
 
   // Services
   QuizService quizzService = QuizService();
@@ -32,12 +41,15 @@ class _CreateQuestionsState extends State<CreateQuestions> {
   final _explanationController = TextEditingController();
 
   // Controllers for answer fields
-  List<TextEditingController> _answerControllers = [];
-  List<TextEditingController> _wrongChoiceControllers = [];
+  final List<TextEditingController> _answerControllers = [];
+  final List<TextEditingController> _wrongChoiceControllers = [];
 
   @override
   void initState() {
     super.initState();
+    if (widget.questionId.isNotEmpty) {
+      _future = _fetchQuestionDetail();
+    }
   }
 
   @override
@@ -49,7 +61,28 @@ class _CreateQuestionsState extends State<CreateQuestions> {
     for (var controller in _wrongChoiceControllers) {
       controller.dispose();
     }
+
+    _questionController.dispose();
+    _originalAnswerController.dispose();
+    _originalWrongChoiceController.dispose();
+    _explanationController.dispose();
     super.dispose();
+  }
+
+  void updateQuestionImage(Uint8List selectedImage) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef =
+        storageRef.child('question_image/question_${widget.questionId}');
+    await imageRef.putData(selectedImage);
+    var photoUrl = (await imageRef.getDownloadURL()).toString();
+    setState(() {
+      questionImage = photoUrl;
+    });
+  }
+
+  void selectImageFromGallery() async {
+    Uint8List selectedImage = await pickImage(ImageSource.gallery);
+    updateQuestionImage(selectedImage);
   }
 
   void _addAnswerField() {
@@ -78,6 +111,26 @@ class _CreateQuestionsState extends State<CreateQuestions> {
     });
   }
 
+  Future<void> _fetchQuestionDetail() async {
+    questionData =
+        await quizzService.getQuestionById(widget.quizId, widget.questionId);
+    _questionController.text = questionData!["question"];
+    List<dynamic> answers = questionData!["answers"];
+    _originalAnswerController.text = answers[0];
+    for (var i = 1; i < answers.length; i++) {
+      _addAnswerField();
+      _answerControllers[i - 1].text = answers[i];
+    }
+    List<dynamic> wrongChoices = questionData!["wrongChoices"];
+    _originalWrongChoiceController.text = wrongChoices[0];
+    for (var i = 1; i < wrongChoices.length; i++) {
+      _addWrongChoiceField();
+      _wrongChoiceControllers[i - 1].text = wrongChoices[i];
+    }
+    _explanationController.text = questionData!["explanation"];
+    questionImage = questionData!["questionImage"];
+  }
+
   Future<void> addQuestion() async {
     String question = _questionController.text;
     String originalAnswer = _originalAnswerController.text;
@@ -99,6 +152,7 @@ class _CreateQuestionsState extends State<CreateQuestions> {
       "answers": answerList,
       "wrongChoices": wrongChoicesList,
       "explanation": explanation,
+      "questionImage": questionImage,
     };
 
     try {
@@ -107,6 +161,43 @@ class _CreateQuestionsState extends State<CreateQuestions> {
         questionData,
       );
       showSuccessToast(context, "Question added successfully");
+      Navigator.pop(context);
+    } catch (e) {
+      showErrorToast(context, "Error adding question");
+    }
+  }
+
+  Future<void> updateQuestion() async {
+    String question = _questionController.text;
+    String originalAnswer = _originalAnswerController.text;
+    String originalChoice = _originalWrongChoiceController.text;
+    String explanation = _explanationController.text;
+    List<String> answerList = [originalAnswer];
+    List<String> wrongChoicesList = [originalChoice];
+
+    for (var answers in _answerControllers) {
+      answerList.add(answers.text);
+    }
+
+    for (var wrong in _wrongChoiceControllers) {
+      wrongChoicesList.add(wrong.text);
+    }
+
+    var questionData = {
+      "question": question,
+      "answers": answerList,
+      "wrongChoices": wrongChoicesList,
+      "explanation": explanation,
+      "questionImage": questionImage,
+    };
+
+    try {
+      await quizzService.updateQuestion(
+        widget.quizId,
+        widget.questionId,
+        questionData,
+      );
+      showSuccessToast(context, "Question editted");
       Navigator.pop(context);
     } catch (e) {
       showErrorToast(context, "Error adding question");
@@ -139,14 +230,20 @@ class _CreateQuestionsState extends State<CreateQuestions> {
                 style: AppStyles.primaryButtonStyle,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    await addQuestion();
+                    if (widget.questionId.isEmpty) {
+                      await addQuestion();
+                    } else {
+                      await updateQuestion();
+                    }
                   }
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Create question",
-                    style: TextStyle(fontSize: 16),
+                    widget.questionId.isEmpty
+                        ? "Create question"
+                        : "Update question",
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),
@@ -158,7 +255,7 @@ class _CreateQuestionsState extends State<CreateQuestions> {
         surfaceTintColor: AppColors.ghostWhite,
         centerTitle: true,
         title: const Text(
-          "Create question",
+          "Question detail",
           style: TextStyle(
             fontSize: 20,
           ),
@@ -179,8 +276,51 @@ class _CreateQuestionsState extends State<CreateQuestions> {
                     true,
                     "Select Image",
                     Icons.add_a_photo,
-                    () {},
+                    () {
+                      selectImageFromGallery();
+                    },
                   ),
+                  questionImage != null
+                      ? Column(
+                          children: [
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    alignment: const Alignment(-.2, 0),
+                                    image: NetworkImage(questionImage!),
+                                    fit: BoxFit.cover),
+                              ),
+                              alignment: Alignment.bottomCenter,
+                              padding: const EdgeInsets.only(bottom: 20),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                var deleteImage = {
+                                  "questionImage": null,
+                                };
+
+                                await quizzService.updateQuestion(
+                                  widget.quizId,
+                                  widget.questionId,
+                                  deleteImage,
+                                );
+                                final storageRef =
+                                    FirebaseStorage.instance.ref();
+                                final questionImageRef = storageRef.child(
+                                  "question_image/question_${widget.questionId}",
+                                );
+                                await questionImageRef.delete();
+                                setState(() {
+                                  questionImage = null;
+                                });
+                              },
+                              icon: const Icon(Icons.delete),
+                              color: Colors.red,
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
                   _buildField(_questionController),
                   _buildLabel(
                     "Answers",
@@ -250,6 +390,8 @@ class _CreateQuestionsState extends State<CreateQuestions> {
       children: [
         AppSpacing.smallVertical,
         TextFormField(
+          onTapOutside: (event) {
+          },
           validator: (value) {
             if (value!.isEmpty) {
               return "Please fill in the field";

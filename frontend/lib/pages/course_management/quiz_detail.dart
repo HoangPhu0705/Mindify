@@ -7,6 +7,8 @@ import 'package:frontend/pages/course_management/create_questions.dart';
 import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:getwidget/getwidget.dart';
 
 class QuizDetail extends StatefulWidget {
@@ -48,6 +50,38 @@ class _QuizDetailState extends State<QuizDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.ghostWhite,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              offset: const Offset(0, -1),
+            ),
+          ],
+        ),
+        height: MediaQuery.of(context).size.height * 0.1,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppSpacing.mediumHorizontal,
+            Expanded(
+              child: TextButton(
+                style: AppStyles.primaryButtonStyle,
+                onPressed: () async {},
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "Preview",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text(
           "Edit quiz",
@@ -159,6 +193,7 @@ class _QuizDetailState extends State<QuizDetail> {
                           builder: (context) {
                             return CreateQuestions(
                               quizId: widget.quizId,
+                              questionId: "",
                             );
                           },
                         ),
@@ -186,39 +221,125 @@ class _QuizDetailState extends State<QuizDetail> {
               StreamBuilder<QuerySnapshot>(
                   stream: quizService.getQuestionsStreamByQuiz(widget.quizId),
                   builder: (context, snapshot) {
-                    List<DocumentSnapshot> documents = snapshot.data!.docs;
-
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: documents.length,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot question = documents[index];
-                        String questionId = question.id;
-                        Map<String, dynamic> questionData =
-                            question.data() as Map<String, dynamic>;
-                        return ListTile(
-                          title: Text(
-                            questionData["question"],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                    if (snapshot.hasData) {
+                      List<DocumentSnapshot> documents = snapshot.data!.docs;
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: documents.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot question = documents[index];
+                          String questionId = question.id;
+                          Map<String, dynamic> questionData =
+                              question.data() as Map<String, dynamic>;
+                          List<dynamic> answers = questionData["answers"];
+                          String answersText = answers.join(", ");
+                          return ListTile(
+                            leading: Text(
+                              "${index + 1}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
+                            title: Text(
+                              questionData["question"],
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
+                            subtitle: Text(
+                              "Answers: $answersText",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                _buildBottomSheet(
+                                  context,
+                                  questionId,
+                                );
+                              },
+                              icon: const Icon(Icons.more_horiz),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
                   })
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _buildBottomSheet(BuildContext context, String questionId) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.deepSpace,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(10),
+            ),
+          ),
+          height: MediaQuery.of(context).size.height * 0.2,
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(
+                  Icons.edit,
+                  color: AppColors.cream,
+                ),
+                title: const Text(
+                  'Edit',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () async {
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return CreateQuestions(
+                          quizId: widget.quizId,
+                          questionId: questionId,
+                        );
+                      },
+                    ),
+                  );
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.delete,
+                  color: AppColors.cream,
+                ),
+                title: const Text(
+                  'Delete',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () {
+                  // Handle delete action
+                  Navigator.pop(context);
+                  // Add your delete logic here
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

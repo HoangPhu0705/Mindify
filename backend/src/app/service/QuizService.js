@@ -70,3 +70,28 @@ exports.updateQuiz = async (quizId, data) => {
         throw error;
     }
 }
+
+exports.getQuestionById = async (quizId, questionId) => {
+    try {
+        const questionRef = QuizCollection.doc(quizId).collection('questions').doc(questionId);
+        const questionDoc = await questionRef.get();
+        if (!questionDoc.exists) {
+            throw new Error('Question not found');
+        }
+        return { id: questionDoc.id, ...questionDoc.data() };
+    } catch (error) {
+        console.error('Error getting question by ID:', error);
+        throw error;
+    }
+};
+
+exports.updateQuestion = async (quizId, questionId, data) => {
+    try {
+        const questionRef = QuizCollection.doc(quizId).collection('questions').doc(questionId);
+        await questionRef.update(data);
+        return { success: true };
+    } catch (error) {
+        console.error('Error updating question:', error);
+        throw error;
+    }
+};
