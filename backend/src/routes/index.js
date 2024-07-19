@@ -5,7 +5,9 @@ const folderRouter = require('./folders')
 const transactionRouter = require('./transactions')
 const quizRouter = require('./quizzes')
 const adminAuthRouter = require('./adminAuth')
+const courseRequestRouter = require('./courseRequest')
 const qqRouter = require('./qq');
+
 function route(app){
     app.use('/admin', adminAuthRouter)
     app.use('/api/courses', courseRouter)
@@ -14,6 +16,7 @@ function route(app){
     app.use('/api/folders', folderRouter)
     app.use('/api/transactions', transactionRouter)
     app.use('/api/quizzes', quizRouter)
+    app.use('/api/courseRequest', courseRequestRouter)
     app.use('/lon', qqRouter)
 }
 
