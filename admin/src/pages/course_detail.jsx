@@ -48,9 +48,9 @@ const CourseDetail = () => {
   }
 
   return (
-    <Card className="h-full w-full overflow-scroll p-6">
-      <div className="flex flex-col md:flex-row">
-        <div className="flex-2">
+    <Card className="h-full w-full p-6">
+      <div className="flex flex-col md:flex-row items-start h-full">
+        <div className="w-5/6">
           {selectedLesson && (
             <video
               key={selectedLesson.id}
@@ -66,16 +66,18 @@ const CourseDetail = () => {
           <Typography variant="h5" color="black" className="mb-2">Author: {course.author}</Typography>
           <Typography variant="h6" color="black" className="mb-4">Lessons: {course.lessonNum}</Typography>
         </div>
-        <div className="flex-1 md:pl-6">
+        <div className="w-1/6 md:pl-6 overflow-y-auto h-full">
           <div className="space-y-2">
             {course.lessons.map((lesson) => (
               <Button
                 key={lesson.id}
                 color="cyan"
-                className="w-full text-left"
+                className="w-full p-4 flex items-center justify-center"
                 onClick={() => handleLessonClick(lesson)}
               >
+                <div className="text-left line-clamp-2  ">
                 {lesson.title}
+                </div>
               </Button>
             ))}
           </div>
