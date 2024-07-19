@@ -75,7 +75,7 @@ const getAllUsersPaginated = async (limit, startAfter) => {
             };
         }));
 
-        return users ;
+        return { users, totalCount };
     } catch (error) {
         console.error('Error getting users: ', error);
         throw new Error('Error getting users: ' + error.message);
@@ -128,10 +128,11 @@ const unlockUser = async (uid) => {
     }
 };
 
-module.exports = { loginUser, 
-                    logout, 
-                    getAllUsersPaginated, 
-                    getAllCoursesPaginated, 
-                    lockUser, 
-                    unlockUser 
-                };
+module.exports = {
+    loginUser,
+    logout,
+    getAllUsersPaginated,
+    getAllCoursesPaginated,
+    lockUser,
+    unlockUser
+};

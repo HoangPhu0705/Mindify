@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, Typography, Button, Select, MenuItem, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
+import { Card, Typography, Button, Select, MenuItem, Dialog, DialogHeader, DialogBody, DialogFooter, Spinner } from "@material-tailwind/react";
 
 const USER_TABLE_HEAD = ["Email", "Display Name", "Role", "Lock Account"];
 
@@ -11,19 +11,25 @@ const UserManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
   }, [userPage, currentPage]);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:3000/admin/users-management', {
         params: { limit: userPage.limit, startAfter: userPage.startAfter }
       });
-      setUsers(response.data);
+      const { users, totalCount } = response.data;
+      setUsers(users);
+      setTotalPages(Math.ceil(totalCount / userPage.limit));
     } catch (error) {
       console.error('Error fetching users: ', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,31 +51,48 @@ const UserManagement = () => {
     }
   };
 
-  const handlePageChange = (event) => {
-    setCurrentPage(event.target.value);
-    const newStartAfter = users[users.length - 1]?.id || null;
-    setUserPage({ ...userPage, startAfter: newStartAfter });
+  const handlePageChange = (newPage) => {
+    const startAfter = users[userPage.limit - 1]?.id || null;
+    setCurrentPage(newPage);
+    setUserPage({ ...userPage, startAfter });
   };
 
-  return (
-    <Card className="h-full w-full p-4">
-      <Typography variant="h4" color="blue-gray">User Management</Typography>
-      <table className="w-full min-w-max table-auto text-left">
+  const handleLimitChange = (val) => {
+    setUserPage({ ...userPage, limit: Number(val), startAfter: null });
+    setCurrentPage(1);
+  };
+
+  const renderTable = (headers, data) => (
+    <div className="overflow-auto">
+      <table className='min-w-full text-left'>
         <thead>
           <tr>
-            {USER_TABLE_HEAD.map((head) => (
-              <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">{head}</Typography>
+            {headers.map((head) => (
+              <th key={head} className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">
+                  {head}
+                </Typography>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index) => (
+          {data.map((user) => (
             <tr key={user.id} className="even:bg-blue-gray-50/50">
-              <td className="p-4">{user.email}</td>
-              <td className="p-4">{user.displayName}</td>
-              <td className="p-4">{user.role}</td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {user.email}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {user.displayName}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {user.role}
+                </Typography></td>
               <td className="p-4">
                 <Button color={user.disabled ? 'green' : 'red'} onClick={() => handleLockUser(user)}>
                   {user.disabled ? 'Unlock' : 'Lock'}
@@ -79,10 +102,40 @@ const UserManagement = () => {
           ))}
         </tbody>
       </table>
-      <div className="flex justify-center items-center mt-4">
-        <Button color="blue-gray" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
-        <span className="mx-4">{`Page ${currentPage} of ${totalPages}`}</span>
-        <Button color="blue-gray" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</Button>
+    </div>
+  );
+
+  return (
+    <Card className="h-full w-full overflow-scroll">
+      <div className="py-6 px-4 md:px-6 xl:px-7.5 bg-gray-100 dark:bg-gray-800">
+        <Typography variant="h4" color="black" className="dark:text-white">
+          User Management
+        </Typography>
+        <div className="flex justify-between items-center mb-4">
+          <Typography variant="h6" color="black" className="dark:text-white">
+            Show
+          </Typography>
+          <Select
+            value={String(userPage.limit)}
+            onChange={(e) => handleLimitChange(e)}
+            className="ml-2"
+          >
+            <Option value="5">5</Option>
+            <Option value="10">10</Option>
+          </Select>
+        </div>
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <Spinner color="blue" />
+          </div>
+        ) : (
+          renderTable(USER_TABLE_HEAD, users)
+        )}
+        <div className="flex justify-center items-center mt-4">
+          <Button color="blue-gray" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
+          <span className="mx-4">{`Page ${currentPage} of ${totalPages}`}</span>
+          <Button color="blue-gray" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</Button>
+        </div>
       </div>
       <Dialog open={isConfirmOpen} handler={() => setIsConfirmOpen(false)}>
         <DialogHeader>{selectedUser?.disabled ? 'Unlock User' : 'Lock User'}</DialogHeader>

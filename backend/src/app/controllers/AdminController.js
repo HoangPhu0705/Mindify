@@ -37,8 +37,8 @@ class AdminController {
     showAllUsers = async (req, res) => {
         const { limit, startAfter } = req.query;
         try {
-            const users = await getAllUsersPaginated(parseInt(limit), startAfter);
-            res.status(200).json(users);
+            const {users, totalCount} = await getAllUsersPaginated(parseInt(limit), startAfter);
+            res.status(200).json({users, totalCount});
         } catch (error) {
             res.status(500).json({ message: error.message });
         }

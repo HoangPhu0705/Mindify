@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Button, Select, Option, Spinner } from "@material-tailwind/react";
 
-const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Actions"];
+const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Student Num", "Actions"];
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
@@ -50,45 +50,52 @@ const CourseManagement = () => {
   };
 
   const renderTable = (headers, data) => (
-    <table className="w-full min-w-max table-auto text-left">
-      <thead>
-        <tr>
-          {headers.map((head) => (
-            <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-              <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">
-                {head}
-              </Typography>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.id} className="even:bg-blue-gray-50/50">
-            <td className="p-4">
-              <Typography variant="small" color="blue-gray" className="font-normal">
-                {item.courseName}
-              </Typography>
-            </td>
-            <td className="p-4">
-              <Typography variant="small" color="blue-gray" className="font-normal">
-                {item.author}
-              </Typography>
-            </td>
-            <td className="p-4">
-              <Typography variant="small" color="blue-gray" className="font-normal">
-                {item.lessonNum}
-              </Typography>
-            </td>
-            <td className="p-4">
-              <Button color="cyan" onClick={() => goToCourseDetail(item.id)}>
-                Detail
-              </Button>
-            </td>
+    <div className="overflow-auto">
+      <table className="w-full min-w-max table-auto text-left">
+        <thead>
+          <tr>
+            {headers.map((head) => (
+              <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">
+                  {head}
+                </Typography>
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((item) => (
+            <tr key={item.id} className="even:bg-blue-gray-50/50">
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {item.courseName}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {item.author}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {item.lessonNum}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Typography variant="small" color="blue-gray" className="font-normal">
+                  {item.students}
+                </Typography>
+              </td>
+              <td className="p-4">
+                <Button color="cyan" onClick={() => goToCourseDetail(item.id)}>
+                  Detail
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 
   return (
@@ -97,13 +104,13 @@ const CourseManagement = () => {
         <Typography variant="h4" color="black" className="dark:text-white">
           Course Management
         </Typography>
-        <div className="flex justify-between items-center mb-4">
-          <Typography variant="h6" color="black" className="dark:text-white">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+          <Typography variant="h6" color="black" className="dark:text-white mb-2 md:mb-0">
             Show
           </Typography>
           <Select
             value={String(coursePage.limit)}
-            onChange={(e) => handleLimitChange(e)}
+            onChange={(e) => handleLimitChange(e.target.value)}
             className="ml-2"
           >
             <Option value="5">5</Option>
@@ -117,7 +124,7 @@ const CourseManagement = () => {
         ) : (
           renderTable(COURSE_TABLE_HEAD, courses)
         )}
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mt-4">
           <Button
             color="blue"
             onClick={() => handlePageChange(currentPage - 1)}
@@ -125,7 +132,7 @@ const CourseManagement = () => {
           >
             Previous
           </Button>
-          <Typography variant="small" color="blue-gray" className="font-normal">
+          <Typography variant="small" color="blue-gray" className="font-normal my-2 md:my-0">
             Page {currentPage} of {totalPages}
           </Typography>
           <Button

@@ -2,4 +2,6 @@ node_modules/
 
 src/etc/secrets/*.json
 
+src/config/*.json
+
 *.env
