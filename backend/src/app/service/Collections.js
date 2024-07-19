@@ -8,6 +8,7 @@ const EnrollmentCollection = db.collection("enrollments");
 const TransactionCollection = db.collection("transactions");
 const FolderCollection = db.collection("folders");
 const QuizCollection = db.collection("quizzes");
+const CourseRequestCollection = db.collection("course_requests");
 
 module.exports = { CourseCollection, 
                     UserCollection, 
@@ -16,5 +17,6 @@ module.exports = { CourseCollection,
                     EnrollmentCollection,
                     TransactionCollection,
                     FolderCollection,
-                    QuizCollection
+                    QuizCollection,
+                    CourseRequestCollection
                  };

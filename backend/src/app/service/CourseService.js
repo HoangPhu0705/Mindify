@@ -69,6 +69,7 @@ exports.createCourse = async (course) => {
     const docRef = CourseCollection.doc();
     await docRef.set({
       ...course,
+      requestSent: false,
       createdAt: firestore.FieldValue.serverTimestamp(),
     });
     return docRef.id;

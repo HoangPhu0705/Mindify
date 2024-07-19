@@ -73,7 +73,7 @@ export default function Sidebar() {
           <ListItemPrefix>
             <UserCircleIcon className="h-5 w-5" />
           </ListItemPrefix>
-          Profile
+          Requests from Course
         </ListItem>
         <ListItem className={`hover:bg-[#062137] hover:text-white`}>
           <ListItemPrefix>
