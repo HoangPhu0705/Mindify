@@ -128,7 +128,9 @@ class _CreateQuestionsState extends State<CreateQuestions> {
       _wrongChoiceControllers[i - 1].text = wrongChoices[i];
     }
     _explanationController.text = questionData!["explanation"];
-    questionImage = questionData!["questionImage"];
+    setState(() {
+      questionImage = questionData!["questionImage"];
+    });
   }
 
   Future<void> addQuestion() async {
@@ -390,8 +392,7 @@ class _CreateQuestionsState extends State<CreateQuestions> {
       children: [
         AppSpacing.smallVertical,
         TextFormField(
-          onTapOutside: (event) {
-          },
+          onTapOutside: (event) {},
           validator: (value) {
             if (value!.isEmpty) {
               return "Please fill in the field";
