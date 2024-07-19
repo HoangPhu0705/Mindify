@@ -1,4 +1,4 @@
-const { CourseRequestCollection, CourseCollection } = require('./Collections');
+const { CourseRequestCollection, CourseCollection, UserCollection } = require('./Collections');
 const { firestore } = require('firebase-admin');
 const admin = require('firebase-admin');
 const { transporter } = require('../../utils/sender.util');
@@ -14,11 +14,18 @@ const sendEmail = async (email, subject, content) => {
     return transporter.sendMail(mailOptions);
 };
 
-exports.getRequests = async () => {
+exports.getRequests = async (limit, startAfter) => {
     try {
-        const snapshot = await CourseRequestCollection.get();
+        let query = CourseRequestCollection.orderBy('createdAt').limit(limit);
+
+        if (startAfter) {
+            const lastDoc = await CourseRequestCollection.doc(startAfter).get();
+            query = query.startAfter(lastDoc);
+        }
+
+        const snapshot = await query.get();
         if (snapshot.empty) {
-            return [];
+            return { requests: [], totalCount: 0 };
         }
 
         const requests = [];
@@ -26,42 +33,56 @@ exports.getRequests = async () => {
             requests.push({ id: doc.id, ...doc.data() });
         });
 
-        return requests;
+        const totalCountSnapshot = await CourseRequestCollection.get();
+        const totalCount = totalCountSnapshot.size;
+
+        return { requests, totalCount };
     } catch (error) {
         throw new Error(`Error happened when fetching unapproved requests: ${error.message}`);
     }
 };
 
 exports.sendRequest = async (courseId) => {
-    try {
-        // get course data
-        const courseDoc = await CourseCollection.doc(courseId).get();
-        if (!courseDoc.exists) {
-            throw new Error('Course not found');
-        }
+  try {
+      // get course data
+      const courseDoc = await CourseCollection.doc(courseId).get();
+      if (!courseDoc.exists) {
+          throw new Error('Course not found');
+      }
 
-        const courseData = courseDoc.data();
-        const author = await admin.auth().getUser(courseData.authorId);
-        // create request
-        const request = await CourseRequestCollection.add({
-            courseName: courseData.courseName,
-            coursePrice: courseData.price,
-            author: author.displayName,
-            email: author.email,
-            createdAt: firestore.FieldValue.serverTimestamp(),
-            courseId: courseId
-        });
-        // update request of course
-        await CourseCollection.doc(courseId).update({
-            request: true
-        });
+      const courseData = courseDoc.data();
+      console.log('Course Data:', courseData);
 
-        console.log('Request sent successfully');
-        return request;
-    } catch (error) {
-        throw new Error(`Error happened when sending request: ${error.message}`);
-    }
+      // Get user data from Firestore
+      const userDoc = await UserCollection.doc(courseData.authorId).get();
+      const userData = userDoc.data();
+      console.log('User Data:', userData);
+
+      const displayName = userData.displayName || 'Unknown Author';
+
+      // create request
+      const request = await CourseRequestCollection.add({
+          courseName: courseData.courseName,
+          coursePrice: courseData.price,
+          author: displayName,
+          email: userData.email,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          courseId: courseId
+      });
+
+      // update request of course
+      await CourseCollection.doc(courseId).update({
+          request: true
+      });
+
+      console.log('Request sent successfully');
+      return request;
+  } catch (error) {
+      console.error('Error occurred:', error);
+      throw new Error(`Error happened when sending request: ${error.message}`);
+  }
 };
+
 
 exports.approveRequest = async (requestId) => {
     try {

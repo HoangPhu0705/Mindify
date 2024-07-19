@@ -69,12 +69,15 @@ export default function Sidebar() {
           </ListItem>
         </Link>
 
-        <ListItem className={`hover:bg-[#062137] hover:text-white`}>
-          <ListItemPrefix>
-            <UserCircleIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Requests from Course
-        </ListItem>
+        <Link to="/courseRequest">
+          <ListItem className={`hover:bg-[#062137] hover:text-white`}>
+            <ListItemPrefix>
+              <UserCircleIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Requests from Course
+          </ListItem>
+        </Link>
+
         <ListItem className={`hover:bg-[#062137] hover:text-white`}>
           <ListItemPrefix>
             <Cog6ToothIcon className="h-5 w-5" />

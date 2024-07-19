@@ -1,15 +1,16 @@
 const { CourseRequestCollection } = require('../service/Collections');
-const CourseRequestService = require('../service/CourseRequestService');
+const CourseRequestService = require('../service/CourseRequestService');    
 
 exports.getRequests = async (req, res) => {
+    const { limit = 5, startAfter = null } = req.query;
+
     try {
-        const requests = await CourseRequestService.getRequests();
-        res.status(200).json(requests);
+        const { requests, totalCount } = await CourseRequestService.getRequests(Number(limit), startAfter);
+        res.status(200).json({ requests, totalCount });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-
 exports.sendRequest = async (req, res) => {
     try {
         const request = await CourseRequestService.sendRequest(req.params.courseId);
