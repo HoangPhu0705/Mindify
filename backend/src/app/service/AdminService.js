@@ -3,6 +3,7 @@ const { initializeApp } = require('firebase/app');
 const { getAuth, signInWithEmailAndPassword } = require('firebase/auth');
 const { generateToken } = require('../../utils/jwt.util');
 const { UserCollection, CourseCollection } = require('./Collections')
+const { transporter } = require('../../utils/sender.util')
 const dotenv = require('dotenv');
 const admin = require('firebase-admin');
 
@@ -19,6 +20,17 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
+
+const sendEmail = async (email, subject, content) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: subject,
+        html: content
+    };
+
+    return transporter.sendMail(mailOptions);
+};
 
 const loginUser = async (email, password) => {
     try {
@@ -107,9 +119,49 @@ const getAllCoursesPaginated = async (limit, startAfter) => {
 // lock user
 const lockUser = async (uid) => {
     try {
+        const user = await admin.auth().getUser(uid);
+        const content = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Account Lock Notification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    p {
+      color: #555;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Account Lock Notification</h1>
+    <p>Hello ${user.displayName},</p>
+    <p>We regret to inform you that your Mindify account has been locked due to a violation of our terms of service. Please contact our customer support team for guidance on how to unlock your account.</p>
+    <p>Best regards,<br>
+    Mindify Team</p>
+  </div>
+</body>
+</html>
+`;
         await admin.auth().updateUser(uid, {
             disabled: true
         });
+        await sendEmail(user.email, "You Mindify Account Was Locked", content);
         return `Successfully lock user ${uid}`;
     } catch (error) {
         throw new Error('Error when lock user: ' + error.message);
@@ -119,9 +171,51 @@ const lockUser = async (uid) => {
 // unlock user
 const unlockUser = async (uid) => {
     try {
+        const user = await admin.auth().getUser(uid);
+        const content = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Account Unlock Notification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    p {
+      color: #555;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Account Lock Notification</h1>
+    <p>Hello ${user.displayName},</p>
+    <p>We are pleased to inform you that your Mindify account has been successfully unlocked.</p>
+    <p>You can now access your account and resume using our platform.</p>
+    <p>Best regards,<br>
+    Mindify Team</p>
+  </div>
+</body>
+</html>
+`;
         await admin.auth().updateUser(uid, {
             disabled: false
         });
+        await sendEmail(user.email, "You Mindify Account Was Unlocked", content);
+
         return `Successfully unlocked user ${uid}`;
     } catch (error) {
         throw new Error('Error when unlocking user: ' + error.message);

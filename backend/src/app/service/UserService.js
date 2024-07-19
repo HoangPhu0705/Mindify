@@ -8,10 +8,7 @@ const sendRejectionEmail = async (email, firstName, content) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: 'Rejection Notification',
-        text: `Hello ${firstName},\n\nYour instructor sign-up request has been rejected.
-            \n
-            ${content}
-            \nBest regards,\nPhu Phan`
+        text: `Hello ${firstName},\n\nYour instructor sign-up request has been rejected.\n${content}\nBest regards,\nPhu Phan`
     };
 
     return transporter.sendMail(mailOptions);
