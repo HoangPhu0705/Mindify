@@ -10,6 +10,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:googleapis/chat/v1.dart';
 
@@ -234,7 +235,13 @@ class _CreateQuizState extends State<CreateQuiz> {
                         },
                       );
                     } else {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(
+                        child: MyLoading(
+                          width: 30,
+                          height: 30,
+                          color: AppColors.deepBlue,
+                        ),
+                      );
                     }
                   }),
             ],

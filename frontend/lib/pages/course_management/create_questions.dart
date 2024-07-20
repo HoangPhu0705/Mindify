@@ -16,10 +16,12 @@ import 'package:image_picker/image_picker.dart';
 class CreateQuestions extends StatefulWidget {
   final String quizId;
   final String questionId;
+  final int questionCount;
   CreateQuestions({
     Key? key,
     required this.quizId,
     required this.questionId,
+    required this.questionCount,
   }) : super(key: key);
 
   @override
@@ -150,6 +152,7 @@ class _CreateQuestionsState extends State<CreateQuestions> {
     }
 
     var questionData = {
+      "index": widget.questionCount,
       "question": question,
       "answers": answerList,
       "wrongChoices": wrongChoicesList,

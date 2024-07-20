@@ -18,7 +18,11 @@ class QuizService {
   }
 
   Stream<QuerySnapshot> getQuestionsStreamByQuiz(String quizId) {
-    return quizzes.doc(quizId).collection('questions').snapshots();
+    return quizzes
+        .doc(quizId)
+        .collection('questions')
+        .orderBy('index')
+        .snapshots();
   }
 
   Future<String?> createQuiz(Map<String, dynamic> quizData) async {
