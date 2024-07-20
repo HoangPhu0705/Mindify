@@ -101,6 +101,7 @@ class _QuizDetailState extends State<QuizDetail> {
                         return QuizPage(
                           quizId: widget.quizId,
                           quizName: quizNameController.text,
+                          totalQuestion: totalQuestions + 1,
                         );
                       },
                     ),
@@ -365,7 +366,7 @@ class _QuizDetailState extends State<QuizDetail> {
                         return CreateQuestions(
                           quizId: widget.quizId,
                           questionId: questionId,
-                          questionCount: totalQuestions,
+                          questionCount: totalQuestions + 1,
                         );
                       },
                     ),
