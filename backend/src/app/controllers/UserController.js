@@ -32,6 +32,17 @@ exports.getSavedCourses = async (req, res) => {
     }
 };
 
+exports.checkSavedCourse = async (req, res) => {
+    const userId = req.params.userId;
+    const courseId = req.query.courseId;
+    try {
+        const result = await UserService.checkSavedCourse(userId, courseId);
+        res.status(200).send(result);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+}
+
 
 exports.createInstructorSignUpRequest = async (req, res) => {
     try {

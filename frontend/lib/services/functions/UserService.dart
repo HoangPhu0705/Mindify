@@ -111,6 +111,8 @@ class UserService {
     }
   }
 
+  // save course
+
   Future<void> saveCourseForUser(String userId, String courseId) async {
     final url = Uri.parse('$baseUrl/users/$userId/saveCourse');
     final response = await http.post(
@@ -148,6 +150,18 @@ class UserService {
       return coursesJson.map((course) => course.toString()).toSet();
     } else {
       throw Exception('Failed to load saved courses');
+    }
+  }
+
+  Future<bool> checkSavedCourse(String userId, String courseId) async {
+    final url = Uri.parse('$baseUrl/users/$userId/checkSavedCourse?courseId=$courseId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['isSaved'];
+    } else {
+      throw Exception('Failed to check saved course: ${response.body}');
     }
   }
 
@@ -321,6 +335,16 @@ class UserService {
     } catch (e) {
       log("Error $e");
       throw Exception("Failed to update user");
+    }
+  }
+
+  // get avt and displayname to display on discussion tab
+  Future<Map<String, dynamic>> getUserNameAndAvatar(String userId) async {
+    final response = await http.get(Uri.parse('$baseUrl/users/auth/$userId'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load user details');
     }
   }
 }

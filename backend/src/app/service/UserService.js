@@ -91,6 +91,26 @@ exports.getSavedCourses = async (userId) => {
     }
 };
 
+exports.checkSavedCourse = async (userId, courseId) => {
+    try {
+        const userRef = UserCollection.doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            throw new Error("User doesn't exist");
+        }
+
+        const userData = userDoc.data();
+        const savedClasses = userData.savedClasses || [];
+
+        const isSaved = savedClasses.includes(courseId);
+
+        return { isSaved: isSaved };
+    } catch (error) {
+        throw new Error(`Error when checking saved course for user: ${error.message}`);
+    }
+};
+
+
 exports.createInstructorSignUpRequest = async (data) => {
     try {
         await RequestCollection.add(data);

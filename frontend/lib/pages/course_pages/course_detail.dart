@@ -39,6 +39,7 @@ class _CourseDetailState extends State<CourseDetail>
   final userService = UserService();
   bool isFollowed = false;
   bool isEnrolled = false;
+  late bool isSaved;
   Course? course;
   String _currentVideoUrl = '';
   int _currentVideoIndex = 0;
@@ -67,6 +68,7 @@ class _CourseDetailState extends State<CourseDetail>
               course!.lessons.where((lesson) => lesson.index == 0).first.link;
         }
       });
+      isSaved = await userService.checkSavedCourse(userId, widget.courseId);
     } catch (e) {
       log("Error fetching course details: $e");
     }
@@ -157,6 +159,22 @@ class _CourseDetailState extends State<CourseDetail>
           course!.lessons[_currentVideoIndex].id, time);
     } catch (e) {
       log("Error saving watched time: $e");
+    }
+  }
+
+  Future<void> _toggleSaveCourse() async {
+    try {
+      if (isSaved) {
+        await userService.unsaveCourseForUser(userId, widget.courseId);
+      } else {
+        await userService.saveCourseForUser(userId, widget.courseId);
+      }
+      setState(() {
+        isSaved = !isSaved;
+      });
+    } catch (e) {
+      log("Error toggling save course: $e");
+      showErrorToast(context, 'Failed to update save status');
     }
   }
 
@@ -270,8 +288,13 @@ class _CourseDetailState extends State<CourseDetail>
             ),
             actions: [
               IconButton(
-                onPressed: () {},
-                icon: const Icon(CupertinoIcons.bookmark),
+                onPressed: _toggleSaveCourse,
+                icon: Icon(
+                  isSaved
+                      ? CupertinoIcons.bookmark_solid
+                      : CupertinoIcons.bookmark,
+                  // color: isSaved ? Colors.white : Colors.black,
+                ),
               ),
               IconButton(
                 onPressed: () {},

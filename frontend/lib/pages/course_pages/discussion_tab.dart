@@ -160,33 +160,39 @@ class _DiscussionState extends State<Discussion> {
                               Map<String, dynamic> data =
                                   doc.data() as Map<String, dynamic>;
 
-                              return StreamBuilder<QuerySnapshot>(
-                                  stream:
-                                      commentService.getReplieStreamByComment(
-                                          widget.courseId, commentId),
-                                  builder: (context, replySnapshot) {
-                                    if (!replySnapshot.hasData) {
-                                      return SizedBox.shrink();
-                                    }
-                                    List<DocumentSnapshot> replyDocs =
-                                        replySnapshot.data!.docs;
-                                    List<Reply> replies = replyDocs
-                                        .map((doc) => Reply.fromJson(
-                                            doc.data() as Map<String, dynamic>))
-                                        .toList();
-                                    Comment comment = Comment(
-                                        id: commentId,
-                                        content: data['content'],
-                                        userId: data['userId'],
-                                        createdAt: data['createdAt'],
-                                        replies: replies);
-                                    return Column(
-                                      children: [
-                                        _buildCommentTree(context, comment),
-                                        Divider(color: AppColors.lighterGrey),
-                                      ],
-                                    );
-                                  });
+                              return FutureBuilder<Map<String, dynamic>>(
+                                future: userService.getUserNameAndAvatar(data['userId']),
+                                builder: (context, userSnapshot) {
+                                  if (!userSnapshot.hasData) {
+                                    return SizedBox.shrink();
+                                  }
+                                  Map<String, dynamic> userData = userSnapshot.data!;
+                                  String displayName = userData['displayName'] ?? 'Anonymous';
+                                  String photoUrl = userData['photoUrl'] ?? 'assets/images/default_avatar.png';
+
+                                  return StreamBuilder<QuerySnapshot>(
+                                      stream: commentService.getReplieStreamByComment(widget.courseId, commentId),
+                                      builder: (context, replySnapshot) {
+                                        if (!replySnapshot.hasData) {
+                                          return SizedBox.shrink();
+                                        }
+                                        List<DocumentSnapshot> replyDocs = replySnapshot.data!.docs;
+                                        List<Reply> replies = replyDocs.map((doc) => Reply.fromJson(doc.data() as Map<String, dynamic>)).toList();
+                                        Comment comment = Comment(
+                                            id: commentId,
+                                            content: data['content'],
+                                            userId: data['userId'],
+                                            createdAt: data['createdAt'],
+                                            replies: replies);
+                                        return Column(
+                                          children: [
+                                            _buildCommentTree(context, comment, displayName, photoUrl),
+                                            Divider(color: AppColors.lighterGrey),
+                                          ],
+                                        );
+                                      });
+                                },
+                              );
                             },
                           ),
                         ],
@@ -200,7 +206,7 @@ class _DiscussionState extends State<Discussion> {
     );
   }
 
-  Widget _buildCommentTree(BuildContext context, Comment rootComment) {
+  Widget _buildCommentTree(BuildContext context, Comment rootComment, String displayName, String photoUrl) {
     return ct.CommentTreeWidget<Comment, Reply>(
       rootComment,
       rootComment.replies,
@@ -209,7 +215,7 @@ class _DiscussionState extends State<Discussion> {
         child: CircleAvatar(
           radius: 18,
           backgroundColor: Colors.grey,
-          backgroundImage: AssetImage('assets/images/default_avatar.png'),
+          backgroundImage: NetworkImage(photoUrl),
         ),
         preferredSize: Size.fromRadius(18),
       ),
@@ -217,7 +223,7 @@ class _DiscussionState extends State<Discussion> {
         child: CircleAvatar(
           radius: 12,
           backgroundColor: Colors.grey,
-          backgroundImage: AssetImage('assets/images/default_avatar.png'),
+          backgroundImage: NetworkImage(photoUrl),
         ),
         preferredSize: Size.fromRadius(12),
       ),
@@ -231,7 +237,7 @@ class _DiscussionState extends State<Discussion> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data.userId,
+                    displayName,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
@@ -285,7 +291,7 @@ class _DiscussionState extends State<Discussion> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data.userId,
+                    displayName,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
