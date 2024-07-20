@@ -95,7 +95,7 @@ class CropScreen extends StatelessWidget {
                           _buildCropButton(context, null),
                           _buildCropButton(context, 1.toFraction()),
                           _buildCropButton(
-                              context, Fraction.fromString("9/16")),
+                              context, Fraction.fromString("16/9")),
                           _buildCropButton(context, Fraction.fromString("3/4")),
                         ],
                       )

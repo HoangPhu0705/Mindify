@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_management/create_questions.dart';
+import 'package:frontend/pages/course_management/quiz_page.dart';
 import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -48,6 +49,29 @@ class _QuizDetailState extends State<QuizDetail> {
     super.dispose();
   }
 
+  void reorderData(List<DocumentSnapshot> list, int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final DocumentSnapshot item = list.removeAt(oldIndex);
+      list.insert(newIndex, item);
+
+      for (int i = 0; i < list.length; i++) {
+        updateQuestionIndex(list[i].id, i);
+      }
+    });
+  }
+
+  Future<void> updateQuestionIndex(String questionId, int newIndex) async {
+    await FirebaseFirestore.instance
+        .collection('quizzes')
+        .doc(widget.quizId)
+        .collection('questions')
+        .doc(questionId)
+        .update({'index': newIndex});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +94,18 @@ class _QuizDetailState extends State<QuizDetail> {
             Expanded(
               child: TextButton(
                 style: AppStyles.primaryButtonStyle,
-                onPressed: () async {},
+                onPressed: () async {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return QuizPage(
+                          quizId: widget.quizId,
+                          quizName: quizNameController.text,
+                        );
+                      },
+                    ),
+                  );
+                },
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
@@ -86,7 +121,7 @@ class _QuizDetailState extends State<QuizDetail> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context, totalQuestions);
+            Navigator.pop(context, totalQuestions + 1);
           },
           icon: const Icon(
             Icons.chevron_left,
@@ -204,6 +239,7 @@ class _QuizDetailState extends State<QuizDetail> {
                             return CreateQuestions(
                               quizId: widget.quizId,
                               questionId: "",
+                              questionCount: totalQuestions + 1,
                             );
                           },
                         ),
@@ -233,8 +269,11 @@ class _QuizDetailState extends State<QuizDetail> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       List<DocumentSnapshot> documents = snapshot.data!.docs;
-                      totalQuestions = documents.length;
-                      return ListView.builder(
+                      totalQuestions = documents.length - 1;
+                      return ReorderableListView.builder(
+                        onReorder: (oldIndex, newIndex) {
+                          reorderData(documents, oldIndex, newIndex);
+                        },
                         shrinkWrap: true,
                         itemCount: documents.length,
                         itemBuilder: (context, index) {
@@ -245,6 +284,7 @@ class _QuizDetailState extends State<QuizDetail> {
                           List<dynamic> answers = questionData["answers"];
                           String answersText = answers.join(", ");
                           return ListTile(
+                            key: ValueKey(questionId),
                             leading: Text(
                               "${index + 1}",
                               style: const TextStyle(
@@ -300,8 +340,9 @@ class _QuizDetailState extends State<QuizDetail> {
               top: Radius.circular(10),
             ),
           ),
-          height: MediaQuery.of(context).size.height * 0.2,
+          height: MediaQuery.of(context).size.height * 0.15,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ListTile(
                 leading: const Icon(
@@ -316,17 +357,19 @@ class _QuizDetailState extends State<QuizDetail> {
                   ),
                 ),
                 onTap: () async {
+                  Navigator.pop(context);
+
                   final result = await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
                         return CreateQuestions(
                           quizId: widget.quizId,
                           questionId: questionId,
+                          questionCount: totalQuestions,
                         );
                       },
                     ),
                   );
-                  Navigator.pop(context);
                 },
               ),
               ListTile(
