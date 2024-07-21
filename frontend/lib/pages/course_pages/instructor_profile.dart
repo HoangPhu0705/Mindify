@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_pages/teaching_tab_teacher.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/follow_user_page.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -93,42 +94,47 @@ class _InstructorProfileState extends State<InstructorProfile> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          followers.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          "Followers",
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => FollowersFollowingPage(
+                                userId: userService.getUserId(),
+                                tab: 0,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "$followers Followers •",
                           style: TextStyle(
+                            fontSize: 14,
                             color: Colors.white,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ],
-                    ),
-                    AppSpacing.mediumHorizontal,
-                    Column(
-                      children: [
-                        Text(
-                          following.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          "Following",
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => FollowersFollowingPage(
+                                userId: userService.getUserId(),
+                                tab: 1, // Navigate to Following tab
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          " $following Following ",
                           style: TextStyle(
+                            fontSize: 14,
                             color: Colors.white,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
                 ),
               ],
             ),
