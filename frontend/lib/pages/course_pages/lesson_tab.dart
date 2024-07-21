@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:frontend/pages/course_pages/instructor_profile.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
@@ -192,45 +193,56 @@ class _LessonTabState extends State<LessonTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            maxRadius: 24,
-                            backgroundImage: instructorAvatar.isNotEmpty
-                                ? NetworkImage(instructorAvatar)
-                                : const NetworkImage(
-                                    "https://i.ibb.co/tZxYspW/default-avatar.png"),
-                          ),
-                          AppSpacing.smallHorizontal,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                instructorName.isEmpty
-                                    ? 'Mindify Member'
-                                    : instructorName,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InstructorProfile(
+                                instructorId: widget.course.instructorId,
                               ),
-                              Text(
-                                instructorInfo['profession'] ??
-                                    "Mindify Instructor",
-                                style: const TextStyle(
-                                  fontSize: 13,
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              maxRadius: 24,
+                              backgroundImage: instructorAvatar.isNotEmpty
+                                  ? NetworkImage(instructorAvatar)
+                                  : const NetworkImage(
+                                      "https://i.ibb.co/tZxYspW/default-avatar.png"),
+                            ),
+                            AppSpacing.smallHorizontal,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  instructorName.isEmpty
+                                      ? 'Mindify Member'
+                                      : instructorName,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                Text(
+                                  instructorInfo['profession'] ??
+                                      "Mindify Instructor",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       !widget.isPreviewing
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: AnimatedButton(
-                                onPress:
-                                     widget.isFollowed
-                                ? _unfollowUser
-                                : _followUser,
+                                onPress: widget.isFollowed
+                                    ? _unfollowUser
+                                    : _followUser,
                                 isSelected: widget.isFollowed,
                                 width: 100,
                                 height: 40,

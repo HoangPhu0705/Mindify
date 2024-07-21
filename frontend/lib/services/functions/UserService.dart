@@ -175,7 +175,7 @@ class UserService {
   }
 
   //get user data by id
-  Future<dynamic> getUserData(String userId) async {
+  Future<Map<String, dynamic>> getUserData(String userId) async {
     final url = Uri.parse('${AppConstants.baseUrl}/users/$userId');
     final response =
         await http.get(url, headers: {'Content-Type': 'application/json'});

@@ -41,6 +41,7 @@ dependencies:
   firebase_auth: ^4.19.6
   firebase_core: ^2.31.1
   lottie: ^3.1.2
+  skeleton_loader: ^2.0.0
   sign_in_button: ^3.2.0
   toastification: ^2.0.0
   google_sign_in: ^6.2.1

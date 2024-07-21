@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/achievements_tab.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/follow_user_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/profile_tab.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/teaching_tab.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -26,6 +27,8 @@ class _ViewProfileState extends State<ViewProfile>
     with SingleTickerProviderStateMixin {
   UserService userService = UserService();
   TabController? _tabController;
+  int? followers;
+  int? following;
 
   @override
   void initState() {
@@ -38,7 +41,21 @@ class _ViewProfileState extends State<ViewProfile>
       String photoUrl = userService.getPhotoUrl();
       Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
     });
+    getUserData();
     _tabController = TabController(length: 3, vsync: this);
+  }
+
+  Future<void> getUserData() async {
+    String userId = userService.getUserId();
+    final userData = await userService.getUserData(userId);
+
+    if (userData != null) {
+        setState(() {
+          followers = userData['followerNum'] ?? 0;
+          following = userData['followingNum'] ?? 0;
+        });
+      }
+
   }
 
   @override
@@ -104,20 +121,44 @@ class _ViewProfileState extends State<ViewProfile>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        "0 Followers •",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => FollowersFollowingPage(
+                                userId: userService.getUserId(),
+                                tab: 0,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "$followers Followers •",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      Text(
-                        " 0 Following ",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => FollowersFollowingPage(
+                                userId: userService.getUserId(),
+                                tab: 1, // Navigate to Following tab
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          " $following Following ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
