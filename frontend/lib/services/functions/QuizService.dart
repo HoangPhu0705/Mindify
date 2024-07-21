@@ -169,4 +169,23 @@ class QuizService {
       throw Exception('Failed to delete question');
     }
   }
+
+  Future<List<dynamic>> getQuestionByQuizzId(String quizId) async {
+    final url = Uri.parse('$baseUrl/$quizId/questions');
+    try {
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to retreive question detail');
+      }
+    } catch (e) {
+      throw Exception('Failed to retreive question detail + $e');
+    }
+  }
 }

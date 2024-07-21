@@ -80,6 +80,19 @@ class _CreateQuestionsState extends State<CreateQuestions> {
     setState(() {
       questionImage = photoUrl;
     });
+    var imageData = {
+      "questionImage": questionImage,
+    };
+
+    try {
+      await quizzService.updateQuestion(
+        widget.quizId,
+        widget.questionId,
+        imageData,
+      );
+    } catch (e) {
+      showErrorToast(context, "Error adding image");
+    }
   }
 
   void selectImageFromGallery() async {

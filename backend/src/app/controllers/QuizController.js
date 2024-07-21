@@ -87,4 +87,26 @@ exports.deleteQuestion = async (req, res) => {
   }
 }
 
+exports.getQuizzById = async (req, res) => {
+  try {
+    const quizData = await QuizService.getQuizzById(req.params.quizId);
+    res.status(200).send(quizData);
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch quiz" });
+  }
+}
+
+exports.getQuestionByQuizId = async (req, res) => {
+  try {
+    const questions = await QuizService.getQuestionByQuizzId(req.params.quizId);
+    res.status(200).send(questions);
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch questions" });
+  }
+}
+
+
+
 

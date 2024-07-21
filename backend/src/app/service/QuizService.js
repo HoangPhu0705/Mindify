@@ -107,3 +107,37 @@ exports.deleteQuestion = async (quizId, questionId) => {
         throw error;
     }
 }
+
+exports.getQuizzById = async (quizId) => {
+    try {
+        const quizDoc = await QuizCollection.doc(quizId).get();
+        if (!quizDoc.exists) {
+            throw new Error('Quiz not found');
+        }
+        return { id: quizDoc.id, ...quizDoc.data() };
+    }catch(error){
+        console.error('Error getting quiz by ID:', error);
+        throw error;
+    }
+}
+
+exports.getQuestionByQuizzId = async (quizId) => {
+    try {
+        const questionsSnapshot = await QuizCollection.doc(quizId).collection('questions').orderBy("index", 'desc').get();
+        if (questionsSnapshot.empty) {
+            return [];
+        }
+
+        const questions = [];
+        questionsSnapshot.forEach(doc => {
+            questions.push({ id: doc.id, ...doc.data() });
+        });
+
+        return questions;
+    } catch (error) {
+        console.error('Error fetching questions:', error);
+        throw error;
+    }
+}
+
+

@@ -46,9 +46,9 @@ class _SignInState extends State<SignIn> {
   void initState() {
     super.initState();
     _isObsecured = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      emailFocusNode.requestFocus();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   emailFocusNode.requestFocus();
+    // });
   }
 
   @override

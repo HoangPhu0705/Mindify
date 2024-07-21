@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_management/quiz_result.dart';
 import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -38,54 +39,66 @@ class _QuizPageState extends State<QuizPage> {
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: currentPage);
+    pageController = PageController(
+      initialPage: currentPage,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.ghostWhite,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        height: MediaQuery.of(context).size.height * 0.1,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppSpacing.mediumHorizontal,
-            Expanded(
-              child: TextButton(
-                style: AppStyles.primaryButtonStyle,
-                onPressed: () async {
-                  if (currentPage < widget.totalQuestion - 1) {
-                    pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                  } else {
-                    var result = getSelectedAnswers();
-                    log(result.toString());
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    currentPage < widget.totalQuestion - 1 ? "Next" : "Finish",
-                    style: const TextStyle(fontSize: 16),
+      bottomSheet: widget.totalQuestion == 0
+          ? const SizedBox.shrink()
+          : Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.ghostWhite,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    offset: const Offset(0, -1),
                   ),
-                ),
+                ],
               ),
-            )
-          ],
-        ),
-      ),
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppSpacing.mediumHorizontal,
+                  Expanded(
+                    child: TextButton(
+                      style: AppStyles.primaryButtonStyle,
+                      onPressed: () async {
+                        if (currentPage < widget.totalQuestion - 1) {
+                          pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeIn,
+                          );
+                        } else {
+                          var result = getSelectedAnswers();
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => QuizResult(
+                              result: result,
+                              quizName: widget.quizName,
+                              quizId: widget.quizId,
+                            ),
+                          ));
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          currentPage < widget.totalQuestion - 1
+                              ? "Next"
+                              : "Finish",
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
       appBar: AppBar(
         title: Text(
           widget.quizName,
@@ -138,6 +151,7 @@ class _QuizPageState extends State<QuizPage> {
                   if (questions.isEmpty) {
                     return const Center(
                       child: Text(
+                        textAlign: TextAlign.center,
                         "Your quiz doesn't have any questions",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
@@ -149,6 +163,7 @@ class _QuizPageState extends State<QuizPage> {
 
                   return Expanded(
                     child: PageView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
                       onPageChanged: (index) {
                         setState(() {
                           currentPage = index;
@@ -162,59 +177,78 @@ class _QuizPageState extends State<QuizPage> {
                         String questionText = question["question"];
                         List<dynamic> wrongChoices = question["wrongChoices"];
                         List<dynamic> answers = question["answers"];
-
+                        String questionImage = question["questionImage"] ?? "";
                         List<dynamic> options = [...wrongChoices, ...answers];
-                        return Container(
-                          padding: const EdgeInsets.only(
-                            top: 10,
-                          ),
-                          child: Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "Question no.${index + 1}: ",
+                        return SingleChildScrollView(
+                          child: Container(
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).size.height * 0.1,
+                            ),
+                            child: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    "Question no.${index + 1}: ",
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                AppSpacing.mediumVertical,
+                                questionImage.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Container(
+                                        height: 300,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          image: DecorationImage(
+                                            image: NetworkImage(questionImage),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                AppSpacing.mediumVertical,
+                                Text(
+                                  textAlign: TextAlign.center,
+                                  questionText,
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              Text(
-                                textAlign: TextAlign.center,
-                                questionText,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const Divider(),
-                              AppSpacing.mediumVertical,
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: options.length,
-                                itemBuilder: (context, index) {
-                                  String option = options[index];
-                                  bool isSelected = selectedOptions[questionId]
-                                          ?.contains(option) ??
-                                      false;
+                                const Divider(),
+                                AppSpacing.mediumVertical,
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: options.length,
+                                  itemBuilder: (context, index) {
+                                    String option = options[index];
+                                    bool isSelected =
+                                        selectedOptions[questionId]
+                                                ?.contains(option) ??
+                                            false;
 
-                                  return buildOptionContainer(
-                                    questionId,
-                                    option,
-                                    isSelected,
-                                    answers.length == 1,
-                                  );
-                                },
-                              ),
-                              AppSpacing.mediumVertical,
-                              answers.length > 1
-                                  ? const Text(
-                                      "Note*: This question has more than one answer",
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
+                                    return buildOptionContainer(
+                                      questionId,
+                                      option,
+                                      isSelected,
+                                      answers.length == 1,
+                                    );
+                                  },
+                                ),
+                                AppSpacing.mediumVertical,
+                                answers.length > 1
+                                    ? const Text(
+                                        "Note*: This question has more than one answer",
+                                      )
+                                    : const SizedBox.shrink(),
+                              ],
+                            ),
                           ),
                         );
                       },
