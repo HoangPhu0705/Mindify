@@ -11,6 +11,7 @@ import 'package:frontend/pages/user_information/setting_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/notification_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/view_profile.dart';
 import 'package:frontend/pages/user_information/watch_history.dart';
+import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -28,7 +29,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   UserService userService = UserService();
+  EnrollmentService enrollmentService = EnrollmentService();
   String? userId;
+
   @override
   void initState() {
     super.initState();
@@ -42,9 +45,8 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Future<List<String>> getInfo() async {
+    return await enrollmentService.getUserEnrollments(userId!);
   }
 
   @override
@@ -63,7 +65,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   children: [
                     Row(
-                      //icon notification
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
@@ -162,24 +163,62 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: ListView(
                     children: [
-                      ListTile(
-                        leading: Icon(Icons.arrow_circle_down),
-                        title: Text(
-                          'Downloads',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(fontSize: 16),
-                        ),
-                        subtitle: Text('0 classes'),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Downloads(userId: userId!,),
-                            ),
-                          );
+                      FutureBuilder<List<String>>(
+                        future: getInfo(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return ListTile(
+                              leading: Icon(Icons.arrow_circle_down),
+                              title: Text(
+                                'Downloads',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(fontSize: 16),
+                              ),
+                              subtitle: Text('Loading...'),
+                              trailing: Icon(Icons.chevron_right),
+                            );
+                          } else if (snapshot.hasError) {
+                            return ListTile(
+                              leading: Icon(Icons.arrow_circle_down),
+                              title: Text(
+                                'Downloads',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(fontSize: 16),
+                              ),
+                              subtitle: Text('Error loading classes'),
+                              trailing: Icon(Icons.chevron_right),
+                            );
+                          } else {
+                            int numClasses = snapshot.data!.length;
+                            return ListTile(
+                              leading: Icon(Icons.arrow_circle_down),
+                              title: Text(
+                                'Downloads',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(fontSize: 16),
+                              ),
+                              subtitle: Text(numClasses == 1
+                                  ? '$numClasses class'
+                                  : '$numClasses classes'),
+                              trailing: Icon(Icons.chevron_right),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Downloads(
+                                      userId: userId!,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         },
                       ),
                       ListTile(
@@ -193,7 +232,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          // Handle All saved Classes tap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
