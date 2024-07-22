@@ -101,6 +101,7 @@ class _FollowersFollowingPageState extends State<FollowersFollowingPage> {
               return Center(
                 child: SkeletonLoader(
                   builder: ListView.builder(
+                    shrinkWrap: true,
                     itemCount: 5, // Adjust based on expected number of items
                     itemBuilder: (context, index) => ListTile(
                       leading: CircleAvatar(
