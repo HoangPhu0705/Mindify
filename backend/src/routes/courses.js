@@ -34,6 +34,7 @@ router.post('/:id/projects', ProjectController.submitProject);
 router.get('/:courseId/lessons', LessonController.getAllLesson);
 router.post('/:courseId/lessons', LessonController.createLesson);
 router.get('/:courseId/lessons/:lessonId', LessonController.getLessonById);
+router.get('/:courseId/combined-duration', LessonController.getCombinedDuration);
 // watch project
 router.get('/:courseId/projects/:userId', ProjectController.getUserProject);
 router.patch('/:courseId/lessons/:lessonId', LessonController.updateLesson);

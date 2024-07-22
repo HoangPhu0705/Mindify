@@ -205,8 +205,10 @@ class _PreviewClassState extends State<PreviewClass>
                       ),
                       SubmitProject(
                         course: course!,
+                        isPreviewing: true,
                       ),
                       Discussion(
+                        isPreviewing: true,
                         courseId: course!.id,
                         isEnrolled: isEnrolled,
                       ),

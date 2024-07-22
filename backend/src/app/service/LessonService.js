@@ -49,3 +49,30 @@ exports.deleteLesson = async (courseId, lessonId) => {
     throw error;
   }
 };
+
+
+const durationToSeconds = (duration) => {
+  const [hours, minutes] = duration.split(':').map(Number);
+  return hours * 3600 + minutes * 60;
+};
+
+// Helper function to convert seconds to "HH:MM"
+const secondsToDuration = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+};
+
+exports.getCombinedDuration = async (courseId) => {
+  try {
+    const lessonsSnapshot = await CourseCollection.doc(courseId).collection('lessons').get();
+    const totalSeconds = lessonsSnapshot.docs.reduce((acc, doc) => {
+      const { duration } = doc.data();
+      return acc + durationToSeconds(duration);
+    }, 0);
+    return secondsToDuration(totalSeconds);
+  } catch (error) {
+    console.error('Error getting combined duration:', error);
+    throw error;
+  }
+};

@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:frontend/pages/course_management/quiz_page.dart';
 import 'package:frontend/pages/course_pages/instructor_profile.dart';
+import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
@@ -53,8 +56,9 @@ class _LessonTabState extends State<LessonTab> {
   String instructorAvatar = "";
   String instructorName = "";
   ScrollController scrollController = ScrollController();
-  FocusNode focusNode = FocusNode(canRequestFocus: false);
   QuillController quillController = QuillController.basic();
+
+  QuizService quizService = QuizService();
 
   @override
   void initState() {
@@ -62,7 +66,7 @@ class _LessonTabState extends State<LessonTab> {
     _getInstructorInfo();
     _sortLessonsByIndex();
 
-    if (widget.isPreviewing) _checkIfFollowed();
+    if (!widget.isPreviewing) _checkIfFollowed();
     quillController.document = Document.fromJson(
       jsonDecode(widget.course.description),
     );
@@ -300,76 +304,193 @@ class _LessonTabState extends State<LessonTab> {
             Padding(
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).size.height * 0.1),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: widget.course.lessons.length,
-                itemBuilder: (context, index) {
-                  final lesson = widget.course.lessons[index];
-                  final isLessonAccessible = widget.isEnrolled || index == 0;
+              child: Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: widget.course.lessons.length,
+                    itemBuilder: (context, index) {
+                      final lesson = widget.course.lessons[index];
+                      final isLessonAccessible =
+                          widget.isEnrolled || index == 0;
 
-                  return Container(
-                    margin: const EdgeInsets.only(
-                      bottom: 10,
+                      return Container(
+                        margin: const EdgeInsets.only(
+                          bottom: 10,
+                        ),
+                        child: ListTile(
+                          tileColor: lesson.index == widget.currentVideoIndex
+                              ? AppColors.deepSpace
+                              : Colors.white,
+                          onTap: isLessonAccessible || widget.isPreviewing
+                              ? () {
+                                  widget.onLessonTap(lesson.link, lesson.index);
+                                }
+                              : null,
+                          title: Text(
+                            "${lesson.index + 1}. ${lesson.title}",
+                            style: TextStyle(
+                              color: lesson.index == widget.currentVideoIndex
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                          subtitle: Text(
+                            lesson.duration,
+                            style: TextStyle(
+                              color: lesson.index == widget.currentVideoIndex
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                          leading: Icon(
+                            isLessonAccessible || widget.isPreviewing
+                                ? Icons.play_circle_outline_outlined
+                                : Icons.lock,
+                            size: 30,
+                            color: lesson.index == widget.currentVideoIndex
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          trailing: widget.isEnrolled
+                              ? IconButton(
+                                  icon: Icon(
+                                    Icons.download_for_offline_outlined,
+                                    size: 30,
+                                    color:
+                                        lesson.index == widget.currentVideoIndex
+                                            ? Colors.white
+                                            : Colors.black,
+                                  ),
+                                  onPressed: isLessonAccessible
+                                      ? () {
+                                          _downloadLesson(
+                                              lesson.link, lesson.title);
+                                          widget.onSaveLesson(lesson.id);
+                                        }
+                                      : null,
+                                )
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                  AppSpacing.mediumVertical,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Flexible(
+                          flex: 2,
+                          child: Divider(),
+                        ),
+                        Flexible(
+                          child: Center(
+                              child: Text(
+                            "Quizzes",
+                            style: Theme.of(context).textTheme.labelSmall,
+                          )),
+                        ),
+                        const Flexible(
+                          flex: 2,
+                          child: Divider(),
+                        ),
+                      ],
                     ),
-                    child: ListTile(
-                      tileColor: lesson.index == widget.currentVideoIndex
-                          ? AppColors.deepSpace
-                          : Colors.white,
-                      onTap: isLessonAccessible || widget.isPreviewing
-                          ? () {
-                              widget.onLessonTap(lesson.link, lesson.index);
-                            }
-                          : null,
-                      title: Text(
-                        "${lesson.index + 1}. ${lesson.title}",
-                        style: TextStyle(
-                          color: lesson.index == widget.currentVideoIndex
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                      subtitle: Text(
-                        lesson.duration,
-                        style: TextStyle(
-                          color: lesson.index == widget.currentVideoIndex
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                      leading: Icon(
-                        isLessonAccessible || widget.isPreviewing
-                            ? Icons.play_circle_outline_outlined
-                            : Icons.lock,
-                        size: 30,
-                        color: lesson.index == widget.currentVideoIndex
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                      trailing: widget.isEnrolled
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.download_for_offline_outlined,
-                                size: 30,
-                                color: lesson.index == widget.currentVideoIndex
-                                    ? Colors.white
-                                    : Colors.black,
+                  ),
+                  AppSpacing.mediumVertical,
+                  StreamBuilder<QuerySnapshot>(
+                    stream:
+                        quizService.getQuizzesStreamByCourse(widget.course.id),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List<DocumentSnapshot> quizzes = snapshot.data!.docs;
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: quizzes.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot quiz = quizzes[index];
+                            String quizId = quiz.id;
+                            String quizName = quiz["name"];
+                            int totalQuestion = quiz["totalQuestions"];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
                               ),
-                              onPressed: isLessonAccessible
-                                  ? () {
-                                      _downloadLesson(
-                                          lesson.link, lesson.title);
-                                      widget.onSaveLesson(lesson.id);
-                                    }
-                                  : null,
-                            )
-                          : null,
-                    ),
-                  );
-                },
+                              child: buildQuizCard(
+                                quizId,
+                                quizName,
+                                totalQuestion,
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return Text(
+                        "No quizzes available",
+                        style: TextStyle(
+                          color: AppColors.lightGrey,
+                        ),
+                      );
+                    },
+                  )
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildQuizCard(String quizId, String quizName, int totalQuestion) {
+    return Container(
+      margin: const EdgeInsets.only(
+        bottom: 10,
+      ),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: AppColors.ghostWhite,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: AppColors.lightGrey,
+          width: 1,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.lighterGrey,
+            blurRadius: 5,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return QuizPage(
+                  quizId: quizId,
+                  quizName: quizName,
+                  totalQuestion: totalQuestion,
+                );
+              },
+            ),
+          );
+        },
+        title: Text(
+          quizName,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Text("Questions: $totalQuestion"),
+        trailing: const Icon(
+          Icons.quiz_outlined,
+          size: 30,
+          color: AppColors.deepSpace,
         ),
       ),
     );

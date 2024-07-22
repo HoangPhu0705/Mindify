@@ -43,6 +43,7 @@ class _LessonUploadState extends State<LessonUpload> {
   Duration? videoDuration;
   String? editingLessonId;
   int lessonIndex = 0;
+  int totalDuration = 0;
   //Controllers
   final videoTitleController = TextEditingController();
   FocusNode focusNode = FocusNode();
@@ -140,38 +141,38 @@ class _LessonUploadState extends State<LessonUpload> {
     await courseService.createLesson(widget.courseId, data);
   }
 
-  Future<void> deleteLesson(String courseId, String lessonId, String videoPath) async {
-  try {
-    await courseService.deleteLesson(courseId, lessonId);
+  Future<void> deleteLesson(
+      String courseId, String lessonId, String videoPath) async {
+    try {
+      await courseService.deleteLesson(courseId, lessonId);
 
-    final ref = FirebaseStorage.instance.ref().child(videoPath);
-    await ref.delete();
+      final ref = FirebaseStorage.instance.ref().child(videoPath);
+      await ref.delete();
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('courses')
-        .doc(courseId)
-        .collection('lessons')
-        .orderBy('index')
-        .get();
-
-    int deletedIndex = snapshot.docs.indexWhere((doc) => doc.id == lessonId);
-
-    for (int i = deletedIndex; i < snapshot.docs.length; i++) {
-      await FirebaseFirestore.instance
+      final snapshot = await FirebaseFirestore.instance
           .collection('courses')
           .doc(courseId)
           .collection('lessons')
-          .doc(snapshot.docs[i].id)
-          .update({'index': i});
+          .orderBy('index')
+          .get();
+
+      int deletedIndex = snapshot.docs.indexWhere((doc) => doc.id == lessonId);
+
+      for (int i = deletedIndex; i < snapshot.docs.length; i++) {
+        await FirebaseFirestore.instance
+            .collection('courses')
+            .doc(courseId)
+            .collection('lessons')
+            .doc(snapshot.docs[i].id)
+            .update({'index': i});
+      }
+
+      log("Lesson deleted successfully");
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error deleting lesson");
     }
-
-    log("Lesson deleted successfully");
-  } catch (e) {
-    log("Error: $e");
-    throw Exception("Error deleting lesson");
   }
-}
-
 
   void _onFocusChange() {
     if (!focusNode.hasFocus && editingLessonId != null) {
@@ -214,6 +215,20 @@ class _LessonUploadState extends State<LessonUpload> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () async {
+            dynamic totalDuration = await courseService.getCombinedDuration(
+              widget.courseId,
+            );
+
+            await courseService.updateCourse(
+              widget.courseId,
+              {'totalDuration': totalDuration["totalSeconds"]},
+            );
+            Navigator.pop(context);
+          },
+        ),
         centerTitle: true,
         title: const Text(
           "Upload lessons",

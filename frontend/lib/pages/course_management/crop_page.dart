@@ -47,8 +47,8 @@ class CropScreen extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                   icon: const Center(
                     child: Text(
-                      "cancel",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      "Cancel",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white,),
                     ),
                   ),
                 ),

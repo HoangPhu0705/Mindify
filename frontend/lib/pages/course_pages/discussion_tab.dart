@@ -14,11 +14,13 @@ import 'package:frontend/widgets/my_loading.dart';
 class Discussion extends StatefulWidget {
   final String courseId;
   final bool isEnrolled;
+  final bool isPreviewing;
 
   const Discussion({
     super.key,
     required this.courseId,
     required this.isEnrolled,
+    required this.isPreviewing,
   });
 
   @override
@@ -82,7 +84,7 @@ class _DiscussionState extends State<Discussion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: Container(
+      bottomSheet: widget.isPreviewing ? const SizedBox.shrink() : Container(
         height: MediaQuery.of(context).size.height * 0.07,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -161,23 +163,34 @@ class _DiscussionState extends State<Discussion> {
                                   doc.data() as Map<String, dynamic>;
 
                               return FutureBuilder<Map<String, dynamic>>(
-                                future: userService.getUserNameAndAvatar(data['userId']),
+                                future: userService
+                                    .getUserNameAndAvatar(data['userId']),
                                 builder: (context, userSnapshot) {
                                   if (!userSnapshot.hasData) {
                                     return SizedBox.shrink();
                                   }
-                                  Map<String, dynamic> userData = userSnapshot.data!;
-                                  String displayName = userData['displayName'] ?? 'Anonymous';
-                                  String photoUrl = userData['photoUrl'] ?? 'assets/images/default_avatar.png';
+                                  Map<String, dynamic> userData =
+                                      userSnapshot.data!;
+                                  String displayName =
+                                      userData['displayName'] ?? 'Anonymous';
+                                  String photoUrl = userData['photoUrl'] ??
+                                      'assets/images/default_avatar.png';
 
                                   return StreamBuilder<QuerySnapshot>(
-                                      stream: commentService.getReplieStreamByComment(widget.courseId, commentId),
+                                      stream: commentService
+                                          .getReplieStreamByComment(
+                                              widget.courseId, commentId),
                                       builder: (context, replySnapshot) {
                                         if (!replySnapshot.hasData) {
                                           return SizedBox.shrink();
                                         }
-                                        List<DocumentSnapshot> replyDocs = replySnapshot.data!.docs;
-                                        List<Reply> replies = replyDocs.map((doc) => Reply.fromJson(doc.data() as Map<String, dynamic>)).toList();
+                                        List<DocumentSnapshot> replyDocs =
+                                            replySnapshot.data!.docs;
+                                        List<Reply> replies = replyDocs
+                                            .map((doc) => Reply.fromJson(
+                                                doc.data()
+                                                    as Map<String, dynamic>))
+                                            .toList();
                                         Comment comment = Comment(
                                             id: commentId,
                                             content: data['content'],
@@ -186,8 +199,10 @@ class _DiscussionState extends State<Discussion> {
                                             replies: replies);
                                         return Column(
                                           children: [
-                                            _buildCommentTree(context, comment, displayName, photoUrl),
-                                            Divider(color: AppColors.lighterGrey),
+                                            _buildCommentTree(context, comment,
+                                                displayName, photoUrl),
+                                            Divider(
+                                                color: AppColors.lighterGrey),
                                           ],
                                         );
                                       });
@@ -206,7 +221,8 @@ class _DiscussionState extends State<Discussion> {
     );
   }
 
-  Widget _buildCommentTree(BuildContext context, Comment rootComment, String displayName, String photoUrl) {
+  Widget _buildCommentTree(BuildContext context, Comment rootComment,
+      String displayName, String photoUrl) {
     return ct.CommentTreeWidget<Comment, Reply>(
       rootComment,
       rootComment.replies,

@@ -9,7 +9,9 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/create_quiz.dart';
 import 'package:frontend/pages/course_management/lesson_upload.dart';
 import 'package:frontend/pages/course_management/preview_class.dart';
+import 'package:frontend/pages/course_management/publish_course.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
+import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/multiline_tag.dart';
 import 'package:frontend/services/functions/CourseService.dart';
@@ -40,6 +42,7 @@ class ManageClass extends StatefulWidget {
 class _ManageClassState extends State<ManageClass> {
   // Services
   CourseService courseServices = CourseService();
+  QuizService quizService = QuizService();
 
   // Controllers
   final TextEditingController _titleController = TextEditingController();
@@ -47,6 +50,7 @@ class _ManageClassState extends State<ManageClass> {
   final QuillController _projectDescriptionController = QuillController.basic();
   final ScrollController _scrollController = ScrollController();
   late StringTagController stringTagController;
+  int lessonNums = 0;
 
   // Variables
   String greeting = "Hello";
@@ -349,6 +353,7 @@ class _ManageClassState extends State<ManageClass> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             int lessonNum = snapshot.data!.docs.length;
+                            lessonNums = lessonNum;
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               title: const Text(
@@ -383,38 +388,48 @@ class _ManageClassState extends State<ManageClass> {
                             return const SizedBox.shrink();
                           }
                         }),
+                    StreamBuilder<QuerySnapshot>(
+                        stream: quizService
+                            .getQuizzesStreamByCourse(widget.courseId),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            int quizNum = snapshot.data!.docs.length;
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: const Text(
+                                "Quizzes (Optional)",
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              trailing: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CreateQuiz(courseId: widget.courseId),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Manage",
+                                  style: TextStyle(
+                                    color: AppColors.deepBlue,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              subtitle: Text("$quizNum quiz(s)"),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        }),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text(
-                        "Create Quiz (Optional)",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CreateQuiz(courseId: myCourse.id),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Create",
-                          style: TextStyle(
-                            color: AppColors.deepBlue,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      subtitle: Text("0"),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        "Create Flashcard (Optional)",
+                        "Flashcard (Optional)",
                         style: TextStyle(
                           fontFamily: "Poppins",
                           fontWeight: FontWeight.w700,
@@ -432,7 +447,7 @@ class _ManageClassState extends State<ManageClass> {
                           ),
                         ),
                       ),
-                      subtitle: Text("0"),
+                      subtitle: Text("0 flashcard"),
                     ),
                     const Divider(),
                     AppSpacing.mediumVertical,
@@ -445,7 +460,7 @@ class _ManageClassState extends State<ManageClass> {
                       ),
                     ),
                     const Text(
-                      "Keep your title between 30 and 70 characters.",
+                      "Keep your title between 20 and 70 characters.",
                     ),
                     AppSpacing.mediumVertical,
                     TextFormField(
@@ -543,6 +558,31 @@ class _ManageClassState extends State<ManageClass> {
                         ),
                       ),
                     ),
+                    AppSpacing.mediumVertical,
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          proceedNext();
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStateProperty.all(AppColors.cream),
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          "Next Step",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -553,7 +593,54 @@ class _ManageClassState extends State<ManageClass> {
     );
   }
 
-  Widget _buildQuillToolbar(QuillController _controller) {
+  void proceedNext() {
+    if (_titleController.text.isEmpty || _titleController.text == "") {
+      showErrorToast(context, "Please enter a title");
+      return;
+    }
+    if (_titleController.text.length < 20 ||
+        _titleController.text.length > 70) {
+      showErrorToast(context, "Title must be between 20 and 70 characters");
+      return;
+    }
+    if (_classDescriptionController.document.toPlainText().isEmpty ||
+        _classDescriptionController.document.toPlainText() == "\n") {
+      showErrorToast(context, "Please enter a class description");
+      return;
+    }
+    if (_classDescriptionController.document.toPlainText().length < 100) {
+      showErrorToast(
+          context, "Class description must be at least 100 characters");
+      return;
+    }
+    if (_projectDescriptionController.document.toPlainText().isEmpty ||
+        _projectDescriptionController.document.toPlainText() == "\n") {
+      showErrorToast(context, "Please enter a project description");
+      return;
+    }
+    if (_projectDescriptionController.document.toPlainText().length < 100) {
+      showErrorToast(
+          context, "Project description must be at least 100 characters");
+      return;
+    }
+    if (stringTagController.getTags!.isEmpty ||
+        stringTagController.getTags == null) {
+      showErrorToast(context, "Please enter at least one category");
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PublishCourse(
+          courseId: widget.courseId,
+          lessonNums: lessonNums,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuillToolbar(QuillController controller) {
     return quill.QuillToolbar.simple(
       configurations: QuillSimpleToolbarConfigurations(
         decoration: BoxDecoration(
@@ -573,7 +660,7 @@ class _ManageClassState extends State<ManageClass> {
         showIndent: false,
         showQuote: false,
         showCodeBlock: false,
-        controller: _controller,
+        controller: controller,
         sharedConfigurations: const QuillSharedConfigurations(
           locale: Locale('en'),
         ),

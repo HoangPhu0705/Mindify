@@ -349,8 +349,10 @@ class _CourseDetailState extends State<CourseDetail>
                       ),
                       SubmitProject(
                         course: course!,
+                        isPreviewing: false,
                       ),
                       Discussion(
+                        isPreviewing: false,
                         courseId: course!.id,
                         isEnrolled: isEnrolled,
                       ),

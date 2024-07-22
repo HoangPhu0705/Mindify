@@ -142,8 +142,7 @@ class _QuizResultState extends State<QuizResult> {
                                 animateFromLastPercent: true,
                               ),
                               AppSpacing.mediumVertical,
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                              Wrap(
                                 children: [
                                   Text(
                                     "Question count: ${questions.length}",
@@ -232,7 +231,6 @@ class _QuizResultState extends State<QuizResult> {
                                     ),
                                   ),
                                   AppSpacing.mediumVertical,
-
                                   ListView.builder(
                                     physics:
                                         const NeverScrollableScrollPhysics(),

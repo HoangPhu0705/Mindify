@@ -390,6 +390,22 @@ class CourseService {
     }
   }
 
+  Future<dynamic> getCombinedDuration(String courseId) async {
+    try {
+      final url =
+          Uri.parse("${AppConstants.COURSE_API}/$courseId/combined-duration");
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Failed to load courses: ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error getting course by categories");
+    }
+  }
+
   // Future<Map<String, dynamic>> getLessonById(String courseId, String lessonId){
   //   return ;
   // }
