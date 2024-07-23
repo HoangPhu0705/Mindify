@@ -4,12 +4,12 @@ const enrollmentRouter = require('./enrollments');
 const folderRouter = require('./folders')
 const transactionRouter = require('./transactions')
 const quizRouter = require('./quizzes')
-const adminAuthRouter = require('./adminAuth')
+const adminRouter = require('./admin')
 const courseRequestRouter = require('./courseRequest')
 const qqRouter = require('./qq');
 
 function route(app){
-    app.use('/admin', adminAuthRouter)
+    app.use('/admin', adminRouter)
     app.use('/api/courses', courseRouter)
     app.use('/api/users', userRouter)
     app.use('/api/enrollments', enrollmentRouter)

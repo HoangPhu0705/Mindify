@@ -240,35 +240,31 @@ class _LessonTabState extends State<LessonTab> {
                           ],
                         ),
                       ),
-                      !widget.isPreviewing
-                          ? Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AnimatedButton(
-                                onPress: widget.isFollowed
-                                    ? _unfollowUser
-                                    : _followUser,
-                                isSelected: widget.isFollowed,
-                                width: 100,
-                                height: 40,
-                                borderColor: AppColors.deepBlue,
-                                borderWidth: 1,
-                                borderRadius: 50,
-                                backgroundColor: Colors.transparent,
-                                selectedBackgroundColor: AppColors.deepBlue,
-                                selectedTextColor: Colors.white,
-                                transitionType:
-                                    TransitionType.RIGHT_BOTTOM_ROUNDER,
-                                selectedText: "Following",
-                                text: 'Follow',
-                                textStyle: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 14,
-                                  color: AppColors.deepBlue,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink()
+                      if (widget.userId != widget.instructorId && !widget.isPreviewing)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: AnimatedButton(
+                            onPress: widget.isFollowed ? _unfollowUser : _followUser,
+                            isSelected: widget.isFollowed,
+                            width: 100,
+                            height: 40,
+                            borderColor: AppColors.deepBlue,
+                            borderWidth: 1,
+                            borderRadius: 50,
+                            backgroundColor: Colors.transparent,
+                            selectedBackgroundColor: AppColors.deepBlue,
+                            selectedTextColor: Colors.white,
+                            transitionType: TransitionType.RIGHT_BOTTOM_ROUNDER,
+                            selectedText: "Following",
+                            text: 'Follow',
+                            textStyle: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: AppColors.deepBlue,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                   const Divider(),

@@ -27,12 +27,13 @@ exports.getRequests = async (limit, startAfter) => {
         if (snapshot.empty) {
             return { requests: [], totalCount: 0 };
         }
-
+        
         const requests = [];
         snapshot.forEach(doc => {
-            requests.push({ id: doc.id, ...doc.data() });
+          requests.push({ id: doc.id, ...doc.data() });
         });
-
+        
+        console.log(requests)
         const totalCountSnapshot = await CourseRequestCollection.get();
         const totalCount = totalCountSnapshot.size;
 
@@ -54,18 +55,18 @@ exports.sendRequest = async (courseId) => {
       console.log('Course Data:', courseData);
 
       // Get user data from Firestore
-      const userDoc = await UserCollection.doc(courseData.authorId).get();
-      const userData = userDoc.data();
-      console.log('User Data:', userData);
-
-      const displayName = userData.displayName || 'Unknown Author';
+      const userRecord = await admin.auth().getUser(courseData.authorId);
+      
+      const displayName = userRecord.displayName;
+      console.log(displayName)
+      const email = userRecord.email;
 
       // create request
       const request = await CourseRequestCollection.add({
           courseName: courseData.courseName,
           coursePrice: courseData.price,
           author: displayName,
-          email: userData.email,
+          email: email,
           createdAt: firestore.FieldValue.serverTimestamp(),
           courseId: courseId
       });

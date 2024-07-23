@@ -1,5 +1,5 @@
 const { firestore } = require('firebase-admin');
-const { EnrollmentCollection } = require('./Collections');
+const { EnrollmentCollection, CourseCollection } = require('./Collections');
 
 exports.createEnrollment = async (data) => {
     try {
@@ -10,6 +10,13 @@ exports.createEnrollment = async (data) => {
             enrollmentDay: firestore.FieldValue.serverTimestamp(),
             downloadedLessons: []
         });
+
+        // +1 student
+        const courseRef = CourseCollection.doc(data.courseId);
+        await courseRef.update({
+            students: firestore.FieldValue.increment(1)
+        });
+
         return { "enrollmentId": docRef.id };
     } catch (error) {
         console.error('Error creating enrollment:', error);
