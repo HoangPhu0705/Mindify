@@ -355,4 +355,46 @@ exports.getCoursesByCategory = async (userCategories) => {
   }
 };
 
+exports.addResourceToCourse = async (courseId, resource) => {
+  try {
+    const courseRef = CourseCollection.doc(courseId);
+    const resourceRef = courseRef.collection('resources').doc(); 
+    await resourceRef.set(resource);
+    return { id: resourceRef.id, ...resource };
+  } catch (error) {
+    console.error('Error adding resource to course:', error);
+    throw error;
+  }
+};
+exports.updateResourceInCourse = async (courseId, resourceId, updates) => {
+  try {
+    const resourceRef = CourseCollection.doc(courseId).collection('resources').doc(resourceId);
+    await resourceRef.update(updates);
+    return { id: resourceId, ...updates };
+  } catch (error) {
+    console.error('Error updating resource in course:', error);
+    throw error;
+  }
+};
 
+exports.deleteResourceFromCourse = async (courseId, resourceId) => {
+  try {
+    const resourceRef = CourseCollection.doc(courseId).collection('resources').doc(resourceId);
+    await resourceRef.delete();
+    return { id: resourceId };
+  } catch (error) {
+    console.error('Error deleting resource from course:', error);
+    throw error;
+  }
+};
+
+exports.getResourcesByCourseId = async (courseId) => {
+  try {
+    const resourcesSnapshot = await CourseCollection.doc(courseId).collection('resources').get();
+    const resources = resourcesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return resources;
+  } catch (error) {
+    console.error('Error fetching resources for course:', error);
+    throw error;
+  }
+};

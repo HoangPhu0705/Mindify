@@ -59,7 +59,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
       await _loadSavedCourses();
       await _loadInstructorInfo();
-      await _loadCoursesByCategory();
+      // await _loadCoursesByCategory();
     } catch (e) {
       dev.log("Error in _initPage: $e");
     }

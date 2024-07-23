@@ -35,6 +35,13 @@ router.get('/:courseId/lessons', LessonController.getAllLesson);
 router.post('/:courseId/lessons', LessonController.createLesson);
 router.get('/:courseId/lessons/:lessonId', LessonController.getLessonById);
 router.get('/:courseId/combined-duration', LessonController.getCombinedDuration);
+
+//Resources
+router.get('/:courseId/resources', CourseController.getResourcesByCourseId)
+router.post('/:courseId/resources', CourseController.addResourceToCourse)
+router.patch('/:courseId/resources/:resourceId', CourseController.updateResourceInCourse)
+router.delete('/:courseId/resources/:resourceId', CourseController.deleteResourceFromCourse)
+
 // watch project
 router.get('/:courseId/projects/:userId', ProjectController.getUserProject);
 router.patch('/:courseId/lessons/:lessonId', LessonController.updateLesson);

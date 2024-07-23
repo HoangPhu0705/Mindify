@@ -51,28 +51,37 @@ exports.deleteLesson = async (courseId, lessonId) => {
 };
 
 
-const durationToSeconds = (duration) => {
-  const [hours, minutes] = duration.split(':').map(Number);
-  return hours * 3600 + minutes * 60;
-};
-
-// Helper function to convert seconds to "HH:MM"
-const secondsToDuration = (seconds) => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-};
 
 exports.getCombinedDuration = async (courseId) => {
   try {
-    const lessonsSnapshot = await CourseCollection.doc(courseId).collection('lessons').get();
-    const totalSeconds = lessonsSnapshot.docs.reduce((acc, doc) => {
-      const { duration } = doc.data();
-      return acc + durationToSeconds(duration);
-    }, 0);
-    return secondsToDuration(totalSeconds);
+    const lessonsSnapshot = await CourseCollection.doc(courseId)
+                                   .collection('lessons')
+                                   .get();
+
+    let totalSeconds = 0;
+
+    lessonsSnapshot.forEach(doc => {
+      const duration = doc.data().duration;
+      const [minutes, seconds] = duration.split(':').map(Number);
+      totalSeconds += minutes * 60 + seconds;
+    });
+
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const totalHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+
+    let result;
+    if (totalHours > 0) {
+      result = `${totalHours}h ${remainingMinutes}m`;
+    } else if (totalMinutes > 0) {
+      result = `${totalMinutes}m`;
+    } else {
+      result = '0';
+    }
+
+    return result;
   } catch (error) {
-    console.error('Error getting combined duration:', error);
-    throw error;
+    console.error("Error getting combined duration: ", error);
+    throw new Error("Failed to get combined duration");
   }
 };

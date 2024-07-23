@@ -409,4 +409,90 @@ class CourseService {
   // Future<Map<String, dynamic>> getLessonById(String courseId, String lessonId){
   //   return ;
   // }
+
+  Future<void> addResourceToCourse(String courseId, var resources) async {
+    try {
+      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/resources");
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(resources),
+      );
+      if (response.statusCode == 200) {
+        log("added resources");
+      } else {
+        throw Exception("Failed to add resources: ${response.body}");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error adding resources");
+    }
+  }
+
+  Future<void> deleteResourceFromCourse(
+      String courseId, String resourceId) async {
+    try {
+      final url = Uri.parse(
+          "${AppConstants.COURSE_API}/$courseId/resources/$resourceId");
+      final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        log("deleted resource");
+      } else {
+        throw Exception("Failed to delete resource: ${response.body}");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error deleting resource");
+    }
+  }
+
+  Future<void> updateResourceInCourse(
+      String courseId, String resourceId, var updates) async {
+    try {
+      final url = Uri.parse(
+          "${AppConstants.COURSE_API}/$courseId/resources/$resourceId");
+      final response = await http.patch(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(updates),
+      );
+      if (response.statusCode == 200) {
+        log("updated resource");
+      } else {
+        throw Exception("Failed to update resource: ${response.body}");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error updating resource");
+    }
+  }
+
+  Stream<QuerySnapshot> getResourcesStreamByCourse(String courseId) {
+    return _firestore
+        .collection('courses')
+        .doc(courseId)
+        .collection('resources')
+        .snapshots();
+  }
+
+  Future<void> requestCourse(String courseId) async {
+    try {
+      final url = Uri.parse("${AppConstants.baseUrl}/courseRequest/$courseId");
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        log("request Sent");
+      } else {
+        throw Exception("Failed to send course request: ${response.body}");
+      }
+    } catch (e) {
+      log("Error: $e");
+      throw Exception("Error adding resources");
+    }
+  }
 }

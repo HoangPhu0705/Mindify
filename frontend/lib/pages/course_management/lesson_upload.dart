@@ -79,20 +79,25 @@ class _LessonUploadState extends State<LessonUpload> {
     final pickedFile = result.files.first;
     final file = XFile(pickedFile.path!);
 
-    XFile video = await Navigator.push(
+    XFile? video = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (BuildContext context) => VideoEditor(file: file),
       ),
     );
 
-    final videoPlayerController = VideoPlayerController.file(File(video.path));
-    await videoPlayerController.initialize();
-    videoDuration = videoPlayerController.value.duration;
-
-    setState(() {
-      pickedVideo = video;
-    });
+    if (video != null) {
+      final videoPlayerController =
+          VideoPlayerController.file(File(video.path));
+      await videoPlayerController.initialize();
+      videoDuration = videoPlayerController.value.duration;
+      setState(() {
+        pickedVideo = video;
+      });
+      await uploadVideo(lessonIndex);
+    } else {
+      showErrorToast(context, "Invalid video (min: 20sec, max: 25min)");
+    }
   }
 
   Future<XFile?> getThumbnail(String videoUrl) async {
@@ -224,7 +229,7 @@ class _LessonUploadState extends State<LessonUpload> {
 
             await courseService.updateCourse(
               widget.courseId,
-              {'totalDuration': totalDuration["totalSeconds"]},
+              {'duration': totalDuration["totalSeconds"]},
             );
             Navigator.pop(context);
           },
@@ -453,7 +458,6 @@ class _LessonUploadState extends State<LessonUpload> {
                       GestureDetector(
                         onTap: () async {
                           await _pickVideo();
-                          await uploadVideo(lessonIndex);
                         },
                         child: const Icon(
                           Icons.add_circle_outline_outlined,
@@ -488,11 +492,6 @@ class _LessonUploadState extends State<LessonUpload> {
               height: 50,
               child: Column(
                 children: [
-                  Center(
-                    child: Text(
-                      "${(100 * progress).roundToDouble()}%",
-                    ),
-                  ),
                   LinearPercentIndicator(
                     animateFromLastPercent: true,
                     percent: progress,

@@ -52,7 +52,7 @@ class _VideoEditorState extends State<VideoEditor> {
         .catchError(
       (error) {
         // handle minumum duration bigger than video duration error
-        Navigator.pop(context);
+        Navigator.pop(context, null);
       },
       test: (e) => e is VideoMinDurationError,
     );

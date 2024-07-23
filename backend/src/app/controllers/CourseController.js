@@ -199,3 +199,62 @@ exports.getCoursesByCategory = async (req, res) => {
     res.status(500).send({ message: 'Error happened when getting courses by category', error: error.message });
   }
 };
+
+exports.addResourceToCourse = async (req, res) => {
+  const courseId = req.params.courseId;
+  const resource = req.body;
+
+  if (!resource.name || !resource.url) {
+    return res.status(400).send({ success: false, message: 'Missing required fields: name and url' });
+  }
+
+  try {
+    const result = await CourseService.addResourceToCourse(courseId, resource);
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send({ success: false, message: 'Internal Server Error', error: error.message });
+  }
+}
+
+
+exports.updateResourceInCourse = async (req, res) => {
+  const courseId = req.params.courseId;
+  const resourceId = req.params.resourceId;
+  const updates = req.body;
+
+  if (!updates.name && !updates.url) {
+    return res.status(400).send({ success: false, message: 'No fields to update' });
+  }
+
+  try {
+    const result = await CourseService.updateResourceInCourse(courseId, resourceId, updates);
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send({ success: false, message: 'Internal Server Error', error: error.message });
+  }
+};
+
+
+exports.deleteResourceFromCourse = async (req, res) => {
+  const courseId = req.params.courseId;
+  const resourceId = req.params.resourceId;
+
+  try {
+    const result = await CourseService.deleteResourceFromCourse(courseId, resourceId);
+    res.status(200).send({ success: true, message: 'Resource deleted successfully', data: result });
+  } catch (error) {
+    res.status(500).send({ success: false, message: 'Internal Server Error', error: error.message });
+  }
+};
+
+
+exports.getResourcesByCourseId = async (req, res) => {
+  const courseId = req.params.id;
+
+  try {
+    const resources = await CourseService.getResourcesByCourseId(courseId);
+    res.status(200).send({ success: true, data: resources });
+  } catch (error) {
+    res.status(500).send({ success: false, message: 'Internal Server Error', error: error.message });
+  }
+};

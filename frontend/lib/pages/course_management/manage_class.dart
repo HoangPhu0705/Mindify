@@ -426,29 +426,29 @@ class _ManageClassState extends State<ManageClass> {
                           }
                           return const SizedBox.shrink();
                         }),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        "Flashcard (Optional)",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          log("Manage click");
-                        },
-                        child: const Text(
-                          "Create",
-                          style: TextStyle(
-                            color: AppColors.deepBlue,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      subtitle: Text("0 flashcard"),
-                    ),
+                    // ListTile(
+                    //   contentPadding: EdgeInsets.zero,
+                    //   title: const Text(
+                    //     "Flashcard (Optional)",
+                    //     style: TextStyle(
+                    //       fontFamily: "Poppins",
+                    //       fontWeight: FontWeight.w700,
+                    //     ),
+                    //   ),
+                    //   trailing: GestureDetector(
+                    //     onTap: () {
+                    //       log("Manage click");
+                    //     },
+                    //     child: const Text(
+                    //       "Create",
+                    //       style: TextStyle(
+                    //         color: AppColors.deepBlue,
+                    //         fontSize: 14,
+                    //       ),
+                    //     ),
+                    //   ),
+                    //   subtitle: Text("0 flashcard"),
+                    // ),
                     const Divider(),
                     AppSpacing.mediumVertical,
                     const Text(
