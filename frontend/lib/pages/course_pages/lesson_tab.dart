@@ -58,6 +58,8 @@ class _LessonTabState extends State<LessonTab> {
   ScrollController scrollController = ScrollController();
   QuillController quillController = QuillController.basic();
 
+  FocusNode focusNode = FocusNode(canRequestFocus: false);
+
   QuizService quizService = QuizService();
 
   @override
@@ -240,11 +242,13 @@ class _LessonTabState extends State<LessonTab> {
                           ],
                         ),
                       ),
-                      if (widget.userId != widget.instructorId && !widget.isPreviewing)
+                      if (widget.userId != widget.instructorId &&
+                          !widget.isPreviewing)
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: AnimatedButton(
-                            onPress: widget.isFollowed ? _unfollowUser : _followUser,
+                            onPress:
+                                widget.isFollowed ? _unfollowUser : _followUser,
                             isSelected: widget.isFollowed,
                             width: 100,
                             height: 40,
@@ -500,6 +504,7 @@ class _LessonTabState extends State<LessonTab> {
           ? MediaQuery.of(context).size.height * 0.7
           : MediaQuery.of(context).size.height * 0.1,
       child: quill.QuillEditor.basic(
+        focusNode: focusNode,
         scrollController: scrollController,
         configurations: QuillEditorConfigurations(
           controller: controller,

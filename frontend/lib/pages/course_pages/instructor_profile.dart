@@ -36,7 +36,8 @@ class _InstructorProfileState extends State<InstructorProfile> {
     try {
       final userData = await userService.getUserData(widget.instructorId);
       log(userData.toString());
-      final avatarAndDisplayName = await userService.getAvatarAndDisplayName(widget.instructorId);
+      final avatarAndDisplayName =
+          await userService.getAvatarAndDisplayName(widget.instructorId);
 
       if (userData != null && avatarAndDisplayName != null) {
         setState(() {
@@ -56,14 +57,30 @@ class _InstructorProfileState extends State<InstructorProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Teacher Info", style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text(
+          "Teacher Info",
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: AppColors.deepBlue,
       ),
       body: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.only(top: 12),
+            height: MediaQuery.of(context).size.height * 0.25,
+            decoration: const BoxDecoration(
               color: AppColors.deepBlue,
             ),
             child: Column(
@@ -72,7 +89,8 @@ class _InstructorProfileState extends State<InstructorProfile> {
                 CircleAvatar(
                   backgroundImage: avatarUrl.isNotEmpty
                       ? NetworkImage(avatarUrl)
-                      : const NetworkImage("https://i.ibb.co/tZxYspW/default-avatar.png"),
+                      : const NetworkImage(
+                          "https://i.ibb.co/tZxYspW/default-avatar.png"),
                   radius: 40,
                 ),
                 AppSpacing.smallVertical,
@@ -94,55 +112,53 @@ class _InstructorProfileState extends State<InstructorProfile> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => FollowersFollowingPage(
-                                userId: userService.getUserId(),
-                                tab: 0,
-                              ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => FollowersFollowingPage(
+                              userId: userService.getUserId(),
+                              tab: 0,
                             ),
-                          );
-                        },
-                        child: Text(
-                          "$followers Followers •",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
                           ),
+                        );
+                      },
+                      child: Text(
+                        "$followers Followers •",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => FollowersFollowingPage(
-                                userId: userService.getUserId(),
-                                tab: 1, // Navigate to Following tab
-                              ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => FollowersFollowingPage(
+                              userId: userService.getUserId(),
+                              tab: 1, // Navigate to Following tab
                             ),
-                          );
-                        },
-                        child: Text(
-                          " $following Following ",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
                           ),
+                        );
+                      },
+                      child: Text(
+                        " $following Following ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           Expanded(
-            child: TeachingTabTeacher(
-              widget.instructorId, displayName
-              ),
+            child: TeachingTabTeacher(widget.instructorId, displayName),
           ),
         ],
       ),

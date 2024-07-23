@@ -17,7 +17,8 @@ class SubmitProject extends StatefulWidget {
   final bool isPreviewing;
   SubmitProject({
     Key? key,
-    required this.course, required this.isPreviewing,
+    required this.course,
+    required this.isPreviewing,
   }) : super(key: key);
   @override
   State<SubmitProject> createState() => _SubmitProjectState();
@@ -29,7 +30,7 @@ class _SubmitProjectState extends State<SubmitProject> {
     // TODO: implement initState
     super.initState();
     quillController.document = Document.fromJson(
-      jsonDecode(widget.course.description),
+      jsonDecode(widget.course.projectDescription),
     );
   }
 
@@ -53,30 +54,31 @@ class _SubmitProjectState extends State<SubmitProject> {
               ),
             ),
             AppSpacing.mediumVertical,
-            widget.isPreviewing ? const SizedBox.shrink() :
-            SizedBox(
-              height: 100.0,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            "https://pollthepeople.app/wp-content/uploads/2022/06/Figma-Design-Flow-Image.png"),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(5),
+            widget.isPreviewing
+                ? const SizedBox.shrink()
+                : SizedBox(
+                    height: 100.0,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 3,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  "https://pollthepeople.app/wp-content/uploads/2022/06/Figma-Design-Flow-Image.png"),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
             AppSpacing.mediumVertical,
             const Align(
               alignment: Alignment.bottomRight,
@@ -150,6 +152,7 @@ class _SubmitProjectState extends State<SubmitProject> {
       ),
       padding: const EdgeInsets.all(16),
       child: quill.QuillEditor.basic(
+        focusNode: FocusNode(canRequestFocus: false),
         scrollController: scrollController,
         configurations: QuillEditorConfigurations(
           controller: controller,

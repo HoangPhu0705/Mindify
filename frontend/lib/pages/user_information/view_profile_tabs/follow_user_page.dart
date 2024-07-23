@@ -31,7 +31,7 @@ class _FollowersFollowingPageState extends State<FollowersFollowingPage> {
       setState(() {
         displayName = data?['displayName'] ?? 'Unknown'; // Update displayName
       });
-      
+
       final followersFuture = _fetchFollowers(widget.userId);
       final followingFuture = _fetchFollowing(widget.userId);
 
@@ -86,8 +86,26 @@ class _FollowersFollowingPageState extends State<FollowersFollowingPage> {
       initialIndex: widget.tab,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(displayName),
-          bottom: TabBar(
+          title: Text(
+            displayName,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          bottom: const TabBar(
+            dividerColor: AppColors.lightGrey,
+            indicatorColor: Colors.black,
+            indicatorSize: TabBarIndicatorSize.tab,
+            unselectedLabelStyle: TextStyle(
+              color: AppColors.lightGrey,
+              fontSize: 16,
+            ),
+            labelStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
             tabs: [
               Tab(text: 'Followers'),
               Tab(text: 'Following'),
@@ -118,10 +136,14 @@ class _FollowersFollowingPageState extends State<FollowersFollowingPage> {
               );
             }
             if (snapshot.hasError) {
-              return Center(child: Text("Error loading data"));
+              return const Center(
+                child: Text("Error loading data"),
+              );
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text("No data found"));
+              return const Center(
+                child: Text("No data found"),
+              );
             }
 
             final followers = snapshot.data!['followers']!;
@@ -140,40 +162,44 @@ class _FollowersFollowingPageState extends State<FollowersFollowingPage> {
   }
 
   Widget _buildUserList(List<String> userIds) {
-    return ListView.builder(
-      itemCount: userIds.length,
-      itemBuilder: (context, index) {
-        final userId = userIds[index];
-        return FutureBuilder<Map<String, dynamic>?>(
-          future: userService.getAvatarAndDisplayName(userId),
-          builder: (context, userSnapshot) {
-            if (userSnapshot.connectionState == ConnectionState.waiting) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: userIds.length,
+        itemBuilder: (context, index) {
+          final userId = userIds[index];
+          return FutureBuilder<Map<String, dynamic>?>(
+            future: userService.getAvatarAndDisplayName(userId),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.grey.shade300,
+                  ),
+                  title: Container(
+                    color: Colors.grey.shade300,
+                    height: 16,
+                    width: double.infinity,
+                  ),
+                );
+              }
+              if (userSnapshot.hasError || !userSnapshot.hasData) {
+                return const ListTile(
+                  title: Text('Error fetching user info'),
+                );
+              }
+              final user = userSnapshot.data!;
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.grey.shade300,
+                  backgroundImage: NetworkImage(user['photoUrl']),
                 ),
-                title: Container(
-                  color: Colors.grey.shade300,
-                  height: 16,
-                  width: double.infinity,
-                ),
+                title: Text(user['displayName']),
               );
-            }
-            if (userSnapshot.hasError || !userSnapshot.hasData) {
-              return ListTile(
-                title: Text('Error fetching user info'),
-              );
-            }
-            final user = userSnapshot.data!;
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(user['photoUrl']),
-              ),
-              title: Text(user['displayName']),
-            );
-          },
-        );
-      },
+            },
+          );
+        },
+      ),
     );
   }
 }

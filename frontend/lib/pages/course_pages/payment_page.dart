@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:frontend/services/functions/PaymentService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:frontend/utils/constants.dart';
@@ -28,26 +32,38 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   final paymentService = PaymentService();
+  ScrollController scrollController = ScrollController();
+  QuillController quillController = QuillController.basic();
 
   @override
   void initState() {
     super.initState();
     Stripe.publishableKey = AppConstants.PUBLIC_KEY_STRIPE;
     Stripe.instance.applySettings();
+    quillController.document = Document.fromJson(
+      jsonDecode(widget.course.description),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: AppColors.ghostWhite,
+        backgroundColor: AppColors.ghostWhite,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
         ),
-        title: Text('Payment'),
+        title: const Text(
+          'Purchase course',
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,34 +73,46 @@ class _PaymentPageState extends State<PaymentPage> {
               width: double.infinity,
               fit: BoxFit.cover,
             ),
-            SizedBox(height: 16.0),
+            AppSpacing.mediumVertical,
             Text(
               widget.course.title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            SizedBox(height: 8.0),
+            AppSpacing.smallVertical,
             Text(
               'Instructor: ${widget.course.instructorName}',
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[700],
+              ),
             ),
-            SizedBox(height: 16.0),
-            Text(
+            AppSpacing.mediumVertical,
+            const Text(
               'Description:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            SizedBox(height: 8.0),
-            Text(
-              widget.course.description,
-              style: TextStyle(fontSize: 16),
+            AppSpacing.smallVertical,
+            _buildQuillEditor(
+              quillController,
+              scrollController,
             ),
-            SizedBox(height: 16.0),
-            Divider(),
-            SizedBox(height: 16.0),
+            AppSpacing.mediumVertical,
+            const Divider(),
+            AppSpacing.mediumVertical,
             Text(
               'Price: \$${widget.price}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            SizedBox(height: 16.0),
+            AppSpacing.mediumVertical,
             GFButton(
               onPressed: () async {
                 try {
@@ -130,9 +158,35 @@ class _PaymentPageState extends State<PaymentPage> {
               },
               text: "Proceed to Payment",
               color: AppColors.deepBlue,
-              textStyle: TextStyle(color: Colors.white),
+              textStyle: const TextStyle(color: Colors.white),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuillEditor(
+      QuillController controller, ScrollController scrollController) {
+    return Container(
+      // width: double.infinity,
+      // height: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.ghostWhite,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: quill.QuillEditor.basic(
+        focusNode: FocusNode(canRequestFocus: false),
+        scrollController: scrollController,
+        configurations: QuillEditorConfigurations(
+          controller: controller,
+          scrollPhysics: const NeverScrollableScrollPhysics(),
+          autoFocus: false,
+          scrollable: true,
+          showCursor: false,
+          sharedConfigurations: const QuillSharedConfigurations(
+            locale: Locale('en'),
+          ),
         ),
       ),
     );
