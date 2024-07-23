@@ -209,6 +209,7 @@ class _CourseDetailState extends State<CourseDetail>
           userId: widget.userId,
           courseId: widget.courseId,
           price: course!.price,
+          course: course!,
         ),
       ),
     );
