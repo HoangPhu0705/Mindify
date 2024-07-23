@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer' as dev;
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -53,13 +52,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   Future<void> _initPage() async {
     try {
+      instructorInfo.clear();
       _coursesFuture = await courseService.getRandomCourses();
       _top5Courses = await courseService.getTop5Courses();
       _newestCourses = await courseService.getFiveNewestCourses();
 
       await _loadSavedCourses();
       await _loadInstructorInfo();
-      await _loadCoursesByCategory();
+      // await _loadCoursesByCategory();
     } catch (e) {
       dev.log("Error in _initPage: $e");
     }
@@ -113,6 +113,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               'avatar': data!["photoUrl"],
               'displayName': data["displayName"],
             };
+            dev.log(instructorInfo[course.instructorId].toString());
           }
         }
       }
@@ -130,6 +131,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               'avatar': data!["photoUrl"],
               'displayName': data["displayName"],
             };
+            
           }
         }
       }

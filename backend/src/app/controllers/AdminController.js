@@ -2,8 +2,17 @@ const { loginUser,
     logout,
     getAllUsersPaginated,
     getAllCoursesPaginated,
-    lockUser, 
-    unlockUser
+    lockUser,
+    unlockUser,
+    getTotalStudents,
+    getMonthlyEnrollments,
+    getYearlyEnrollments,
+    getEnrollmentsByDateRange,
+    getTotalCourses,
+    getRevenue,
+    getYearlyRevenue, 
+    getMonthlyRevenue, 
+    getRevenueByDateRange
 } = require('../service/AdminService');
 
 
@@ -37,8 +46,8 @@ class AdminController {
     showAllUsers = async (req, res) => {
         const { limit, startAfter } = req.query;
         try {
-            const {users, totalCount} = await getAllUsersPaginated(parseInt(limit), startAfter);
-            res.status(200).json({users, totalCount});
+            const { users, totalCount } = await getAllUsersPaginated(parseInt(limit), startAfter);
+            res.status(200).json({ users, totalCount });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -74,6 +83,98 @@ class AdminController {
         }
     }
 
+    getTotalStudentsController = async (req, res) => {
+        try {
+            const totalStudents = await getTotalStudents();
+            res.status(200).json({ totalStudents });
+        } catch (error) {
+            console.error('Error getting total students:', error);
+            res.status(500).json({ message: 'Error getting total students' });
+        }
+    };
+
+    getMonthlyEnrollments = async (req, res) => {
+        const { year } = req.query;
+        try {
+            const monthlyEnrollments = await getMonthlyEnrollments(year);
+            res.status(200).json({ enrollments: monthlyEnrollments });
+        } catch (error) {
+            console.error('Error getting monthly enrollments:', error);
+            res.status(500).json({ message: 'Error getting monthly enrollments' });
+        }
+    };
+
+    getYearlyEnrollments = async (req, res) => {
+        try {
+            const yearlyEnrollments = await getYearlyEnrollments();
+            res.status(200).json({ enrollments: yearlyEnrollments });
+        } catch (error) {
+            console.error('Error getting yearly enrollments:', error);
+            res.status(500).json({ message: 'Error getting yearly enrollments' });
+        }
+    };
+
+    getEnrollmentsByDateRange = async (req, res) => {
+        const { startDate, endDate } = req.query;
+        try {
+            const enrollments = await getEnrollmentsByDateRange(startDate, endDate);
+            res.status(200).json({ enrollments });
+        } catch (error) {
+            console.error('Error getting enrollments:', error);
+            res.status(500).json({ message: 'Error getting enrollments' });
+        }
+    };
+
+    // transactions
+    getYearlyRevenue = async (req, res) => {
+        try {
+            const revenue = await getYearlyRevenue();
+            res.status(200).json(revenue);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    };
+
+    getMonthlyRevenue = async (req, res) => {
+        try {
+            const { year } = req.params;
+            const revenue = await getMonthlyRevenue(year);
+            res.status(200).json(revenue);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    };
+
+    getRevenueByDateRange = async (req, res) => {
+        try {
+            const { startDate, endDate } = req.query;
+            const revenue = await getRevenueByDateRange(startDate, endDate);
+            res.status(200).json(revenue);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    };
+
+    // getTotalCourses
+    getTotalCourses = async (req, res) => {
+        try {
+            const totalCourses = await getTotalCourses();
+            res.status(200).json({ totalCourses });
+        } catch (error) {
+            console.error('Error getting total courses', error);
+            res.status(500).json({ message: 'Error getting total courses' });
+        }
+    }
+    //   getRevenue
+    getRevenue = async (req, res) => {
+        try {
+            const totalRevenue = await getRevenue();
+            res.status(200).json({ totalRevenue });
+        } catch (error) {
+            console.error('Error getting revenue', error);
+            res.status(500).json({ message: 'Error getting revenue' });
+        }
+    }
 }
 
 module.exports = new AdminController();

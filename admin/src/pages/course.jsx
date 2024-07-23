@@ -110,7 +110,7 @@ const CourseManagement = () => {
           </Typography>
           <Select
             value={String(coursePage.limit)}
-            onChange={(e) => handleLimitChange(e.target.value)}
+            onChange={(e) => handleLimitChange(e)}
             className="ml-2"
           >
             <Option value="5">5</Option>
