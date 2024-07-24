@@ -197,7 +197,8 @@ class _CourseDetailState extends State<CourseDetail>
     try {
       final lessonId = course!.lessons[_currentVideoIndex].id;
       if (_enrollmentId != null) {
-        await enrollmentService.addProgressToEnrollment(_enrollmentId!, lessonId);
+        await enrollmentService.addProgressToEnrollment(
+            _enrollmentId!, lessonId);
         log("Progress added to enrollment");
       } else {
         log("No enrollment found");
@@ -385,8 +386,10 @@ class _CourseDetailState extends State<CourseDetail>
                       ),
                       NoteTab(
                         playerkey: _videoPlayerKey,
+                        lessonIndex: _currentVideoIndex,
                         enrollmentId: _enrollmentId!,
                         lessonId: course!.lessons[_currentVideoIndex].id,
+                        lessonTitle: course!.lessons[_currentVideoIndex].title,
                       ),
                     ],
                   ),

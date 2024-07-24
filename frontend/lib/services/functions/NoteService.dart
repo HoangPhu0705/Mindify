@@ -42,7 +42,7 @@ class NoteService {
   Future<void> updateNote(
       String enrollmentId, String noteId, Map<String, dynamic> data) async {
     final url =
-        Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/notes/$noteId');
+        Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/$noteId');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
