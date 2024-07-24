@@ -9,12 +9,14 @@ class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
   final int currentTime;
+  final Function onVideoEnd;
 
   const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
     required this.currentTime,
+    required this.onVideoEnd,
   });
 
   @override
@@ -79,6 +81,7 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
       if (videoPosition >= videoDuration) {
         removePodListener();
         log("Video ${widget.url} het roi");
+        widget.onVideoEnd(widget.url);
         addPodListener();
         return true;
       }

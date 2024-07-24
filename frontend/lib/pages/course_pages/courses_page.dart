@@ -243,13 +243,16 @@ class _MyCoursesPageState extends State<MyCoursePage>
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<DocumentSnapshot> enrollments = snapshot.data!.docs;
-          return FutureBuilder<List<Course>>(
+          return FutureBuilder<List<Map<String, dynamic>>>(
             future: Future.wait(
               enrollments.map((document) async {
                 Map<String, dynamic> data =
                     document.data() as Map<String, dynamic>;
                 String courseId = data['courseId'];
-                return await courseService.getCourseById(courseId);
+                Course course = await courseService.getCourseById(courseId);
+                List<String> progress = await enrollmentService
+                    .getProgressOfEnrollment(document.id);
+                return {'course': course, 'progress': progress};
               }).toList(),
             ),
             builder: (context, courseSnapshot) {
@@ -260,11 +263,15 @@ class _MyCoursesPageState extends State<MyCoursePage>
                   color: AppColors.deepBlue,
                 );
               } else if (courseSnapshot.hasData) {
-                List<Course> courses = courseSnapshot.data!;
+                List<Map<String, dynamic>> courseDataList =
+                    courseSnapshot.data!;
                 return ListView.builder(
-                  itemCount: courses.length,
+                  itemCount: courseDataList.length,
                   itemBuilder: (context, index) {
-                    Course course = courses[index];
+                    Course course = courseDataList[index]['course'];
+                    List<String> progress = courseDataList[index]['progress'];
+                    int totalLessons = course.lessonNum;
+                    int completedLessons = progress.length;
 
                     return GestureDetector(
                       onTap: () {
@@ -277,15 +284,43 @@ class _MyCoursesPageState extends State<MyCoursePage>
                           ),
                         );
                       },
-                      child: MyCourseItem(
-                        imageUrl: course.thumbnail,
-                        title: course.title,
-                        author: course.instructorName,
-                        duration: course.duration,
-                        students: course.students.toString(),
-                        moreOnPress: () {
-                          showFolderBottomSheet(context, course.id);
-                        },
+                      child: Column(
+                        children: [
+                          MyCourseItem(
+                            imageUrl: course.thumbnail,
+                            title: course.title,
+                            author: course.instructorName,
+                            duration: course.duration,
+                            students: course.students.toString(),
+                            moreOnPress: () {
+                              showFolderBottomSheet(context, course.id);
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                LinearProgressIndicator(
+                                  value: totalLessons > 0
+                                      ? completedLessons / totalLessons
+                                      : 0,
+                                  backgroundColor: Colors.grey.shade300,
+                                  color: AppColors.deepBlue,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  '$completedLessons of $totalLessons lessons completed',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },

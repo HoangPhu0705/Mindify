@@ -193,30 +193,26 @@ class _CourseDetailState extends State<CourseDetail>
     }
   }
 
-  // void _handleVideoEnd(String videoUrl) async {
-  //   if (_enrollmentId != null && _currentVideoUrl == videoUrl) {
-  //     final currentLesson = course!.lessons[_currentVideoIndex];
-  //     try {
-  //       // await enrollmentService.addProgressToEnrollment(_enrollmentId!, {
-  //       //   'lessonId': currentLesson.id,
-  //       //   'completedAt': DateTime.now().toIso8601String(),
-  //       // });
-  //       log('Video Ended');
-  //     } catch (e) {
-  //       log('Error saving progress: $e');
-  //     }
+  void _addProgressToEnrollment() async {
+    try {
+      final lessonId = course!.lessons[_currentVideoIndex].id;
+      if (_enrollmentId != null) {
+        await enrollmentService.addProgressToEnrollment(_enrollmentId!, lessonId);
+        log("Progress added to enrollment");
+      } else {
+        log("No enrollment found");
+      }
+    } catch (e) {
+      log("Error adding progress to enrollment: $e");
+    }
+  }
 
-  //     // if (_currentVideoIndex < course!.lessons.length - 1) {
-  //     //   setState(() {
-  //     //     _currentVideoIndex += 1;
-  //     //     _currentVideoUrl = course!.lessons[_currentVideoIndex].link;
-  //     //   });
-  //     //   _videoPlayerKey.currentState?.goToVideo(_currentVideoUrl);
-  //     // }
-  //   }
-  // }
+  void _handleVideoEnd(String videoUrl) async {
+    log("Video $videoUrl ended");
+    _addProgressToEnrollment();
+  }
 
-  void _handleVideoEnd() {}
+  // void _handleVideoEnd() {}
 
   void _onLessonTap(String videoUrl, int index) async {
     setState(() {
@@ -339,6 +335,7 @@ class _CourseDetailState extends State<CourseDetail>
                   url: _currentVideoUrl,
                   dataSourceType: DataSourceType.network,
                   currentTime: _currentTime,
+                  onVideoEnd: _handleVideoEnd,
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,
@@ -370,6 +367,7 @@ class _CourseDetailState extends State<CourseDetail>
                         instructorId: course!.instructorId,
                         userId: userId,
                         course: course!,
+                        enrollmentId: _enrollmentId!,
                         currentVideoIndex: _currentVideoIndex,
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,
