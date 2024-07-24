@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
@@ -8,12 +9,14 @@ class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
   final int currentTime;
+  final Function(String) onVideoEnd;
 
   const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
     required this.currentTime,
+    required this.onVideoEnd,
   });
 
   @override
@@ -23,6 +26,7 @@ class VideoPlayerView extends StatefulWidget {
 class VideoPlayerViewState extends State<VideoPlayerView> {
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
+  Timer? _timer;
 
   Future<void> initVideoPlayer() async {
     _podPlayerController = PodPlayerController(
@@ -37,19 +41,45 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     seekToPeriod(
       Duration(seconds: widget.currentTime),
     );
-    setState(() {});
+    setState(() {
+      log(_podPlayerController.videoPlayerValue!.duration.toString());
+    // _podPlayerController.addListener(_videoListener);
+    // startVideoListenerTimer();
+    });
+    _podPlayerController.addListener(_listenToEndVideo);
+    
   }
 
   @override
   void initState() {
     super.initState();
     _future = initVideoPlayer();
+    
   }
 
   @override
   void dispose() {
     _podPlayerController.dispose();
+    _timer?.cancel();
     super.dispose();
+  }
+
+  void _listenToEndVideo() {
+    if (_podPlayerController.videoPlayerValue != null) {
+      final videoPosition = _podPlayerController.videoPlayerValue!.position;
+      final videoDuration = _podPlayerController.videoPlayerValue!.duration;
+
+      log('Current Position: $videoPosition, Duration: $videoDuration');
+
+      if (videoPosition != null && videoDuration != null && videoPosition >= videoDuration) {
+        widget.onVideoEnd(widget.url);
+        setState() {
+    _future = initVideoPlayer();
+
+        }
+
+      }
+    }
   }
 
   void goToVideo(String url) {

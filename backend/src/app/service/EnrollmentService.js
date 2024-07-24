@@ -106,3 +106,36 @@ exports.getDownloadedLessons = async (userId) => {
     }
 };
 
+exports.getProgressOfEnrollment = async (enrollmentId) => {
+    try {
+        const docRef = EnrollmentCollection.doc(enrollmentId);
+        const doc = await docRef.get();
+
+        if (!doc.exists) {
+            throw new Error('Enrollment not found');
+        }
+
+        const data = doc.data();
+        return data.progress || [];
+    } catch (error) {
+        console.error('Error getting progress of enrollment:', error);
+        throw error;
+    }
+};
+
+
+exports.addProgressToEnrollment = async (enrollmentId, data) => {
+    try {
+        const docRef = EnrollmentCollection.doc(enrollmentId);
+        await docRef.update({
+            progress: firestore.FieldValue.arrayUnion(data)
+        });
+        console.log(data);
+        return { "message": "Progress added successfully" };
+    } catch (error) {
+        console.error('Error adding progress to enrollment:', error);
+        throw error;
+    }
+};
+
+

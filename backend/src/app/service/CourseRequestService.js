@@ -101,7 +101,7 @@ exports.approveRequest = async (requestId) => {
 
         // Update the course status to approved
         await CourseCollection.doc(courseId).update({
-            status: 'approved'
+            isPublic: true,
         });
 
         // Delete the request document

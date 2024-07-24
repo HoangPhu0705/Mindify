@@ -66,3 +66,26 @@ exports.getDownloadedLessons = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.addProgressToEnrollment = async (req, res) => {
+    const { enrollmentId } = req.params;
+    const data = req.body;
+
+    try {
+        const response = await EnrollmentService.addProgressToEnrollment(enrollmentId, data);
+        res.status(200).send(response);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+}
+
+exports.getProgressOfEnrollment = async (req, res) => {
+    const { enrollmentId } = req.params;
+
+    try {
+        const progress = await EnrollmentService.getProgressOfEnrollment(enrollmentId);
+        res.status(200).send(progress);
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+}
