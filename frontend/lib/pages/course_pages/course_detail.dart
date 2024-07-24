@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
+import 'package:frontend/pages/course_pages/note_tab.dart';
 import 'package:frontend/pages/course_pages/payment_page.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
@@ -381,9 +382,7 @@ class _CourseDetailState extends State<CourseDetail>
                         courseId: course!.id,
                         isEnrolled: isEnrolled,
                       ),
-                      const Center(
-                        child: Text("Notes"),
-                      ),
+                      NoteTab(),
                     ],
                   ),
                 ),
