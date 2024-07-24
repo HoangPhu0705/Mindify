@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
@@ -90,16 +91,30 @@ class EnrollmentService {
     }
   }
 
-  Future<void> addProgressToEnrollment(String enrollmentId, var data) async {
+  Future<void> addProgressToEnrollment(String enrollmentId, String lessonId) async {
     final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
+      body: jsonEncode({'lessonId': lessonId}),
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to add progress to enrollment');
+      throw Exception('Failed to add progress to enrollment: ${response.body}');
     }
   }
+
+  Future<List<String>> getProgressOfEnrollment(String enrollmentId) async {
+    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
+    final response = await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 200) {
+      List<dynamic> progressData = jsonDecode(response.body);
+      log(progressData.toString());
+      return progressData.map((item) => item as String).toList();
+    } else {
+      throw Exception('Failed to get progress of enrollment: ${response.body}');
+    }
+  }
+
 }

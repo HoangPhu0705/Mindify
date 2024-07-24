@@ -69,10 +69,14 @@ exports.getDownloadedLessons = async (req, res) => {
 
 exports.addProgressToEnrollment = async (req, res) => {
     const { enrollmentId } = req.params;
-    const data = req.body;
+    const { lessonId } = req.body;
+
+    if (!lessonId) {
+        return res.status(400).send({ error: 'Lesson ID is required' });
+    }
 
     try {
-        const response = await EnrollmentService.addProgressToEnrollment(enrollmentId, data);
+        const response = await EnrollmentService.addProgressToEnrollment(enrollmentId, lessonId);
         res.status(200).send(response);
     } catch (error) {
         res.status(500).send({ error: error.message });

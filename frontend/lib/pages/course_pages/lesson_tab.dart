@@ -9,6 +9,7 @@ import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/quiz_page.dart';
 import 'package:frontend/pages/course_pages/instructor_profile.dart';
+import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/lesson.dart';
@@ -27,6 +28,7 @@ class LessonTab extends StatefulWidget {
   final String instructorId;
   final String userId;
   final Course course;
+  final String enrollmentId;
   final bool isEnrolled;
   final int currentVideoIndex;
   final void Function(String, int) onLessonTap;
@@ -39,6 +41,7 @@ class LessonTab extends StatefulWidget {
     required this.instructorId,
     required this.userId,
     required this.course,
+    required this.enrollmentId,
     required this.isEnrolled,
     required this.onLessonTap,
     required this.onSaveLesson,
@@ -52,6 +55,7 @@ class LessonTab extends StatefulWidget {
 class _LessonTabState extends State<LessonTab> {
   DateTime? _lastNotificationTime;
   final userService = UserService();
+  final enrollmentService = EnrollmentService();
   Map<String, dynamic> instructorInfo = {};
   String instructorAvatar = "";
   String instructorName = "";
@@ -61,12 +65,13 @@ class _LessonTabState extends State<LessonTab> {
   FocusNode focusNode = FocusNode(canRequestFocus: false);
 
   QuizService quizService = QuizService();
-
+  List<String> completedLessons = [];
   @override
   void initState() {
     super.initState();
     _getInstructorInfo();
     _sortLessonsByIndex();
+    _fetchProgress();
 
     if (!widget.isPreviewing) _checkIfFollowed();
     quillController.document = Document.fromJson(
@@ -148,6 +153,19 @@ class _LessonTabState extends State<LessonTab> {
     } catch (e) {
       log(e.toString());
       if (mounted) showErrorToast(context, 'Failed to unfollow user');
+    }
+  }
+
+  Future<void> _fetchProgress() async {
+    try {
+      final progress =
+          await enrollmentService.getProgressOfEnrollment(widget.enrollmentId);
+          log(progress.toString());
+      setState(() {
+        completedLessons = progress;
+      });
+    } catch (e) {
+      log("Error fetching progress: $e");
     }
   }
 
@@ -312,6 +330,9 @@ class _LessonTabState extends State<LessonTab> {
                     itemCount: widget.course.lessons.length,
                     itemBuilder: (context, index) {
                       final lesson = widget.course.lessons[index];
+                      final isCompleted = completedLessons.contains(lesson.id);
+                      log(lesson.id);
+                      log(isCompleted.toString());
                       final isLessonAccessible =
                           widget.isEnrolled || index == 0;
 
@@ -346,7 +367,9 @@ class _LessonTabState extends State<LessonTab> {
                           ),
                           leading: Icon(
                             isLessonAccessible || widget.isPreviewing
-                                ? Icons.play_circle_outline_outlined
+                                ? (isCompleted
+                                    ? Icons.check_circle_outline
+                                    : Icons.play_circle_outline_outlined)
                                 : Icons.lock,
                             size: 30,
                             color: lesson.index == widget.currentVideoIndex
