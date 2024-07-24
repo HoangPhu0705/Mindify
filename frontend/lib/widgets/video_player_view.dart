@@ -9,14 +9,12 @@ class VideoPlayerView extends StatefulWidget {
   final String url;
   final DataSourceType dataSourceType;
   final int currentTime;
-  final Function(String) onVideoEnd;
 
   const VideoPlayerView({
     super.key,
     required this.url,
     required this.dataSourceType,
     required this.currentTime,
-    required this.onVideoEnd,
   });
 
   @override
@@ -26,7 +24,6 @@ class VideoPlayerView extends StatefulWidget {
 class VideoPlayerViewState extends State<VideoPlayerView> {
   late PodPlayerController _podPlayerController;
   late Future<void> _future;
-  Timer? _timer;
 
   Future<void> initVideoPlayer() async {
     _podPlayerController = PodPlayerController(
@@ -34,58 +31,34 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
       podPlayerConfig: const PodPlayerConfig(
         autoPlay: true,
         isLooping: false,
-        videoQualityPriority: [360, 720],
+        videoQualityPriority: [1080, 720, 360],
       ),
     );
     await _podPlayerController.initialise();
     seekToPeriod(
       Duration(seconds: widget.currentTime),
     );
-    setState(() {
-      log(_podPlayerController.videoPlayerValue!.duration.toString());
-    // _podPlayerController.addListener(_videoListener);
-    // startVideoListenerTimer();
-    });
-    _podPlayerController.addListener(_listenToEndVideo);
-    
   }
 
   @override
   void initState() {
     super.initState();
     _future = initVideoPlayer();
-    
+    _podPlayerController.addListener(lessonEnded);
   }
 
   @override
   void dispose() {
     _podPlayerController.dispose();
-    _timer?.cancel();
     super.dispose();
-  }
-
-  void _listenToEndVideo() {
-    if (_podPlayerController.videoPlayerValue != null) {
-      final videoPosition = _podPlayerController.videoPlayerValue!.position;
-      final videoDuration = _podPlayerController.videoPlayerValue!.duration;
-
-      log('Current Position: $videoPosition, Duration: $videoDuration');
-
-      if (videoPosition != null && videoDuration != null && videoPosition >= videoDuration) {
-        widget.onVideoEnd(widget.url);
-        setState() {
-    _future = initVideoPlayer();
-
-        }
-
-      }
-    }
   }
 
   void goToVideo(String url) {
     _podPlayerController.changeVideo(
       playVideoFrom: PlayVideoFrom.network(url),
     );
+    removePodListener();
+    addPodListener();
   }
 
   int getCurrentTime() {
@@ -95,6 +68,31 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
 
   void seekToPeriod(Duration duration) {
     _podPlayerController.videoSeekTo(duration);
+  }
+
+  bool lessonEnded() {
+    if (_podPlayerController.videoPlayerValue != null) {
+      final videoPosition = _podPlayerController.videoPlayerValue!.position;
+      final videoDuration = _podPlayerController.videoPlayerValue!.duration;
+
+      log('Current Position: $videoPosition, Duration: $videoDuration');
+      if (videoPosition >= videoDuration) {
+        removePodListener();
+        log("Video ${widget.url} het roi");
+        addPodListener();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void removePodListener() {
+    _podPlayerController.removeListener(lessonEnded);
+  }
+
+  void addPodListener() {
+    _podPlayerController.addListener(lessonEnded);
   }
 
   @override
@@ -158,3 +156,22 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     );
   }
 }
+
+
+  // void _listenToEndVideo() {
+  //   if (_podPlayerController.videoPlayerValue != null) {
+  //     final videoPosition = _podPlayerController.videoPlayerValue!.position;
+  //     final videoDuration = _podPlayerController.videoPlayerValue!.duration;
+
+  //     log('Current Position: $videoPosition, Duration: $videoDuration');
+
+  //     if (videoPosition != null &&
+  //         videoDuration != null &&
+  //         videoPosition >= videoDuration) {
+  //       widget.onVideoEnd(widget.url);
+  //       setState() {
+  //         _future = initVideoPlayer();
+  //       }
+  //     }
+  //   }
+  // }

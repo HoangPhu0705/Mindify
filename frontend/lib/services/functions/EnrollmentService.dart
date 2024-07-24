@@ -90,12 +90,12 @@ class EnrollmentService {
     }
   }
 
-  Future<void> addProgressToEnrollment(String enrollmentId, Map<String, dynamic> data) async {
+  Future<void> addProgressToEnrollment(String enrollmentId, var data) async {
     final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'enrollmentId': enrollmentId, 'data': data}),
+      body: jsonEncode(data),
     );
 
     if (response.statusCode != 200) {

@@ -150,7 +150,7 @@ class _CourseDetailState extends State<CourseDetail>
   @override
   void dispose() {
     _tabController?.dispose();
-    // _videoPlayerKey.currentState!.dispose();
+
     super.dispose();
   }
 
@@ -193,28 +193,30 @@ class _CourseDetailState extends State<CourseDetail>
     }
   }
 
-  void _handleVideoEnd(String videoUrl) async {
-    if (_enrollmentId != null && _currentVideoUrl == videoUrl) {
-      final currentLesson = course!.lessons[_currentVideoIndex];
-      try {
-        await enrollmentService.addProgressToEnrollment(_enrollmentId!, {
-          'lessonId': currentLesson.id,
-          'completedAt': DateTime.now().toIso8601String(),
-        });
-        log('Video Ended');
-      } catch (e) {
-        log('Error saving progress: $e');
-      }
-      
-      // if (_currentVideoIndex < course!.lessons.length - 1) {
-      //   setState(() {
-      //     _currentVideoIndex += 1;
-      //     _currentVideoUrl = course!.lessons[_currentVideoIndex].link;
-      //   });
-      //   _videoPlayerKey.currentState?.goToVideo(_currentVideoUrl);
-      // }
-    }
-  }
+  // void _handleVideoEnd(String videoUrl) async {
+  //   if (_enrollmentId != null && _currentVideoUrl == videoUrl) {
+  //     final currentLesson = course!.lessons[_currentVideoIndex];
+  //     try {
+  //       // await enrollmentService.addProgressToEnrollment(_enrollmentId!, {
+  //       //   'lessonId': currentLesson.id,
+  //       //   'completedAt': DateTime.now().toIso8601String(),
+  //       // });
+  //       log('Video Ended');
+  //     } catch (e) {
+  //       log('Error saving progress: $e');
+  //     }
+
+  //     // if (_currentVideoIndex < course!.lessons.length - 1) {
+  //     //   setState(() {
+  //     //     _currentVideoIndex += 1;
+  //     //     _currentVideoUrl = course!.lessons[_currentVideoIndex].link;
+  //     //   });
+  //     //   _videoPlayerKey.currentState?.goToVideo(_currentVideoUrl);
+  //     // }
+  //   }
+  // }
+
+  void _handleVideoEnd() {}
 
   void _onLessonTap(String videoUrl, int index) async {
     setState(() {
@@ -224,6 +226,8 @@ class _CourseDetailState extends State<CourseDetail>
 
     _videoPlayerKey.currentState?.goToVideo(videoUrl);
   }
+
+  void listenToVideoProgress() {}
 
   void _navigateToPaymentScreen() {
     Navigator.push(
@@ -335,7 +339,6 @@ class _CourseDetailState extends State<CourseDetail>
                   url: _currentVideoUrl,
                   dataSourceType: DataSourceType.network,
                   currentTime: _currentTime,
-                  onVideoEnd: _handleVideoEnd,
                 ),
                 TabBar(
                   tabAlignment: TabAlignment.center,
