@@ -385,7 +385,11 @@ class _CourseDetailState extends State<CourseDetail>
                         courseId: course!.id,
                         isEnrolled: isEnrolled,
                       ),
-                      NoteTab(),
+                      NoteTab(
+                        playerkey: _videoPlayerKey,
+                        enrollmentId: _enrollmentId!,
+                        lessonId: course!.lessons[_currentVideoIndex].id,
+                      ),
                     ],
                   ),
                 ),
