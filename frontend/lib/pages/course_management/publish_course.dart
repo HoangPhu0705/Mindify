@@ -209,6 +209,7 @@ class _PublishCourseState extends State<PublishCourse> {
       backgroundColor: AppColors.ghostWhite,
       appBar: AppBar(
         surfaceTintColor: AppColors.ghostWhite,
+        backgroundColor: AppColors.ghostWhite,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
