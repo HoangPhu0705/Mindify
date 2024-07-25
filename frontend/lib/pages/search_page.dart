@@ -22,6 +22,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   int _currentSearchIndex = -1;
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   final CourseService _courseService = CourseService();
   final UserService userService = UserService();
   String userId = '';
@@ -49,6 +50,13 @@ class _SearchPageState extends State<SearchPage> {
     userId = userService.getUserId();
     _future = _preloadImages();
     _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _preloadImages() async {
@@ -267,6 +275,7 @@ class _SearchPageState extends State<SearchPage> {
                 backgroundColor: AppColors.ghostWhite,
                 height: 0,
                 searchBar: SuperSearchBar(
+                  searchFocusNode: _searchFocusNode,
                   searchController: _searchController,
                   height: 48,
                   placeholderText: "What do you want to learn today?",
@@ -317,7 +326,12 @@ class _SearchPageState extends State<SearchPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           extraOnToggle: (val) {
                             _currentSearchIndex = val;
-                            setState(() {});
+                            FocusScope.of(context)
+                                .requestFocus(_searchFocusNode);
+                            setState(() {
+                              _searchController.text =
+                                  _popularSearches[_currentSearchIndex];
+                            });
                           },
                         ),
                       ),
@@ -330,7 +344,9 @@ class _SearchPageState extends State<SearchPage> {
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         return _buildCategoryTile(
-                            categories[index], categoryImage[index]);
+                          categories[index],
+                          categoryImage[index],
+                        );
                       },
                     ),
                     if (_isLoadingMore) const CircularProgressIndicator(),
@@ -361,7 +377,12 @@ class _SearchPageState extends State<SearchPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 30),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          FocusScope.of(context).requestFocus(_searchFocusNode);
+          setState(() {
+            _searchController.text = name;
+          });
+        },
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: Container(

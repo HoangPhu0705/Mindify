@@ -27,6 +27,13 @@ class CourseService {
     }
   }
 
+  Stream<QuerySnapshot> getCourseStreamByAuthorId(String userId) {
+    return _firestore
+        .collection('courses')
+        .where("authorId", isEqualTo: userId)
+        .snapshots();
+  }
+
   Future<List<Course>> getRandomCourses() async {
     try {
       final response =

@@ -71,7 +71,9 @@ class LessonTabState extends State<LessonTab> {
     super.initState();
     _getInstructorInfo();
     _sortLessonsByIndex();
-    fetchProgress();
+    if (widget.enrollmentId.isNotEmpty) {
+      fetchProgress();
+    }
 
     if (!widget.isPreviewing) _checkIfFollowed();
     quillController.document = Document.fromJson(
@@ -80,7 +82,7 @@ class LessonTabState extends State<LessonTab> {
   }
 
   Future<void> setFetchProgress() async {
-    await fetchProgress(); 
+    await fetchProgress();
   }
 
   void _sortLessonsByIndex() {
