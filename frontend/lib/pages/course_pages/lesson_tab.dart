@@ -49,10 +49,10 @@ class LessonTab extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<LessonTab> createState() => _LessonTabState();
+  State<LessonTab> createState() => LessonTabState();
 }
 
-class _LessonTabState extends State<LessonTab> {
+class LessonTabState extends State<LessonTab> {
   DateTime? _lastNotificationTime;
   final userService = UserService();
   final enrollmentService = EnrollmentService();
@@ -71,12 +71,16 @@ class _LessonTabState extends State<LessonTab> {
     super.initState();
     _getInstructorInfo();
     _sortLessonsByIndex();
-    _fetchProgress();
+    fetchProgress();
 
     if (!widget.isPreviewing) _checkIfFollowed();
     quillController.document = Document.fromJson(
       jsonDecode(widget.course.description),
     );
+  }
+
+  Future<void> setFetchProgress() async {
+    await fetchProgress(); 
   }
 
   void _sortLessonsByIndex() {
@@ -156,14 +160,16 @@ class _LessonTabState extends State<LessonTab> {
     }
   }
 
-  Future<void> _fetchProgress() async {
+  Future<void> fetchProgress() async {
     try {
       final progress =
           await enrollmentService.getProgressOfEnrollment(widget.enrollmentId);
-          log(progress.toString());
-      setState(() {
-        completedLessons = progress;
-      });
+      log(progress.toString());
+      if (mounted) {
+        setState(() {
+          completedLessons = progress;
+        });
+      }
     } catch (e) {
       log("Error fetching progress: $e");
     }
