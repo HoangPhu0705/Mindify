@@ -140,72 +140,89 @@ class _TeachingTabState extends State<TeachingTab> {
                             ),
                       ),
                       AppSpacing.smallVertical,
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        child: ListView.builder(
-                          itemCount: userCourses.length,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            Course course = userCourses[index];
+                      StreamBuilder<QuerySnapshot>(
+                        stream: courseService.getCourseStreamByAuthorId(uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData &&
+                              snapshot.data!.docs.isNotEmpty) {
+                            List<DocumentSnapshot> courses =
+                                snapshot.data!.docs;
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.25,
+                              child: ListView.builder(
+                                itemCount: courses.length,
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  Course course = userCourses[index];
 
-                            return MyClassItem(
-                              classTitle: course.title,
-                              onEditPressed: () async {
-                                final result = await Navigator.of(context,
-                                        rootNavigator: true)
-                                    .push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ManageClass(
-                                      courseId: course.id,
-                                      isEditing: true,
-                                    ),
-                                  ),
-                                );
-                                if (result != null) {
-                                  setState(() {
-                                    userCourses[index] = result;
-                                  });
-                                }
-                              },
-                              onDeletePressed: () {
-                                AwesomeDialog(
-                                  padding: EdgeInsets.all(16),
-                                  context: context,
-                                  dialogType: DialogType.noHeader,
-                                  dialogBorderRadius: BorderRadius.circular(5),
-                                  dialogBackgroundColor: AppColors.deepSpace,
-                                  title: 'Delete Class',
-                                  titleTextStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  desc:
-                                      'Deleting this will delete all of your content?',
-                                  btnCancelOnPress: () {},
-                                  btnOkColor: AppColors.cream,
-                                  descTextStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                  buttonsTextStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                  btnOkOnPress: () async {
-                                    await courseService.deleteCourse(course.id);
-                                    setState(() {
-                                      userCourses.removeAt(index);
-                                    });
-                                  },
-                                ).show();
-                              },
-                              thumbnail: "",
-                              isPublic: course.isPublic,
+                                  return MyClassItem(
+                                    classTitle: course.title,
+                                    onEditPressed: () async {
+                                      final result = await Navigator.of(context,
+                                              rootNavigator: true)
+                                          .push(
+                                        MaterialPageRoute(
+                                          builder: (context) => ManageClass(
+                                            courseId: course.id,
+                                            isEditing: true,
+                                          ),
+                                        ),
+                                      );
+                                      if (result != null) {
+                                        setState(() {
+                                          userCourses[index] = result;
+                                        });
+                                      }
+                                    },
+                                    onDeletePressed: () {
+                                      AwesomeDialog(
+                                        padding: EdgeInsets.all(16),
+                                        context: context,
+                                        dialogType: DialogType.noHeader,
+                                        dialogBorderRadius:
+                                            BorderRadius.circular(5),
+                                        dialogBackgroundColor:
+                                            AppColors.deepSpace,
+                                        title: 'Delete Class',
+                                        titleTextStyle: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        desc:
+                                            'Deleting this will delete all of your content?',
+                                        btnCancelOnPress: () {},
+                                        btnOkColor: AppColors.cream,
+                                        descTextStyle: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                        buttonsTextStyle: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
+                                        btnOkOnPress: () async {
+                                          await courseService
+                                              .deleteCourse(course.id);
+                                          setState(() {
+                                            userCourses.removeAt(index);
+                                          });
+                                        },
+                                      ).show();
+                                    },
+                                    thumbnail: course.thumbnail.isNotEmpty
+                                        ? course.thumbnail
+                                        : "",
+                                    isPublic: course.isPublic,
+                                  );
+                                },
+                              ),
                             );
-                          },
-                        ),
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -231,8 +248,6 @@ class _TeachingTabState extends State<TeachingTab> {
       ),
     );
   }
-
-
 
   Widget _startCreateClass() {
     return Container(

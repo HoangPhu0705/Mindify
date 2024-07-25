@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:async_button/async_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -37,6 +38,7 @@ class PublishCourse extends StatefulWidget {
 class _PublishCourseState extends State<PublishCourse> {
   CourseService courseService = CourseService();
   UserService userService = UserService();
+  final TextEditingController priceController = TextEditingController();
 
   late Course myCourse;
   late Future<void> _future;
@@ -48,6 +50,8 @@ class _PublishCourseState extends State<PublishCourse> {
   final resourceNameController = TextEditingController();
   final storageRef = FirebaseStorage.instance.ref();
   FocusNode focusNode = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final btnStateController = AsyncBtnStatesController();
 
   @override
   void initState() {
@@ -59,6 +63,14 @@ class _PublishCourseState extends State<PublishCourse> {
 
   Future<void> _initCourseDetailPage() async {
     await _fetchCourseDetails();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    resourceNameController.dispose();
+    focusNode.dispose();
+    super.dispose();
   }
 
   void _onFocusChange() {
@@ -281,6 +293,69 @@ class _PublishCourseState extends State<PublishCourse> {
                     alignment: Alignment.topLeft,
                     child: RichText(
                       text: const TextSpan(
+                        text: "Add a price",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: " (minimum: 100.000đ)",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  AppSpacing.mediumVertical,
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value != null) {
+                          if (int.tryParse(value)! < 100000) {
+                            return "Price must be at least 100,000 VND";
+                          }
+                        }
+                        return null;
+                      },
+                      controller: priceController,
+                      keyboardType: TextInputType.number,
+                      cursorColor: AppColors.blue,
+                      decoration: const InputDecoration(
+                        labelText: 'Course Price (vnd)',
+                        labelStyle: TextStyle(
+                          color: AppColors.lightGrey,
+                          fontSize: 16,
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.blue,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.blue,
+                          ),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (int.tryParse(value) != null) {
+                          setState(() {});
+                        }
+                      },
+                    ),
+                  ),
+                  AppSpacing.largeVertical,
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: RichText(
+                      text: const TextSpan(
                         text: "Additional Resources",
                         style: TextStyle(
                           fontSize: 20,
@@ -420,20 +495,57 @@ class _PublishCourseState extends State<PublishCourse> {
                       Icons.upload_file,
                     ),
                   ),
-                  AppSpacing.extraLargeVertical,
+                  AppSpacing.largeVertical,
                   SizedBox(
                     width: double.infinity,
-                    child: TextButton(
-                      style: AppStyles.primaryButtonStyle,
-                      onPressed: () async {
-                        await courseService.requestCourse(widget.courseId);
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Publish Course",
-                          style: TextStyle(fontSize: 16),
+                    child: AsyncOutlinedBtn(
+                      loadingStyle: AsyncBtnStateStyle(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.cream,
                         ),
+                        widget: const Center(
+                          child: MyLoading(
+                            width: 20,
+                            height: 20,
+                            color: AppColors.deepBlue,
+                          ),
+                        ),
+                      ),
+                      successStyle: AsyncBtnStateStyle(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.cream,
+                        ),
+                        widget: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.check),
+                            SizedBox(width: 4),
+                            Text('Success!')
+                          ],
+                        ),
+                      ),
+                      style: AppStyles.primaryButtonStyle,
+                      asyncBtnStatesController: btnStateController,
+                      onPressed: () async {
+                        try {
+                          // Await your api call here
+                          if (_formKey.currentState!.validate()) {
+                            btnStateController.update(AsyncBtnState.loading);
+
+                            await courseService.updateCourse(
+                              widget.courseId,
+                              {"price": int.parse(priceController.text)},
+                            );
+                            await courseService.requestCourse(widget.courseId);
+                            btnStateController.update(AsyncBtnState.success);
+                          }
+                        } catch (e) {
+                          btnStateController.update(AsyncBtnState.failure);
+                        }
+                      },
+                      child: const Text(
+                        "Publish Course",
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
