@@ -13,7 +13,9 @@ class NoteTab extends StatefulWidget {
   final String lessonId;
   final int lessonIndex;
   final String lessonTitle;
+  final String lessonUrl;
   final GlobalKey<VideoPlayerViewState> playerkey;
+  final void Function(String, int, int) onNoteTap;
   const NoteTab({
     Key? key,
     required this.enrollmentId,
@@ -21,6 +23,8 @@ class NoteTab extends StatefulWidget {
     required this.playerkey,
     required this.lessonTitle,
     required this.lessonIndex,
+    required this.onNoteTap,
+    required this.lessonUrl,
   }) : super(key: key);
 
   @override
@@ -42,6 +46,7 @@ class _NoteTabState extends State<NoteTab> {
           'lessonId': widget.lessonId,
           'lessonTitle': widget.lessonTitle,
           'lessonIndex': widget.lessonIndex,
+          'lessonLink': widget.lessonUrl,
           'time': widget.playerkey.currentState!.getCurrentTime(),
         },
       );
@@ -160,16 +165,14 @@ class _NoteTabState extends State<NoteTab> {
                         DocumentSnapshot note = notes[index];
                         String noteId = note.id;
                         String content = note["content"];
+                        int lessonIndex = note["lessonIndex"];
+                        String lessonLink = note["lessonLink"];
                         String lessonTitle = note['lessonTitle'];
                         int time = note['time'];
                         String timeconverted = convertTime(time);
                         return ListTile(
                           onTap: () {
-                            widget.playerkey.currentState!.seekToPeriod(
-                              Duration(
-                                seconds: time,
-                              ),
-                            );
+                            widget.onNoteTap(lessonLink, lessonIndex, time);
                           },
                           leading: const Icon(
                             Icons.note_alt,

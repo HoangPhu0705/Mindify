@@ -210,21 +210,30 @@ class _CourseDetailState extends State<CourseDetail>
 
   void _handleVideoEnd(String videoUrl) async {
     log("Video $videoUrl ended");
+
     _addProgressToEnrollment();
   }
 
   // void _handleVideoEnd() {}
 
-  void _onLessonTap(String videoUrl, int index) async {
+  Future<void> _onLessonTap(String videoUrl, int index) async {
     setState(() {
       _currentVideoUrl = videoUrl;
       _currentVideoIndex = index;
     });
 
-    _videoPlayerKey.currentState?.goToVideo(videoUrl);
+    await _videoPlayerKey.currentState?.goToVideo(videoUrl);
   }
 
-  void listenToVideoProgress() {}
+  Future<void> onNoteTap(String videoUrl, int index, int duration) async {
+    await _onLessonTap(videoUrl, index);
+
+    await _videoPlayerKey.currentState!.seekToPeriod(
+      Duration(
+        seconds: duration,
+      ),
+    );
+  }
 
   void _navigateToPaymentScreen() {
     Navigator.push(
@@ -387,9 +396,11 @@ class _CourseDetailState extends State<CourseDetail>
                       NoteTab(
                         playerkey: _videoPlayerKey,
                         lessonIndex: _currentVideoIndex,
-                        enrollmentId: _enrollmentId!,
                         lessonId: course!.lessons[_currentVideoIndex].id,
                         lessonTitle: course!.lessons[_currentVideoIndex].title,
+                        lessonUrl: _currentVideoUrl,
+                        onNoteTap: onNoteTap,
+                        enrollmentId: _enrollmentId!,
                       ),
                     ],
                   ),

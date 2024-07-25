@@ -37,6 +37,7 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
       ),
     );
     await _podPlayerController.initialise();
+    log("vo lai");
     seekToPeriod(
       Duration(seconds: widget.currentTime),
     );
@@ -55,8 +56,8 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     super.dispose();
   }
 
-  void goToVideo(String url) {
-    _podPlayerController.changeVideo(
+  Future<void> goToVideo(String url) async {
+    await _podPlayerController.changeVideo(
       playVideoFrom: PlayVideoFrom.network(url),
     );
     removePodListener();
@@ -68,8 +69,8 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     return currentTime;
   }
 
-  void seekToPeriod(Duration duration) {
-    _podPlayerController.videoSeekTo(duration);
+  Future<void> seekToPeriod(Duration duration) async {
+    await _podPlayerController.videoSeekTo(duration);
   }
 
   bool lessonEnded() {
