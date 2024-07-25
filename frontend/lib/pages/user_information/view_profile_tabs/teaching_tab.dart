@@ -35,7 +35,6 @@ class _TeachingTabState extends State<TeachingTab> {
   //Variables
   late Future<dynamic> _future;
   late dynamic userData;
-  late List<Course> userCourses;
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
@@ -51,7 +50,6 @@ class _TeachingTabState extends State<TeachingTab> {
 
   Future<void> _initPage() async {
     userData = await getUserRole();
-    userCourses = await getUserCourse();
   }
 
   Future<dynamic> getUserRole() async {
@@ -130,7 +128,7 @@ class _TeachingTabState extends State<TeachingTab> {
                         _startCreateClass(),
                       AppSpacing.mediumVertical,
                       Text(
-                        "My Classes",
+                        "Class drafts",
                         style: Theme.of(context)
                             .textTheme
                             .headlineMedium!
@@ -141,7 +139,8 @@ class _TeachingTabState extends State<TeachingTab> {
                       ),
                       AppSpacing.smallVertical,
                       StreamBuilder<QuerySnapshot>(
-                        stream: courseService.getCourseStreamByAuthorId(uid),
+                        stream:
+                            courseService.getCourseStreamByAuthorId(uid, false),
                         builder: (context, snapshot) {
                           if (snapshot.hasData &&
                               snapshot.data!.docs.isNotEmpty) {
@@ -154,12 +153,16 @@ class _TeachingTabState extends State<TeachingTab> {
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (context, index) {
-                                  Course course = userCourses[index];
-
+                                  DocumentSnapshot course = courses[index];
+                                  String courseName = course["courseName"];
+                                  String thumbnail = course["thumbnail"];
+                                  bool isPublic = course["isPublic"];
+                                  bool requestSent = course["request"];
                                   return MyClassItem(
-                                    classTitle: course.title,
+                                    requestSent: requestSent,
+                                    classTitle: courseName,
                                     onEditPressed: () async {
-                                      final result = await Navigator.of(context,
+                                      await Navigator.of(context,
                                               rootNavigator: true)
                                           .push(
                                         MaterialPageRoute(
@@ -169,11 +172,6 @@ class _TeachingTabState extends State<TeachingTab> {
                                           ),
                                         ),
                                       );
-                                      if (result != null) {
-                                        setState(() {
-                                          userCourses[index] = result;
-                                        });
-                                      }
                                     },
                                     onDeletePressed: () {
                                       AwesomeDialog(
@@ -205,16 +203,12 @@ class _TeachingTabState extends State<TeachingTab> {
                                         btnOkOnPress: () async {
                                           await courseService
                                               .deleteCourse(course.id);
-                                          setState(() {
-                                            userCourses.removeAt(index);
-                                          });
                                         },
                                       ).show();
                                     },
-                                    thumbnail: course.thumbnail.isNotEmpty
-                                        ? course.thumbnail
-                                        : "",
-                                    isPublic: course.isPublic,
+                                    thumbnail:
+                                        thumbnail.isNotEmpty ? thumbnail : "",
+                                    isPublic: isPublic,
                                   );
                                 },
                               ),
@@ -297,7 +291,7 @@ class _TeachingTabState extends State<TeachingTab> {
               children: [
                 ElevatedButton(
                   onPressed: () async {
-                    final result = await Navigator.of(
+                    await Navigator.of(
                       context,
                       rootNavigator: true,
                     ).push(
@@ -307,11 +301,6 @@ class _TeachingTabState extends State<TeachingTab> {
                         },
                       ),
                     );
-                    if (result != null) {
-                      setState(() {
-                        userCourses.add(result);
-                      });
-                    }
                   },
                   style: ButtonStyle(
                     backgroundColor:

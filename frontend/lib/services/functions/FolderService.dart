@@ -95,4 +95,16 @@ class FolderService {
       throw Exception('Failed to get courses');
     }
   }
+
+  Future<void> removeCourseFromFolder(String folderId, String courseId) {
+    return http
+        .delete(
+      Uri.parse("${AppConstants.FOLDER_API}/$folderId/removeCourse/$courseId"),
+    )
+        .then((response) {
+      if (response.statusCode != 200) {
+        throw Exception('Failed to remove course');
+      }
+    });
+  }
 }

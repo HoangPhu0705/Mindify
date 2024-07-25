@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
@@ -14,6 +15,7 @@ import 'package:frontend/widgets/my_loading.dart';
 class FolderDetail extends StatefulWidget {
   final String folderId;
   final String folderName;
+
   const FolderDetail({
     super.key,
     required this.folderId,
@@ -25,7 +27,7 @@ class FolderDetail extends StatefulWidget {
 }
 
 class _FolderDetailState extends State<FolderDetail> {
-  //Services
+  // Services
   FolderService folderService = FolderService();
   CourseService courseService = CourseService();
 
@@ -41,7 +43,7 @@ class _FolderDetailState extends State<FolderDetail> {
   }
 
   Future<List<Course>> getCourseList() async {
-    //get course list from folderId
+    // Get course list from folderId
     List<dynamic> courseIds =
         await folderService.getCoursesIdFromFolder(widget.folderId);
     List<Course> courseList = [];
@@ -56,6 +58,12 @@ class _FolderDetailState extends State<FolderDetail> {
 
   Future<void> _initPage() async {
     _courseList = await getCourseList();
+  }
+
+  void _removeCourse(String courseId) {
+    setState(() {
+      _courseList.removeWhere((course) => course.id == courseId);
+    });
   }
 
   @override
@@ -112,7 +120,14 @@ class _FolderDetailState extends State<FolderDetail> {
                         author: course.instructorName,
                         duration: course.duration,
                         students: course.students.toString(),
-                        moreOnPress: () {},
+                        moreOnPress: () async {
+                          _showBottomSheet(
+                            context,
+                            widget.folderId,
+                            course.id,
+                            _removeCourse,
+                          );
+                        },
                       ),
                     );
                   },
@@ -121,4 +136,46 @@ class _FolderDetailState extends State<FolderDetail> {
       ),
     );
   }
+}
+
+_showBottomSheet(BuildContext context, String folderId, String courseId,
+    Function(String) onRemoveCourse) async {
+  FolderService folderService = FolderService();
+
+  showModalBottomSheet(
+    useRootNavigator: true,
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        decoration: const BoxDecoration(
+          color: AppColors.ghostWhite,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(10),
+          ),
+        ),
+        height: MediaQuery.of(context).size.height * 0.07,
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Icon(
+                CupertinoIcons.trash,
+                color: Colors.red,
+              ),
+              titleAlignment: ListTileTitleAlignment.center,
+              title: const Text(
+                "Remove",
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+              ),
+              onTap: () async {
+                await folderService.removeCourseFromFolder(folderId, courseId);
+                Navigator.pop(context);
+                onRemoveCourse(courseId);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

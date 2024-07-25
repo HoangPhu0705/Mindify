@@ -52,6 +52,7 @@ class _ChooseClassNameState extends State<ChooseClassName> {
         "description": jsonEncode([
           {"insert": "\n"}
         ]),
+        "request": false,
         "category": [],
         "students": 0,
         "projectNum": 0,

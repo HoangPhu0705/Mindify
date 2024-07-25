@@ -88,3 +88,16 @@ exports.getCoursesOfFolder = async (folderId) => {
         throw error;
     }
 }
+
+exports.removeCourseFromFolder = async (folderId, courseId) => {
+    try {
+        const docRef = FolderCollection.doc(folderId);
+        await docRef.update({
+            courses: firestore.FieldValue.arrayRemove(courseId)
+        });
+        return { "message": "Course removed successfully" };
+    } catch (error) {
+        console.error('Error removing courseId from folder:', error);
+        throw error;
+    }
+}

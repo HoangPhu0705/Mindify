@@ -12,13 +12,15 @@ class MyClassItem extends StatefulWidget {
   final VoidCallback onDeletePressed;
   final String thumbnail;
   final bool isPublic;
+  final bool requestSent;
   const MyClassItem(
       {super.key,
       required this.classTitle,
       required this.onEditPressed,
       required this.onDeletePressed,
       required this.thumbnail,
-      required this.isPublic});
+      required this.isPublic,
+      required this.requestSent});
 
   @override
   State<MyClassItem> createState() => _MyClassItemState();
@@ -108,31 +110,54 @@ class _MyClassItemState extends State<MyClassItem> {
               ),
             ),
           ),
-          widget.isPublic
-              ? const SizedBox.shrink()
-              : Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 5),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 3,
-                    ),
-                    decoration: const BoxDecoration(
-                      color: AppColors.cream,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(5),
-                      ),
-                    ),
-                    child: const Text(
-                      "Draft",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+          if (!widget.isPublic)
+            Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                margin: const EdgeInsets.only(left: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
+                decoration: const BoxDecoration(
+                  color: AppColors.cream,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
                   ),
                 ),
+                child: Text(
+                  widget.requestSent ? "Pending" : "Draft",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            )
+          else
+            Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                margin: const EdgeInsets.only(left: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
+                decoration: const BoxDecoration(
+                  color: AppColors.cream,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
+                  ),
+                ),
+                child: const Text(
+                  "Published",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

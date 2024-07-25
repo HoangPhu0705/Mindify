@@ -296,30 +296,50 @@ class _MyCoursesPageState extends State<MyCoursePage>
                               showFolderBottomSheet(context, course.id);
                             },
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                LinearProgressIndicator(
-                                  value: totalLessons > 0
-                                      ? completedLessons / totalLessons
-                                      : 0,
-                                  backgroundColor: Colors.grey.shade300,
-                                  color: AppColors.deepBlue,
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  '$completedLessons of $totalLessons lessons completed',
+                                const Text(
+                                  "Progress",
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.black,
+                                    color: AppColors.deepBlue,
+                                    fontWeight: FontWeight.w500,
                                   ),
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: LinearProgressIndicator(
+                                        value: totalLessons > 0
+                                            ? completedLessons / totalLessons
+                                            : 0,
+                                        backgroundColor: Colors.grey.shade300,
+                                        color: AppColors.deepBlue,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        '$completedLessons of $totalLessons lessons',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign
+                                            .right, // Align the text to the right
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
+                          const Divider(),
                         ],
                       ),
                     );

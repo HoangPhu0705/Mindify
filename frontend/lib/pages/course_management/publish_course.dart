@@ -156,6 +156,7 @@ class _PublishCourseState extends State<PublishCourse> {
         "name": pickedFile!.name,
         "url": urlDownload,
         "timestamp": timestamp,
+        "extension": pickedFile!.extension,
       };
       log(resource.toString());
       await courseService.addResourceToCourse(myCourse.id, resource);
@@ -317,7 +318,10 @@ class _PublishCourseState extends State<PublishCourse> {
                     child: TextFormField(
                       validator: (value) {
                         if (value != null) {
-                          if (int.tryParse(value)! < 100000) {
+                          if (value.isEmpty) {
+                            return "Please enter a price";
+                          }
+                          if (int.parse(value) < 100000) {
                             return "Price must be at least 100,000 VND";
                           }
                         }
@@ -344,11 +348,6 @@ class _PublishCourseState extends State<PublishCourse> {
                           ),
                         ),
                       ),
-                      onChanged: (value) {
-                        if (int.tryParse(value) != null) {
-                          setState(() {});
-                        }
-                      },
                     ),
                   ),
                   AppSpacing.largeVertical,
@@ -389,7 +388,6 @@ class _PublishCourseState extends State<PublishCourse> {
                             DocumentSnapshot resource = resources[index];
                             String resourceId = resource.id;
                             String name = resource["name"];
-                            String url = resource["url"];
                             String timestamp = resource["timestamp"];
 
                             return ListTile(
@@ -538,7 +536,11 @@ class _PublishCourseState extends State<PublishCourse> {
                             );
                             await courseService.requestCourse(widget.courseId);
                             btnStateController.update(AsyncBtnState.success);
-                          }
+                            await Future.delayed(
+                                const Duration(milliseconds: 500));
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          } else {}
                         } catch (e) {
                           btnStateController.update(AsyncBtnState.failure);
                         }

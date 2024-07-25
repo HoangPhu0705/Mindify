@@ -75,3 +75,13 @@ exports.getCoursesOfFolders = async (req, res) =>{
         res.status(500).json({ error: error.message });
     }
 }
+
+exports.removeCourseFromFolder = async (req, res) => {
+    const { folderId, courseId } = req.params;
+    try {
+      const response = await FolderService.removeCourseFromFolder(folderId, courseId);
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(500).json({ message: 'Error removing course from folder', error: error.message });
+    }
+  }

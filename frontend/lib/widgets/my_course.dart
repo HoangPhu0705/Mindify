@@ -26,7 +26,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       color: AppColors.ghostWhite,
       child: Column(
         children: [
@@ -39,9 +39,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
                 width: 100,
                 height: 60,
               ),
-              AppSpacing
-                  .mediumHorizontal, 
-                  
+              AppSpacing.mediumHorizontal,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +89,6 @@ class _MyCourseItemState extends State<MyCourseItem> {
               )
             ],
           ),
-          const Divider(),
         ],
       ),
     );

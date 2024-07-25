@@ -27,10 +27,12 @@ class CourseService {
     }
   }
 
-  Stream<QuerySnapshot> getCourseStreamByAuthorId(String userId) {
+  Stream<QuerySnapshot> getCourseStreamByAuthorId(
+      String userId, bool isRequest) {
     return _firestore
         .collection('courses')
         .where("authorId", isEqualTo: userId)
+        .where("request", isEqualTo: isRequest)
         .snapshots();
   }
 

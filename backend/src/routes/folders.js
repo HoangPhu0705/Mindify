@@ -10,5 +10,6 @@ router.post('/addCourseToFolder', FolderController.addCourseToFolder);
 router.get('/:folderId', FolderController.getFolderById);
 router.get('/:folderId/courses', FolderController.getCoursesOfFolders);
 router.delete('/:folderId', FolderController.deleteFolder);
+router.delete('/:folderId/removeCourse/:courseId', FolderController.removeCourseFromFolder);
 
 module.exports = router;
