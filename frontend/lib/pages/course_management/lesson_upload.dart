@@ -285,7 +285,9 @@ class _LessonUploadState extends State<LessonUpload> {
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     color: AppColors.lighterGrey,
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5),
+                    ),
                   ),
                   child: Column(
                     children: [

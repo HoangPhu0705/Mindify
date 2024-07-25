@@ -406,8 +406,10 @@ class LessonTabState extends State<LessonTab> {
                     },
                   ),
                   AppSpacing.mediumVertical,
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                    ),
                     child: Row(
                       children: [
                         const Flexible(
@@ -417,7 +419,7 @@ class LessonTabState extends State<LessonTab> {
                         Flexible(
                           child: Center(
                               child: Text(
-                            "Quizzes",
+                            "Quiz",
                             style: Theme.of(context).textTheme.labelSmall,
                           )),
                         ),
@@ -433,30 +435,35 @@ class LessonTabState extends State<LessonTab> {
                     stream:
                         quizService.getQuizzesStreamByCourse(widget.course.id),
                     builder: (context, snapshot) {
-                      if (snapshot.hasData) {
+                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                         List<DocumentSnapshot> quizzes = snapshot.data!.docs;
                         return ListView.builder(
                           shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: quizzes.length,
                           itemBuilder: (context, index) {
                             DocumentSnapshot quiz = quizzes[index];
                             String quizId = quiz.id;
                             String quizName = quiz["name"];
                             int totalQuestion = quiz["totalQuestions"];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: buildQuizCard(
-                                quizId,
-                                quizName,
-                                totalQuestion,
-                              ),
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: buildQuizCard(
+                                    quizId,
+                                    quizName,
+                                    totalQuestion,
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         );
                       }
-                      return Text(
+                      return const Text(
                         "No quizzes available",
                         style: TextStyle(
                           color: AppColors.lightGrey,
