@@ -75,7 +75,9 @@ class _SubmitProjectState extends State<SubmitProject> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return SubmitProjectPage();
+                  return SubmitProjectPage(
+                    courseId: widget.course.id,
+                  );
                 },
               ),
             );
@@ -240,8 +242,7 @@ class _SubmitProjectState extends State<SubmitProject> {
 
   Future downloadFile(String filename, String url, String fileExtension) async {
     var time = DateTime.now().millisecondsSinceEpoch;
-    var path =
-        "/storage/emulated/0/Download/mindify-$filename-$time.$fileExtension";
+    var path = "/storage/emulated/0/Download/$filename.$fileExtension";
     var file = File(path);
     var res = await get(Uri.parse(url));
     file.writeAsBytes(res.bodyBytes);

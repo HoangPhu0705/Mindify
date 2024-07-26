@@ -12,16 +12,7 @@ pickImage(ImageSource source) async {
   log("No image selected");
 }
 
-pickMultipleImage(ImageSource source) async {
+Future<List<XFile>?> pickMultipleImage(ImageSource source) async {
   final ImagePicker _imagePicker = ImagePicker();
-  List<XFile>? _file = await _imagePicker.pickMultiImage();
-  if (_file != null) {
-    List<List<int>> _images = [];
-    for (XFile file in _file) {
-      _images.add(await file.readAsBytes());
-    }
-    return _images;
-  }
-
-  log("No images selected");
+  return await _imagePicker.pickMultiImage();
 }
