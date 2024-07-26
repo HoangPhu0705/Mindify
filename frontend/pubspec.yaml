@@ -100,6 +100,7 @@ dependencies:
   get_thumbnail_video: ^0.6.1
   flutter_stripe: ^8.0.0
   selectable_container: ^1.0.7
+  open_file: ^3.3.2
   
 dev_dependencies:
   flutter_test:
