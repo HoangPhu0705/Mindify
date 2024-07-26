@@ -149,7 +149,7 @@ exports.getRandomCourses = async () => {
     for (let i = 0; i < 5; i++) {
       const randomIndex = Math.floor(Math.random() * allCourseIds.length);
       randomCourseIds.push(allCourseIds[randomIndex]);
-      allCourseIds.splice(randomIndex, 1); 
+      allCourseIds.splice(randomIndex, 1);
     }
 
     const courses = randomCourseIds.map(async id => {
@@ -172,15 +172,15 @@ exports.getRandomCourses = async () => {
 exports.addPriceToAllCourses = async () => {
   try {
     const snapshot = await CourseCollection.get();
-    
+
     const batch = CourseCollection.firestore.batch();
     const prices = [199000, 249000, 299000, 349000, 399000];
-    
+
     snapshot.docs.forEach(doc => {
       const randomPrice = prices[Math.floor(Math.random() * prices.length)];
       batch.update(doc.ref, { price: randomPrice });
     });
-    
+
     await batch.commit();
     return { message: "Added random price to all courses successfully" };
   } catch (error) {
@@ -210,7 +210,7 @@ exports.updateLessonLinkByIndex = async (index, newLink) => {
     console.error('Error updating lessons link:', error);
     throw error;
   };
-    
+
 };
 
 exports.getCourseByUserId = async (userId) => {
@@ -254,16 +254,16 @@ exports.updateLessonCountForCourses = async () => {
 exports.changeTheInstructorId = async () => {
   try {
     const snapshot = await CourseCollection.get();
-    
+
     const batch = CourseCollection.firestore.batch();
     const instructorId = ["K0TVyBUIYiag23kc7DQrlrplF853", "JODO8VMzDWfGmcsYgNqNrNrLrt22",
-                          "AMAVeLkYQeW1q6U0ZPka5k8FLeL2"];
-    
+      "AMAVeLkYQeW1q6U0ZPka5k8FLeL2"];
+
     snapshot.docs.forEach(doc => {
       const randomId = instructorId[Math.floor(Math.random() * instructorId.length)];
       batch.update(doc.ref, { authorId: randomId });
     });
-    
+
     await batch.commit();
     return { message: "Added random id to all courses successfully" };
   } catch (error) {
@@ -290,6 +290,23 @@ exports.updateAllLessonLinks = async (newLink) => {
     return { message: "All lesson links updated successfully" };
   } catch (error) {
     console.error('Error updating lesson links:', error);
+    throw error;
+  }
+};
+
+exports.addFieldToAllCourses = async (data) => {
+  try {
+    const snapshot = await CourseCollection.get();
+    const batch = CourseCollection.firestore.batch();
+
+    snapshot.docs.forEach((doc) => {
+      batch.update(doc.ref, data );
+    });
+
+    await batch.commit();
+    return { message: "New field added to all courses successfully" };
+  } catch (error) {
+    console.error('Error adding new field to courses:', error);
     throw error;
   }
 };
@@ -327,18 +344,18 @@ exports.getCoursesByCategory = async (userCategories) => {
     // Assuming userCategories is an array of categories the user is interested in
     const snapshot = await CourseCollection.where('isPublic', '==', true).get();
     console
-    
+
     // Initialize a result object with categories as keys and empty arrays as values
     const result = userCategories.reduce((acc, category) => {
       acc[category] = [];
       return acc;
     }, {});
-    
+
     snapshot.docs.forEach(doc => {
       const courseData = doc.data();
       if (Array.isArray(courseData.category)) {
         userCategories.forEach(category => {
-          const matches = courseData.category.some(courseCategory => 
+          const matches = courseData.category.some(courseCategory =>
             courseCategory.toLowerCase().includes(category.toLowerCase())
           );
           if (matches) {
@@ -358,7 +375,7 @@ exports.getCoursesByCategory = async (userCategories) => {
 exports.addResourceToCourse = async (courseId, resource) => {
   try {
     const courseRef = CourseCollection.doc(courseId);
-    const resourceRef = courseRef.collection('resources').doc(); 
+    const resourceRef = courseRef.collection('resources').doc();
     await resourceRef.set(resource);
     return { id: resourceRef.id, ...resource };
   } catch (error) {

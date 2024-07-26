@@ -14,6 +14,7 @@ router.post('/categories', CourseController.getCoursesByCategory);
 router.get('/top5', CourseController.getTop5Courses);
 router.get('/newest', CourseController.getFiveNewestCourse);
 router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);
+router.post('/add-field', CourseController.addFieldToAllCourses);
 router.get('/users/:id', CourseController.getCourseByUserId)
 // router.post('/', CourseController.createCourseWithLessons)
 router.get('/:id', CourseController.getCourseById);

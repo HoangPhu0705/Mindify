@@ -9,6 +9,16 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
+exports.addFieldToAllCourses = async (req, res) => {
+  const data = req.body;
+
+  try {
+    const result = await CourseService.addFieldToAllCourses(data);
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send({ error: 'Internal Server Error' });
+  }
+};
 
 exports.getPublicCourse = async (req, res) => {
   try {

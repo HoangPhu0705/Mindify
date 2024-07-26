@@ -25,8 +25,8 @@ exports.createPaymentIntent = async (courseId, userId) => {
         });
 
         await TransactionCollection.doc(paymentIntent.id).set({
-            courseId,
-            userId,
+            // courseId,
+            // userId,
             payment: "Stripe",
             status: 'pending',
             amount: course.price,
