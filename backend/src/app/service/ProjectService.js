@@ -63,3 +63,14 @@ exports.getUserProject = async (courseId, userId) => {
         return { success: false, error };
     }
 };
+
+exports.updateProject = async (courseId, projectId, project) => {
+    try {
+        await CourseCollection.doc(courseId).collection('projects').doc(projectId).update(project);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating project:", error);
+        return { success: false, error };
+    }
+}

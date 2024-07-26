@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_pages/submit_project_page.dart';
 import 'package:frontend/services/functions/CourseService.dart';
+import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -37,7 +39,8 @@ class SubmitProject extends StatefulWidget {
 
 class _SubmitProjectState extends State<SubmitProject> {
   CourseService courseService = CourseService();
-
+  Projectservice projectservice = Projectservice();
+  bool hasSubmitted = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -45,10 +48,29 @@ class _SubmitProjectState extends State<SubmitProject> {
     quillController.document = Document.fromJson(
       jsonDecode(widget.course.projectDescription),
     );
+    checkSubmissionStatus();
+  }
+
+  void checkSubmissionStatus() async {
+    bool submitted = await projectservice.hasSubmittedProject(
+      widget.course.id,
+      FirebaseAuth.instance.currentUser!.uid,
+    );
+    log("submit chuwa " + submitted.toString());
+    setState(() {
+      hasSubmitted = submitted;
+    });
   }
 
   ScrollController scrollController = ScrollController();
   QuillController quillController = QuillController.basic();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +104,8 @@ class _SubmitProjectState extends State<SubmitProject> {
               ),
             );
           },
-          child: const Text(
-            "Submit Project",
+          child: Text(
+            hasSubmitted ? "You have submitted" : "Submit Project",
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/ProjectService.dart';
@@ -60,8 +61,18 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
     }
   }
 
+  Future<List<XFile>?> pickMultipleImage(ImageSource source) async {
+    final ImagePicker _imagePicker = ImagePicker();
+    return await _imagePicker.pickMultiImage();
+  }
+
+  Future<XFile?> pickSingleImage(ImageSource source) async {
+    final ImagePicker _imagePicker = ImagePicker();
+    return await _imagePicker.pickImage(source: source);
+  }
+
   void selectCoverImage() async {
-    XFile? image = await pickImage(ImageSource.gallery);
+    XFile? image = await pickSingleImage(ImageSource.gallery);
     if (image != null) {
       setState(() {
         coverImage = image.path;
@@ -69,23 +80,19 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
     }
   }
 
-  Future<void> uploadImages(List<XFile> files, String path) async {
-    for (var file in files) {
-      final ref = FirebaseStorage.instance.ref().child('$path/${file.name}');
-      try {
-        await ref.putFile(File(file.path));
-        final urlDownload = await ref.getDownloadURL();
-        print('Image uploaded: $urlDownload');
-      } catch (e) {
-        print('Error uploading image: $e');
-      }
+  Future<String?> uploadFileToStorage(File file, String path) async {
+    final ref = FirebaseStorage.instance.ref().child(path);
+    try {
+      await ref.putFile(file);
+      return await ref.getDownloadURL();
+    } catch (e) {
+      print('Error uploading file: $e');
+      return null;
     }
   }
 
-  Future selectFiles() async {
-    final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-    );
+  Future<void> selectFiles() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result == null) return;
     setState(() {
       pickedFile = result.files;
@@ -120,11 +127,61 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
           );
   }
 
-  void submitProject() {
-    if (_formKey.currentState!.validate()) {
-      // Perform the submit action here
-      if (coverImage != null) {}
+  Future<void> submitProject() async {
+    if (_formKey.currentState!.validate() &&
+        coverImage != null &&
+        pickedFile != null &&
+        selectedImages != null) {
+      await uploadAll();
+      projectContent['title'] = projectTitleController.text;
+      projectContent['description'] = projectDescriptionController.text;
+      projectContent['userId'] = FirebaseAuth.instance.currentUser!.uid;
+      await projectservice.submitProject(widget.courseId, projectContent);
+    } else {
+      log("Not enough data to submit project");
     }
+  }
+
+  Future<void> uploadAll() async {
+    final folderRef = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = 'course_projects/${widget.courseId}/$folderRef';
+    projectContent['folderRef'] = folderRef;
+    // Upload cover image
+    if (coverImage != null) {
+      final coverImageUrl =
+          await uploadFileToStorage(File(coverImage!), '$path/cover_image.jpg');
+      if (coverImageUrl != null) {
+        projectContent['coverImage'] = coverImageUrl;
+      }
+    }
+
+    // Upload content images
+    if (selectedImages != null) {
+      List<String> imageUrls = [];
+      for (var image in selectedImages!) {
+        final imageUrl = await uploadFileToStorage(
+            File(image.path), '$path/content_images/${image.name}');
+        if (imageUrl != null) {
+          imageUrls.add(imageUrl);
+        }
+      }
+      projectContent['contentImages'] = imageUrls;
+    }
+
+    // Upload other files
+    if (pickedFile != null) {
+      List<String> fileUrls = [];
+      for (var file in pickedFile!) {
+        final fileUrl = await uploadFileToStorage(
+            File(file.path!), '$path/files/${file.name}');
+        if (fileUrl != null) {
+          fileUrls.add(fileUrl);
+        }
+      }
+      projectContent['files'] = fileUrls;
+    }
+
+    setState(() {});
   }
 
   @override

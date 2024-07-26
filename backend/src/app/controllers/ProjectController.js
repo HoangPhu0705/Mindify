@@ -48,3 +48,17 @@ exports.getUserProject = async (req, res) => {
         res.status(404).json({ message: "Project not found", error: response.error });
     }
 };
+
+
+exports.updateProject = async (req, res) => {
+    const { courseId, projectId } = req.params;
+    const content = req.body;
+
+    const response = await ProjectService.updateProject(courseId, projectId, content);
+
+    if (response.success) {
+        res.status(200).json({ message: "Project updated successfully" });
+    } else {
+        res.status(500).json({ message: "Internal server error", error: response.error });
+    }
+}
