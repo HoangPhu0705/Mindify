@@ -10,17 +10,26 @@ import 'react-date-range/dist/theme/default.css';
 
 const Dashboard = () => {
   const [filterType, setFilterType] = useState("month");
-  const [filters, setFilters] = useState({ year: 2024, startDate: new Date(), endDate: new Date() });
+  const [filters, setFilters] = useState({ year: new Date().getFullYear(), startDate: new Date(), endDate: new Date() });
   const [barChartConfig, setBarChartConfig] = useState({
     type: "bar",
     height: 240,
     series: [
       { name: "Enrollments", data: [] },
-      { name: "Revenue", data: [] },
+      { name: "Revenue", data: [], show: false } 
     ],
     options: {
-      chart: { toolbar: { show: false } },
-      title: { show: "" },
+      chart: {
+        toolbar: { show: false },
+        events: {
+          legendClick: (chartContext, seriesIndex, config) => {
+            if (seriesIndex === 1) {
+              fetchRevenue();
+            }
+          },
+        },
+      },
+      title: { text: "Revenue and Enrollments", align: 'center' },
       dataLabels: { enabled: false },
       colors: ["#020617", "#28a745"],
       plotOptions: { bar: { columnWidth: "40%", borderRadius: 2 } },
@@ -44,6 +53,12 @@ const Dashboard = () => {
       },
       fill: { opacity: 0.8 },
       tooltip: { theme: "dark" },
+      legend: {
+        show: true,
+        onItemClick: {
+          toggleDataSeries: true,
+        },
+      },
     },
   });
 
@@ -82,10 +97,7 @@ const Dashboard = () => {
 
       setBarChartConfig(prevConfig => ({
         ...prevConfig,
-        series: [
-          { name: "Enrollments", data: data },
-          { name: "Revenue", data: prevConfig.series[1].data } // Preserve the revenue data
-        ],
+        series: [{ name: "Enrollments", data: data }, { name: "Revenue", data: prevConfig.series[1].data, show: false }],
         options: { ...prevConfig.options, xaxis: { ...prevConfig.options.xaxis, categories: categories } },
       }));
     } catch (error) {
@@ -118,8 +130,8 @@ const Dashboard = () => {
       setBarChartConfig(prevConfig => ({
         ...prevConfig,
         series: [
-          { name: "Enrollments", data: prevConfig.series[0].data }, // Preserve the enrollments data
-          { name: "Revenue", data: data }
+          { name: "Enrollments", data: prevConfig.series[0].data },
+          { name: "Revenue", data: data, show: true }
         ],
         options: { ...prevConfig.options, xaxis: { ...prevConfig.options.xaxis, categories: categories } },
       }));
@@ -130,7 +142,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchEnrollments();
-    fetchRevenue();
   }, [filters, filterType]);
 
   return (

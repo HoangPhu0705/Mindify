@@ -8,6 +8,7 @@ router.get('/admin-logout', AdminController.logOut);
 router.get('/users-management', AdminController.showAllUsers);
 router.get('/courses-management', AdminController.showAllCourses);
 router.get('/total-students', AdminController.getTotalStudentsController);
+router.get('/total-users', AdminController.getTotalUsers)
 router.get('/monthly-enrollments', AdminController.getMonthlyEnrollments);
 router.get('/yearly-enrollments', AdminController.getYearlyEnrollments);
 router.get('/date-range-enrollments', AdminController.getEnrollmentsByDateRange);

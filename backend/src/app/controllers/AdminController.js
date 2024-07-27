@@ -12,7 +12,8 @@ const { loginUser,
     getRevenue,
     getYearlyRevenue, 
     getMonthlyRevenue, 
-    getRevenueByDateRange
+    getRevenueByDateRange,
+    getTotalUsers
 } = require('../service/AdminService');
 
 
@@ -154,6 +155,16 @@ class AdminController {
             res.status(500).json({ message: error.message });
         }
     };
+    getTotalUsers = async (req, res) => {
+        try {
+            const totalUsers = await getTotalUsers();
+            res.status(200).json({ totalUsers });
+        } catch (error) {
+            console.error('Error getting total users', error);
+            res.status(500).json({ message: 'Error getting total users' });
+        }
+    }
+
 
     // getTotalCourses
     getTotalCourses = async (req, res) => {
