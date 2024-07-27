@@ -14,6 +14,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_pages/submit_project_page.dart';
+import 'package:frontend/pages/course_pages/view_my_project.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/models/course.dart';
@@ -39,8 +40,10 @@ class SubmitProject extends StatefulWidget {
 
 class _SubmitProjectState extends State<SubmitProject> {
   CourseService courseService = CourseService();
-  Projectservice projectservice = Projectservice();
+  ProjectService projectservice = ProjectService();
   bool hasSubmitted = false;
+  DocumentSnapshot? Myproject;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -49,6 +52,7 @@ class _SubmitProjectState extends State<SubmitProject> {
       jsonDecode(widget.course.projectDescription),
     );
     checkSubmissionStatus();
+    getUserProject();
   }
 
   void checkSubmissionStatus() async {
@@ -56,10 +60,22 @@ class _SubmitProjectState extends State<SubmitProject> {
       widget.course.id,
       FirebaseAuth.instance.currentUser!.uid,
     );
-    log("submit chuwa " + submitted.toString());
     setState(() {
       hasSubmitted = submitted;
     });
+  }
+
+  Future<void> getUserProject() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    String courseId = widget.course.id;
+    DocumentSnapshot? project =
+        await projectservice.getProjectId(courseId, uid);
+
+    if (project != null) {
+      setState(() {
+        Myproject = project;
+      });
+    }
   }
 
   ScrollController scrollController = ScrollController();
@@ -68,7 +84,6 @@ class _SubmitProjectState extends State<SubmitProject> {
   @override
   void dispose() {
     // TODO: implement dispose
-
     super.dispose();
   }
 
@@ -78,40 +93,113 @@ class _SubmitProjectState extends State<SubmitProject> {
       bottomSheet: Container(
         padding: EdgeInsets.all(5),
         width: double.infinity,
-        child: ElevatedButton(
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(AppColors.deepBlue),
-            shape: WidgetStateProperty.all(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
-          ),
-          onPressed: () async {
-            if (widget.isPreviewing) {
-              showErrorToast(
-                  context, "You can't submit project in preview mode");
-              return;
-            }
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return SubmitProjectPage(
-                    courseId: widget.course.id,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasSubmitted)
+              TextButton(
+                onPressed: () {
+                  // Navigate to the user's project page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ViewMyProject(
+                        courseId: widget.course.id,
+                        project: Myproject!, // Make sure projectId is not null
+                      ),
+                    ),
                   );
                 },
+                child: Text(
+                  "View My Project",
+                  style: TextStyle(
+                    color: AppColors.deepBlue,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
               ),
-            );
-          },
-          child: Text(
-            hasSubmitted ? "You have submitted" : "Submit Project",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(AppColors.deepBlue),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                ),
+                onPressed: () async {
+                  if (widget.isPreviewing) {
+                    showErrorToast(
+                        context, "You can't submit project in preview mode");
+                    return;
+                  }
+                  if (hasSubmitted) {
+                    if (Myproject == null) {
+                      showErrorToast(
+                        context,
+                        "Error removing project, please try again later",
+                      );
+                      return;
+                    }
+
+                    await projectservice.removeProject(
+                      widget.course.id,
+                      Myproject!.id,
+                    );
+
+                    final folderRef = Myproject!["folderRef"];
+                    final storageRef = FirebaseStorage.instance.ref();
+                    final projectFolderRef = storageRef.child(
+                        "course_projects/${widget.course.id}/$folderRef");
+
+                    // Function to delete all items in a folder
+                    Future<void> deleteFolderContents(
+                        Reference folderRef) async {
+                      ListResult result = await folderRef.listAll();
+                      for (var item in result.items) {
+                        await item.delete();
+                        log('Deleted file: ${item.fullPath}');
+                      }
+                      for (var prefix in result.prefixes) {
+                        await deleteFolderContents(prefix);
+                      }
+                    }
+
+                    await deleteFolderContents(projectFolderRef);
+
+                    log('Deleted project folder and all its contents: ${projectFolderRef.fullPath}');
+                    checkSubmissionStatus();
+                    return;
+                  }
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return SubmitProjectPage(
+                          courseId: widget.course.id,
+                        );
+                      },
+                    ),
+                  );
+                  if (result != null) {
+                    checkSubmissionStatus();
+                    getUserProject();
+                  }
+                },
+                child: Text(
+                  hasSubmitted ? "Remove project" : "Submit Project",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
       body: Container(

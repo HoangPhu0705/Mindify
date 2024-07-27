@@ -8,7 +8,13 @@ exports.submitProject = async (courseId, project) => {
             createdAt: firestore.FieldValue.serverTimestamp(),
         };
 
-        await CourseCollection.doc(courseId).collection('projects').add(newProject);
+        const docRef = await CourseCollection.doc(courseId).collection('projects').add(newProject);
+        
+        // Update the document with its own ID
+        await docRef.update({ projectId: docRef.id });
+
+        // Include the project ID in the project object
+        newProject.projectId = docRef.id;
 
         return { success: true, project: newProject };
     } catch (error) {
@@ -16,6 +22,7 @@ exports.submitProject = async (courseId, project) => {
         return { success: false, error };
     }
 };
+
 
 exports.removeProject = async (courseId, projectId) => {
     try {

@@ -11,7 +11,9 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/images.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:open_file/open_file.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -38,7 +40,7 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
   Map<String, dynamic> projectContent = {};
   final projectDescriptionController = TextEditingController();
   final projectTitleController = TextEditingController();
-  Projectservice projectservice = Projectservice();
+  ProjectService projectservice = ProjectService();
 
   @override
   void initState() {
@@ -105,14 +107,16 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
         : Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: selectedImages!.map((image) {
-              return Image.file(
-                File(image.path),
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              );
-            }).toList(),
+            children: selectedImages!.map(
+              (image) {
+                return Image.file(
+                  File(image.path),
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                );
+              },
+            ).toList(),
           );
   }
 
@@ -130,13 +134,15 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
   Future<void> submitProject() async {
     if (_formKey.currentState!.validate() &&
         coverImage != null &&
-        pickedFile != null &&
-        selectedImages != null) {
+        (pickedFile != null || selectedImages != null)) {
       await uploadAll();
       projectContent['title'] = projectTitleController.text;
       projectContent['description'] = projectDescriptionController.text;
       projectContent['userId'] = FirebaseAuth.instance.currentUser!.uid;
+
       await projectservice.submitProject(widget.courseId, projectContent);
+
+      Navigator.pop(context, true);
     } else {
       log("Not enough data to submit project");
     }
@@ -186,166 +192,182 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.ghostWhite,
-      appBar: AppBar(
-        surfaceTintColor: AppColors.ghostWhite,
+    return LoaderOverlay(
+      useDefaultLoading: false,
+      overlayWidgetBuilder: (_) {
+        //ignored progress for the moment
+        return const Center(
+            child: MyLoading(
+          width: 30,
+          height: 30,
+          color: AppColors.deepBlue,
+        ));
+      },
+      child: Scaffold(
         backgroundColor: AppColors.ghostWhite,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        appBar: AppBar(
+          surfaceTintColor: AppColors.ghostWhite,
+          backgroundColor: AppColors.ghostWhite,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
-      ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: AppStyles.primaryButtonStyle,
-                    onPressed: submitProject,
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: AppStyles.primaryButtonStyle,
+                      onPressed: () async {
+                        context.loaderOverlay.show();
+                        await submitProject();
+                        context.loaderOverlay.hide();
+                      },
+                      child: const Text(
+                        "Submit Project",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(),
+                  AppSpacing.mediumVertical,
+                  const Text(
+                    "Cover Image",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  AppSpacing.smallVertical,
+                  const Text(
+                    "Choose a photo that represents your project.",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  AppSpacing.mediumVertical,
+                  ElevatedButton(
+                    onPressed: selectCoverImage,
+                    style: AppStyles.secondaryButtonStyle,
                     child: const Text(
-                      "Submit Project",
+                      "Upload Cover Image",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
                   ),
-                ),
-                const Divider(),
-                AppSpacing.mediumVertical,
-                const Text(
-                  "Cover Image",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                AppSpacing.smallVertical,
-                const Text(
-                  "Choose a photo that represents your project.",
-                  style: TextStyle(fontSize: 14),
-                ),
-                AppSpacing.mediumVertical,
-                ElevatedButton(
-                  onPressed: selectCoverImage,
-                  style: AppStyles.secondaryButtonStyle,
-                  child: const Text(
-                    "Upload Cover Image",
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
+                  AppSpacing.mediumVertical,
+                  buildCoverImagePreview(),
+                  AppSpacing.largeVertical,
+                  const Text(
+                    "Project Title",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                ),
-                AppSpacing.mediumVertical,
-                buildCoverImagePreview(),
-                AppSpacing.largeVertical,
-                const Text(
-                  "Project Title",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                AppSpacing.smallVertical,
-                TextFormField(
-                  controller: projectTitleController,
-                  cursorColor: AppColors.blue,
-                  onTapOutside: (event) {
-                    log("Tapped outside");
-                    FocusScope.of(context).unfocus();
-                  },
-                  focusNode: projectTitleNode,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: AppColors.lightGrey,
+                  AppSpacing.smallVertical,
+                  TextFormField(
+                    controller: projectTitleController,
+                    cursorColor: AppColors.blue,
+                    onTapOutside: (event) {
+                      log("Tapped outside");
+                      FocusScope.of(context).unfocus();
+                    },
+                    focusNode: projectTitleNode,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.lightGrey,
+                        ),
                       ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a project title';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a project title';
-                    }
-                    return null;
-                  },
-                ),
-                AppSpacing.largeVertical,
-                const Text(
-                  "Project Description",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                AppSpacing.smallVertical,
-                TextFormField(
-                  controller: projectDescriptionController,
-                  maxLines: 8,
-                  cursorColor: AppColors.blue,
-                  onTapOutside: (event) {
-                    FocusScope.of(context).unfocus();
-                  },
-                  focusNode: projectDescriptionNode,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: AppColors.lightGrey,
+                  AppSpacing.largeVertical,
+                  const Text(
+                    "Project Description",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  AppSpacing.smallVertical,
+                  TextFormField(
+                    controller: projectDescriptionController,
+                    maxLines: 8,
+                    cursorColor: AppColors.blue,
+                    onTapOutside: (event) {
+                      FocusScope.of(context).unfocus();
+                    },
+                    focusNode: projectDescriptionNode,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: AppColors.lightGrey,
+                        ),
                       ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a project description';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a project description';
-                    }
-                    return null;
-                  },
-                ),
-                AppSpacing.largeVertical,
-                const Text(
-                  "Project Contents",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                AppSpacing.smallVertical,
-                buildImagePreview(),
-                AppSpacing.smallVertical,
-                pickedFile != null
-                    ? ListView.builder(
-                        itemCount: pickedFile!.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            onTap: () {
-                              openFile(pickedFile![index]);
-                            },
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              pickedFile![index].name,
-                              style: const TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.deepBlue,
+                  AppSpacing.largeVertical,
+                  const Text(
+                    "Project Contents",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  AppSpacing.smallVertical,
+                  buildImagePreview(),
+                  AppSpacing.smallVertical,
+                  pickedFile != null
+                      ? ListView.builder(
+                          itemCount: pickedFile!.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              onTap: () {
+                                openFile(pickedFile![index]);
+                              },
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                pickedFile![index].name,
+                                style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.deepBlue,
+                                ),
                               ),
-                            ),
-                          );
-                        })
-                    : const SizedBox.shrink(),
-                Row(
-                  children: [
-                    buildProjectContent(
-                      Icons.image_outlined,
-                      "Image",
-                      selectImageFromGallery,
-                    ),
-                    AppSpacing.largeHorizontal,
-                    buildProjectContent(
-                      Icons.file_upload_outlined,
-                      "File",
-                      selectFiles,
-                    ),
-                    AppSpacing.largeHorizontal,
-                  ],
-                ),
-              ],
+                            );
+                          })
+                      : const SizedBox.shrink(),
+                  Row(
+                    children: [
+                      buildProjectContent(
+                        Icons.image_outlined,
+                        "Image",
+                        selectImageFromGallery,
+                      ),
+                      AppSpacing.largeHorizontal,
+                      buildProjectContent(
+                        Icons.file_upload_outlined,
+                        "File",
+                        selectFiles,
+                      ),
+                      AppSpacing.largeHorizontal,
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
