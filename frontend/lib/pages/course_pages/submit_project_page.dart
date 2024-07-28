@@ -152,6 +152,7 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
     final folderRef = DateTime.now().millisecondsSinceEpoch.toString();
     final path = 'course_projects/${widget.courseId}/$folderRef';
     projectContent['folderRef'] = folderRef;
+
     // Upload cover image
     if (coverImage != null) {
       final coverImageUrl =
@@ -176,18 +177,45 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
 
     // Upload other files
     if (pickedFile != null) {
-      List<String> fileUrls = [];
+      List<Map<String, String>> fileDetails = [];
       for (var file in pickedFile!) {
         final fileUrl = await uploadFileToStorage(
             File(file.path!), '$path/files/${file.name}');
         if (fileUrl != null) {
-          fileUrls.add(fileUrl);
+          // Get file type from the file extension
+          final fileType = getFileType(file.name);
+          fileDetails.add({
+            'name': file.name,
+            'url': fileUrl,
+            'type': fileType,
+          });
         }
       }
-      projectContent['files'] = fileUrls;
+      projectContent['files'] = fileDetails;
     }
 
     setState(() {});
+  }
+
+  String getFileType(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'image';
+      case 'pdf':
+        return 'pdf';
+      case 'doc':
+      case 'docx':
+        return 'document';
+      case 'txt':
+        return 'text';
+      case 'mp4':
+        return 'video';
+      default:
+        return 'unknown';
+    }
   }
 
   @override

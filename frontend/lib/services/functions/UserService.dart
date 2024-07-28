@@ -91,6 +91,7 @@ class UserService {
           await http.get(url, headers: {'Content-Type': 'application/json'});
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        log(jsonResponse.toString());
         return jsonResponse;
       } else {
         log("Error fetching user info");
