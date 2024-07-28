@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { IoBagHandle, IoPeopleCircleOutline, IoPeople, IoCart } from 'react-icons/io5';
+import { IoBagHandle, IoPeopleCircleOutline, IoPeople, IoCart, IoPerson  } from 'react-icons/io5';
 import axios from 'axios';
 
 export default function DashboardStatsGrid() {
   const [totalCourses, setTotalCourses] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+
 
   useEffect(() => {
+    axios.get('http://localhost:3000/admin/total-users')
+      .then(response => setTotalUsers(response.data.totalUsers))
+      .catch(error => console.error('Error fetching total users:', error));
+
     axios.get('http://localhost:3000/admin/total-courses')
       .then(response => setTotalCourses(response.data.totalCourses))
       .catch(error => console.error('Error fetching total courses:', error));
@@ -53,6 +59,17 @@ export default function DashboardStatsGrid() {
           <span className="text-sm text-gray-500 font-light">Total Revenue</span>
           <div className="flex items-center">
             <strong className="text-xl text-gray-700 font-semibold">{totalRevenue} VNĐ</strong>
+          </div>
+        </div>
+      </BoxWrapper>
+      <BoxWrapper>
+        <div className="rounded-full h-12 w-12 flex items-center justify-center bg-blue-600">
+          <IoPeople className="text-2xl text-white" />
+        </div>
+        <div className="pl-4">
+          <span className="text-sm text-gray-500 font-light">Total Users</span>
+          <div className="flex items-center">
+            <strong className="text-xl text-gray-700 font-semibold">{totalUsers}</strong>
           </div>
         </div>
       </BoxWrapper>

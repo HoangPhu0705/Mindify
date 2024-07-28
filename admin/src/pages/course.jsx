@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Button, Select, Option, Spinner } from "@material-tailwind/react";
 
-const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson Num", "Student Num", "Actions"];
+const COURSE_TABLE_HEAD = ["Course Name", "Author", "Lesson", "Student", "Actions"];
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);

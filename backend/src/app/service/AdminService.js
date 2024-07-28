@@ -224,14 +224,23 @@ const unlockUser = async (uid) => {
 
 
 // Get total number of students across all courses
+const getTotalUsers = async () => {
+  try {
+    const snapshot = await UserCollection.get();
+    const totalUsers = snapshot.size;
+    return totalUsers;
+  } catch (error) {
+    console.error('Error getting total students:', error);
+    throw new Error('Error getting total students: ' + error.message);
+  }
+};
+
+// Get total number of students across all courses
 const getTotalStudents = async () => {
   try {
-    const snapshot = await CourseCollection.get();
-    let totalStudents = 0;
-    snapshot.forEach(doc => {
-      const courseData = doc.data();
-      totalStudents += courseData.students || 0;
-    });
+    const snapshot = await EnrollmentCollection.get();
+    const totalStudents = snapshot.size;
+
     return totalStudents;
   } catch (error) {
     console.error('Error getting total students:', error);
@@ -418,8 +427,6 @@ const getRevenue = async() => {
   }
 }
 
-
-
 module.exports = {
   loginUser,
   logout,
@@ -435,5 +442,6 @@ module.exports = {
   getRevenue,
   getYearlyRevenue,
   getMonthlyRevenue,
-  getRevenueByDateRange
+  getRevenueByDateRange,
+  getTotalUsers
 };

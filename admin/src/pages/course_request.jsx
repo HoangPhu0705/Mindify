@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Button, Select, Option, Spinner } from "@material-tailwind/react";
 
-const COURSE_TABLE_HEAD = ["Course Name", "Author", "Email", "Price", "Actions"];
+const COURSE_TABLE_HEAD = ["Course Name", "Author", "Email", "Price", "Detail"];
 
 const CourseRequestManagement = () => {
   const [requests, setRequests] = useState([]);
@@ -34,22 +34,8 @@ const CourseRequestManagement = () => {
     }
   };
 
-  const approveRequest = async (requestId) => {
-    try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/approve`);
-      fetchRequests();
-    } catch (error) {
-      console.error('Error approving request: ', error);
-    }
-  };
-
-  const rejectRequest = async (requestId) => {
-    try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/reject`);
-      fetchRequests();
-    } catch (error) {
-      console.error('Error rejecting request: ', error);
-    }
+  const goToCourseDetail = (courseId) => {
+    navigate(`/course/${courseId}`);
   };
 
   const handlePageChange = (newPage) => {
@@ -100,12 +86,17 @@ const CourseRequestManagement = () => {
                   {item.coursePrice}
                 </Typography>
               </td>
-              <td className="p-4">
+              {/* <td className="p-4">
                 <Button color="green" onClick={() => approveRequest(item.id)}>
                   Approve
                 </Button>
                 <Button color="red" onClick={() => rejectRequest(item.id)}>
                   Reject
+                </Button>
+              </td> */}
+              <td className="p-4">
+                <Button color="cyan" onClick={() => goToCourseDetail(item.courseId)}>
+                  Detail
                 </Button>
               </td>
             </tr>
