@@ -14,7 +14,7 @@ import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class SubmitProjectPage extends StatefulWidget {

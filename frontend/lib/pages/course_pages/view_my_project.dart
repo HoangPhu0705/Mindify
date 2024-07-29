@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -9,7 +11,8 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_file/open_file.dart';
+import 'package:http/http.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -46,31 +49,21 @@ class _ViewMyProjectState extends State<ViewMyProject> {
     await getUserInfo();
   }
 
-  Future<void> _downloadAndOpenFile(String fileUrl) async {
+  Future downloadFile(String filename, String url) async {
+    var path = "/storage/emulated/0/Download/$filename";
+    var file = File(path);
+    var res = await get(Uri.parse(url));
+    file.writeAsBytes(res.bodyBytes);
+    log("Downloaded file to $path");
+    await openFile(file);
+  }
+
+  Future openFile(File file) async {
     try {
-      // Get the temporary directory of the device
-      final directory = await getTemporaryDirectory();
-      final filePath =
-          '${directory.path}/${Uri.parse(fileUrl).pathSegments.last}';
-
-      // Download the file from the URL
-      final response = await http.get(Uri.parse(fileUrl));
-      final file = File(filePath);
-
-      // Write the downloaded file to the local file system
-      await file.writeAsBytes(response.bodyBytes);
-
-      // Open the file using the open_file package
-      final result = await OpenFile.open(filePath);
-
-      // Handle the result of opening the file
-      if (result.type != ResultType.done) {
-        // Handle errors (e.g., the file could not be opened)
-        print('Error opening file: ${result.message}');
-      }
+      log("Opening file: ${file.path}");
+      await OpenFile.open(file.path);
     } catch (e) {
-      // Handle exceptions (e.g., network issues, file write errors)
-      print('Exception: $e');
+      log("Error opening file: $e");
     }
   }
 
@@ -157,12 +150,67 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                         ),
                       ),
                       AppSpacing.smallVertical,
+                      widget.project!["contentImages"] == null
+                          ? const SizedBox.shrink()
+                          : Container(
+                              height: 200,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    widget.project!["contentImages"].length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(
+                                      widget.project!["contentImages"][index],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                       widget.project!["files"] == null
-                          ? const Text("No files uploaded")
-                          : ListTile(
-                              onTap: () {},
-                              title:
-                                  Text("${widget.project!["files"][0]["url"]}"),
+                          ? const SizedBox.shrink()
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Files:",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                AppSpacing.smallVertical,
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: widget.project!["files"].length,
+                                  itemBuilder: (context, index) {
+                                    final file =
+                                        widget.project!["files"][index];
+                                    String fileUrl =
+                                        widget.project!["files"][index]["url"];
+                                    String fileName =
+                                        widget.project!["files"][index]["name"];
+                                    return ListTile(
+                                      onTap: () {
+                                        downloadFile(
+                                          fileName,
+                                          fileUrl,
+                                        );
+                                      },
+                                      title: Text(
+                                        file["name"],
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      leading: const Icon(Icons.file_copy),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                     ],
                   ),

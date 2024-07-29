@@ -131,7 +131,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
               'avatar': data!["photoUrl"],
               'displayName': data["displayName"],
             };
-            
           }
         }
       }
@@ -386,6 +385,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             viewportFraction: 0.85,
             disableCenter: true,
             enlargeCenterPage: true,
+            showIndicator: false,
           ),
           itemCount: courses.length,
           itemBuilder: (context, index, realIndex) {

@@ -100,8 +100,9 @@ dependencies:
   get_thumbnail_video: ^0.6.1
   flutter_stripe: ^8.0.0
   selectable_container: ^1.0.7
-  open_file: ^3.3.2
   loader_overlay: ^4.0.1
+  widget_zoom: ^0.0.4
+  open_file_plus: ^3.4.1+1
   
 dev_dependencies:
   flutter_test:
