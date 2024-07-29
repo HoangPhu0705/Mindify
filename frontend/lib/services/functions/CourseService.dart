@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/comment.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/constants.dart';
@@ -170,37 +171,50 @@ class CourseService {
       Query queryRef = _firestore
           .collection('courses')
           .where('isPublic', isEqualTo: true)
-          .limit(30);
+          .limit(10);
+      log('Initial Query: $queryRef');
+      log('Collection: ${queryRef.parameters['path']}');
+      log('Filters: ${queryRef.parameters['filters']}');
+      log('Limit: ${queryRef.parameters['limit']}');
 
       if (lastDocument != null) {
         queryRef = queryRef.startAfterDocument(lastDocument!);
       }
 
       final QuerySnapshot snapshot = await queryRef.get();
+      log('Snapshot: ${snapshot.docs.length} documents found');
+
       if (snapshot.docs.isNotEmpty) {
         lastDocument = snapshot.docs.last;
       }
-
-      log("Snapshot: ${snapshot.docs.length} documents found");
 
       final courses = snapshot.docs.map((doc) {
         var courseData = doc.data() as Map<String, dynamic>;
         courseData['id'] = doc.id;
         return courseData;
       }).toList();
+      log('Courses from Firestore: $courses');
 
-      final filteredCourses = courses.where((course) {
+      List<Map<String, dynamic>> filteredCourses = [];
+
+      for (var course in courses) {
         final courseName = course['courseName']?.toString().toLowerCase() ?? '';
         final authorName = course['author']?.toString().toLowerCase() ?? '';
         final lowerCaseQuery = query.toLowerCase();
-        return courseName.contains(lowerCaseQuery) ||
-            authorName.contains(lowerCaseQuery);
-      }).toList();
 
-      log("Filtered Courses: $filteredCourses");
+        log("Checking course: $courseName by $authorName");
+
+        if (courseName.contains(lowerCaseQuery) ||
+            authorName.contains(lowerCaseQuery)) {
+          log("Match found: $courseName by $authorName");
+          filteredCourses.add(course);
+        }
+      }
+
+      log('Filtered Courses: $filteredCourses');
       return filteredCourses;
     } catch (e) {
-      log("Error searching courses: $e");
+      log('Error searching courses: $e');
       return [];
     }
   }
@@ -211,7 +225,10 @@ class CourseService {
       if (isNewSearch) lastDocument = null;
 
       // Search courses
-      Query coursesQuery = _firestore.collection('courses').limit(10);
+      Query coursesQuery = _firestore
+          .collection('courses')
+          .where('isPublic', isEqualTo: true)
+          .limit(3);
       if (lastDocument != null) {
         coursesQuery = coursesQuery.startAfterDocument(lastDocument!);
       }
@@ -227,24 +244,38 @@ class CourseService {
         return courseData;
       }).toList();
 
-      final filteredCourses = courses.where((course) {
-        final courseName = course['courseName']?.toString().toLowerCase() ?? '';
-        final lowerCaseQuery = query.toLowerCase();
-        return courseName.contains(lowerCaseQuery);
-      }).toList();
+      final filteredCourses = courses
+          .where((course) {
+            final courseName =
+                course['courseName']?.toString().toLowerCase() ?? '';
+            final lowerCaseQuery = query.toLowerCase();
+            return courseName.contains(lowerCaseQuery);
+          })
+          .take(3)
+          .toList();
 
       // Search users
       final usersSnapshot = await _firestore
           .collection('users')
           .where('displayName', isGreaterThanOrEqualTo: query)
-          .where('displayName', isLessThanOrEqualTo: query + '\uf8ff')
+          .limit(3)
           .get();
 
-      final users = usersSnapshot.docs.map((doc) {
+      log(usersSnapshot.docs.toString());
+
+      List<Map<String, dynamic>> users = [];
+      final userService = UserService();
+      for (var doc in usersSnapshot.docs) {
         var userData = doc.data() as Map<String, dynamic>;
         userData['id'] = doc.id;
-        return userData;
-      }).toList();
+        final additionalData =
+            await userService.getAvatarAndDisplayName(userData['id']);
+        if (additionalData != null) {
+          userData['displayName'] = additionalData['displayName'];
+          userData['photoUrl'] = additionalData['photoUrl'];
+        }
+        users.add(userData);
+      }
 
       final searchResults = [
         ...filteredCourses,
