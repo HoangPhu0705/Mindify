@@ -156,7 +156,7 @@ const Dashboard = () => {
             </Typography>
           </div>
         </CardHeader>
-        <CardBody className="px-2 pb-0">
+        <CardBody className="px-2 pb-5">
           <div className="flex flex-wrap gap-4">
             <Select name="filterType" value={filterType} onChange={(e) => handleFilterTypeChange(e)} label="Filter Type">
               <Option value="month">Month</Option>
@@ -178,7 +178,7 @@ const Dashboard = () => {
                 onChange={handleDateChange}
               />
             )}
-            <div>
+            <div className = "w-full flex justify-end items-end mb-5">
               <Button className="" onClick={() => { fetchEnrollments(); fetchRevenue(); }}>Apply Filters</Button>
             </div>
           </div>
@@ -190,7 +190,7 @@ const Dashboard = () => {
           <div>
             <Typography variant="h6" color="blue-gray">Bar Chart</Typography>
             <Typography variant="small" color="gray" className="max-w-sm font-normal">
-              Visualize your data with bar chart
+              Mindify enrollments and revenue data
             </Typography>
           </div>
         </CardHeader>

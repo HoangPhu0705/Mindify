@@ -21,10 +21,10 @@ class ViewMyProject extends StatefulWidget {
   final String courseId;
   final DocumentSnapshot project;
   const ViewMyProject({
-    Key? key,
+    super.key,
     required this.courseId,
     required this.project,
-  }) : super(key: key);
+  });
 
   @override
   State<ViewMyProject> createState() => _ViewMyProjectState();

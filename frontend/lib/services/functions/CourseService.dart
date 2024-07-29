@@ -266,7 +266,7 @@ class CourseService {
       List<Map<String, dynamic>> users = [];
       final userService = UserService();
       for (var doc in usersSnapshot.docs) {
-        var userData = doc.data() as Map<String, dynamic>;
+        var userData = doc.data();
         userData['id'] = doc.id;
         final additionalData =
             await userService.getAvatarAndDisplayName(userData['id']);
