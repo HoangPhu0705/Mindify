@@ -18,8 +18,11 @@ import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:open_file_plus/open_file_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class PublishCourse extends StatefulWidget {
@@ -165,6 +168,37 @@ class _PublishCourseState extends State<PublishCourse> {
     setState(() {
       uploadTask = null;
     });
+  }
+
+  Future downloadFile(String filename, String url) async {
+    var path = "";
+    if (Platform.isAndroid) {
+      path = "/storage/emulated/0/Download/$filename";
+    } else if (Platform.isIOS) {
+      var downloadDir = await getApplicationDocumentsDirectory();
+      path = "${downloadDir.path}/$filename";
+    }
+
+    if (path.isEmpty) {
+      log("Platform not supported");
+      return;
+    }
+
+    var file = File(path);
+
+    var res = await get(Uri.parse(url));
+    file.writeAsBytes(res.bodyBytes);
+    log("Downloaded file to $path");
+    await openFile(file);
+  }
+
+  Future openFile(File file) async {
+    try {
+      log("Opening file: ${file.path}");
+      await OpenFile.open(file.path);
+    } catch (e) {
+      log("Error opening file: $e");
+    }
   }
 
   Widget buildProgress() => StreamBuilder<TaskSnapshot>(

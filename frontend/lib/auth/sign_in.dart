@@ -100,7 +100,6 @@ class _SignInState extends State<SignIn> {
         accessToken: gAuth.accessToken,
         idToken: gAuth.idToken,
       );
-
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 

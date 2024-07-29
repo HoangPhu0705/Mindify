@@ -50,8 +50,21 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   }
 
   Future downloadFile(String filename, String url) async {
-    var path = "/storage/emulated/0/Download/$filename";
+    var path = "";
+    if (Platform.isAndroid) {
+      path = "/storage/emulated/0/Download/$filename";
+    } else if (Platform.isIOS) {
+      var downloadDir = await getApplicationDocumentsDirectory();
+      path = "${downloadDir.path}/$filename";
+    }
+
+    if (path.isEmpty) {
+      log("Platform not supported");
+      return;
+    }
+
     var file = File(path);
+
     var res = await get(Uri.parse(url));
     file.writeAsBytes(res.bodyBytes);
     log("Downloaded file to $path");
@@ -71,6 +84,8 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.ghostWhite,
+        surfaceTintColor: AppColors.ghostWhite,
         centerTitle: true,
         title: Text(
           widget.project!["title"],

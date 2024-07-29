@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:frontend/pages/course_pages/show_all_projects.dart';
 import 'package:frontend/pages/course_pages/submit_project_page.dart';
 import 'package:frontend/pages/course_pages/view_my_project.dart';
 import 'package:frontend/services/functions/CourseService.dart';
@@ -24,6 +25,7 @@ import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:http/http.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SubmitProject extends StatefulWidget {
@@ -40,7 +42,7 @@ class SubmitProject extends StatefulWidget {
 
 class _SubmitProjectState extends State<SubmitProject> {
   CourseService courseService = CourseService();
-  ProjectService projectservice = ProjectService();
+  ProjectService projectService = ProjectService();
   bool hasSubmitted = false;
   DocumentSnapshot? Myproject;
 
@@ -56,7 +58,7 @@ class _SubmitProjectState extends State<SubmitProject> {
   }
 
   void checkSubmissionStatus() async {
-    bool submitted = await projectservice.hasSubmittedProject(
+    bool submitted = await projectService.hasSubmittedProject(
       widget.course.id,
       FirebaseAuth.instance.currentUser!.uid,
     );
@@ -69,7 +71,7 @@ class _SubmitProjectState extends State<SubmitProject> {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     String courseId = widget.course.id;
     DocumentSnapshot? project =
-        await projectservice.getProjectId(courseId, uid);
+        await projectService.getProjectId(courseId, uid);
 
     if (project != null) {
       setState(() {
@@ -145,7 +147,7 @@ class _SubmitProjectState extends State<SubmitProject> {
                       return;
                     }
 
-                    await projectservice.removeProject(
+                    await projectService.removeProject(
                       widget.course.id,
                       Myproject!.id,
                     );
@@ -219,38 +221,63 @@ class _SubmitProjectState extends State<SubmitProject> {
               AppSpacing.mediumVertical,
               widget.isPreviewing
                   ? const SizedBox.shrink()
-                  : SizedBox(
-                      height: 100.0,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 3,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            width: MediaQuery.of(context).size.width * 0.3,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://pollthepeople.app/wp-content/uploads/2022/06/Figma-Design-Flow-Image.png"),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+                  : StreamBuilder<QuerySnapshot>(
+                      stream: projectService.getProjectStream(widget.course.id),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Center(
+                            child: Text(
+                                "This class don't have submitted project yet"),
                           );
-                        },
-                      ),
-                    ),
+                        }
+                        List<DocumentSnapshot> projects = snapshot.data!.docs;
+                        return SizedBox(
+                          height: 100.0,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount: projects.length,
+                            itemBuilder: (context, index) {
+                              DocumentSnapshot project = projects[index];
+                              String projectCoverImage = project["coverImage"];
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(projectCoverImage),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
               AppSpacing.mediumVertical,
-              const Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  "Show All",
-                  style: TextStyle(
-                    color: AppColors.deepBlue,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return ShowAllProjects(
+                          course: widget.course,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: const Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(
+                    "Show All",
+                    style: TextStyle(
+                      color: AppColors.deepBlue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -351,11 +378,34 @@ class _SubmitProjectState extends State<SubmitProject> {
   }
 
   Future downloadFile(String filename, String url, String fileExtension) async {
-    var time = DateTime.now().millisecondsSinceEpoch;
-    var path = "/storage/emulated/0/Download/$filename.$fileExtension";
+    var path = "";
+    if (Platform.isAndroid) {
+      path = "/storage/emulated/0/Download/$filename.$fileExtension";
+    } else if (Platform.isIOS) {
+      var downloadDir = await getApplicationDocumentsDirectory();
+      path = "${downloadDir.path}/$filename";
+    }
+
+    if (path.isEmpty) {
+      log("Platform not supported");
+      return;
+    }
+
     var file = File(path);
+
     var res = await get(Uri.parse(url));
     file.writeAsBytes(res.bodyBytes);
+    log("Downloaded file to $path");
+    await openFile(file);
+  }
+
+  Future openFile(File file) async {
+    try {
+      log("Opening file: ${file.path}");
+      await OpenFile.open(file.path);
+    } catch (e) {
+      log("Error opening file: $e");
+    }
   }
 
   Widget _buildQuillEditor(QuillController controller,

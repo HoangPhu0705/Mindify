@@ -244,7 +244,7 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
           ),
         ),
         body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(

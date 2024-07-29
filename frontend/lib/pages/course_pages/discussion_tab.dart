@@ -35,11 +35,19 @@ class _DiscussionState extends State<Discussion> {
   String userId = '';
   String? _replyToCommentId;
   bool isLoading = true;
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     userId = userService.getUserId();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    focusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _addComment() async {
@@ -84,40 +92,51 @@ class _DiscussionState extends State<Discussion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: widget.isPreviewing ? const SizedBox.shrink() : Container(
-        height: MediaQuery.of(context).size.height * 0.07,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        child: TextField(
-          key: _commentFieldKey,
-          controller: _commentController,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: AppColors.ghostWhite,
-            contentPadding: const EdgeInsets.all(12),
-            hintText: _replyToCommentId == null
-                ? 'Start a discussion...'
-                : 'Replying...',
-            border: InputBorder.none,
-            hintStyle:
-                Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16),
-            suffixIcon: IconButton(
-              onPressed: _addComment,
-              icon: const Icon(
-                Icons.send,
-                color: AppColors.deepBlue,
+      bottomSheet: widget.isPreviewing
+          ? const SizedBox.shrink()
+          : Container(
+              height: MediaQuery.of(context).size.height * 0.07,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    offset: const Offset(0, -1),
+                  ),
+                ],
+              ),
+              child: TextField(
+                onTapOutside: (event) {
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    _replyToCommentId = null;
+                  });
+                },
+                focusNode: focusNode,
+                key: _commentFieldKey,
+                controller: _commentController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.ghostWhite,
+                  contentPadding: const EdgeInsets.all(12),
+                  hintText: _replyToCommentId == null
+                      ? 'Start a discussion...'
+                      : 'Replying...',
+                  border: InputBorder.none,
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontSize: 16),
+                  suffixIcon: IconButton(
+                    onPressed: _addComment,
+                    icon: const Icon(
+                      Icons.send,
+                      color: AppColors.deepBlue,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
       body: StreamBuilder<QuerySnapshot>(
           stream: commentService.getCommentsStreamByCourse(widget.courseId),
           builder: (context, snapshot) {
@@ -349,7 +368,7 @@ class _DiscussionState extends State<Discussion> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Scrollable.ensureVisible(_commentFieldKey.currentContext!,
             duration: Duration(milliseconds: 300));
-        FocusScope.of(context).requestFocus(FocusNode());
+        FocusScope.of(context).requestFocus(focusNode);
       });
     });
   }

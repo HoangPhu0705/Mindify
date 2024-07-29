@@ -9,7 +9,12 @@ class NotificationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications'),
+        title: const Text(
+          'Notifications',
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -20,8 +25,8 @@ class NotificationsPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
+            return const Center(
+              child: Text("You have no notifications"),
             );
           }
 
@@ -36,7 +41,7 @@ class NotificationsPage extends StatelessWidget {
                 subtitle: Text(notification['body']),
                 trailing: Text(
                   (notification['timestamp'] as Timestamp).toDate().toString(),
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
               );
             },
