@@ -173,6 +173,8 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
         }
       }
       projectContent['contentImages'] = imageUrls;
+    } else {
+      projectContent['contentImages'] = null;
     }
 
     // Upload other files
@@ -192,6 +194,8 @@ class _SubmitProjectPageState extends State<SubmitProjectPage> {
         }
       }
       projectContent['files'] = fileDetails;
+    } else {
+      projectContent['files'] = null;
     }
 
     setState(() {});

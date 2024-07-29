@@ -18,7 +18,7 @@ import 'package:path_provider/path_provider.dart';
 
 class ViewMyProject extends StatefulWidget {
   final String courseId;
-  final DocumentSnapshot? project;
+  final DocumentSnapshot project;
   const ViewMyProject({
     Key? key,
     required this.courseId,
@@ -113,7 +113,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                   height: MediaQuery.of(context).size.height * 0.3,
                   width: double.infinity,
                   child: Image.network(
-                    widget.project!["coverImage"],
+                    widget.project["coverImage"],
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -149,7 +149,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                           ),
                           AppSpacing.smallHorizontal,
                           Text(
-                            widget.project!["description"],
+                            widget.project["description"],
                             style: const TextStyle(
                               fontSize: 16,
                             ),
@@ -165,26 +165,26 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                         ),
                       ),
                       AppSpacing.smallVertical,
-                      widget.project!["contentImages"] == null
+                      widget.project["contentImages"] == null
                           ? const SizedBox.shrink()
                           : Container(
                               height: 200,
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount:
-                                    widget.project!["contentImages"].length,
+                                    widget.project["contentImages"].length,
                                 itemBuilder: (context, index) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Image.network(
-                                      widget.project!["contentImages"][index],
+                                      widget.project["contentImages"][index],
                                       fit: BoxFit.cover,
                                     ),
                                   );
                                 },
                               ),
                             ),
-                      widget.project!["files"] == null
+                      widget.project["files"] == null
                           ? const SizedBox.shrink()
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

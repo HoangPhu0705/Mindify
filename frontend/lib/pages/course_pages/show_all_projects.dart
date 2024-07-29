@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_pages/view_my_project.dart';
 import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
@@ -74,39 +75,54 @@ class _ShowAllProjectsState extends State<ShowAllProjects> {
                             userData?['displayName'] ?? 'Unknown User';
                         String photoUrl = userData?['photoUrl'] ?? '';
 
-                        return Column(
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              height: MediaQuery.of(context).size.height * 0.25,
-                              child: Image.network(
-                                projectCoverImage,
-                                fit: BoxFit.cover,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ViewMyProject(
+                                    courseId: widget.course.id,
+                                    project: project,
+                                  );
+                                },
                               ),
-                            ),
-                            ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              leading: CircleAvatar(
-                                backgroundImage: photoUrl.isNotEmpty
-                                    ? NetworkImage(photoUrl)
-                                    : null,
-                                child: photoUrl.isEmpty
-                                    ? const Icon(Icons.person)
-                                    : null,
-                              ),
-                              title: Text(
-                                title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
+                                child: Image.network(
+                                  projectCoverImage,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
-                              subtitle: Text(displayName),
-                            ),
-                            AppSpacing.mediumVertical,
-                          ],
+                              ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundImage: photoUrl.isNotEmpty
+                                      ? NetworkImage(photoUrl)
+                                      : null,
+                                  child: photoUrl.isEmpty
+                                      ? const Icon(Icons.person)
+                                      : null,
+                                ),
+                                title: Text(
+                                  title,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                subtitle: Text(displayName),
+                              ),
+                              AppSpacing.mediumVertical,
+                            ],
+                          ),
                         );
                       },
                     );
