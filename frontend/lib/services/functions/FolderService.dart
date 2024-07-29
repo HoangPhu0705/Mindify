@@ -18,6 +18,16 @@ class FolderService {
     return foldersStream;
   }
 
+  Future<void> updateFolder(
+      String folderId, Map<String, dynamic> updatedData) async {
+    try {
+      await folders.doc(folderId).update(updatedData);
+      log('Folder updated successfully');
+    } catch (e) {
+      log('Error updating folder: $e');
+    }
+  }
+
   Future<void> createFolder(Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse(AppConstants.FOLDER_API),

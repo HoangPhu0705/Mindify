@@ -34,12 +34,21 @@ class _FolderDetailState extends State<FolderDetail> {
   late Future _future;
   late List<Course> _courseList;
   late Folder folder;
+  bool isEditing = false;
+  late TextEditingController _folderNameController;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _future = _initPage();
+    _folderNameController = TextEditingController(text: widget.folderName);
+    _folderNameController.text = widget.folderName;
+  }
+
+  @override
+  void dispose() {
+    _folderNameController.dispose();
+    super.dispose();
   }
 
   Future<List<Course>> getCourseList() async {
@@ -66,17 +75,58 @@ class _FolderDetailState extends State<FolderDetail> {
     });
   }
 
+  Future<void> _updateFolderName() async {
+    try {
+      await folderService.updateFolder(
+        widget.folderId,
+        {'name': _folderNameController.text},
+      );
+      setState(() {
+        isEditing = false;
+      });
+    } catch (e) {
+      log('Error updating folder name: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.folderName),
+        title: isEditing
+            ? TextField(
+                autofocus: true,
+                controller: _folderNameController,
+                decoration: const InputDecoration.collapsed(hintText: ""),
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            : Text(
+                _folderNameController.text,
+              ),
         titleTextStyle: const TextStyle(
           color: Colors.black,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(isEditing ? Icons.check : Icons.edit),
+            onPressed: () {
+              if (isEditing) {
+                _updateFolderName();
+              } else {
+                setState(() {
+                  isEditing = true;
+                });
+              }
+            },
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: _future,

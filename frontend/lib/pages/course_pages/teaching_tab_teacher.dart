@@ -67,7 +67,7 @@ class _TeachingTabTeacherState extends State<TeachingTabTeacher> {
 
         return SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -97,7 +97,10 @@ class _TeachingTabTeacherState extends State<TeachingTabTeacher> {
                           // Navigate to course detail page
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => CourseDetail(courseId: course.id, userId: userId,),
+                              builder: (context) => CourseDetail(
+                                courseId: course.id,
+                                userId: userId,
+                              ),
                             ),
                           );
                         },

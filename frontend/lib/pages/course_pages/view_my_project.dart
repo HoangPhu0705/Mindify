@@ -15,6 +15,7 @@ import 'package:http/http.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:widget_zoom/widget_zoom.dart';
 
 class ViewMyProject extends StatefulWidget {
   final String courseId;
@@ -138,6 +139,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                           ),
                         ),
                       ),
+                      AppSpacing.mediumVertical,
                       Wrap(
                         children: [
                           const Text(
@@ -167,7 +169,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                       AppSpacing.smallVertical,
                       widget.project["contentImages"] == null
                           ? const SizedBox.shrink()
-                          : Container(
+                          : SizedBox(
                               height: 200,
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
@@ -176,9 +178,12 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                                 itemBuilder: (context, index) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Image.network(
-                                      widget.project["contentImages"][index],
-                                      fit: BoxFit.cover,
+                                    child: WidgetZoom(
+                                      heroAnimationTag: "images",
+                                      zoomWidget: Image.network(
+                                        widget.project["contentImages"][index],
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   );
                                 },
