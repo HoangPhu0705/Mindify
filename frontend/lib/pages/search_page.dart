@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
+import 'package:frontend/pages/course_pages/instructor_profile.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
@@ -35,6 +37,7 @@ class _SearchPageState extends State<SearchPage> {
   String _lastQuery = '';
   late Future<void> _future;
   bool _isTyping = false;
+  Timer? _debounce;
 
   final List<String> _popularSearches = [
     'marketing',
@@ -54,6 +57,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -66,17 +70,20 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchChanged() {
-    if (_searchController.text.isEmpty) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_searchController.text.isEmpty) {
+        setState(() {
+          _isTyping = true;
+          _suggestionResults = [];
+        });
+        return;
+      }
       setState(() {
         _isTyping = true;
-        _suggestionResults = [];
       });
-      return;
-    }
-    setState(() {
-      _isTyping = true;
+      _onSearch(_searchController.text);
     });
-    _onSearch(_searchController.text);
   }
 
   void _onSearch(String query) async {
@@ -90,15 +97,15 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      List<Map<String, dynamic>> courses =
-          await _courseService.searchCourses(query, isNewSearch: true);
+      List<Map<String, dynamic>> results =
+          await _courseService.searchCoursesAndUsers(query, isNewSearch: true);
       setState(() {
-        _suggestionResults = courses;
+        _suggestionResults = results;
         _isLoading = false;
-        _hasMoreData = courses.length == 50;
+        _hasMoreData = results.length == 6;
       });
     } catch (e) {
-      log("Error searching courses: $e");
+      log("Error searching courses and users: $e");
       setState(() {
         _isLoading = false;
       });
@@ -233,22 +240,47 @@ class _SearchPageState extends State<SearchPage> {
       shrinkWrap: true,
       itemCount: _suggestionResults.length,
       itemBuilder: (context, index) {
-        final course = _suggestionResults[index];
-        return ListTile(
-          leading: Image.network(course['thumbnail'],
-              width: 50, height: 50, fit: BoxFit.cover),
-          title: Text(course['courseName']),
-          onTap: () {
-            Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-                builder: (context) => CourseDetail(
-                  courseId: course['id'],
-                  userId: userId,
+        final result = _suggestionResults[index];
+
+        if (result.containsKey('courseName')) {
+          // Course item
+          return ListTile(
+            leading: Image.network(result['thumbnail'],
+                width: 50, height: 50, fit: BoxFit.cover),
+            title: Text(result['courseName']),
+            subtitle: Text(result['author']),
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(
+                  builder: (context) => CourseDetail(
+                    courseId: result['id'],
+                    userId: userId,
+                  ),
                 ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
+        } else if (result.containsKey('displayName')) {
+          // User item
+          return ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(result['photoUrl']),
+            ),
+            title: Text(result['displayName']),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InstructorProfile(
+                    instructorId: result['id'],
+                  ),
+                ),
+              );
+            },
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
       },
     );
   }
