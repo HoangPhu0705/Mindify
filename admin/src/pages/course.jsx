@@ -8,6 +8,7 @@ import {
   Select,
   Option,
   Spinner,
+  Input,
 } from "@material-tailwind/react";
 
 const COURSE_TABLE_HEAD = [
@@ -20,10 +21,11 @@ const COURSE_TABLE_HEAD = [
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
-  const [coursePage, setCoursePage] = useState({ limit: 5, startAfter: null });
+  const [coursePage, setCoursePage] = useState({ limit: 10, startAfter: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -67,6 +69,11 @@ const CourseManagement = () => {
     setCoursePage({ ...coursePage, limit: Number(value), startAfter: null });
     setCurrentPage(1);
   };
+
+  // Filter courses based on the search query
+  const filteredCourses = courses.filter((course) =>
+    course.courseName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderTable = (headers, data) => (
     <div className="overflow-auto">
@@ -147,20 +154,28 @@ const CourseManagement = () => {
           Course Management
         </Typography>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <div className="w-full flex justify-end items-end mb-5">
-            <div>
-              <Typography variant="h6" color="black" className="mr-2 ">
-                Show
-              </Typography>
-              <Select
-                value={String(coursePage.limit)}
-                onChange={(e) => handleLimitChange(e)}
-                className=""
-              >
-                <Option value="5">5</Option>
-                <Option value="10">10</Option>
-              </Select>
-            </div>
+          <div className="w-full md:w-auto mb-4 md:mb-0">
+            <Input
+              type="text"
+              color="blue-gray"
+              label="Search Course"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+            />
+          </div>
+          <div className="flex items-center">
+            <Typography variant="h6" color="black" className="mr-2">
+              Show
+            </Typography>
+            <Select
+              value={String(coursePage.limit)}
+              onChange={(e) => handleLimitChange(e)}
+            >
+              <Option value="10">10</Option>
+              <Option value="20">20</Option>
+              <Option value="50">50</Option>
+            </Select>
           </div>
         </div>
         {loading ? (
@@ -168,7 +183,7 @@ const CourseManagement = () => {
             <Spinner color="blue" />
           </div>
         ) : (
-          renderTable(COURSE_TABLE_HEAD, courses)
+          renderTable(COURSE_TABLE_HEAD, filteredCourses)
         )}
         <div className="flex flex-col md:flex-row justify-between items-center mt-4">
           <Button

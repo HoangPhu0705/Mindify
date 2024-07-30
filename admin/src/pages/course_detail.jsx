@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Spinner, Button } from "@material-tailwind/react";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
+  const { state } = useLocation();
+  const requestId = state?.requestId;
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState(null);
@@ -27,13 +29,9 @@ const CourseDetail = () => {
     }
   };
 
-  const handleLessonClick = (lesson) => {
-    setSelectedLesson(lesson);
-  };
-
   const handleApprove = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${courseId}/approve`);
+      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/approve`);
       fetchCourseDetail();
     } catch (error) {
       console.error('Error approving course: ', error);
@@ -42,7 +40,7 @@ const CourseDetail = () => {
 
   const handleReject = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${courseId}/reject`);
+      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/reject`);
       fetchCourseDetail();
     } catch (error) {
       console.error('Error rejecting course: ', error);
@@ -67,16 +65,13 @@ const CourseDetail = () => {
 
   return (
     <Card className="h-full w-full p-6">
-      {course.isPublic === false && course.request === true && (
+      {course.isPublic === false && requestId && (
         <div className="flex flex-row justify-end mt-4 space-x-2">
-          
           <Button color="green" onClick={handleApprove}>Approve</Button>
           <Button color="red" onClick={handleReject}>Reject</Button>
-          <div className='space-x-2'></div>
         </div>
       )}
       <div className="flex flex-col md:flex-row items-start h-full">
-      
         <div className="w-4/6">
           {selectedLesson && (
             <video
@@ -100,7 +95,7 @@ const CourseDetail = () => {
                 key={lesson.id}
                 color="cyan"
                 className="w-full p-4 flex items-center justify-center"
-                onClick={() => handleLessonClick(lesson)}
+                onClick={() => setSelectedLesson(lesson)}
               >
                 <div className="text-left line-clamp-2">
                   {lesson.title}
@@ -110,7 +105,6 @@ const CourseDetail = () => {
           </div>
         </div>
       </div>
-      
     </Card>
   );
 };

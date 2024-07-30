@@ -11,12 +11,15 @@ import {
   DialogBody,
   DialogFooter,
   Spinner,
+  Input,
 } from "@material-tailwind/react";
 
 const USER_TABLE_HEAD = ["Email", "Display Name", "Role", "Lock Account"];
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [userPage, setUserPage] = useState({ limit: 10, startAfter: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -27,6 +30,10 @@ const UserManagement = () => {
   useEffect(() => {
     fetchUsers();
   }, [userPage, currentPage]);
+
+  useEffect(() => {
+    filterUsers();
+  }, [searchQuery, users]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -45,6 +52,16 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterUsers = () => {
+    const filtered = users.filter((user) =>
+      [user.email, user.displayName, user.role]
+        .join(" ")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+    setFilteredUsers(filtered);
   };
 
   const handleLockUser = (user) => {
@@ -154,7 +171,7 @@ const UserManagement = () => {
         <Typography variant="h4" color="black">
           User Management
         </Typography>
-        <div className="flex justify-end items-end mb-4">
+        <div className="flex justify-between items-end mb-4">
           <div>
             <Typography variant="h6" color="black">
               Show
@@ -162,11 +179,19 @@ const UserManagement = () => {
             <Select
               value={String(userPage.limit)}
               onChange={(e) => handleLimitChange(e)}
-              
             >
-              <Option value="5">5</Option>
               <Option value="10">10</Option>
+              <Option value="20">20</Option>
+              <Option value="50">50</Option>
             </Select>
+          </div>
+          <div>
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search users..."
+            />
           </div>
         </div>
         {loading ? (
@@ -174,7 +199,7 @@ const UserManagement = () => {
             <Spinner color="blue" />
           </div>
         ) : (
-          renderTable(USER_TABLE_HEAD, users)
+          renderTable(USER_TABLE_HEAD, filteredUsers)
         )}
         <div className="flex justify-center items-center mt-4">
           <Button

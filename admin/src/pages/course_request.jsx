@@ -34,8 +34,8 @@ const CourseRequestManagement = () => {
     }
   };
 
-  const goToCourseDetail = (courseId) => {
-    navigate(`/course/${courseId}`);
+  const goToCourseDetail = (courseId, requestId) => {
+    navigate(`/course/${courseId}`, { state: { requestId } });
   };
 
   const handlePageChange = (newPage) => {
@@ -95,7 +95,7 @@ const CourseRequestManagement = () => {
                 </Button>
               </td> */}
               <td className="p-4">
-                <Button color="cyan" onClick={() => goToCourseDetail(item.courseId)}>
+                <Button color="cyan" onClick={() => goToCourseDetail(item.courseId, item.id)}>
                   Detail
                 </Button>
               </td>
