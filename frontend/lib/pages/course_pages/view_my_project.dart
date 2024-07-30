@@ -43,7 +43,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
 
   Future<void> getUserInfo() async {
     userInfo =
-        await userService.getAvatarAndDisplayName(widget.project!["userId"]);
+        await userService.getAvatarAndDisplayName(widget.project["userId"]);
   }
 
   Future<void> initPage() async {
@@ -89,7 +89,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
         surfaceTintColor: AppColors.ghostWhite,
         centerTitle: true,
         title: Text(
-          widget.project!["title"],
+          widget.project["title"],
           style: const TextStyle(
             fontSize: 20,
           ),
@@ -176,12 +176,14 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                                 itemCount:
                                     widget.project["contentImages"].length,
                                 itemBuilder: (context, index) {
+                                  String image =
+                                      widget.project["contentImages"][index];
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: WidgetZoom(
-                                      heroAnimationTag: "images",
+                                      heroAnimationTag: image,
                                       zoomWidget: Image.network(
-                                        widget.project["contentImages"][index],
+                                        image,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -205,14 +207,13 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                                 ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: widget.project!["files"].length,
+                                  itemCount: widget.project["files"].length,
                                   itemBuilder: (context, index) {
-                                    final file =
-                                        widget.project!["files"][index];
+                                    final file = widget.project["files"][index];
                                     String fileUrl =
-                                        widget.project!["files"][index]["url"];
+                                        widget.project["files"][index]["url"];
                                     String fileName =
-                                        widget.project!["files"][index]["name"];
+                                        widget.project["files"][index]["name"];
                                     return ListTile(
                                       onTap: () {
                                         downloadFile(

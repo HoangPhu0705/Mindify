@@ -560,6 +560,14 @@ class _PublishCourseState extends State<PublishCourse> {
                       asyncBtnStatesController: btnStateController,
                       onPressed: () async {
                         try {
+                          if (courseThumbnail.isEmpty) {
+                            showErrorToast(
+                              context,
+                              "Please provide a thumbnail for your course",
+                            );
+                            return;
+                          }
+
                           // Await your api call here
                           if (_formKey.currentState!.validate()) {
                             btnStateController.update(AsyncBtnState.loading);
@@ -571,10 +579,11 @@ class _PublishCourseState extends State<PublishCourse> {
                             await courseService.requestCourse(widget.courseId);
                             btnStateController.update(AsyncBtnState.success);
                             await Future.delayed(
-                                const Duration(milliseconds: 500));
+                              const Duration(milliseconds: 500),
+                            );
                             Navigator.pop(context);
                             Navigator.pop(context);
-                          } else {}
+                          }
                         } catch (e) {
                           btnStateController.update(AsyncBtnState.failure);
                         }
