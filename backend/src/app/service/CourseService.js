@@ -1,6 +1,78 @@
 const { firestore } = require('firebase-admin');
 const { CourseCollection } = require('./Collections');
 
+exports.searchCourses = async (query, lastDocument = null) => {
+  try {
+    let queryRef = CourseCollection
+      .where('isPublic', '==', true)
+
+    if (lastDocument) {
+      const lastDocRef = CourseCollection.doc(lastDocument);
+      const lastDocSnapshot = await lastDocRef.get();
+      queryRef = queryRef.startAfter(lastDocSnapshot);
+    }
+
+    const snapshot = await queryRef.get();
+
+    if (snapshot.empty) {
+      return { courses: [], lastDocument: null };
+    }
+
+    const courses = snapshot.docs.map(doc => {
+      const courseData = doc.data();
+      courseData['id'] = doc.id;
+      return courseData;
+    });
+
+    const filteredCourses = courses.filter(course => {
+      const courseName = course['courseName']?.toString().toLowerCase() || '';
+      const lowerCaseQuery = query.toLowerCase();
+
+      return courseName.includes(lowerCaseQuery);
+    });
+
+    const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+    return { courses: filteredCourses, lastDocument: lastDoc ? lastDoc.id : null };
+  } catch (e) {
+    console.error('Error searching courses:', e);
+    throw new Error('Error searching courses');
+  }
+};
+
+exports.searchCoursesOnChanged = async (query, isNewSearch) => {
+  try {
+    let coursesQuery = CourseCollection.where('isPublic', '==', true).limit(30);
+
+    if (!isNewSearch && global.lastDocument) {
+      coursesQuery = coursesQuery.startAfter(global.lastDocument);
+    }
+
+    const coursesSnapshot = await coursesQuery.get();
+    if (!coursesSnapshot.empty) {
+      global.lastDocument = coursesSnapshot.docs[coursesSnapshot.docs.length - 1];
+    }
+
+    const courses = coursesSnapshot.docs.map((doc) => {
+      const courseData = doc.data();
+      return {
+        id: doc.id,
+        ...courseData,
+      };
+    });
+
+    const filteredCourses = courses.filter((course) => {
+      const courseName = (course.courseName || '').toLowerCase();
+      return courseName.includes(query.toLowerCase());
+    }).slice(0, 3);
+
+    return filteredCourses;
+  } catch (error) {
+    console.error("Error searching courses: ", error);
+    throw new Error("Failed to search courses");
+  }
+}
+
 exports.getAllCourses = async () => {
   const snapshot = await CourseCollection.get();
   const courses = await Promise.all(

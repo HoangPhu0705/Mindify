@@ -6,6 +6,7 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/comment.dart';
 import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/constants.dart';
+import 'package:googleapis/chat/v1.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/course.dart';
 
@@ -162,133 +163,91 @@ class CourseService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> searchCoursesAPI(String query, {bool isNewSearch = false, String? lastDocument}) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConstants.COURSE_API}/searchCourses'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'query': query, 'lastDocument': lastDocument}),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        List<Map<String, dynamic>> courses = (data['courses'] as List).map((course) => course as Map<String, dynamic>).toList();
+        return courses;
+      } else {
+        throw Exception('Failed to load courses');
+      }
+    } catch (e) {
+      print('Error searching courses: $e');
+      return [];
+    }
+  }
+
   // search
   Future<List<Map<String, dynamic>>> searchCourses(String query,
       {bool isNewSearch = false}) async {
     try {
       if (isNewSearch) lastDocument = null;
 
-      Query queryRef = _firestore
-          .collection('courses')
-          .where('isPublic', isEqualTo: true)
-          .limit(10);
-      log('Initial Query: $queryRef');
-      log('Collection: ${queryRef.parameters['path']}');
-      log('Filters: ${queryRef.parameters['filters']}');
-      log('Limit: ${queryRef.parameters['limit']}');
+      List<Map<String, dynamic>> courses = await searchCoursesAPI(
+        query,
+        isNewSearch: isNewSearch,
+        lastDocument: lastDocument?.id,
+      );
 
-      if (lastDocument != null) {
-        queryRef = queryRef.startAfterDocument(lastDocument!);
-      }
-
-      final QuerySnapshot snapshot = await queryRef.get();
-      log('Snapshot: ${snapshot.docs.length} documents found');
-
-      if (snapshot.docs.isNotEmpty) {
-        lastDocument = snapshot.docs.last;
-      }
-
-      final courses = snapshot.docs.map((doc) {
-        var courseData = doc.data() as Map<String, dynamic>;
-        courseData['id'] = doc.id;
-        return courseData;
-      }).toList();
-      log('Courses from Firestore: $courses');
-
-      List<Map<String, dynamic>> filteredCourses = [];
-
-      for (var course in courses) {
-        final courseName = course['courseName']?.toString().toLowerCase() ?? '';
-        final authorName = course['author']?.toString().toLowerCase() ?? '';
-        final lowerCaseQuery = query.toLowerCase();
-
-        log("Checking course: $courseName by $authorName");
-
-        if (courseName.contains(lowerCaseQuery) ||
-            authorName.contains(lowerCaseQuery)) {
-          log("Match found: $courseName by $authorName");
-          filteredCourses.add(course);
-        }
-      }
-
-      log('Filtered Courses: $filteredCourses');
-      return filteredCourses;
+      return courses;
     } catch (e) {
-      log('Error searching courses: $e');
+      print('Error searching courses: $e');
       return [];
     }
   }
 
-  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
-      {bool isNewSearch = false}) async {
+  Future<List<Map<String, dynamic>>> searchCourseOnChangedAPI(String query, {bool isNewSearch = false}) async {
     try {
-      if (isNewSearch) lastDocument = null;
+      final response = await http.post(
+        Uri.parse('${AppConstants.COURSE_API}/searchOnChanged'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'query': query, 'isNewSearch': isNewSearch}),
+      );
 
-      // Search courses
-      Query coursesQuery = _firestore
-          .collection('courses')
-          .where('isPublic', isEqualTo: true)
-          .limit(3);
-      if (lastDocument != null) {
-        coursesQuery = coursesQuery.startAfterDocument(lastDocument!);
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Failed to load courses and users');
       }
-
-      final QuerySnapshot coursesSnapshot = await coursesQuery.get();
-      if (coursesSnapshot.docs.isNotEmpty) {
-        lastDocument = coursesSnapshot.docs.last;
-      }
-
-      final courses = coursesSnapshot.docs.map((doc) {
-        var courseData = doc.data() as Map<String, dynamic>;
-        courseData['id'] = doc.id;
-        return courseData;
-      }).toList();
-
-      final filteredCourses = courses
-          .where((course) {
-            final courseName =
-                course['courseName']?.toString().toLowerCase() ?? '';
-            final lowerCaseQuery = query.toLowerCase();
-            return courseName.contains(lowerCaseQuery);
-          })
-          .take(3)
-          .toList();
-
-      // Search users
-      final usersSnapshot = await _firestore
-          .collection('users')
-          .where('displayName', isGreaterThanOrEqualTo: query)
-          .limit(3)
-          .get();
-
-      log(usersSnapshot.docs.toString());
-
-      List<Map<String, dynamic>> users = [];
-      final userService = UserService();
-      for (var doc in usersSnapshot.docs) {
-        var userData = doc.data() as Map<String, dynamic>;
-        userData['id'] = doc.id;
-        final additionalData =
-            await userService.getAvatarAndDisplayName(userData['id']);
-        if (additionalData != null) {
-          userData['displayName'] = additionalData['displayName'];
-          userData['photoUrl'] = additionalData['photoUrl'];
-        }
-        users.add(userData);
-      }
-
-      final searchResults = [
-        ...filteredCourses,
-        ...users,
-      ];
-
-      log("Filtered Courses and Users: $searchResults");
-      return searchResults;
     } catch (e) {
-      log("Error searching courses and users: $e");
+      print("Error searching courses and users: $e");
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query, {bool isNewSearch = false}) async {
+  try {
+    if (isNewSearch) lastDocument = null;
+
+    // courses
+
+    final filteredCourses = await searchCourseOnChangedAPI(query, isNewSearch: isNewSearch);
+
+    // users
+    final userService = UserService();
+    List<Map<String, dynamic>> users = await userService.searchUsers(query);
+
+    final searchResults = [
+      ...filteredCourses,
+      ...users,
+    ];
+
+    log("Filtered Courses and Users: $searchResults");
+    return searchResults;
+  } catch (e) {
+    log("Error searching courses and users: $e");
+    return [];
+  }
+}
+
 
   Future<List<Course>> getCourseByUserId(String userId) async {
     final response = await http.get(

@@ -1,5 +1,17 @@
 const UserService = require('../service/UserService');
 
+exports.searchUsers = async (req, res) => {
+    const query = req.query.query;
+
+    try {
+        const users = await UserService.searchUsers(query);
+        res.json(users);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send("Error fetching users");
+    }
+};
+
 exports.saveCourseForUser = async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -96,7 +108,7 @@ exports.getUserData = async (req, res) => {
 exports.rejectInstructorRequest = async (req, res) => {
     try {
         const requestId = req.params.requestId;
-        const { content } = req.body; 
+        const { content } = req.body;
         const response = await UserService.rejectInstructorRequest(requestId, content);
         res.status(200).json(response);
     } catch (error) {
@@ -162,11 +174,11 @@ exports.updateUsers = async (req, res) => {
 };
 
 exports.getUserNameAndAvatar = async (req, res) => {
-    try{
+    try {
         const userId = req.params.userId;
         const response = await UserService.getUserNameAndAvatar(userId);
         res.status(200).json(response);
-    }catch(e){
+    } catch (e) {
         res.status(500).json({ error: `Error getting name and avatar ${error.message}` });
 
     }

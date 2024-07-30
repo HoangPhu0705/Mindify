@@ -1,5 +1,28 @@
 const CourseService = require('../service/CourseService');
 
+exports.searchCourses = async (req, res) => {
+  try {
+    const { query, lastDocument } = req.body;
+    const result = await CourseService.searchCourses(query, lastDocument);
+    res.json(result);
+  } catch (e) {
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+exports.searchCoursesOnChanged = async (req, res) => {
+  try {
+    const { query, isNewSearch } = req.body;
+
+    const courses = await CourseService.searchCoursesOnChanged(query, isNewSearch);
+
+    return res.json(courses);
+  } catch (error) {
+    console.error("Error in: ", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await CourseService.getAllCourses();

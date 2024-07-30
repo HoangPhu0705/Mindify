@@ -25,6 +25,24 @@ const sendApprovalEmail = async (email, firstName) => {
     return transporter.sendMail(mailOptions);
 };
 
+exports.searchUsers = async (query) => {
+    const listUsersResult = await admin.auth().listUsers();
+    const users = listUsersResult.users;
+
+    const filteredUsers = users.filter(user => {
+        const displayName = user.displayName ? user.displayName.toLowerCase() : '';
+        return displayName.includes(query.toLowerCase());
+    }).map(user => ({
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+    }));
+
+    const limitedUsers = filteredUsers.slice(0, 3);
+
+    return limitedUsers;
+};
+
 exports.saveCourseForUser = async (userId, courseId) => {
     try {
         const userRef = UserCollection.doc(userId);
@@ -116,10 +134,10 @@ exports.createInstructorSignUpRequest = async (data) => {
         await RequestCollection.add(data);
         return { message: 'Instructor sign up request sent successfully' }
 
-        
-    }catch(error){
+
+    } catch (error) {
         throw new Error(`Error when sending instructor sign up request: ${error.message}`);
-    }    
+    }
 }
 
 
@@ -127,7 +145,7 @@ exports.approveInstructorRequest = async (requestId) => {
     try {
         const requestRef = RequestCollection.doc(requestId);
         const requestDoc = await requestRef.get();
-        
+
         if (!requestDoc.exists) {
             throw new Error("Request doesn't exist");
         }
@@ -244,7 +262,7 @@ exports.rejectInstructorRequest = async (requestId, content) => {
 
         await userRef.update({
             requestSent: false,
-            
+
         });
 
 
@@ -330,7 +348,7 @@ exports.checkIfUserFollows = async (userId, followUserId) => {
         const followingUser = userData.followingUser || [];
         console.log(followingUser);
         console.log(followUserId);
-        console.log( followingUser.includes(followUserId));
+        console.log(followingUser.includes(followUserId));
         return followingUser.includes(followUserId);
     } catch (error) {
         throw new Error(`Error when checking if user follows: ${error.message}`);
@@ -412,7 +430,7 @@ exports.getUserNameAndAvatar = async (uid) => {
 exports.getWatchedHistories = async (userId) => {
     try {
         const userSnapshot = await UserCollection.doc(userId).collection('watchedHistories').get();
-        
+
         if (userSnapshot.empty) {
             return [];
         }
@@ -428,7 +446,7 @@ exports.getWatchedHistories = async (userId) => {
                 thumbnail: courseDetails.thumbnail,
                 index: courseDetails.index,
                 lessonUrl: courseDetails.lessonUrl,
-                
+
             };
         }));
 
@@ -521,7 +539,7 @@ exports.getWatchedTime = async (userId, courseId, lessonId) => {
             .collection('watchedHistories')
             .where('courseId', '==', courseId)
             .where('lessonId', '==', lessonId);
-        
+
         const watchedHistorySnapshot = await watchedHistoryRef.get();
 
         if (watchedHistorySnapshot.empty) {

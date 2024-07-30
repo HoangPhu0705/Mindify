@@ -70,80 +70,77 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchChanged() {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (_searchController.text.isEmpty) {
-        setState(() {
-          _isTyping = true;
-          _suggestionResults = [];
-        });
-        return;
-      }
-      setState(() {
-        _isTyping = true;
-      });
-      _onSearch(_searchController.text);
-    });
-  }
-
-  void _onSearch(String query) async {
-    if (_lastQuery == query && _suggestionResults.isNotEmpty) return;
-
-    setState(() {
-      _isLoading = true;
-      _suggestionResults = [];
-      _lastQuery = query;
-      _hasMoreData = true;
-    });
-
-    try {
-      List<Map<String, dynamic>> results =
-          await _courseService.searchCoursesAndUsers(query, isNewSearch: true);
-      setState(() {
-        _suggestionResults = results;
-        _isLoading = false;
-        _hasMoreData = results.length == 6;
-      });
-    } catch (e) {
-      log("Error searching courses and users: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _onSearchSubmit(String query) async {
+  if (_debounce?.isActive ?? false) _debounce?.cancel();
+  _debounce = Timer(const Duration(milliseconds: 500), () {
     if (_searchController.text.isEmpty) {
       setState(() {
-        _searchResults = [];
+        _isTyping = false;
+        _suggestionResults = [];
       });
       return;
     }
-    if (_lastQuery == query && _searchResults.isNotEmpty) return;
+    _onSearch(_searchController.text);
+  });
+}
 
+void _onSearch(String query) async {
+  setState(() {
+    _isLoading = true;
+    _isTyping = true;
+    _lastQuery = query;
+    _suggestionResults = [];
+  });
+
+  try {
+    List<Map<String, dynamic>> results =
+        await _courseService.searchCoursesAndUsers(query, isNewSearch: true);
     setState(() {
-      _isLoading = true;
+      _suggestionResults = results;
+      _isLoading = false;
+      _hasMoreData = results.length == 50;
+    });
+  } catch (e) {
+    log("Error searching courses and users: $e");
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
+void _onSearchSubmit(String query) async {
+  if (query.isEmpty) {
+    setState(() {
       _searchResults = [];
-      _lastQuery = query;
-      _hasMoreData = true;
       _isTyping = false;
     });
-
-    try {
-      List<Map<String, dynamic>> courses =
-          await _courseService.searchCourses(query, isNewSearch: true);
-      setState(() {
-        _searchResults = courses;
-        _isLoading = false;
-        _hasMoreData = courses.length == 50;
-      });
-    } catch (e) {
-      log("Error searching courses: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    return;
   }
+
+  // if (_lastQuery == query && _searchResults.isNotEmpty) return;
+
+  setState(() {
+    _isLoading = true;
+    _searchResults = [];
+    _lastQuery = query;
+    _hasMoreData = true;
+    _isTyping = false;
+  });
+
+  try {
+    List<Map<String, dynamic>> courses =
+        await _courseService.searchCourses(query, isNewSearch: true);
+    setState(() {
+      _searchResults = courses;
+      _isLoading = false;
+      _hasMoreData = courses.length == 50;
+    });
+  } catch (e) {
+    log("Error searching courses: $e");
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
 
   void _loadMore() async {
     if (_isLoadingMore || !_hasMoreData) return;
@@ -241,7 +238,7 @@ class _SearchPageState extends State<SearchPage> {
       itemCount: _suggestionResults.length,
       itemBuilder: (context, index) {
         final result = _suggestionResults[index];
-
+        log(_suggestionResults.length.toString());
         if (result.containsKey('courseName')) {
           // Course item
           return ListTile(
@@ -262,9 +259,10 @@ class _SearchPageState extends State<SearchPage> {
           );
         } else if (result.containsKey('displayName')) {
           // User item
+          log("chuan bi log res" + result.toString());
           return ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(result['photoUrl']),
+              backgroundImage: NetworkImage(result['photoURL']),
             ),
             title: Text(result['displayName']),
             onTap: () {
@@ -272,7 +270,7 @@ class _SearchPageState extends State<SearchPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => InstructorProfile(
-                    instructorId: result['id'],
+                    instructorId: result['uid'],
                   ),
                 ),
               );
@@ -319,6 +317,8 @@ class _SearchPageState extends State<SearchPage> {
                   },
                   onSubmitted: (query) {
                     _onSearchSubmit(query);
+                    log(_isTyping.toString());
+                    
                   },
                   searchResult: _isTyping
                       ? _buildSuggestionList()

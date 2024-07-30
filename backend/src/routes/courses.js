@@ -13,6 +13,8 @@ router.get('/random', CourseController.getRandomCourses);
 router.post('/categories', CourseController.getCoursesByCategory);
 router.get('/top5', CourseController.getTop5Courses);
 router.get('/newest', CourseController.getFiveNewestCourse);
+router.post('/searchCourses', CourseController.searchCourses);
+router.post('/searchOnChanged', CourseController.searchCoursesOnChanged);
 router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);
 router.post('/add-field', CourseController.addFieldToAllCourses);
 router.get('/users/:id', CourseController.getCourseByUserId)

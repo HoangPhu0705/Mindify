@@ -3,6 +3,7 @@ const router = express.Router();
 const UserController = require('../app/controllers/UserController');
 
 router.get('/requests/', UserController.getRequests);
+router.get('/searchUsers', UserController.searchUsers);
 router.get('/auth/:userId', UserController.getUserNameAndAvatar);
 router.get('/:userId', UserController.getUserData);
 router.get('/:userId/checkSavedCourse', UserController.checkSavedCourse);

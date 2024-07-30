@@ -68,6 +68,20 @@ class UserService {
     FirebaseAuth.instance.signOut();
   }
 
+  //search users
+  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+  final url = Uri.parse('${AppConstants.USER_API}/searchUsers?query=$query');
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> users = json.decode(response.body);
+    return users.map((user) => user as Map<String, dynamic>).toList();
+  } else {
+    throw Exception('Failed to search users');
+  }
+}
+
+
   // Get user info
   Future<Map<String, dynamic>?> getUserInfoById(String uid) async {
     try {
@@ -155,7 +169,8 @@ class UserService {
   }
 
   Future<bool> checkSavedCourse(String userId, String courseId) async {
-    final url = Uri.parse('$baseUrl/users/$userId/checkSavedCourse?courseId=$courseId');
+    final url =
+        Uri.parse('$baseUrl/users/$userId/checkSavedCourse?courseId=$courseId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -205,17 +220,18 @@ class UserService {
   }
 
   Future<void> followUser(String userId, String followUserId) async {
-    try{
-    final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/follow');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'followUserId': followUserId}),
-    );
+    try {
+      final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/follow');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'followUserId': followUserId}),
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to follow user');
-    }}catch(e){
+      if (response.statusCode != 200) {
+        throw Exception('Failed to follow user');
+      }
+    } catch (e) {
       log("Error $e");
       throw Exception("Failed to follow user");
     }
@@ -290,37 +306,39 @@ class UserService {
     }
   }
 
-  Future<int?> getWatchedTime(String userId, String courseId, String lessonId) async {
-  try {
-    final uri = Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories/time')
-        .replace(queryParameters: {
-      'courseId': courseId,
-      'lessonId': lessonId,
-    });
+  Future<int?> getWatchedTime(
+      String userId, String courseId, String lessonId) async {
+    try {
+      final uri = Uri.parse(
+              '${AppConstants.baseUrl}/users/$userId/watchedHistories/time')
+          .replace(queryParameters: {
+        'courseId': courseId,
+        'lessonId': lessonId,
+      });
 
-    log('Requesting URL: $uri');
+      log('Requesting URL: $uri');
 
-    final response = await http.get(
-      uri,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      log('Response data: ${data['time']}');
-      return data['time'];
-    } else {
-      log('Failed to get watched time. Status code: ${response.statusCode}');
-      log('Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        log('Response data: ${data['time']}');
+        return data['time'];
+      } else {
+        log('Failed to get watched time. Status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      log('Error in getWatchedTime: $e');
       return null;
     }
-  } catch (e) {
-    log('Error in getWatchedTime: $e');
-    return null;
   }
-}
 
   Future<void> updateUserFollowedTopics(String userId, var data) async {
     try {
