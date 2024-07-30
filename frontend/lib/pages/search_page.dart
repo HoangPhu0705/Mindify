@@ -70,77 +70,74 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchChanged() {
-  if (_debounce?.isActive ?? false) _debounce?.cancel();
-  _debounce = Timer(const Duration(milliseconds: 500), () {
-    if (_searchController.text.isEmpty) {
+    if (_debounce?.isActive ?? false) {
+      _debounce?.cancel();
+    }
+
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_searchController.text.isEmpty) {
+        log("empty r");
+        setState(() {
+          _isTyping = false;
+          _suggestionResults = [];
+        });
+        return;
+      }
+
+      _onSearch(_searchController.text);
+    });
+  }
+
+  void _onSearch(String query) async {
+    setState(() {
+      _isLoading = true;
+      _lastQuery = query;
+      _suggestionResults = [];
+    });
+
+    try {
+      List<Map<String, dynamic>> results =
+          await _courseService.searchCoursesAndUsers(query, isNewSearch: true);
       setState(() {
-        _isTyping = false;
-        _suggestionResults = [];
+        _suggestionResults = results;
+        _isLoading = false;
+        _hasMoreData = results.length == 50;
+      });
+    } catch (e) {
+      log("Error searching courses and users: $e");
+    }
+  }
+
+  void _onSearchSubmit(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
       });
       return;
     }
-    _onSearch(_searchController.text);
-  });
-}
 
-void _onSearch(String query) async {
-  setState(() {
-    _isLoading = true;
-    _isTyping = true;
-    _lastQuery = query;
-    _suggestionResults = [];
-  });
-
-  try {
-    List<Map<String, dynamic>> results =
-        await _courseService.searchCoursesAndUsers(query, isNewSearch: true);
+    // if (_lastQuery == query && _searchResults.isNotEmpty) return;
     setState(() {
-      _suggestionResults = results;
-      _isLoading = false;
-      _hasMoreData = results.length == 50;
-    });
-  } catch (e) {
-    log("Error searching courses and users: $e");
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
-void _onSearchSubmit(String query) async {
-  if (query.isEmpty) {
-    setState(() {
+      _isLoading = true;
       _searchResults = [];
-      _isTyping = false;
+      _lastQuery = query;
+      _hasMoreData = true;
     });
-    return;
+    try {
+      List<Map<String, dynamic>> courses =
+          await _courseService.searchCourses(query, isNewSearch: true);
+      setState(() {
+        _searchResults = courses;
+        _isLoading = false;
+        _hasMoreData = courses.length == 50;
+      });
+    } catch (e) {
+      log("Error searching courses: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
-
-  // if (_lastQuery == query && _searchResults.isNotEmpty) return;
-
-  setState(() {
-    _isLoading = true;
-    _searchResults = [];
-    _lastQuery = query;
-    _hasMoreData = true;
-    _isTyping = false;
-  });
-
-  try {
-    List<Map<String, dynamic>> courses =
-        await _courseService.searchCourses(query, isNewSearch: true);
-    setState(() {
-      _searchResults = courses;
-      _isLoading = false;
-      _hasMoreData = courses.length == 50;
-    });
-  } catch (e) {
-    log("Error searching courses: $e");
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
 
   void _loadMore() async {
     if (_isLoadingMore || !_hasMoreData) return;
@@ -166,6 +163,7 @@ void _onSearchSubmit(String query) async {
   }
 
   Widget _buildSearchResults() {
+    log("search result BUILDDDD");
     if (_isLoading) {
       return const MyLoading(
         width: 30,
@@ -200,14 +198,9 @@ void _onSearchSubmit(String query) async {
             }
 
             final course = _searchResults[index];
-            return MyCourseItem(
-              imageUrl: course['thumbnail'],
-              title: course['courseName'],
-              author: course['author'],
-              duration: course['duration'],
-              students: course['students'].toString(),
-              moreOnPress: () {
-                Navigator.of(context).push(
+            return GestureDetector(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) => CourseDetail(
                       courseId: course['id'],
@@ -216,6 +209,14 @@ void _onSearchSubmit(String query) async {
                   ),
                 );
               },
+              child: MyCourseItem(
+                imageUrl: course['thumbnail'],
+                title: course['courseName'],
+                author: course['author'],
+                duration: course['duration'],
+                students: course['students'].toString(),
+                moreOnPress: () {},
+              ),
             );
           },
         ),
@@ -224,6 +225,7 @@ void _onSearchSubmit(String query) async {
   }
 
   Widget _buildSuggestionList() {
+    log("suggestion result BUILDDDD");
     if (_suggestionResults.isEmpty) {
       return const Center(
         child: Text(
@@ -238,7 +240,6 @@ void _onSearchSubmit(String query) async {
       itemCount: _suggestionResults.length,
       itemBuilder: (context, index) {
         final result = _suggestionResults[index];
-        log(_suggestionResults.length.toString());
         if (result.containsKey('courseName')) {
           // Course item
           return ListTile(
@@ -259,7 +260,6 @@ void _onSearchSubmit(String query) async {
           );
         } else if (result.containsKey('displayName')) {
           // User item
-          log("chuan bi log res" + result.toString());
           return ListTile(
             leading: CircleAvatar(
               backgroundImage: NetworkImage(result['photoURL']),
@@ -305,6 +305,12 @@ void _onSearchSubmit(String query) async {
                 backgroundColor: AppColors.ghostWhite,
                 height: 0,
                 searchBar: SuperSearchBar(
+                  onFocused: (focus) {
+                    setState(() {
+                      _isTyping = focus;
+                    });
+                  },
+                  resultBehavior: SearchBarResultBehavior.visibleOnFocus,
                   searchFocusNode: _searchFocusNode,
                   searchController: _searchController,
                   height: 48,
@@ -314,11 +320,15 @@ void _onSearchSubmit(String query) async {
                   cancelTextStyle: AppStyles.cancelTextStyle,
                   onChanged: (query) {
                     log("Query changed: $query");
+                    setState(() {
+                      _isTyping = true;
+                    });
                   },
                   onSubmitted: (query) {
+                    setState(() {
+                      _isTyping = false;
+                    });
                     _onSearchSubmit(query);
-                    log(_isTyping.toString());
-                    
                   },
                   searchResult: _isTyping
                       ? _buildSuggestionList()
