@@ -594,37 +594,34 @@ class _ManageClassState extends State<ManageClass> {
   }
 
   void proceedNext() {
-    if (_titleController.text.isEmpty || _titleController.text == "") {
+    if (myCourse.title.isEmpty || myCourse.title == "") {
       showErrorToast(context, "Please enter a title");
       return;
     }
-    if (_titleController.text.length < 20 ||
-        _titleController.text.length > 70) {
+    if (myCourse.title.length < 20 || myCourse.title.length > 70) {
       showErrorToast(context, "Title must be between 20 and 70 characters");
       return;
     }
-    if (_classDescriptionController.document.toPlainText().isEmpty ||
-        _classDescriptionController.document.toPlainText() == "\n") {
+    if (myCourse.description.isEmpty || myCourse.description == "\n") {
       showErrorToast(context, "Please enter a class description");
       return;
     }
-    if (_classDescriptionController.document.toPlainText().length < 100) {
+    if (myCourse.description.length < 100) {
       showErrorToast(
           context, "Class description must be at least 100 characters");
       return;
     }
-    if (_projectDescriptionController.document.toPlainText().isEmpty ||
-        _projectDescriptionController.document.toPlainText() == "\n") {
+    if (myCourse.projectDescription.isEmpty ||
+        myCourse.projectDescription == "\n") {
       showErrorToast(context, "Please enter a project description");
       return;
     }
-    if (_projectDescriptionController.document.toPlainText().length < 100) {
+    if (myCourse.projectDescription.length < 100) {
       showErrorToast(
           context, "Project description must be at least 100 characters");
       return;
     }
-    if (stringTagController.getTags!.isEmpty ||
-        stringTagController.getTags == null) {
+    if (myCourse.categories.isEmpty) {
       showErrorToast(context, "Please enter at least one category");
       return;
     }
