@@ -276,16 +276,18 @@ class _VideoEditorState extends State<VideoEditor> {
                   duration: const Duration(
                     milliseconds: 300,
                   ), // adjust the duration as needed
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Wrap(
+                    // mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         formatter(_controller.startTrim),
                         style: const TextStyle(color: Colors.white),
                       ),
                       const SizedBox(width: 10),
-                      Text(formatter(_controller.endTrim),
-                          style: const TextStyle(color: Colors.white)),
+                      Text(
+                        formatter(_controller.endTrim),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
                 ),
@@ -302,6 +304,7 @@ class _VideoEditorState extends State<VideoEditor> {
           height: height,
           horizontalMargin: height / 4,
           child: TrimTimeline(
+            quantity: 5,
             controller: _controller,
             textStyle: const TextStyle(
               color: Colors.white,

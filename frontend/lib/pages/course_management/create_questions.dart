@@ -97,7 +97,11 @@ class _CreateQuestionsState extends State<CreateQuestions> {
 
   void selectImageFromGallery() async {
     Uint8List selectedImage = await pickImage(ImageSource.gallery);
-    updateQuestionImage(selectedImage);
+    if (widget.questionId.isNotEmpty) {
+      updateQuestionImage(selectedImage);
+    } else {
+      showErrorToast(context, "Please create question first");
+    }
   }
 
   void _addAnswerField() {

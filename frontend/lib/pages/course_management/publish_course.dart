@@ -567,6 +567,16 @@ class _PublishCourseState extends State<PublishCourse> {
                             );
                             return;
                           }
+                          String duration = myCourse.duration;
+                          int totalMinutes = _parseDurationToMinutes(duration);
+
+                          if (totalMinutes < 3) {
+                            showErrorToast(
+                              context,
+                              "Course duration must be at least 3 minutes",
+                            );
+                            return;
+                          }
 
                           // Await your api call here
                           if (_formKey.currentState!.validate()) {
@@ -574,7 +584,10 @@ class _PublishCourseState extends State<PublishCourse> {
 
                             await courseService.updateCourse(
                               widget.courseId,
-                              {"price": int.parse(priceController.text)},
+                              {
+                                "price": int.parse(priceController.text),
+                                "lessonNum": widget.lessonNums,
+                              },
                             );
                             await courseService.requestCourse(widget.courseId);
                             btnStateController.update(AsyncBtnState.success);
@@ -601,5 +614,18 @@ class _PublishCourseState extends State<PublishCourse> {
         },
       ),
     );
+  }
+
+  int _parseDurationToMinutes(String duration) {
+    final regex = RegExp(r'(?:(\d+)h)?\s*(\d+)m');
+    final match = regex.firstMatch(duration);
+
+    if (match != null) {
+      final hours = int.tryParse(match.group(1) ?? '0') ?? 0;
+      final minutes = int.tryParse(match.group(2) ?? '0') ?? 0;
+      return (hours * 60) + minutes;
+    }
+
+    return 0;
   }
 }

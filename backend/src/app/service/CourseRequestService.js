@@ -87,6 +87,7 @@ exports.sendRequest = async (courseId) => {
 
 exports.approveRequest = async (requestId) => {
     try {
+      console.log(requestId);
         const requestDoc = await CourseRequestCollection.doc(requestId).get();
 
         if (!requestDoc.exists) {
