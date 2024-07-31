@@ -14,15 +14,36 @@ class NotificationService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
+
       String? token = await _fcm.getToken();
       print('FCM Token: $token');
-      // Save the token to Firestore for the user
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({'deviceToken': token});
+
+      if (token != null) {
+        await _saveTokenToDatabase(token);
+      }
+
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print('Received message while app is in the foreground!');
+      });
+
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print('User tapped on a notification!');
+      });
+
+      FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+        if (message != null) {
+          print('App opened from terminated state via notification!');
+        }
+      });
     } else {
       print('User declined or has not accepted permission');
     }
+  }
+
+  Future<void> _saveTokenToDatabase(String token) async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'deviceToken': token,
+    });
   }
 }
