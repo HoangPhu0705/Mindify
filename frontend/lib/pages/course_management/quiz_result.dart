@@ -221,13 +221,15 @@ class _QuizResultState extends State<QuizResult> {
                                 ],
                               ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "${question['question']}",
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                  Center(
+                                    child: Text(
+                                      "${question['question']}",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                   AppSpacing.mediumVertical,
@@ -258,7 +260,7 @@ class _QuizResultState extends State<QuizResult> {
                                       );
                                     },
                                   ),
-                                  Row(
+                                  Wrap(
                                     children: [
                                       Text(
                                         "Your answer: ${userAnswers.join(", ").isEmpty ? "No answer" : userAnswers.join(", ")}",
