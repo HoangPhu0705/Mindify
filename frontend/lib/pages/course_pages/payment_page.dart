@@ -19,12 +19,12 @@ class PaymentPage extends StatefulWidget {
   final int price;
 
   const PaymentPage({
-    Key? key,
+    super.key,
     required this.userId,
     required this.courseId,
     required this.price,
     required this.course,
-  }) : super(key: key);
+  });
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -51,10 +51,7 @@ class _PaymentPageState extends State<PaymentPage> {
       appBar: AppBar(
         surfaceTintColor: AppColors.ghostWhite,
         backgroundColor: AppColors.ghostWhite,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-        ),
+        centerTitle: true,
         title: const Text(
           'Purchase course',
           style: TextStyle(
@@ -106,59 +103,65 @@ class _PaymentPageState extends State<PaymentPage> {
             const Divider(),
             AppSpacing.mediumVertical,
             Text(
-              'Price: \$${widget.price}',
+              'Price: ${widget.price}đ',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             AppSpacing.mediumVertical,
-            GFButton(
-              onPressed: () async {
-                try {
-                  Map<String, dynamic> paymentInfo = await paymentService
-                      .createPaymentIntent(widget.userId, widget.courseId);
-                  if (paymentInfo['paymentIntent'] != "" &&
-                      paymentInfo['paymentIntent'] != null) {
-                    String intent = paymentInfo['paymentIntent'];
-                    String intentId =
-                        paymentInfo['paymentIntentId']; // Store the ID
+            SizedBox(
+              width: double.infinity,
+              child: GFButton(
+                onPressed: () async {
+                  try {
+                    Map<String, dynamic> paymentInfo = await paymentService
+                        .createPaymentIntent(widget.userId, widget.courseId);
+                    if (paymentInfo['paymentIntent'] != "" &&
+                        paymentInfo['paymentIntent'] != null) {
+                      String intent = paymentInfo['paymentIntent'];
+                      String intentId =
+                          paymentInfo['paymentIntentId']; // Store the ID
 
-                    await Stripe.instance.initPaymentSheet(
-                      paymentSheetParameters: SetupPaymentSheetParameters(
-                        paymentIntentClientSecret: intent,
-                        merchantDisplayName: "Mindify",
-                        customerId: paymentInfo['customer'],
-                        customerEphemeralKeySecret: paymentInfo['ephemeralKey'],
-                      ),
-                    );
+                      await Stripe.instance.initPaymentSheet(
+                        paymentSheetParameters: SetupPaymentSheetParameters(
+                          paymentIntentClientSecret: intent,
+                          merchantDisplayName: "Mindify",
+                          customerId: paymentInfo['customer'],
+                          customerEphemeralKeySecret:
+                              paymentInfo['ephemeralKey'],
+                        ),
+                      );
 
-                    try {
-                      await Stripe.instance.presentPaymentSheet();
-                      Map<String, dynamic> confirmation =
-                          await paymentService.confirmPayment(intentId);
-                      showSuccessToast(context, 'Payment successful');
-                    } on StripeException catch (e) {
-                      if (e.error.code == FailureCode.Canceled) {
-                        showErrorToast(context, 'Payment flow canceled.');
-                      } else {
-                        log('Confirmation error: $e');
+                      try {
+                        await Stripe.instance.presentPaymentSheet();
+                        Map<String, dynamic> confirmation =
+                            await paymentService.confirmPayment(intentId);
+                        showSuccessToast(context, 'Payment successful');
+                        Navigator.pop(context, true);
+                      } on StripeException catch (e) {
+                        if (e.error.code == FailureCode.Canceled) {
+                          showErrorToast(context, 'Payment flow canceled.');
+                        } else {
+                          log('Confirmation error: $e');
+                          showErrorToast(
+                              context, 'Payment confirmation error: $e');
+                        }
+                      } catch (e) {
+                        log('Payment confirmation error: $e');
                         showErrorToast(
                             context, 'Payment confirmation error: $e');
                       }
-                    } catch (e) {
-                      log('Payment confirmation error: $e');
-                      showErrorToast(context, 'Payment confirmation error: $e');
                     }
+                  } catch (e) {
+                    log('Payment intent error: $e');
+                    showErrorToast(context, 'Payment intent error: $e');
                   }
-                } catch (e) {
-                  log('Payment intent error: $e');
-                  showErrorToast(context, 'Payment intent error: $e');
-                }
-              },
-              text: "Proceed to Payment",
-              color: AppColors.deepBlue,
-              textStyle: const TextStyle(color: Colors.white),
+                },
+                text: "Proceed to Payment",
+                color: AppColors.deepBlue,
+                textStyle: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),

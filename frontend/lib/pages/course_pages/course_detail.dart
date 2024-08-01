@@ -240,20 +240,6 @@ class _CourseDetailState extends State<CourseDetail>
     );
   }
 
-  void _navigateToPaymentScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentPage(
-          userId: widget.userId,
-          courseId: widget.courseId,
-          price: course!.price,
-          course: course!,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -299,7 +285,24 @@ class _CourseDetailState extends State<CourseDetail>
                       Expanded(
                         child: TextButton(
                           style: AppStyles.primaryButtonStyle,
-                          onPressed: _navigateToPaymentScreen,
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PaymentPage(
+                                  userId: widget.userId,
+                                  courseId: widget.courseId,
+                                  price: course!.price,
+                                  course: course!,
+                                ),
+                              ),
+                            );
+                            if (result != null) {
+                              setState(() {
+                                isEnrolled = true;
+                              });
+                            }
+                          },
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
