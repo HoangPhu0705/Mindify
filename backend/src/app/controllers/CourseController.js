@@ -98,6 +98,19 @@ exports.getCourseById = async (req, res) => {
   }
 };
 
+exports.getCoursePublicByUserId = async (req, res) => {
+  try {
+    const course = await CourseService.getCoursePublicByUserId(req.params.id);
+    if (course) {
+      res.status(200).send(course);
+    } else {
+      res.status(404).send({ message: 'Course not found' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Error fetching course by ID', error: error.message });
+  }
+};
+
 exports.updateCourse = async (req, res) => {
   try {
     const updates = req.body;

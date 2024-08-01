@@ -18,6 +18,7 @@ router.post('/searchOnChanged', CourseController.searchCoursesOnChanged);
 router.post('/updateAllLessonLinks', CourseController.updateAllLessonLinksController);
 router.post('/add-field', CourseController.addFieldToAllCourses);
 router.get('/users/:id', CourseController.getCourseByUserId)
+router.get('/users/:id/public', CourseController.getCoursePublicByUserId)
 // router.post('/', CourseController.createCourseWithLessons)
 router.get('/:id', CourseController.getCourseById);
 router.get('/:id/comments', CommentController.showComments);

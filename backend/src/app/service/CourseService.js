@@ -42,7 +42,7 @@ exports.searchCourses = async (query, lastDocument = null) => {
 
 exports.searchCoursesOnChanged = async (query, isNewSearch) => {
   try {
-    let coursesQuery = CourseCollection.where('isPublic', '==', true).limit(30);
+    let coursesQuery = CourseCollection.where('isPublic', '==', true);
 
     if (!isNewSearch && global.lastDocument) {
       coursesQuery = coursesQuery.startAfter(global.lastDocument);
@@ -295,6 +295,20 @@ exports.getCourseByUserId = async (userId) => {
         return { id: doc.id, ...doc.data(), lessons };
       })
     );
+    return courses;
+  } catch (error) {
+    console.error('Error fetching courses by user ID:', error);
+    throw error;
+  }
+}
+
+exports.getCoursePublicByUserId = async (userId) => {
+  try {
+    const snapshot = await CourseCollection.where('authorId', '==', userId).where('isPublic', '==', true).get();
+    const courses = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     return courses;
   } catch (error) {
     console.error('Error fetching courses by user ID:', error);

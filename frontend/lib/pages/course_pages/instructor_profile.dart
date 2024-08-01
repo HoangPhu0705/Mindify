@@ -117,7 +117,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => FollowersFollowingPage(
-                              userId: userService.getUserId(),
+                              userId: widget.instructorId,
                               tab: 0,
                             ),
                           ),
@@ -137,7 +137,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => FollowersFollowingPage(
-                              userId: userService.getUserId(),
+                              userId: widget.instructorId,
                               tab: 1, // Navigate to Following tab
                             ),
                           ),

@@ -12,6 +12,7 @@ class ReminderSetupPage extends StatefulWidget {
 class _ReminderSetupPageState extends State<ReminderSetupPage> {
   String? _selectedDay;
   TimeOfDay? selectedTime;
+  final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedTime = await showTimePicker(
@@ -72,12 +73,13 @@ class _ReminderSetupPageState extends State<ReminderSetupPage> {
         child: Column(
           children: [
             const Text('Select a Day'),
-            Column(
-              children: List.generate(7, (index) {
-                final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index];
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: dayName.length,
+              itemBuilder: (context, index) {
                 return RadioListTile<String>(
-                  title: Text(dayName),
-                  value: dayName,
+                  title: Text(dayName[index]),
+                  value: dayName[index],
                   groupValue: _selectedDay,
                   onChanged: (String? value) {
                     setState(() {
@@ -85,9 +87,10 @@ class _ReminderSetupPageState extends State<ReminderSetupPage> {
                     });
                   },
                 );
-              }),
+              }
             ),
-            const SizedBox(height: 20),
+            
+             SizedBox(height: 20),
             ListTile(
               title: const Text('Select Time'),
               subtitle: Text(selectedTime != null

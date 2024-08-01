@@ -35,7 +35,7 @@ class _TeachingTabTeacherState extends State<TeachingTabTeacher> {
   }
 
   Future<List<Course>> _fetchCourses() async {
-    return await courseService.getCourseByUserId(widget.instructorId);
+    return await courseService.getCoursePublicByUserId(widget.instructorId);
   }
 
   @override
@@ -67,10 +67,14 @@ class _TeachingTabTeacherState extends State<TeachingTabTeacher> {
 
         return SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.all(12),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 12
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "${widget.teacherName}'s Classes",

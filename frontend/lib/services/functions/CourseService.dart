@@ -262,6 +262,19 @@ class CourseService {
     }
   }
 
+  Future<List<Course>> getCoursePublicByUserId(String userId) async {
+    final response = await http.get(
+      Uri.parse("${AppConstants.COURSE_API}/users/$userId/public"),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((course) => Course.fromJson(course)).toList();
+    } else {
+      throw Exception('Failed to load class');
+    }
+  }
+
   Future<void> deleteCourse(String courseId) async {
     try {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId");
