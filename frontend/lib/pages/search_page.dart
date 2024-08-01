@@ -11,6 +11,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:super_cupertino_navigation_bar/super_cupertino_navigation_bar.dart';
 import 'package:chip_list/chip_list.dart';
 import 'package:intl/intl.dart';
@@ -166,7 +167,8 @@ class _SearchPageState extends State<SearchPage> {
   void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
-      useRootNavigator: true,
+      useSafeArea: true,
+      isScrollControlled: true,
       builder: (context) {
         return FilterSheet(
           onApply: (filterCriteria) {
@@ -188,13 +190,13 @@ class _SearchPageState extends State<SearchPage> {
       DateTime cutoffDate;
       switch (criteria.dateRange) {
         case DateRange.oneWeek:
-          cutoffDate = now.subtract(Duration(days: 7));
+          cutoffDate = now.subtract(const Duration(days: 7));
           break;
         case DateRange.oneMonth:
-          cutoffDate = now.subtract(Duration(days: 30));
+          cutoffDate = now.subtract(const Duration(days: 30));
           break;
         case DateRange.oneYear:
-          cutoffDate = now.subtract(Duration(days: 365));
+          cutoffDate = now.subtract(const Duration(days: 365));
           break;
         default:
           cutoffDate = now; // Handle null case
@@ -321,8 +323,19 @@ class _SearchPageState extends State<SearchPage> {
         if (result.containsKey('courseName')) {
           // Course item
           return ListTile(
-            leading: Image.network(result['thumbnail']),
-            title: Text(result['courseName']),
+            leading: Container(
+              width: 100,
+              height: 50,
+              child: Image.network(
+                result['thumbnail'],
+                fit: BoxFit.cover,
+              ),
+            ),
+            title: Text(
+              result['courseName'],
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
             subtitle: Text(result['author']),
             onTap: () {
               Navigator.push(
@@ -540,7 +553,7 @@ class _SearchPageState extends State<SearchPage> {
 class FilterSheet extends StatefulWidget {
   final Function(FilterCriteria) onApply;
 
-  const FilterSheet({required this.onApply});
+  const FilterSheet({super.key, required this.onApply});
 
   @override
   _FilterSheetState createState() => _FilterSheetState();
@@ -552,55 +565,128 @@ class _FilterSheetState extends State<FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return Container(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * 0.9,
+      padding: const EdgeInsets.all(10.0),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Filter Courses',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          const Center(
+            child: Text(
+              'Filters',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ),
-          SizedBox(height: 16),
-          Text('Date Range'),
-          Wrap(
-            children: DateRange.values.map((range) {
-              return ChoiceChip(
-                label: Text(range.toString().split('.').last),
-                selected: _selectedDateRange == range,
-                onSelected: (selected) {
+          AppSpacing.mediumVertical,
+          const Text(
+            'Date Range',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          AppSpacing.smallVertical,
+          ListView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            itemCount: DateRange.values.length,
+            itemBuilder: (context, index) {
+              DateRange range = DateRange.values[index];
+              String label = "";
+              if (range == DateRange.oneYear) {
+                label = "Past Year";
+              } else if (range == DateRange.oneMonth) {
+                label = "Past Month";
+              } else if (range == DateRange.oneWeek) {
+                label = "Past Week";
+              }
+
+              return GFCheckboxListTile(
+                margin: const EdgeInsets.only(
+                  bottom: 15,
+                  right: 10,
+                ),
+                padding: EdgeInsets.zero,
+                titleText: label,
+                size: 24,
+                activeBgColor: AppColors.cream,
+                type: GFCheckboxType.circle,
+                activeIcon: const Icon(
+                  Icons.check,
+                  size: 15,
+                  color: AppColors.deepSpace,
+                ),
+                onChanged: (value) {
                   setState(() {
-                    _selectedDateRange = selected ? range : null;
+                    _selectedDateRange = value ? range : null;
                   });
                 },
+                value: _selectedDateRange == range,
+                inactiveIcon: null,
               );
-            }).toList(),
-          ),
-          SizedBox(height: 16),
-          Text('Sort By'),
-          Wrap(
-            children: SortBy.values.map((sortBy) {
-              return ChoiceChip(
-                label: Text(sortBy.toString().split('.').last),
-                selected: _selectedSortBy == sortBy,
-                onSelected: (selected) {
-                  setState(() {
-                    _selectedSortBy = selected ? sortBy : null;
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              widget.onApply(FilterCriteria(
-                dateRange: _selectedDateRange,
-                sortBy: _selectedSortBy,
-              ));
-              Navigator.pop(context);
             },
-            child: Text('Apply Filters'),
+          ),
+          AppSpacing.mediumVertical,
+          const Text(
+            'Sort By',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          AppSpacing.mediumVertical,
+          ListView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            itemCount: SortBy.values.length,
+            itemBuilder: (context, index) {
+              SortBy sortBy = SortBy.values[index];
+              String label = "";
+              if (sortBy == SortBy.students) {
+                label = "Students";
+              } else if (sortBy == SortBy.lessons) {
+                label = "Lessons";
+              }
+
+              return GFCheckboxListTile(
+                margin: const EdgeInsets.only(
+                  bottom: 15,
+                  right: 10,
+                ),
+                padding: EdgeInsets.zero,
+                titleText: label,
+                size: 24,
+                activeBgColor: AppColors.cream,
+                type: GFCheckboxType.circle,
+                activeIcon: const Icon(
+                  Icons.check,
+                  size: 15,
+                  color: AppColors.deepSpace,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedSortBy = value ? sortBy : null;
+                  });
+                },
+                value: _selectedSortBy == sortBy,
+                inactiveIcon: null,
+              );
+            },
+          ),
+          AppSpacing.mediumVertical,
+          Center(
+            child: ElevatedButton(
+              style: AppStyles.secondaryButtonStyle,
+              onPressed: () {
+                widget.onApply(FilterCriteria(
+                  dateRange: _selectedDateRange,
+                  sortBy: _selectedSortBy,
+                ));
+                Navigator.pop(context);
+              },
+              child: const Text('Apply'),
+            ),
           ),
         ],
       ),

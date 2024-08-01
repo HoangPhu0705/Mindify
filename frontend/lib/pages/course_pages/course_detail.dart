@@ -9,6 +9,7 @@ import 'package:frontend/pages/course_pages/note_tab.dart';
 import 'package:frontend/pages/course_pages/payment_page.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -167,8 +168,12 @@ class _CourseDetailState extends State<CourseDetail>
     try {
       if (isSaved) {
         await userService.unsaveCourseForUser(userId, widget.courseId);
+        Provider.of<CourseProvider>(context, listen: false)
+            .unsaveCourse(widget.courseId);
       } else {
         await userService.saveCourseForUser(userId, widget.courseId);
+        Provider.of<CourseProvider>(context, listen: false)
+            .saveCourse(widget.courseId);
       }
       setState(() {
         isSaved = !isSaved;
@@ -235,20 +240,6 @@ class _CourseDetailState extends State<CourseDetail>
     );
   }
 
-  void _navigateToPaymentScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentPage(
-          userId: widget.userId,
-          courseId: widget.courseId,
-          price: course!.price,
-          course: course!,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -266,7 +257,7 @@ class _CourseDetailState extends State<CourseDetail>
           );
         }
         return Scaffold(
-          bottomSheet: isEnrolled
+          bottomSheet: isEnrolled || widget.userId == course!.instructorId
               ? const SizedBox.shrink()
               : Container(
                   padding: const EdgeInsets.all(12),
@@ -294,7 +285,24 @@ class _CourseDetailState extends State<CourseDetail>
                       Expanded(
                         child: TextButton(
                           style: AppStyles.primaryButtonStyle,
-                          onPressed: _navigateToPaymentScreen,
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PaymentPage(
+                                  userId: widget.userId,
+                                  courseId: widget.courseId,
+                                  price: course!.price,
+                                  course: course!,
+                                ),
+                              ),
+                            );
+                            if (result != null) {
+                              setState(() {
+                                isEnrolled = true;
+                              });
+                            }
+                          },
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
