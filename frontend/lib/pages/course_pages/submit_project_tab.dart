@@ -45,6 +45,7 @@ class _SubmitProjectState extends State<SubmitProject> {
   ProjectService projectService = ProjectService();
   bool hasSubmitted = false;
   DocumentSnapshot? Myproject;
+  String? MyProjectId;
 
   @override
   void initState() {
@@ -76,6 +77,7 @@ class _SubmitProjectState extends State<SubmitProject> {
     if (project != null) {
       setState(() {
         Myproject = project;
+        MyProjectId = project.id;
       });
     }
   }
@@ -107,7 +109,9 @@ class _SubmitProjectState extends State<SubmitProject> {
                     MaterialPageRoute(
                       builder: (context) => ViewMyProject(
                         courseId: widget.course.id,
-                        project: Myproject!, // Make sure projectId is not null
+                        project: Myproject!,
+                        projectId: MyProjectId!,
+                        teacherId: widget.course.instructorId,
                       ),
                     ),
                   );

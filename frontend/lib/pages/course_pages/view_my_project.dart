@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -19,11 +20,15 @@ import 'package:widget_zoom/widget_zoom.dart';
 
 class ViewMyProject extends StatefulWidget {
   final String courseId;
+  final String projectId;
+  final String teacherId;
   final DocumentSnapshot project;
   const ViewMyProject({
     super.key,
     required this.courseId,
     required this.project,
+    required this.projectId,
+    required this.teacherId,
   });
 
   @override
@@ -35,7 +40,20 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   UserService userService = UserService();
   Map<String, dynamic>? userInfo;
   late Future<void> _future;
+  FocusNode focusNode = FocusNode();
+  bool canComment = false;
+  String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final commentController = TextEditingController();
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    commentController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   initState() {
     super.initState();
     _future = initPage();
@@ -48,6 +66,32 @@ class _ViewMyProjectState extends State<ViewMyProject> {
 
   Future<void> initPage() async {
     await getUserInfo();
+    if (currentUserId == widget.project["userId"] ||
+        currentUserId == widget.teacherId) {
+      setState(() {
+        canComment = true;
+      });
+    }
+  }
+
+  Future<void> addComment() async {
+    var commentData = {
+      "comment": commentController.text,
+      "userId": FirebaseAuth.instance.currentUser!.uid,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+
+    try {
+      await projectService.addProjectComment(
+        widget.courseId,
+        widget.projectId,
+        commentData,
+      );
+      log("addd comment successfully");
+    } catch (e) {
+      log("error add project Comment $e");
+      throw Exception(e);
+    }
   }
 
   Future downloadFile(String filename, String url) async {
@@ -84,6 +128,50 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: !canComment
+          ? const SizedBox.shrink()
+          : Container(
+              padding: const EdgeInsets.only(bottom: 10),
+              height: MediaQuery.of(context).size.height * 0.1,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    offset: const Offset(0, -1),
+                  ),
+                ],
+              ),
+              child: TextField(
+                focusNode: focusNode,
+                onTapOutside: (event) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                controller: commentController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.ghostWhite,
+                  contentPadding: const EdgeInsets.all(12),
+                  hintText: "Add comment",
+                  border: InputBorder.none,
+                  hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontSize: 16,
+                      ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      addComment();
+                      setState(() {
+                        commentController.clear();
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      color: AppColors.deepBlue,
+                    ),
+                  ),
+                ),
+              ),
+            ),
       appBar: AppBar(
         backgroundColor: AppColors.ghostWhite,
         surfaceTintColor: AppColors.ghostWhite,
@@ -119,7 +207,12 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.fromLTRB(
+                    12,
+                    12,
+                    12,
+                    MediaQuery.of(context).size.height * 0.15,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -215,6 +308,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                                     String fileName =
                                         widget.project["files"][index]["name"];
                                     return ListTile(
+                                      contentPadding: const EdgeInsets.all(0),
                                       onTap: () {
                                         downloadFile(
                                           fileName,
@@ -225,9 +319,83 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                                         file["name"],
                                         style: const TextStyle(
                                           fontSize: 16,
+                                          color: AppColors.deepBlue,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      leading: const Icon(Icons.file_copy),
+                                      leading: const Icon(
+                                        Icons.file_copy_outlined,
+                                        color: AppColors.deepBlue,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const Text(
+                                  "Project comments:",
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                StreamBuilder(
+                                  stream:
+                                      projectService.getProjectCommentStream(
+                                          widget.courseId, widget.projectId),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    List<DocumentSnapshot> comments =
+                                        snapshot.data!.docs;
+                                    return ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: comments.length,
+                                      itemBuilder: (context, index) {
+                                        DocumentSnapshot comment =
+                                            comments[index];
+                                        return FutureBuilder(
+                                            future: userService
+                                                .getUserNameAndAvatar(
+                                              comment["userId"],
+                                            ),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const SizedBox.shrink();
+                                              }
+
+                                              Map<String, dynamic> userData =
+                                                  snapshot.data!;
+                                              String displayName =
+                                                  userData['displayName'] ??
+                                                      'Mindify Member';
+                                              String photoUrl = userData[
+                                                      'photoUrl'] ??
+                                                  'assets/images/default_avatar.png';
+
+                                              return ListTile(
+                                                leading: CircleAvatar(
+                                                  radius: 14,
+                                                  backgroundImage:
+                                                      NetworkImage(photoUrl),
+                                                ),
+                                                contentPadding:
+                                                    const EdgeInsets.all(0),
+                                                title: Text(
+                                                  displayName,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                subtitle: Text(
+                                                  comment["comment"],
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                      },
                                     );
                                   },
                                 ),

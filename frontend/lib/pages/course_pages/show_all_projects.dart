@@ -51,12 +51,14 @@ class _ShowAllProjectsState extends State<ShowAllProjects> {
                 }
 
                 List<DocumentSnapshot> projects = snapshot.data!.docs;
+
                 return ListView.builder(
                   itemCount: projects.length,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     DocumentSnapshot project = projects[index];
+                    String projectId = project.id;
                     String projectCoverImage = project["coverImage"];
                     String title = project["title"];
                     String userId = project["userId"];
@@ -83,6 +85,8 @@ class _ShowAllProjectsState extends State<ShowAllProjects> {
                                   return ViewMyProject(
                                     courseId: widget.course.id,
                                     project: project,
+                                    projectId: projectId,
+                                    teacherId: widget.course.instructorId,
                                   );
                                 },
                               ),

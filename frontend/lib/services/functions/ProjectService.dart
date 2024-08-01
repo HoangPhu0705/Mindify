@@ -30,6 +30,38 @@ class ProjectService {
     return querySnapshot.docs.isNotEmpty;
   }
 
+  Future<void> addProjectComment(
+      String courseId, String projectId, var commentData) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('courses')
+          .doc(courseId)
+          .collection('projects')
+          .doc(projectId)
+          .collection('comments')
+          .add(commentData);
+    } catch (error) {
+      throw Exception('Failed to add project comment: $error');
+    }
+  }
+
+  Stream<QuerySnapshot> getProjectCommentStream(
+      String courseId, String projectId) {
+    try {
+      final stream = FirebaseFirestore.instance
+          .collection('courses')
+          .doc(courseId)
+          .collection('projects')
+          .doc(projectId)
+          .collection('comments')
+          .orderBy("timestamp")
+          .snapshots();
+      return stream;
+    } catch (error) {
+      throw Exception('Failed to stream projects comment: $error');
+    }
+  }
+
   Future<void> getProject(String courseId, String projectId) async {
     try {
       final response = await http.get(
