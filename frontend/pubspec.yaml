@@ -103,6 +103,7 @@ dependencies:
   loader_overlay: ^4.0.1
   widget_zoom: ^0.0.4
   open_file_plus: ^3.4.1+1
+  flutter_local_notifications: ^17.2.1+2
   
 dev_dependencies:
   flutter_test:

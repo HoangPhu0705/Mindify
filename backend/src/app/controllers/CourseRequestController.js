@@ -1,3 +1,4 @@
+const { messaging } = require('../../config/firebase');
 const { CourseRequestCollection } = require('../service/Collections');
 const CourseRequestService = require('../service/CourseRequestService');    
 
@@ -23,7 +24,7 @@ exports.sendRequest = async (req, res) => {
 exports.approveRequest = async (req, res) => {
     try {
         const result = await CourseRequestService.approveRequest(req.params.requestId);
-        res.status(200).json(result);
+        res.status(200).json({result, messaging: "Successfully sent msg"});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

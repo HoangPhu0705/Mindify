@@ -12,6 +12,7 @@ import 'package:frontend/pages/user_information/view_profile_tabs/notification_p
 import 'package:frontend/pages/user_information/view_profile_tabs/view_profile.dart';
 import 'package:frontend/pages/user_information/watch_history.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/functions/NotificationService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -166,7 +167,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       FutureBuilder<List<String>>(
                         future: getInfo(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return ListTile(
                               leading: Icon(Icons.arrow_circle_down),
                               title: Text(
@@ -275,7 +277,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void signUserOut() {
+  void signUserOut() async {
+    final _notificationService = NotificationService();
+    await _notificationService.deleteTokenFromDatabase();
     FirebaseAuth.instance.signOut();
   }
 }

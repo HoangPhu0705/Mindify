@@ -70,15 +70,20 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchChanged() {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    if (_debounce?.isActive ?? false) {
+      _debounce?.cancel();
+    }
+
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (_searchController.text.isEmpty) {
+        log("empty r");
         setState(() {
           _isTyping = false;
           _suggestionResults = [];
         });
         return;
       }
+
       _onSearch(_searchController.text);
     });
   }
@@ -86,7 +91,6 @@ class _SearchPageState extends State<SearchPage> {
   void _onSearch(String query) async {
     setState(() {
       _isLoading = true;
-      _isTyping = true;
       _lastQuery = query;
       _suggestionResults = [];
     });
@@ -101,9 +105,6 @@ class _SearchPageState extends State<SearchPage> {
       });
     } catch (e) {
       log("Error searching courses and users: $e");
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -111,21 +112,17 @@ class _SearchPageState extends State<SearchPage> {
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];
-        _isTyping = false;
       });
       return;
     }
 
     // if (_lastQuery == query && _searchResults.isNotEmpty) return;
-
     setState(() {
       _isLoading = true;
       _searchResults = [];
       _lastQuery = query;
       _hasMoreData = true;
-      _isTyping = false;
     });
-
     try {
       List<Map<String, dynamic>> courses =
           await _courseService.searchCourses(query, isNewSearch: true);
@@ -166,6 +163,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSearchResults() {
+    log("search result BUILDDDD");
     if (_isLoading) {
       return const MyLoading(
         width: 30,
@@ -200,14 +198,9 @@ class _SearchPageState extends State<SearchPage> {
             }
 
             final course = _searchResults[index];
-            return MyCourseItem(
-              imageUrl: course['thumbnail'],
-              title: course['courseName'],
-              author: course['author'],
-              duration: course['duration'],
-              students: course['students'].toString(),
-              moreOnPress: () {
-                Navigator.of(context).push(
+            return GestureDetector(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) => CourseDetail(
                       courseId: course['id'],
@@ -216,6 +209,14 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 );
               },
+              child: MyCourseItem(
+                imageUrl: course['thumbnail'],
+                title: course['courseName'],
+                author: course['author'],
+                duration: course['duration'],
+                students: course['students'].toString(),
+                moreOnPress: () {},
+              ),
             );
           },
         ),
@@ -224,6 +225,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSuggestionList() {
+    log("suggestion result BUILDDDD");
     if (_suggestionResults.isEmpty) {
       return const Center(
         child: Text(
@@ -238,7 +240,6 @@ class _SearchPageState extends State<SearchPage> {
       itemCount: _suggestionResults.length,
       itemBuilder: (context, index) {
         final result = _suggestionResults[index];
-        log(_suggestionResults.length.toString());
         if (result.containsKey('courseName')) {
           // Course item
           return ListTile(
@@ -259,7 +260,6 @@ class _SearchPageState extends State<SearchPage> {
           );
         } else if (result.containsKey('displayName')) {
           // User item
-          log("chuan bi log res" + result.toString());
           return ListTile(
             leading: CircleAvatar(
               backgroundImage: NetworkImage(result['photoURL']),
@@ -305,6 +305,12 @@ class _SearchPageState extends State<SearchPage> {
                 backgroundColor: AppColors.ghostWhite,
                 height: 0,
                 searchBar: SuperSearchBar(
+                  onFocused: (focus) {
+                    setState(() {
+                      _isTyping = focus;
+                    });
+                  },
+                  resultBehavior: SearchBarResultBehavior.visibleOnFocus,
                   searchFocusNode: _searchFocusNode,
                   searchController: _searchController,
                   height: 48,
@@ -314,10 +320,15 @@ class _SearchPageState extends State<SearchPage> {
                   cancelTextStyle: AppStyles.cancelTextStyle,
                   onChanged: (query) {
                     log("Query changed: $query");
+                    setState(() {
+                      _isTyping = true;
+                    });
                   },
                   onSubmitted: (query) {
+                    setState(() {
+                      _isTyping = false;
+                    });
                     _onSearchSubmit(query);
-                    log(_isTyping.toString());
                   },
                   searchResult: _isTyping
                       ? _buildSuggestionList()
