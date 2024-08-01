@@ -2,7 +2,7 @@ const { CourseRequestCollection, CourseCollection, UserCollection } = require('.
 const { firestore } = require('firebase-admin');
 const admin = require('firebase-admin');
 const { transporter } = require('../../utils/sender.util');
-const { message } = require('../../config/firebase');
+const  messaging = admin.messaging();
 
 const sendEmail = async (email, subject, content) => {
   const mailOptions = {
@@ -111,20 +111,28 @@ exports.approveRequest = async (requestId) => {
     const userDoc = await UserCollection.doc(authorId).get();
     if (userDoc.exists) {
       const userData = userDoc.data();
-      const deviceToken = userData.deviceToken;
+      const deviceTokens = userData.deviceTokens;
+      console.log(deviceTokens);
 
-      if (deviceToken) {
+      if (deviceTokens && deviceTokens.length > 0) {
         const message = {
           notification: {
             title: 'Course Approved',
             body: `Your course: ${courseName} has been approved.`,
           },
-          token: deviceToken,
+          tokens: deviceTokens,
         };
-
-        await messaging.send(message);
+        
+        try {
+          // Gửi thông báo tới danh sách token
+          const response = await messaging.sendMulticast(message);
+          console.log('Successfully sent message:', response);
+        } catch (sendError) {
+          console.error('Error sending message:', sendError);
+        }
+        
       } else {
-        console.log('No device token found for user.');
+        console.log('No device tokens found for user.');
       }
     }
 
@@ -137,6 +145,7 @@ exports.approveRequest = async (requestId) => {
     console.log('Request approved successfully');
     return { message: 'Request approved successfully' };
   } catch (error) {
+    console.error(`Error happened when approving request: ${error.message}`);
     throw new Error(`Error happened when approving request: ${error.message}`);
   }
 };

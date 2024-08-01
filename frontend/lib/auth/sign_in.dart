@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:frontend/auth/forgot_password.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/profile_page.dart';
+import 'package:frontend/services/functions/NotificationService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -62,10 +63,12 @@ class _SignInState extends State<SignIn> {
 
   Future<void> signInUser() async {
     try {
+      final _notificationService = NotificationService();
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      await _notificationService.saveTokenToDatabase();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
         showErrorToast("Incorrect email or passwords !");

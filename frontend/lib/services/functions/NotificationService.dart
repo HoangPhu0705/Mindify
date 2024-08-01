@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
+import 'dart:developer';
 class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   Future<void> initialize() async {
+    await Firebase.initializeApp();
+
+    // Yêu cầu quyền nhận thông báo
     NotificationSettings settings = await _fcm.requestPermission(
       alert: true,
       badge: true,
@@ -13,37 +17,102 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-
-      String? token = await _fcm.getToken();
-      print('FCM Token: $token');
-
-      if (token != null) {
-        await _saveTokenToDatabase(token);
-      }
-
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Received message while app is in the foreground!');
-      });
-
-      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print('User tapped on a notification!');
-      });
-
-      FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
-        if (message != null) {
-          print('App opened from terminated state via notification!');
-        }
-      });
+      log('User granted permission');
+      await _configureFCM();
     } else {
-      print('User declined or has not accepted permission');
+      log('User declined or has not accepted permission');
     }
   }
 
-  Future<void> _saveTokenToDatabase(String token) async {
-    String userId = FirebaseAuth.instance.currentUser!.uid;
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'deviceToken': token,
+  Future<void> _configureFCM() async {
+    // Lưu token vào Firestore
+    await saveTokenToDatabase();
+
+    // Lắng nghe các thông báo khi ứng dụng đang ở chế độ nền trước
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('Received message while app is in the foreground!');
+      log('Message data: ${message.data}');
+      if (message.notification != null) {
+        log('Message also contained a notification: ${message.notification}');
+      }
     });
+
+    // Lắng nghe khi người dùng nhấn vào thông báo
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      log('User tapped on a notification!');
+      log('Message data: ${message.data}');
+    });
+
+    // Xử lý thông báo khi ứng dụng ở chế độ nền hoặc bị đóng
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  Future<void> saveTokenToDatabase() async {
+    String? token = await _fcm.getToken();
+    log('FCM Token: $token');
+
+    if (token != null) {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+
+        try {
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            DocumentSnapshot userDoc = await transaction.get(userRef);
+
+            if (userDoc.exists) {
+              Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+              List<String> tokens = List<String>.from(userData?['deviceTokens'] ?? []);
+              if (!tokens.contains(token)) {
+                tokens.add(token);
+                transaction.update(userRef, {'deviceTokens': tokens});
+              }
+            } else {
+              transaction.set(userRef, {
+                'deviceTokens': [token],
+              });
+            }
+          });
+        } catch (e) {
+          log('Failed to save token to database: $e');
+        }
+      }
+    }
+  }
+
+  Future<void> deleteTokenFromDatabase() async {
+    String? token = await _fcm.getToken();
+    log('FCM Token: $token');
+
+    if (token != null) {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+
+        try {
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            DocumentSnapshot userDoc = await transaction.get(userRef);
+
+            if (userDoc.exists) {
+              Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+              List<String> tokens = List<String>.from(userData?['deviceTokens'] ?? []);
+              if (tokens.contains(token)) {
+                tokens.remove(token);
+                transaction.update(userRef, {'deviceTokens': tokens});
+              }
+            }
+          });
+        } catch (e) {
+          log('Failed to delete token from database: $e');
+        }
+      }
+    }
+  }
+
+  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    await Firebase.initializeApp();
+    log("Handling a background message: ${message.messageId}");
   }
 }
