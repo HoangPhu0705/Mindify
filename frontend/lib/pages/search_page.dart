@@ -13,6 +13,7 @@ import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:super_cupertino_navigation_bar/super_cupertino_navigation_bar.dart';
 import 'package:chip_list/chip_list.dart';
+import 'package:intl/intl.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -162,6 +163,83 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      builder: (context) {
+        return FilterSheet(
+          onApply: (filterCriteria) {
+            setState(() {
+              _applyFilter(filterCriteria);
+            });
+          },
+        );
+      },
+    );
+  }
+
+  void _applyFilter(FilterCriteria criteria) {
+    List<dynamic> filteredResults = _searchResults;
+
+    // Filter by date
+    if (criteria.dateRange != null) {
+      final now = DateTime.now();
+      DateTime cutoffDate;
+      switch (criteria.dateRange) {
+        case DateRange.oneWeek:
+          cutoffDate = now.subtract(Duration(days: 7));
+          break;
+        case DateRange.oneMonth:
+          cutoffDate = now.subtract(Duration(days: 30));
+          break;
+        case DateRange.oneYear:
+          cutoffDate = now.subtract(Duration(days: 365));
+          break;
+        default:
+          cutoffDate = now; // Handle null case
+      }
+
+      filteredResults = filteredResults.where((course) {
+        final createdAtField = course['createdAt'];
+        if (createdAtField is Map && createdAtField.containsKey('_seconds')) {
+          // Firebase timestamp
+          final createdAtTimestamp = DateTime.fromMillisecondsSinceEpoch(
+              createdAtField['_seconds'] * 1000);
+          return createdAtTimestamp.isAfter(cutoffDate);
+        } else if (createdAtField is DateTime) {
+          // Direct DateTime object
+          return createdAtField.isAfter(cutoffDate);
+        } else {
+          return false; // If createdAt is not a timestamp or DateTime, skip this entry
+        }
+      }).toList();
+    }
+
+    // Sort by selected criteria
+    if (criteria.sortBy != null) {
+      switch (criteria.sortBy) {
+        case SortBy.students:
+          filteredResults.sort((a, b) => b['students'] - a['students']);
+          break;
+        case SortBy.lessons:
+          filteredResults.sort((a, b) => b['lessonNum'] - a['lessonNum']);
+          break;
+        default:
+          break; // Handle null case
+      }
+    }
+
+    setState(() {
+      _searchResults = filteredResults;
+    });
+  }
+
+  DateTime _parseCreatedAt(String createdAtString) {
+    final format = DateFormat("MMMM d, yyyy 'at' h:mm:ss a 'UTC'xxx");
+    return format.parse(createdAtString);
+  }
+
   Widget _buildSearchResults() {
     log("search result BUILDDDD");
     if (_isLoading) {
@@ -243,12 +321,12 @@ class _SearchPageState extends State<SearchPage> {
         if (result.containsKey('courseName')) {
           // Course item
           return ListTile(
-            leading: Image.network(result['thumbnail'],
-                width: 50, height: 50, fit: BoxFit.cover),
+            leading: Image.network(result['thumbnail']),
             title: Text(result['courseName']),
             subtitle: Text(result['author']),
             onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
+              Navigator.push(
+                context,
                 MaterialPageRoute(
                   builder: (context) => CourseDetail(
                     courseId: result['id'],
@@ -305,6 +383,14 @@ class _SearchPageState extends State<SearchPage> {
                 backgroundColor: AppColors.ghostWhite,
                 height: 0,
                 searchBar: SuperSearchBar(
+                  actions: [
+                    SuperAction(
+                      child: IconButton(
+                        icon: const Icon(Icons.filter_list),
+                        onPressed: _showFilterSheet,
+                      ),
+                    ),
+                  ],
                   onFocused: (focus) {
                     setState(() {
                       _isTyping = focus;
@@ -450,3 +536,85 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+
+class FilterSheet extends StatefulWidget {
+  final Function(FilterCriteria) onApply;
+
+  const FilterSheet({required this.onApply});
+
+  @override
+  _FilterSheetState createState() => _FilterSheetState();
+}
+
+class _FilterSheetState extends State<FilterSheet> {
+  DateRange? _selectedDateRange;
+  SortBy? _selectedSortBy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Filter Courses',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 16),
+          Text('Date Range'),
+          Wrap(
+            children: DateRange.values.map((range) {
+              return ChoiceChip(
+                label: Text(range.toString().split('.').last),
+                selected: _selectedDateRange == range,
+                onSelected: (selected) {
+                  setState(() {
+                    _selectedDateRange = selected ? range : null;
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 16),
+          Text('Sort By'),
+          Wrap(
+            children: SortBy.values.map((sortBy) {
+              return ChoiceChip(
+                label: Text(sortBy.toString().split('.').last),
+                selected: _selectedSortBy == sortBy,
+                onSelected: (selected) {
+                  setState(() {
+                    _selectedSortBy = selected ? sortBy : null;
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              widget.onApply(FilterCriteria(
+                dateRange: _selectedDateRange,
+                sortBy: _selectedSortBy,
+              ));
+              Navigator.pop(context);
+            },
+            child: Text('Apply Filters'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FilterCriteria {
+  final DateRange? dateRange;
+  final SortBy? sortBy;
+
+  FilterCriteria({this.dateRange, this.sortBy});
+}
+
+enum DateRange { oneWeek, oneMonth, oneYear }
+
+enum SortBy { students, lessons }

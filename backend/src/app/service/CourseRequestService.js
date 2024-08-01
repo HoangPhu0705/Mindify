@@ -68,7 +68,7 @@ exports.sendRequest = async (courseId) => {
       coursePrice: courseData.price,
       author: displayName,
       email: email,
-      userId: courseData.authorId,
+      authorId: courseData.authorId,
       createdAt: firestore.FieldValue.serverTimestamp(),
       courseId: courseId
     });

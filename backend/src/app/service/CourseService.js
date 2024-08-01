@@ -415,7 +415,7 @@ exports.getCoursesByCategory = async (userCategories) => {
   try {
     // Assuming userCategories is an array of categories the user is interested in
     const snapshot = await CourseCollection.where('isPublic', '==', true).get();
-    console
+    // console
 
     // Initialize a result object with categories as keys and empty arrays as values
     const result = userCategories.reduce((acc, category) => {
