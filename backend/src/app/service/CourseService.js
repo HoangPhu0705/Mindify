@@ -42,7 +42,7 @@ exports.searchCourses = async (query, lastDocument = null) => {
 
 exports.searchCoursesOnChanged = async (query, isNewSearch) => {
   try {
-    let coursesQuery = CourseCollection.where('isPublic', '==', true).limit(30);
+    let coursesQuery = CourseCollection.where('isPublic', '==', true);
 
     if (!isNewSearch && global.lastDocument) {
       coursesQuery = coursesQuery.startAfter(global.lastDocument);

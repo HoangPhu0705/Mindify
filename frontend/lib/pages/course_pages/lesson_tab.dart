@@ -352,7 +352,9 @@ class LessonTabState extends State<LessonTab> {
                           tileColor: lesson.index == widget.currentVideoIndex
                               ? AppColors.deepSpace
                               : Colors.white,
-                          onTap: isLessonAccessible || widget.isPreviewing
+                          onTap: isLessonAccessible ||
+                                  widget.isPreviewing ||
+                                  widget.userId == widget.instructorId
                               ? () {
                                   widget.onLessonTap(lesson.link, lesson.index);
                                 }
@@ -374,7 +376,9 @@ class LessonTabState extends State<LessonTab> {
                             ),
                           ),
                           leading: Icon(
-                            isLessonAccessible || widget.isPreviewing
+                            isLessonAccessible ||
+                                    widget.isPreviewing ||
+                                    widget.userId == widget.instructorId
                                 ? (isCompleted
                                     ? Icons.check_circle_outline
                                     : Icons.play_circle_outline_outlined)

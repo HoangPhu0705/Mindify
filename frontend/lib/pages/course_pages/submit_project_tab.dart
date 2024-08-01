@@ -142,6 +142,14 @@ class _SubmitProjectState extends State<SubmitProject> {
                         context, "You can't submit project in preview mode");
                     return;
                   }
+
+                  if (widget.course.instructorId ==
+                      FirebaseAuth.instance.currentUser!.uid) {
+                    showErrorToast(
+                        context, "You can't submit project of your own class");
+                    return;
+                  }
+
                   if (hasSubmitted) {
                     if (Myproject == null) {
                       showErrorToast(

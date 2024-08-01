@@ -9,6 +9,7 @@ import 'package:frontend/pages/course_pages/note_tab.dart';
 import 'package:frontend/pages/course_pages/payment_page.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -167,8 +168,12 @@ class _CourseDetailState extends State<CourseDetail>
     try {
       if (isSaved) {
         await userService.unsaveCourseForUser(userId, widget.courseId);
+        Provider.of<CourseProvider>(context, listen: false)
+            .unsaveCourse(widget.courseId);
       } else {
         await userService.saveCourseForUser(userId, widget.courseId);
+        Provider.of<CourseProvider>(context, listen: false)
+            .saveCourse(widget.courseId);
       }
       setState(() {
         isSaved = !isSaved;
@@ -266,7 +271,7 @@ class _CourseDetailState extends State<CourseDetail>
           );
         }
         return Scaffold(
-          bottomSheet: isEnrolled
+          bottomSheet: isEnrolled || widget.userId == course!.instructorId
               ? const SizedBox.shrink()
               : Container(
                   padding: const EdgeInsets.all(12),
