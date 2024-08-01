@@ -1,10 +1,14 @@
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'dart:developer';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
     await Firebase.initializeApp();
@@ -25,15 +29,24 @@ class NotificationService {
   }
 
   Future<void> _configureFCM() async {
+    // Cấu hình local notifications
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
     // Lưu token vào Firestore
     await saveTokenToDatabase();
 
-    // Lắng nghe các thông báo khi ứng dụng đang ở chế độ nền trước
+    // Lắng nghe các thông báo khi ứng dụng đang ở foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       log('Received message while app is in the foreground!');
       log('Message data: ${message.data}');
       if (message.notification != null) {
         log('Message also contained a notification: ${message.notification}');
+        _showLocalNotification(message.notification!);
       }
     });
 
@@ -45,6 +58,25 @@ class NotificationService {
 
     // Xử lý thông báo khi ứng dụng ở chế độ nền hoặc bị đóng
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  Future<void> _showLocalNotification(RemoteNotification notification) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'mindify_id', 
+      'mindify_app', 
+      channelDescription: 'You have a notification', 
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await _flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      platformChannelSpecifics,
+    );
   }
 
   Future<void> saveTokenToDatabase() async {
@@ -62,8 +94,10 @@ class NotificationService {
             DocumentSnapshot userDoc = await transaction.get(userRef);
 
             if (userDoc.exists) {
-              Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-              List<String> tokens = List<String>.from(userData?['deviceTokens'] ?? []);
+              Map<String, dynamic>? userData =
+                  userDoc.data() as Map<String, dynamic>?;
+              List<String> tokens =
+                  List<String>.from(userData?['deviceTokens'] ?? []);
               if (!tokens.contains(token)) {
                 tokens.add(token);
                 transaction.update(userRef, {'deviceTokens': tokens});
@@ -111,7 +145,8 @@ class NotificationService {
     }
   }
 
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
     await Firebase.initializeApp();
     log("Handling a background message: ${message.messageId}");
   }

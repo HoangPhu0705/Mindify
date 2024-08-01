@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/user_information/edit_profile.dart';
+import 'package:frontend/pages/user_information/manage_reminders.dart';
+import 'package:frontend/pages/user_information/reminder_setup.dart';
 import 'package:frontend/utils/colors.dart';
 
 class SettingPage extends StatefulWidget {
@@ -51,7 +53,11 @@ class _SettingPageState extends State<SettingPage> {
                 "Learning reminders",
                 "Set aside time every week for learning",
                 () {
-                  log("notify");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ManageRemindersPage()),
+                  );
                 },
               ),
               const Divider(),
