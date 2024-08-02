@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:frontend/services/functions/ReminderService.dart';
 
 class ReminderSetupPage extends StatefulWidget {
-  const ReminderSetupPage({Key? key}) : super(key: key);
+  const ReminderSetupPage({super.key});
 
   @override
-  _ReminderSetupPageState createState() => _ReminderSetupPageState();
+  State<ReminderSetupPage> createState() => _ReminderSetupPageState();
 }
 
 class _ReminderSetupPageState extends State<ReminderSetupPage> {
   String? _selectedDay;
   TimeOfDay? selectedTime;
+  final reminderService = ReminderService();
   final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   Future<void> _selectTime(BuildContext context) async {
@@ -33,26 +34,15 @@ class _ReminderSetupPageState extends State<ReminderSetupPage> {
       );
       return;
     }
-
-    // Lưu nhắc nhở vào Firestore
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        DocumentReference userRef = FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid);
-
-        await userRef.collection('reminders').add({
-          'day': _selectedDay,
-          'time': selectedTime!.format(context),
-          'created_at': FieldValue.serverTimestamp(),
-        });
+        await reminderService.addReminder(user.uid, _selectedDay!, selectedTime!.format(context));
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reminder saved successfully')),
         );
 
-        // Quay lại trang trước
         Navigator.pop(context);
       }
     } catch (e) {
@@ -90,7 +80,7 @@ class _ReminderSetupPageState extends State<ReminderSetupPage> {
               }
             ),
             
-             SizedBox(height: 20),
+            SizedBox(height: 20),
             ListTile(
               title: const Text('Select Time'),
               subtitle: Text(selectedTime != null
