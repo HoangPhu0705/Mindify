@@ -142,6 +142,7 @@ flutter:
   - assets/images/category/web_app_design.jpg
   - assets/images/category/writing.jpg
   - assets/images/default_avatar.png
+  - assets/images/reminders.png
   - assets/animation/request_succeed.json
 
 

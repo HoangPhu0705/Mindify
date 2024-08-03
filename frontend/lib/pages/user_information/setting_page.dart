@@ -1,11 +1,16 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/user_information/edit_profile.dart';
-import 'package:frontend/pages/user_information/manage_reminders.dart';
 import 'package:frontend/pages/user_information/reminder_setup.dart';
+import 'package:frontend/services/functions/ReminderService.dart';
 import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_loading.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -16,6 +21,39 @@ class SettingPage extends StatefulWidget {
 
 //refactor this code
 class _SettingPageState extends State<SettingPage> {
+  final User? user = FirebaseAuth.instance.currentUser;
+  ReminderService reminderService = ReminderService();
+  final dayName = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursdat',
+    'Friday',
+    'Saturday'
+  ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  String getReminderText(String reminderDay) {
+    DateTime now = DateTime.now();
+    int currentDayIndex = now.weekday %
+        7; // Monday is 1, Sunday is 7 in Dart. We convert it to 0-6.
+    int reminderDayIndex = dayName.indexOf(reminderDay);
+    int difference = (reminderDayIndex - currentDayIndex) % 7;
+
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == 1) {
+      return 'Tomorrow';
+    } else {
+      return '$difference days left';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,11 +91,7 @@ class _SettingPageState extends State<SettingPage> {
                 "Learning reminders",
                 "Set aside time every week for learning",
                 () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ManageRemindersPage()),
-                  );
+                  _showReminderBottomSheet();
                 },
               ),
               const Divider(),
@@ -137,6 +171,218 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  void _showReminderBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height * 0.95,
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: AppColors.ghostWhite,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(10),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.close),
+                  ),
+                  const Text(
+                    "Learning Reminders",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                ],
+              ),
+              const Divider(),
+              AppSpacing.mediumVertical,
+              const Text(
+                "Get reminders to watch your classes",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              AppSpacing.mediumVertical,
+              StreamBuilder<QuerySnapshot>(
+                stream: reminderService.getUserRemindersStream(user),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: MyLoading(
+                        width: 30,
+                        height: 30,
+                        color: AppColors.deepBlue,
+                      ),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return const Center(
+                      child: Text('Error loading reminders.'),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Column(
+                        children: [
+                          Image.asset("assets/images/reminders.png"),
+                          AppSpacing.mediumVertical,
+                          const Text(
+                            textAlign: TextAlign.center,
+                            "We'll send a helpful reminder to watch your classes",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          AppSpacing.mediumVertical,
+                          ElevatedButton(
+                            style: AppStyles.secondaryButtonStyle,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReminderSetupPage(),
+                                ),
+                              );
+                            },
+                            child: const Text('Add Reminder'),
+                          ),
+                          AppSpacing.mediumVertical,
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          final reminder = snapshot.data!.docs[index];
+
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${reminder['day']} at ${reminder['time']}",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      getReminderText(reminder['day']),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.deepBlue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                AppSpacing.mediumVertical,
+                                Text(
+                                  "Take ${reminder['day']} to hone your skills!. We'll send you a little nudge to come watch your courses.",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.grey,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    onPressed: () {
+                                      _deleteReminder(context, reminder.id);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      AppSpacing.mediumVertical,
+                      ElevatedButton(
+                        style: AppStyles.secondaryButtonStyle,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ReminderSetupPage(),
+                            ),
+                          );
+                        },
+                        child: const Text('Add Reminder'),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteReminder(BuildContext context, String reminderId) async {
+    try {
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .collection('reminders')
+            .doc(reminderId)
+            .delete();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reminder deleted successfully')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete reminder: $e')),
+      );
+    }
+  }
+
   Widget _buildListTileNotify(
       String title, String subtitle, VoidCallback onTap) {
     return ListTile(
@@ -151,7 +397,7 @@ class _SettingPageState extends State<SettingPage> {
       trailing: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
@@ -178,7 +424,7 @@ class _SettingPageState extends State<SettingPage> {
       trailing: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(

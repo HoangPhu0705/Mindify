@@ -24,6 +24,7 @@ import 'package:flutter_localizations/flutter_localizations.dart'
 import 'package:flutter_quill/flutter_quill.dart' show Document;
 import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
 import 'package:frontend/services/functions/NotificationService.dart';
+
 // import 'package:stripe_payment/stripe_payment.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 @pragma('vm:entry-point')
@@ -43,7 +44,6 @@ void main() async {
   // );
   runApp(const MindifyApp());
 }
-
 
 class MindifyApp extends StatefulWidget {
   const MindifyApp({super.key});

@@ -62,6 +62,7 @@ class _SearchPageState extends State<SearchPage> {
     _debounce?.cancel();
     _searchController.dispose();
     _searchFocusNode.dispose();
+    _searchController.removeListener(_onSearchChanged);
     super.dispose();
   }
 
@@ -78,7 +79,6 @@ class _SearchPageState extends State<SearchPage> {
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (_searchController.text.isEmpty) {
-        log("empty r");
         setState(() {
           _isTyping = false;
           _suggestionResults = [];
@@ -243,7 +243,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSearchResults() {
-    log("search result BUILDDDD");
     if (_isLoading) {
       return const MyLoading(
         width: 30,
@@ -270,6 +269,8 @@ class _SearchPageState extends State<SearchPage> {
           itemCount: _searchResults.length + 1,
           itemBuilder: (context, index) {
             if (index == _searchResults.length) {
+              log("search result BUIasdaccLDDDD");
+
               return _isLoadingMore
                   ? const Center(
                       child: CircularProgressIndicator(),
@@ -429,6 +430,7 @@ class _SearchPageState extends State<SearchPage> {
                     });
                     _onSearchSubmit(query);
                   },
+                  
                   searchResult: _isTyping
                       ? _buildSuggestionList()
                       : _buildSearchResults(),

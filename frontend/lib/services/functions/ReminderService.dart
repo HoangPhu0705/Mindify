@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,5 +20,17 @@ class ReminderService {
     if (response.statusCode != 200) {
       throw Exception('Failed to add reminder: ${response.reasonPhrase}');
     }
+  }
+
+  Stream<QuerySnapshot> getUserRemindersStream(User? user) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .collection('reminders')
+        .orderBy(
+          'created_at',
+          descending: true,
+        )
+        .snapshots();
   }
 }
