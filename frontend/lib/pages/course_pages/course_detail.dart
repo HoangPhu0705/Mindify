@@ -301,6 +301,7 @@ class _CourseDetailState extends State<CourseDetail>
                               setState(() {
                                 isEnrolled = true;
                               });
+                              await _checkEnrollment();
                             }
                           },
                           child: const Padding(

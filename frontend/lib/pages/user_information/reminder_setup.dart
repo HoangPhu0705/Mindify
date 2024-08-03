@@ -41,7 +41,7 @@ class _ReminderSetupPageState extends State<ReminderSetupPage> {
               backgroundColor: Colors.white,
               hourMinuteShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-                side: BorderSide(
+                side: const BorderSide(
                   color: AppColors.deepBlue,
                   width: 2,
                 ),
