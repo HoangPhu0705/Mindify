@@ -33,4 +33,17 @@ class ReminderService {
         )
         .snapshots();
   }
+
+  Future<void> deleteReminder(String userId, String reminderId) async {
+    final response = await http.delete(
+      Uri.parse('${AppConstants.USER_API}/$userId/reminder/$reminderId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete reminder: ${response.reasonPhrase}');
+    }
+  }
 }

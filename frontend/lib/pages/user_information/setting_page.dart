@@ -54,6 +54,23 @@ class _SettingPageState extends State<SettingPage> {
     }
   }
 
+  Future<void> _deleteReminder(String reminderId) async {
+    try {
+      await reminderService.deleteReminder(user!.uid, reminderId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Reminder deleted successfully"),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to delete reminder: $e"),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -329,7 +346,7 @@ class _SettingPageState extends State<SettingPage> {
                                   child: IconButton(
                                     icon: const Icon(Icons.delete_outline),
                                     onPressed: () {
-                                      _deleteReminder(context, reminder.id);
+                                      _deleteReminder(reminder.id);
                                     },
                                   ),
                                 ),
@@ -360,27 +377,6 @@ class _SettingPageState extends State<SettingPage> {
         );
       },
     );
-  }
-
-  Future<void> _deleteReminder(BuildContext context, String reminderId) async {
-    try {
-      if (user != null) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.uid)
-            .collection('reminders')
-            .doc(reminderId)
-            .delete();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reminder deleted successfully')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete reminder: $e')),
-      );
-    }
   }
 
   Widget _buildListTileNotify(

@@ -84,7 +84,6 @@ const sendNotification = async (userId, reminder) => {
     };
 
     try {
-      // Gửi thông báo tới danh sách token
       const response = await messaging.sendMulticast(message);
       console.log('Successfully sent message:', response);
     } catch (sendError) {
@@ -94,19 +93,4 @@ const sendNotification = async (userId, reminder) => {
   } else {
     console.log('No device tokens found for user.');
   }
-
-  // if (!deviceTokens || deviceTokens.length === 0) {
-  //   console.log(`No device tokens for user ${userId}`);
-  //   return;
-  // }
-
-  // const message = {
-  //   notification: {
-  //     title: 'Learning Reminder',
-  //     body: `Time to study! ${reminder.day} at ${reminder.time}`
-  //   },
-  //   tokens: deviceTokens
-  // };
-
-  // await admin.messaging().sendMulticast(message);
 }

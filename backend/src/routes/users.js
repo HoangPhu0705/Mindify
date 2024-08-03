@@ -25,5 +25,5 @@ router.post('/requestInstructor', UserController.createInstructorSignUpRequest)
 router.get('/requests/:requestId', UserController.getRequestDetails);
 router.put('/requests/:requestId/approve', UserController.approveInstructorRequest);
 router.put('/requests/:requestId/reject', UserController.rejectInstructorRequest);
-router.delete('/:userId/:reminderId', ReminderController.deleteReminder);
+router.delete('/:userId/reminder/:reminderId', ReminderController.deleteReminder);
 module.exports = router;

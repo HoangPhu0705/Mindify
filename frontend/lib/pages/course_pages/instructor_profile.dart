@@ -43,7 +43,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
         setState(() {
           avatarUrl = avatarAndDisplayName['photoUrl'] ?? '';
           displayName = avatarAndDisplayName['displayName'] ?? '';
-          profession = userData['profession'] ?? 'Mindify Instructor';
+          // profession = userData['profession'] ?? 'Mindify Instructor';
           followers = userData['followerNum'] ?? 0;
           following = userData['followingNum'] ?? 0;
         });
@@ -100,14 +100,14 @@ class _InstructorProfileState extends State<InstructorProfile> {
                         color: Colors.white,
                       ),
                 ),
-                Text(
-                  profession,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                // Text(
+                //   profession,
+                //   style: const TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.w500,
+                //   ),
+                // ),
                 AppSpacing.smallVertical,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
