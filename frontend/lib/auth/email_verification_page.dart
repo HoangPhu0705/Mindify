@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/services/functions/UserService.dart';
-import 'dart:developer';import 'package:frontend/utils/colors.dart';
+import 'dart:developer';
+import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
 
 class VerifyEmailPage extends StatefulWidget {
@@ -43,7 +44,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     timer?.cancel();
     super.dispose();
   }
@@ -124,7 +125,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       style: TextStyle(fontSize: 24.0),
                     ),
                   ),
-                  onPressed: canResendEmail ? sendVerifycationEmail : null,
+                  onPressed: canResendEmail ? sendVerificationEmail : null,
                 ),
               ),
               const SizedBox(height: 8),
