@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as dev;
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -59,7 +60,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
       await _loadSavedCourses();
       await _loadInstructorInfo();
-      // await _loadCoursesByCategory();
+      await _loadCoursesByCategory();
     } catch (e) {
       dev.log("Error in _initPage: $e");
     }
@@ -267,30 +268,30 @@ class _DiscoverPageState extends State<DiscoverPage> {
                             userId,
                           ),
                           AppSpacing.mediumVertical,
-                          // ListView.builder(
-                          //   shrinkWrap: true,
-                          //   physics: const NeverScrollableScrollPhysics(),
-                          //   itemCount: categories.length,
-                          //   itemBuilder: (context, index) {
-                          //     String quotes = randomQuotes[
-                          //         Random().nextInt(randomQuotes.length)];
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              String quotes = randomQuotes[
+                                  Random().nextInt(randomQuotes.length)];
 
-                          //     String categoryName = categories[index];
-                          //     List<dynamic> courseList =
-                          //         _categoryCourses![categoryName];
-                          //     List<Course> courseByCategory = courseList
-                          //         .map((course) => Course.fromJson(course))
-                          //         .toList();
-                          //     return courseByCategory.isEmpty
-                          //         ? const SizedBox.shrink()
-                          //         : buildCarouselCourses(
-                          //             courseByCategory,
-                          //             quotes,
-                          //             categoryName,
-                          //             userId,
-                          //           );
-                          //   },
-                          // ),
+                              String categoryName = categories[index];
+                              List<dynamic> courseList =
+                                  _categoryCourses![categoryName];
+                              List<Course> courseByCategory = courseList
+                                  .map((course) => Course.fromJson(course))
+                                  .toList();
+                              return courseByCategory.isEmpty
+                                  ? const SizedBox.shrink()
+                                  : buildCarouselCourses(
+                                      courseByCategory,
+                                      quotes,
+                                      categoryName,
+                                      userId,
+                                    );
+                            },
+                          ),
                         ],
                       ),
                       AppSpacing.largeVertical,

@@ -177,10 +177,23 @@ class _ProfileTabState extends State<ProfileTab> {
                         );
                       }
 
-                      return const Center(
-                        child: Text(
-                          "You don't have any published classes yet",
-                        ),
+                      return const Column(
+                        children: [
+                          Icon(
+                            Icons.tv_off_outlined,
+                            size: 100,
+                            color: AppColors.deepSpace,
+                          ),
+                          Center(
+                            child: Text(
+                              "You don't have any published classes yet",
+                              style: TextStyle(
+                                color: AppColors.deepSpace,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),

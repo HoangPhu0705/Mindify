@@ -273,11 +273,13 @@ class _QuizPageState extends State<QuizPage> {
     bool singleChoice,
   ) {
     return SelectableContainer(
-      unselectedBorderColor: AppColors.ghostWhite,
+      unselectedBorderColor: Colors.black,
       elevation: 0,
-      selectedBackgroundColor: AppColors.blue,
-      unselectedBackgroundColor: AppColors.deepBlue,
-      selectedBorderColorIcon: Colors.transparent,
+      selectedBackgroundColor: Colors.transparent,
+      selectedBorderColor: Colors.black,
+      unselectedBackgroundColor: Colors.transparent,
+      selectedBorderColorIcon: Colors.black,
+      selectedBackgroundColorIcon: Colors.black,
       selected: isSelected,
       opacityAnimationDuration: 100,
       child: buildTextContentOfContainer(option),
@@ -305,15 +307,15 @@ class _QuizPageState extends State<QuizPage> {
 
   Widget buildTextContentOfContainer(String option) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: Align(
         alignment: Alignment.bottomLeft,
         child: Text(
           option,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
+            fontSize: 16,
           ),
         ),
       ),

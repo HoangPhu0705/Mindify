@@ -275,6 +275,7 @@ class _CreateQuestionsState extends State<CreateQuestions> {
       ),
       appBar: AppBar(
         surfaceTintColor: AppColors.ghostWhite,
+        backgroundColor: AppColors.ghostWhite,
         centerTitle: true,
         title: const Text(
           "Question detail",

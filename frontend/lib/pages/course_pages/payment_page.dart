@@ -106,7 +106,7 @@ class _PaymentPageState extends State<PaymentPage> {
               'Price: ${widget.price}đ',
               style: const TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
               ),
             ),
             AppSpacing.mediumVertical,
@@ -160,7 +160,11 @@ class _PaymentPageState extends State<PaymentPage> {
                 },
                 text: "Proceed to Payment",
                 color: AppColors.deepBlue,
-                textStyle: const TextStyle(color: Colors.white),
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],

@@ -110,7 +110,7 @@ class _CourseDetailState extends State<CourseDetail>
         _enrollmentId = enrollmentStatus['enrollmentId'];
       });
     } catch (e) {
-      log("Error checking enrollment: $e");
+      log("Error checking enrollment dmmm: $e");
     }
   }
 
