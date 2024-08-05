@@ -13,7 +13,6 @@ class NotificationService {
   Future<void> initialize() async {
     await Firebase.initializeApp();
 
-    // Yêu cầu quyền nhận thông báo
     NotificationSettings settings = await _fcm.requestPermission(
       alert: true,
       badge: true,

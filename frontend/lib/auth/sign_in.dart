@@ -63,12 +63,12 @@ class _SignInState extends State<SignIn> {
 
   Future<void> signInUser() async {
     try {
-      final _notificationService = NotificationService();
+      // final _notificationService = NotificationService();
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      await _notificationService.saveTokenToDatabase();
+      // await _notificationService.saveTokenToDatabase();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
         showErrorToast("Incorrect email or passwords !");

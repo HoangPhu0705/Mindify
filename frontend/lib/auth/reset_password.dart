@@ -89,7 +89,7 @@ class ResetPasswordScreen extends StatelessWidget {
                       //   context,
                       //   // MaterialPageRoute(
                       //   //     builder: (context) =>
-                      //   //         //EmailVerificationScreen()), // Trang đích
+                      //   //         //EmailVerificationScreen()), 
                       // );
                     },
                     child: const Padding(

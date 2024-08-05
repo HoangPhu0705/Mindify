@@ -242,6 +242,7 @@ class _SubmitProjectState extends State<SubmitProject> {
                                 "This class don't have submitted project yet"),
                           );
                         }
+
                         List<DocumentSnapshot> projects = snapshot.data!.docs;
                         return SizedBox(
                           height: 100.0,
