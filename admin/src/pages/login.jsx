@@ -56,15 +56,7 @@ function Login1() {
               onSubmit={handleLogin}
               className="flex flex-col gap-4 md:mt-12"
             >
-              {errorMessage && (
-                <Typography
-                  variant="small"
-                  color="red"
-                  className="text-center mb-4"
-                >
-                  {errorMessage}
-                </Typography>
-              )}
+             
               <div>
                 <label htmlFor="email">
                   <Typography
@@ -80,14 +72,12 @@ function Login1() {
                   color="gray"
                   size="lg"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
                   placeholder="name@mail.com"
-                  className="w-full placeholder:opacity-100 focus:border-t-black border-t-blue-gray-200"
+                  className="w-full placeholder:opacity-100 focus:border-t-primary border-t-blue-gray-200"
                   labelProps={{
-                    className: "hidden",
+                    className: "before:mr-0 after:ml-0",
                   }}
-                  required
                 />
               </div>
               <div>
@@ -108,22 +98,30 @@ function Login1() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full placeholder:opacity-100 focus:border-t-black border-t-blue-gray-200"
+                  className="w-full placeholder:opacity-100 focus:border-t-primary border-t-blue-gray-200"
                   labelProps={{
-                    className: "hidden",
+                    className: "before:mr-0 after:ml-0",
                   }}
-                  required
                 />
+                 {errorMessage && (
+                <Typography
+                  variant="small"
+                  color="red"
+                  className="text-center mt-4"
+                >
+                  {errorMessage}
+                </Typography>
+              )}
               </div>
               <Button size="lg" color="gray" fullWidth type="submit">
                 continue
               </Button>
-             
+
               <Typography
                 variant="small"
                 className="text-center mx-auto max-w-[19rem]  !text-black font-bold"
               >
-               © 2024 Mindify. All rights reserved.
+                © 2024 Mindify. All rights reserved.
               </Typography>
             </form>
           </CardBody>
