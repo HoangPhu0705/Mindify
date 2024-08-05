@@ -1,5 +1,17 @@
 const UserService = require('../service/UserService');
 
+exports.handleSendVerificationEmail = async (req, res) => {
+    const { uid } = req.body;
+
+    try {
+        await UserService.sendVerificationEmail(uid);
+        res.status(200).send({ message: 'Verification email sent successfully' });
+    } catch (error) {
+        console.error('Error sending email verification:', error);
+        res.status(500).send({ error: 'Error sending email verification' });
+    }
+}
+
 exports.searchUsers = async (req, res) => {
     const query = req.query.query;
 

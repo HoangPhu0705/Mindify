@@ -1,76 +1,78 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
-import 'dart:developer';
-import 'package:frontend/pages/home_page.dart';
-// import 'package:cookie_app/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/colors.dart';
+import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/services/functions/UserService.dart';
+import 'dart:developer';import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
 
   @override
-  _VerifyEmailPageState createState() => _VerifyEmailPageState();
+  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
 }
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
-  bool isEmailVerify = false;
-  bool canResendEmail = false;
-  // UserService userService = UserService(FirebaseAuth.instance.currentUser!);
+  bool isEmailVerified = false;
+  bool canResendEmail = true;
+  String errorMessage = '';
+  final userService = UserService();
   Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    isEmailVerify = FirebaseAuth.instance.currentUser!.emailVerified;
-    if (!isEmailVerify) {
-      sendVerifycationEmail();
+    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    log(isEmailVerified.toString());
+    if (!isEmailVerified) {
+      sendVerificationEmail();
       timer = Timer.periodic(
-        Duration(seconds: 5),
+        const Duration(seconds: 5),
         (_) => checkEmailVerified(),
       );
     }
   }
 
+  Future checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser!.reload();
+    setState(() {
+      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    });
+    if (isEmailVerified) timer?.cancel();
+  }
+
   @override
-  void dispose() {
+  void dispose(){
     timer?.cancel();
     super.dispose();
   }
 
-  Future checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser!.reload();
-    setState(() {
-      isEmailVerify = FirebaseAuth.instance.currentUser!.emailVerified;
-    });
-    if (isEmailVerify) timer?.cancel();
-  }
-
-  Future sendVerifycationEmail() async {
+  Future sendVerificationEmail() async {
     try {
       final user = FirebaseAuth.instance.currentUser!;
-      await user.sendEmailVerification();
+      final uid = user.uid;
+
+      await userService.sendVerificationEmail(uid);
 
       setState(() => canResendEmail = false);
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(minutes: 1));
       setState(() => canResendEmail = true);
     } catch (e) {
-      log("error: $e");
+      setState(() {
+        errorMessage = 'Error sending email: $e';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isEmailVerify) {
-      log("Email is verified");
+    if (isEmailVerified) {
       return HomePage();
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: Center(
+          title: const Center(
             child: Text(
               'Verify Email',
               style: TextStyle(
@@ -125,14 +127,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   onPressed: canResendEmail ? sendVerifycationEmail : null,
                 ),
               ),
-              SizedBox(
-                height: 8,
-              ),
+              const SizedBox(height: 8),
               TextButton(
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size.fromHeight(50),
+                  minimumSize: const Size.fromHeight(50),
                 ),
-                child: Text(
+                child: const Text(
                   'Cancel',
                   style: TextStyle(
                     fontSize: 20.0,
@@ -140,7 +140,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   ),
                 ),
                 onPressed: () => FirebaseAuth.instance.signOut(),
-              )
+              ),
             ],
           ),
         ),

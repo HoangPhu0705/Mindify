@@ -15,6 +15,7 @@ router.get('/:userId/watchedHistories', UserController.getWatchedHistories);
 router.get('/:userId/watchedHistories/time', UserController.getWatchedTime);
 router.get('/:userId/watchedHistories/:lessonId', UserController.goToVideoWatched);
 router.post('/updateUsers', UserController.updateUsers);
+router.post('/send-verification-email', UserController.handleSendVerificationEmail);
 router.post('/:userId/reminder', ReminderController.addReminder);
 router.post('/:userId/follow', UserController.followUser);
 router.post('/:userId/unfollow', UserController.unfollowUser);
