@@ -6,6 +6,7 @@ require('dotenv').config();
 exports.sendVerificationEmail = async (uid) => {
     try {
       const user = await admin.auth().getUser(uid);
+      console.log("Chuan bi send mail cho user: " + user);
       const link = await admin.auth().generateEmailVerificationLink(user.email);
       console.log(link)
       const mailOptions = {

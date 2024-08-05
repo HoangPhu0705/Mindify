@@ -11,7 +11,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
-    await Firebase.initializeApp();
+    // await Firebase.initializeApp();
 
     NotificationSettings settings = await _fcm.requestPermission(
       alert: true,
@@ -62,9 +62,9 @@ class NotificationService {
   Future<void> _showLocalNotification(RemoteNotification notification) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'mindify_id', 
-      'mindify_app', 
-      channelDescription: 'You have a notification', 
+      'mindify_id',
+      'mindify_app',
+      channelDescription: 'You have a notification',
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -129,8 +129,10 @@ class NotificationService {
             DocumentSnapshot userDoc = await transaction.get(userRef);
 
             if (userDoc.exists) {
-              Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
-              List<String> tokens = List<String>.from(userData?['deviceTokens'] ?? []);
+              Map<String, dynamic>? userData =
+                  userDoc.data() as Map<String, dynamic>?;
+              List<String> tokens =
+                  List<String>.from(userData?['deviceTokens'] ?? []);
               if (tokens.contains(token)) {
                 tokens.remove(token);
                 transaction.update(userRef, {'deviceTokens': tokens});

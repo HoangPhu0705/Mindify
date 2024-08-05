@@ -70,17 +70,16 @@ class UserService {
 
   //search users
   Future<List<Map<String, dynamic>>> searchUsers(String query) async {
-  final url = Uri.parse('${AppConstants.USER_API}/searchUsers?query=$query');
-  final response = await http.get(url);
+    final url = Uri.parse('${AppConstants.USER_API}/searchUsers?query=$query');
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final List<dynamic> users = json.decode(response.body);
-    return users.map((user) => user as Map<String, dynamic>).toList();
-  } else {
-    throw Exception('Failed to search users');
+    if (response.statusCode == 200) {
+      final List<dynamic> users = json.decode(response.body);
+      return users.map((user) => user as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to search users');
+    }
   }
-}
-
 
   // Get user info
   Future<Map<String, dynamic>?> getUserInfoById(String uid) async {
@@ -133,8 +132,8 @@ class UserService {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (e) {
-      print("Error: $e");
-      throw e;
+      log("Error: $e");
+      rethrow;
     }
   }
 

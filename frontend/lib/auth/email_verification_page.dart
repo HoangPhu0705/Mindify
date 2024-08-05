@@ -51,10 +51,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   Future sendVerificationEmail() async {
     try {
+      log("chuan bi sent email");
       final user = FirebaseAuth.instance.currentUser!;
       final uid = user.uid;
 
       await userService.sendVerificationEmail(uid);
+      log("Email sent");
 
       setState(() => canResendEmail = false);
       await Future.delayed(const Duration(minutes: 1));
@@ -69,7 +71,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return HomePage();
+      return const HomePage();
     } else {
       return Scaffold(
         appBar: AppBar(
@@ -84,24 +86,24 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ),
         ),
         body: Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.mark_email_read_outlined,
                 size: 100,
                 color: AppColors.deepSpace,
               ),
-              Text(
-                'We have emailed your activation link.\nPlease check your inboxes to activate your account.',
+              const Text(
+                'We have emailed your verification link.\nPlease check your inboxes to activate your account.',
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24.0,
               ),
               SizedBox(
@@ -114,12 +116,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             AppColors.cream,
                           ),
                   ),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.send,
                     size: 32,
                   ),
-                  label: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  label: const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Resend email',
                       style: TextStyle(fontSize: 24.0),
