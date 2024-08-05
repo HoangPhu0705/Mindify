@@ -1,73 +1,76 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
-import 'dart:developer';
-import 'package:frontend/pages/home_page.dart';
-// import 'package:cookie_app/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/services/functions/UserService.dart';
+import 'dart:developer';
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
 
   @override
-  _VerifyEmailPageState createState() => _VerifyEmailPageState();
+  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
 }
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
-  bool isEmailVerify = false;
-  bool canResendEmail = false;
-  // UserService userService = UserService(FirebaseAuth.instance.currentUser!);
+  bool isEmailVerified = false;
+  bool canResendEmail = true;
+  String errorMessage = '';
+  final userService = UserService();
   Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    isEmailVerify = FirebaseAuth.instance.currentUser!.emailVerified;
-    if (!isEmailVerify) {
-      sendVerifycationEmail();
+    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    log(isEmailVerified.toString());
+    if (!isEmailVerified) {
+      sendVerificationEmail();
       timer = Timer.periodic(
-        Duration(seconds: 5),
+        const Duration(seconds: 5),
         (_) => checkEmailVerified(),
       );
     }
   }
 
+  Future checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser!.reload();
+    setState(() {
+      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    });
+    if (isEmailVerified) timer?.cancel();
+  }
+
   @override
-  void dispose() {
+  void dispose(){
     timer?.cancel();
     super.dispose();
   }
 
-  Future checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser!.reload();
-    setState(() {
-      isEmailVerify = FirebaseAuth.instance.currentUser!.emailVerified;
-    });
-    if (isEmailVerify) timer?.cancel();
-  }
-
-  Future sendVerifycationEmail() async {
+  Future sendVerificationEmail() async {
     try {
       final user = FirebaseAuth.instance.currentUser!;
-      await user.sendEmailVerification();
+      final uid = user.uid;
+
+      await userService.sendVerificationEmail(uid);
 
       setState(() => canResendEmail = false);
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(minutes: 1));
       setState(() => canResendEmail = true);
     } catch (e) {
-      log("error: $e");
+      setState(() {
+        errorMessage = 'Error sending email: $e';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isEmailVerify) {
+    if (isEmailVerified) {
       return HomePage();
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: Center(
+          title: const Center(
             child: Text(
               'Verify Email',
               style: TextStyle(
@@ -81,42 +84,46 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'We have emailed your password reset link.\nPlease check your inboxes to active your account.',
+              const Text(
+                'We have sent you an email verification link.\nPlease check your inbox to activate your account.',
                 style: TextStyle(fontSize: 20.0),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
-                height: 24.0,
-              ),
+              if (errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              SizedBox(height: 24.0),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.cyan,
                   minimumSize: Size.fromHeight(50),
                 ),
-                icon: Icon(
+                icon: const Icon(
                   Icons.email,
                   size: 32,
                 ),
-                label: Text(
-                  'Resent email',
+                label:const Text(
+                  'Resend Email',
                   style: TextStyle(fontSize: 24.0),
                 ),
-                onPressed: canResendEmail ? sendVerifycationEmail : null,
+                onPressed: canResendEmail ? sendVerificationEmail : null,
               ),
-              SizedBox(
-                height: 8,
-              ),
+              const SizedBox(height: 8),
               TextButton(
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size.fromHeight(50),
+                  minimumSize: const Size.fromHeight(50),
                 ),
-                child: Text(
+                child: const Text(
                   'Cancel',
                   style: TextStyle(fontSize: 24.0),
                 ),
                 onPressed: () => FirebaseAuth.instance.signOut(),
-              )
+              ),
             ],
           ),
         ),

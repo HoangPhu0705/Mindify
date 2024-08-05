@@ -29,7 +29,7 @@ import 'package:frontend/services/functions/NotificationService.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
   log("Handling a background message: ${message.messageId}");
 }
 

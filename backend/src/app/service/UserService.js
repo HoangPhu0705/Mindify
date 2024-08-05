@@ -3,6 +3,25 @@ const { transporter } = require('../../utils/sender.util')
 const admin = require('firebase-admin');
 require('dotenv').config();
 
+exports.sendVerificationEmail = async (uid) => {
+    try {
+      const user = await admin.auth().getUser(uid);
+      const link = await admin.auth().generateEmailVerificationLink(user.email);
+      console.log(link)
+      const mailOptions = {
+        from: 'hieupham112003@gmail.com',
+        to: user.email,
+        subject: 'Email Verification',
+        text: `Please verify your email by clicking the following link: ${link}`,
+      };
+  
+      await transporter.sendMail(mailOptions);
+      return link;
+    } catch (error) {
+      throw new Error('Error sending email verification: ' + error.message);
+    }
+  }
+
 const sendRejectionEmail = async (email, firstName, content) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,

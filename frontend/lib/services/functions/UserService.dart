@@ -117,6 +117,18 @@ class UserService {
     return null;
   }
 
+  Future<void> sendVerificationEmail(String uid) async {
+    final response = await http.post(
+      Uri.parse('${AppConstants.USER_API}/send-verification-email'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'uid': uid}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to send verification email');
+    }
+  }
+
   Future<void> resetPassword(String email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
