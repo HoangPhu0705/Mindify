@@ -97,9 +97,9 @@ class CourseService {
       log("Token ne ${idToken!}");
       final response = await http.get(
         Uri.parse("${AppConstants.COURSE_API}/top5"),
-        headers: {
-          'Authorization': 'Bearer $idToken',
-        },
+        // headers: {
+        //   'Authorization': 'Bearer $idToken',
+        // },
       );
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);

@@ -12,11 +12,22 @@ class CommentService {
       FirebaseFirestore.instance.collection('courses');
 
   Stream<QuerySnapshot> getCommentsStreamByCourse(String courseId) {
-    return comments.doc(courseId).collection('comments').orderBy("createdAt", descending: false).snapshots();
+    return comments
+        .doc(courseId)
+        .collection('comments')
+        .orderBy("createdAt", descending: false)
+        .snapshots();
   }
 
-  Stream<QuerySnapshot> getReplieStreamByComment(String courseId, String commentId){
-    return comments.doc(courseId).collection('comments').doc(commentId).collection('replies').snapshots();
+  Stream<QuerySnapshot> getReplieStreamByComment(
+      String courseId, String commentId) {
+    return comments
+        .doc(courseId)
+        .collection('comments')
+        .doc(commentId)
+        .collection('replies')
+        .orderBy("createdAt", descending: false)
+        .snapshots();
   }
 
   Future<List<Reply>> getReplies(String courseId, String commentId) async {
@@ -26,7 +37,9 @@ class CommentService {
         .doc(commentId)
         .collection('replies')
         .get();
-    return replySnapshot.docs.map((doc) => Reply.fromJson(doc.data() as Map<String, dynamic>)).toList();
+    return replySnapshot.docs
+        .map((doc) => Reply.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<Comment>> getComments(String courseId) async {
@@ -66,7 +79,8 @@ class CommentService {
 
   Future<void> createReply(String courseId, String commentId, var data) async {
     try {
-      final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/comments/$commentId/replies");
+      final url = Uri.parse(
+          "${AppConstants.COURSE_API}/$courseId/comments/$commentId/replies");
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

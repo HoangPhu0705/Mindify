@@ -10,6 +10,7 @@ import 'package:frontend/services/models/reply.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:getwidget/getwidget.dart';
 
 class Discussion extends StatefulWidget {
   final String courseId;
@@ -188,10 +189,12 @@ class _DiscussionState extends State<Discussion> {
                                   if (!userSnapshot.hasData) {
                                     return const SizedBox.shrink();
                                   }
+
                                   Map<String, dynamic> userData =
                                       userSnapshot.data!;
                                   String displayName =
-                                      userData['displayName'] ?? 'Anonymous';
+                                      userData['displayName'] ??
+                                          'Mindify Member';
                                   String photoUrl = userData['photoUrl'] ??
                                       'assets/images/default_avatar.png';
 
@@ -206,23 +209,25 @@ class _DiscussionState extends State<Discussion> {
                                         List<DocumentSnapshot> replyDocs =
                                             replySnapshot.data!.docs;
                                         List<Reply> replies = replyDocs
-                                            .map((doc) => Reply.fromJson(
-                                                doc.data()
-                                                    as Map<String, dynamic>))
+                                            .map(
+                                              (doc) => Reply.fromJson(doc.data()
+                                                  as Map<String, dynamic>),
+                                            )
                                             .toList();
 
                                         Comment comment = Comment(
-                                            id: commentId,
-                                            content: data['content'],
-                                            userId: data['userId'],
-                                            createdAt: data['createdAt'],
-                                            replies: replies);
+                                          id: commentId,
+                                          content: data['content'],
+                                          userId: data['userId'],
+                                          createdAt: data['createdAt'],
+                                          replies: replies,
+                                        );
 
                                         return Column(
                                           children: [
                                             _buildCommentTree(context, comment,
                                                 displayName, photoUrl),
-                                            Divider(
+                                            const Divider(
                                                 color: AppColors.lighterGrey),
                                           ],
                                         );
@@ -247,14 +252,15 @@ class _DiscussionState extends State<Discussion> {
     return ct.CommentTreeWidget<Comment, Reply>(
       rootComment,
       rootComment.replies,
-      treeThemeData: ct.TreeThemeData(lineColor: AppColors.cream, lineWidth: 3),
+      treeThemeData:
+          const ct.TreeThemeData(lineColor: AppColors.cream, lineWidth: 3),
       avatarRoot: (context, data) => PreferredSize(
+        preferredSize: const Size.fromRadius(18),
         child: CircleAvatar(
           radius: 18,
           backgroundColor: Colors.grey,
           backgroundImage: NetworkImage(rootPhotoUrl),
         ),
-        preferredSize: const Size.fromRadius(18),
       ),
       avatarChild: (context, data) {
         return PreferredSize(
@@ -263,16 +269,14 @@ class _DiscussionState extends State<Discussion> {
             future: userService.getUserNameAndAvatar(data.userId),
             builder: (context, userSnapshot) {
               if (!userSnapshot.hasData) {
-                return const CircleAvatar(
-                  radius: 12,
-                  backgroundColor: Colors.grey,
-                  backgroundImage:
-                      AssetImage('assets/images/default_avatar.png'),
+                return const GFShimmer(
+                  child: CircleAvatar(
+                    radius: 12,
+                  ),
                 );
               }
               Map<String, dynamic> userData = userSnapshot.data!;
-              String photoUrl = userData['photoUrl'] ??
-                  'assets/images/default_avatar.png';
+              String photoUrl = userData['photoUrl'];
               return CircleAvatar(
                 radius: 12,
                 backgroundColor: Colors.grey,
@@ -287,8 +291,8 @@ class _DiscussionState extends State<Discussion> {
           context,
           data.content,
           rootDisplayName,
-          rootPhotoUrl,
           rootComment.id,
+          false,
         );
       },
       contentChild: (context, data) {
@@ -296,24 +300,39 @@ class _DiscussionState extends State<Discussion> {
           future: userService.getUserNameAndAvatar(data.userId),
           builder: (context, userSnapshot) {
             if (!userSnapshot.hasData) {
-              return _buildCommentContent(
-                context,
-                data.content,
-                'Anonymous',
-                'assets/images/default_avatar.png',
-                null,
+              return GFShimmer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 20,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: AppColors.grey,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                    AppSpacing.smallVertical,
+                    Container(
+                      height: 15,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        color: AppColors.grey,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
             Map<String, dynamic> userData = userSnapshot.data!;
-            String displayName = userData['displayName'] ?? 'Anonymous';
-            String photoUrl =
-                userData['photoUrl'] ?? 'assets/images/default_avatar.png';
+            String displayName = userData['displayName'] ?? 'Mindify Member';
             return _buildCommentContent(
               context,
               data.content,
               displayName,
-              photoUrl,
               data.id,
+              true,
             );
           },
         );
@@ -322,7 +341,7 @@ class _DiscussionState extends State<Discussion> {
   }
 
   Widget _buildCommentContent(BuildContext context, String content,
-      String displayName, String photoUrl, String? commentId) {
+      String displayName, String? commentId, bool isReplied) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -350,16 +369,18 @@ class _DiscussionState extends State<Discussion> {
           ),
         ),
         DefaultTextStyle(
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-              color: Colors.grey[700], fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(color: Colors.grey[700], fontWeight: FontWeight.bold),
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Row(
               children: [
                 AppSpacing.smallHorizontal,
                 const Text('Like'),
-                if (commentId != null) ...[
-                  AppSpacing.largeHorizontal,
+                if (commentId != null && !isReplied) ...[
+                  AppSpacing.mediumHorizontal,
                   TextButton(
                     onPressed: () => _prepareReply(commentId),
                     child: Text(
