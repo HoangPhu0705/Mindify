@@ -150,7 +150,7 @@ class _SignUpState extends State<SignUp> {
   void showSuccessToast() {
     toastification.show(
       context: context,
-      title: Text(
+      title: const Text(
         'Account created',
         style: TextStyle(fontWeight: FontWeight.w500),
       ),

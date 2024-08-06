@@ -128,13 +128,14 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.ghostWhite,
       bottomSheet: !canComment
           ? const SizedBox.shrink()
           : Container(
               padding: const EdgeInsets.only(bottom: 10),
               height: MediaQuery.of(context).size.height * 0.1,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.ghostWhite,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),

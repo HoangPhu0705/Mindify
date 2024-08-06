@@ -24,15 +24,11 @@ class _IntroductionState extends State<Introduction> {
   final _image = const NetworkImage(
       "https://images.typeform.com/images/8uVv8sPWhbCV/background/large");
   bool _loading = true;
+
   @override
   void initState() {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.black,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
     super.initState();
+
     _image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (info, call) {
@@ -46,6 +42,15 @@ class _IntroductionState extends State<Introduction> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.black,
+          statusBarIconBrightness: Brightness.light,
+        ),
+      );
+    });
+
     return Scaffold(
       body: SafeArea(
         child: _loading

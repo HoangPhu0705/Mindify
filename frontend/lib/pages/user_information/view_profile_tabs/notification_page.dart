@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/colors.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationsPage extends StatefulWidget {
@@ -17,6 +18,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'Notifications',
           style: TextStyle(
@@ -49,7 +51,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
               var timeAgo = timeago.format(timestamp);
 
               return ListTile(
-                leading: const Icon(Icons.notifications),
+                leading: const Icon(
+                  Icons.notifications,
+                  color: AppColors.deepBlue,
+                ),
                 title: Text(notification['title']),
                 subtitle: Text(
                   notification['body'],
@@ -58,7 +63,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 ),
                 trailing: Text(
                   timeAgo,
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(
+                    fontSize: 12,
+                  ),
                 ),
               );
             },

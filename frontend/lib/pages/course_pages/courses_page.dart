@@ -78,20 +78,23 @@ class _MyCoursesPageState extends State<MyCoursePage>
                 color: Colors.black,
               ),
             ),
-            TextField(
-              controller: folderNameController,
-              textAlign: TextAlign.center,
-              decoration: const InputDecoration(
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: AppColors.blue,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: folderNameController,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: AppColors.blue,
+                    ),
                   ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 2,
-                    color: AppColors.blue,
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: AppColors.blue,
+                    ),
                   ),
                 ),
               ),

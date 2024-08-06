@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +21,10 @@ import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/UserService.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:http/http.dart' as http;
 
 class CourseDetail extends StatefulWidget {
   final String courseId;
@@ -107,7 +110,7 @@ class _CourseDetailState extends State<CourseDetail>
         _enrollmentId = enrollmentStatus['enrollmentId'];
       });
     } catch (e) {
-      log("Error checking enrollment: $e");
+      log("Error checking enrollment dmmm: $e");
     }
   }
 

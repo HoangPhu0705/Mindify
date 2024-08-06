@@ -201,7 +201,7 @@ class _QuizResultState extends State<QuizResult> {
                               isCorrect = false;
                             }
                             String explanation = question["explanation"];
-
+                            String? questionImage = question["questionImage"];
                             return Container(
                               margin: const EdgeInsets.symmetric(vertical: 5),
                               padding: const EdgeInsets.all(10),
@@ -223,6 +223,16 @@ class _QuizResultState extends State<QuizResult> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  if (questionImage != null)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image.network(
+                                        questionImage,
+                                        width: double.infinity,
+                                        height: 200,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   Center(
                                     child: Text(
                                       "${question['question']}",

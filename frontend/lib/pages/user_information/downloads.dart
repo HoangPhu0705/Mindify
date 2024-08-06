@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -28,26 +29,6 @@ class _DownloadsState extends State<Downloads> {
   final EnrollmentService _enrollmentService = EnrollmentService();
   final CourseService _courseService = CourseService();
   late Future<List<Map<String, dynamic>>> _downloadedLessonsFuture;
-
-  Future<File> downloadVideo(String url, String filename) async {
-    final response = await http.get(Uri.parse(url));
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/$filename';
-    final file = File(filePath);
-    await file.writeAsBytes(response.bodyBytes);
-    return file;
-  }
-
-  Future<File?> _getDownloadedVideoFile(String filename) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/$filename';
-    final file = File(filePath);
-    if (await file.exists()) {
-      return file;
-    } else {
-      return null;
-    }
-  }
 
   @override
   void initState() {
@@ -82,15 +63,25 @@ class _DownloadsState extends State<Downloads> {
     return await _courseService.getLesson(courseId, lessonId);
   }
 
-  void _downloadAndPlayVideo(String url, String filename) async {
-    File videoFile = await downloadVideo(url, filename);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VideoPlayerScreen(videoFile: videoFile),
-      ),
-    );
+  Future<String> downloadVideo(
+      String url, String videoId, String userId) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+        String userDir = '${appDocDir.path}/$userId';
+        Directory(userDir).createSync(recursive: true);
+        String filePath = '$userDir/$videoId.mp4';
+        File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+        return filePath;
+      } else {
+        throw Exception('Failed to download video');
+      }
+    } catch (e) {
+      log('Error downloading video: $e');
+      rethrow;
+    }
   }
 
   @override
@@ -139,6 +130,7 @@ class _DownloadsState extends State<Downloads> {
                 avatar: const Icon(
                   Icons.play_circle_fill,
                   size: 40,
+                  color: AppColors.deepSpace,
                 ),
                 title: Text(
                   lesson['title'],
@@ -157,10 +149,7 @@ class _DownloadsState extends State<Downloads> {
                   ),
                 ),
                 icon: IconButton(
-                  onPressed: () {
-                    _downloadAndPlayVideo(
-                        lesson['link'].toString(), '${lesson['title']}.mp4');
-                  },
+                  onPressed: () {},
                   icon: const Icon(
                     Icons.download_for_offline_sharp,
                     size: 32,
@@ -176,57 +165,57 @@ class _DownloadsState extends State<Downloads> {
   }
 }
 
-class VideoPlayerScreen extends StatefulWidget {
-  final File videoFile;
+// class VideoPlayerScreen extends StatefulWidget {
+//   final File videoFile;
 
-  VideoPlayerScreen({required this.videoFile});
+//   VideoPlayerScreen({required this.videoFile});
 
-  @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
-}
+//   @override
+//   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+// }
 
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
+// class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+//   late VideoPlayerController _controller;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.file(widget.videoFile)
-      ..initialize().then((_) {
-        setState(() {});
-      });
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = VideoPlayerController.file(widget.videoFile)
+//       ..initialize().then((_) {
+//         setState(() {});
+//       });
+//   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     _controller.dispose();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Video Player')),
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : CircularProgressIndicator(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _controller.value.isPlaying
-                ? _controller.pause()
-                : _controller.play();
-          });
-        },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Video Player')),
+//       body: Center(
+//         child: _controller.value.isInitialized
+//             ? AspectRatio(
+//                 aspectRatio: _controller.value.aspectRatio,
+//                 child: VideoPlayer(_controller),
+//               )
+//             : CircularProgressIndicator(),
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () {
+//           setState(() {
+//             _controller.value.isPlaying
+//                 ? _controller.pause()
+//                 : _controller.play();
+//           });
+//         },
+//         child: Icon(
+//           _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+//         ),
+//       ),
+//     );
+//   }
+// }

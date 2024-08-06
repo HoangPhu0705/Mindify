@@ -106,6 +106,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1+2
   connectivity_plus: ^6.0.4
   timeago: ^3.7.0
+  shared_preferences: ^2.3.1
   
 dev_dependencies:
   flutter_test:

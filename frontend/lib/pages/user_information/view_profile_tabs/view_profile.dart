@@ -34,12 +34,19 @@ class _ViewProfileState extends State<ViewProfile>
   void initState() {
     // TODO: implement initState
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       String displayName = userService.getUsername();
       Provider.of<UserProvider>(context, listen: false)
           .setDisplayName(displayName);
       String photoUrl = userService.getPhotoUrl();
       Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: AppColors.ghostWhite,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+      );
     });
     getUserData();
     _tabController = TabController(length: 3, vsync: this);
@@ -50,22 +57,15 @@ class _ViewProfileState extends State<ViewProfile>
     final userData = await userService.getUserData(userId);
 
     if (userData != null) {
-        setState(() {
-          followers = userData['followerNum'] ?? 0;
-          following = userData['followingNum'] ?? 0;
-        });
-      }
-
+      setState(() {
+        followers = userData['followerNum'] ?? 0;
+        following = userData['followingNum'] ?? 0;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: AppColors.ghostWhite,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-    );
     return Scaffold(
       body: SafeArea(
         child: Column(

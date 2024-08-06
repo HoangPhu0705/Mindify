@@ -16,7 +16,7 @@ import {
   CalendarDaysIcon,
   PhoneIcon,
 } from "@heroicons/react/24/solid";
-import RejectPopup from '../components/rejection_popup';
+import RejectPopup from "../components/rejection_popup";
 
 const RequestDetail = () => {
   const { requestId } = useParams();
@@ -113,7 +113,7 @@ const RequestDetail = () => {
             disabled={isApproved || isRejected || loading}
             className="mr-5"
           >
-            {loading ? 'Processing...' : 'Approve'}
+            {loading ? "Processing..." : "Approve"}
           </Button>
           <Button
             onClick={handleOpenPopup}
@@ -121,7 +121,7 @@ const RequestDetail = () => {
             size="sm"
             disabled={isApproved || isRejected || loading}
           >
-            {loading ? 'Processing...' : 'Reject'}
+            {loading ? "Processing..." : "Reject"}
           </Button>
         </div>
       </div>
@@ -264,16 +264,32 @@ const RequestDetail = () => {
               labelProps={{
                 className: "hidden",
               }}
+              
               className="w-full placeholder:opacity-100 placeholder:text-black focus:border-t-black border-t-blue-gray-200"
             />
           </div>
         </div>
-        <RejectPopup 
-        open={popupOpen} 
-        handleOpen={() => setPopupOpen(!popupOpen)} 
-        onReject={rejectRequest} 
-        setRejectionContent={setRejectionContent} 
-      />
+        <div className="w-full">
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="mb-2 font-medium"
+          >
+            Class description
+          </Typography>
+          <Textarea 
+            readOnly={true}
+            placeholder= {details.request.topicDescription}
+            className="placeholder:opacity-100 placeholder:text-black focus:border-t-black border-t-blue-gray-200"
+          />
+            
+        </div>
+        <RejectPopup
+          open={popupOpen}
+          handleOpen={() => setPopupOpen(!popupOpen)}
+          onReject={rejectRequest}
+          setRejectionContent={setRejectionContent}
+        />
       </div>
     </Card>
   );

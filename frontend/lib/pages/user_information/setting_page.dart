@@ -136,16 +136,6 @@ class _SettingPageState extends State<SettingPage> {
                 Icons.chevron_right_outlined,
                 () {},
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 15.0),
-                child: Divider(),
-              ),
-              _buildListTileDeleteAccount(
-                "Delete Account",
-                () {
-                  log("Delete Account");
-                },
-              ),
               const Divider(),
             ],
           ),
@@ -204,175 +194,177 @@ class _SettingPageState extends State<SettingPage> {
               top: Radius.circular(10),
             ),
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.close),
-                  ),
-                  const Text(
-                    "Learning Reminders",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.close),
                     ),
-                  ),
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.1),
-                ],
-              ),
-              const Divider(),
-              AppSpacing.mediumVertical,
-              const Text(
-                "Get reminders to watch your classes",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
+                    const Text(
+                      "Learning Reminders",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+                  ],
                 ),
-              ),
-              AppSpacing.mediumVertical,
-              StreamBuilder<QuerySnapshot>(
-                stream: reminderService.getUserRemindersStream(user),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: MyLoading(
-                        width: 30,
-                        height: 30,
-                        color: AppColors.deepBlue,
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return const Center(
-                      child: Text('Error loading reminders.'),
-                    );
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: Column(
-                        children: [
-                          Image.asset("assets/images/reminders.png"),
-                          AppSpacing.mediumVertical,
-                          const Text(
-                            textAlign: TextAlign.center,
-                            "We'll send a helpful reminder to watch your classes",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          AppSpacing.mediumVertical,
-                          ElevatedButton(
-                            style: AppStyles.secondaryButtonStyle,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ReminderSetupPage(),
-                                ),
-                              );
-                            },
-                            child: const Text('Add Reminder'),
-                          ),
-                          AppSpacing.mediumVertical,
-                        ],
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    children: [
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          final reminder = snapshot.data!.docs[index];
-
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            margin: const EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: Colors.grey.shade300),
+                const Divider(),
+                AppSpacing.mediumVertical,
+                const Text(
+                  "Get reminders to watch your classes",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                AppSpacing.mediumVertical,
+                StreamBuilder<QuerySnapshot>(
+                  stream: reminderService.getUserRemindersStream(user),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: MyLoading(
+                          width: 30,
+                          height: 30,
+                          color: AppColors.deepBlue,
+                        ),
+                      );
+                    }
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('Error loading reminders.'),
+                      );
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Column(
+                          children: [
+                            Image.asset("assets/images/reminders.png"),
+                            AppSpacing.mediumVertical,
+                            const Text(
+                              textAlign: TextAlign.center,
+                              "We'll send a helpful reminder to watch your classes",
+                              style: TextStyle(fontSize: 14),
                             ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${reminder['day']} at ${reminder['time']}",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      getReminderText(reminder['day']),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.deepBlue,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                AppSpacing.mediumVertical,
-                                Text(
-                                  "Take ${reminder['day']} to hone your skills!. We'll send you a little nudge to come watch your courses.",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.grey,
-                                    fontWeight: FontWeight.w500,
+                            AppSpacing.mediumVertical,
+                            ElevatedButton(
+                              style: AppStyles.secondaryButtonStyle,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ReminderSetupPage(),
                                   ),
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.delete_outline),
-                                    onPressed: () {
-                                      _deleteReminder(reminder.id);
-                                    },
+                                );
+                              },
+                              child: const Text('Add Reminder'),
+                            ),
+                            AppSpacing.mediumVertical,
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            final reminder = snapshot.data!.docs[index];
+
+                            return Container(
+                              padding: const EdgeInsets.all(16),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${reminder['day']} at ${reminder['time']}",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        getReminderText(reminder['day']),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.deepBlue,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      AppSpacing.mediumVertical,
-                      ElevatedButton(
-                        style: AppStyles.secondaryButtonStyle,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ReminderSetupPage(),
-                            ),
-                          );
-                        },
-                        child: const Text('Add Reminder'),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
+                                  const Divider(),
+                                  AppSpacing.mediumVertical,
+                                  Text(
+                                    "Take ${reminder['day']} to hone your skills!. We'll send you a little nudge to come watch your courses.",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.grey,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.delete_outline),
+                                      onPressed: () {
+                                        _deleteReminder(reminder.id);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        AppSpacing.mediumVertical,
+                        ElevatedButton(
+                          style: AppStyles.secondaryButtonStyle,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ReminderSetupPage(),
+                              ),
+                            );
+                          },
+                          child: const Text('Add Reminder'),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },

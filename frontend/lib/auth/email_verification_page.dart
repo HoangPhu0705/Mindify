@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'dart:developer';
+import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/styles.dart';
+
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
 
@@ -41,17 +44,19 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     timer?.cancel();
     super.dispose();
   }
 
   Future sendVerificationEmail() async {
     try {
+      log("chuan bi sent email");
       final user = FirebaseAuth.instance.currentUser!;
       final uid = user.uid;
 
       await userService.sendVerificationEmail(uid);
+      log("Email sent");
 
       setState(() => canResendEmail = false);
       await Future.delayed(const Duration(minutes: 1));
@@ -66,7 +71,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return HomePage();
+      return const HomePage();
     } else {
       return Scaffold(
         appBar: AppBar(
@@ -75,43 +80,55 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               'Verify Email',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 20.0,
               ),
             ),
           ),
         ),
-        body: Padding(
-          padding: EdgeInsets.all(16),
+        body: Container(
+          padding: const EdgeInsets.all(12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              const Icon(
+                Icons.mark_email_read_outlined,
+                size: 100,
+                color: AppColors.deepSpace,
+              ),
               const Text(
-                'We have sent you an email verification link.\nPlease check your inbox to activate your account.',
-                style: TextStyle(fontSize: 20.0),
+                'We have emailed your verification link.\nPlease check your inboxes to activate your account.',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                ),
                 textAlign: TextAlign.center,
               ),
-              if (errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(
-                    errorMessage,
-                    style: TextStyle(color: Colors.red),
+              const SizedBox(
+                height: 24.0,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: AppStyles.primaryButtonStyle.copyWith(
+                    backgroundColor: canResendEmail
+                        ? WidgetStateProperty.all(AppColors.lighterGrey)
+                        : WidgetStateProperty.all(
+                            AppColors.cream,
+                          ),
                   ),
+                  icon: const Icon(
+                    Icons.send,
+                    size: 32,
+                  ),
+                  label: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Resend email',
+                      style: TextStyle(fontSize: 24.0),
+                    ),
+                  ),
+                  onPressed: canResendEmail ? sendVerificationEmail : null,
                 ),
-              SizedBox(height: 24.0),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyan,
-                  minimumSize: Size.fromHeight(50),
-                ),
-                icon: const Icon(
-                  Icons.email,
-                  size: 32,
-                ),
-                label:const Text(
-                  'Resend Email',
-                  style: TextStyle(fontSize: 24.0),
-                ),
-                onPressed: canResendEmail ? sendVerificationEmail : null,
               ),
               const SizedBox(height: 8),
               TextButton(
@@ -120,7 +137,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 ),
                 child: const Text(
                   'Cancel',
-                  style: TextStyle(fontSize: 24.0),
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: AppColors.deepBlue,
+                  ),
                 ),
                 onPressed: () => FirebaseAuth.instance.signOut(),
               ),
