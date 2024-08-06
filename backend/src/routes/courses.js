@@ -3,7 +3,8 @@ const router = express.Router();
 const CourseController = require('../app/controllers/CourseController');
 const LessonController = require('../app/controllers/LessonController');
 const CommentController = require('../app/controllers/CommentController');
-const ProjectController =  require('../app/controllers/ProjectController');
+const ProjectController = require('../app/controllers/ProjectController');
+const { authenticate } = require('../app/middleware/auth');
 // const {getRandomCourses} = require('../app/controllers/CourseController')
 // Courses
 // get
@@ -11,7 +12,7 @@ router.get('/', CourseController.getAllCourses);
 router.post('/', CourseController.createCourse);
 router.get('/random', CourseController.getRandomCourses);
 router.post('/categories', CourseController.getCoursesByCategory);
-router.get('/top5', CourseController.getTop5Courses);
+router.get('/top5', authenticate, CourseController.getTop5Courses);
 router.get('/newest', CourseController.getFiveNewestCourse);
 router.post('/searchCourses', CourseController.searchCourses);
 router.post('/searchOnChanged', CourseController.searchCoursesOnChanged);

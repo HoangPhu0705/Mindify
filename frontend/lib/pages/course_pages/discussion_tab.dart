@@ -186,7 +186,7 @@ class _DiscussionState extends State<Discussion> {
                                     .getUserNameAndAvatar(data['userId']),
                                 builder: (context, userSnapshot) {
                                   if (!userSnapshot.hasData) {
-                                    return SizedBox.shrink();
+                                    return const SizedBox.shrink();
                                   }
                                   Map<String, dynamic> userData =
                                       userSnapshot.data!;
@@ -201,7 +201,7 @@ class _DiscussionState extends State<Discussion> {
                                               widget.courseId, commentId),
                                       builder: (context, replySnapshot) {
                                         if (!replySnapshot.hasData) {
-                                          return SizedBox.shrink();
+                                          return const SizedBox.shrink();
                                         }
                                         List<DocumentSnapshot> replyDocs =
                                             replySnapshot.data!.docs;
@@ -210,12 +210,14 @@ class _DiscussionState extends State<Discussion> {
                                                 doc.data()
                                                     as Map<String, dynamic>))
                                             .toList();
+
                                         Comment comment = Comment(
                                             id: commentId,
                                             content: data['content'],
                                             userId: data['userId'],
                                             createdAt: data['createdAt'],
                                             replies: replies);
+
                                         return Column(
                                           children: [
                                             _buildCommentTree(context, comment,
@@ -241,7 +243,7 @@ class _DiscussionState extends State<Discussion> {
   }
 
   Widget _buildCommentTree(BuildContext context, Comment rootComment,
-      String displayName, String photoUrl) {
+      String rootDisplayName, String rootPhotoUrl) {
     return ct.CommentTreeWidget<Comment, Reply>(
       rootComment,
       rootComment.replies,
@@ -250,126 +252,138 @@ class _DiscussionState extends State<Discussion> {
         child: CircleAvatar(
           radius: 18,
           backgroundColor: Colors.grey,
-          backgroundImage: NetworkImage(photoUrl),
+          backgroundImage: NetworkImage(rootPhotoUrl),
         ),
-        preferredSize: Size.fromRadius(18),
+        preferredSize: const Size.fromRadius(18),
       ),
-      avatarChild: (context, data) => PreferredSize(
-        child: CircleAvatar(
-          radius: 12,
-          backgroundColor: Colors.grey,
-          backgroundImage: NetworkImage(photoUrl),
-        ),
-        preferredSize: Size.fromRadius(12),
-      ),
+      avatarChild: (context, data) {
+        return PreferredSize(
+          preferredSize: const Size.fromRadius(12),
+          child: FutureBuilder<Map<String, dynamic>>(
+            future: userService.getUserNameAndAvatar(data.userId),
+            builder: (context, userSnapshot) {
+              if (!userSnapshot.hasData) {
+                return const CircleAvatar(
+                  radius: 12,
+                  backgroundColor: Colors.grey,
+                  backgroundImage:
+                      AssetImage('assets/images/default_avatar.png'),
+                );
+              }
+              Map<String, dynamic> userData = userSnapshot.data!;
+              String photoUrl = userData['photoUrl'] ??
+                  'assets/images/default_avatar.png';
+              return CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.grey,
+                backgroundImage: NetworkImage(photoUrl),
+              );
+            },
+          ),
+        );
+      },
       contentRoot: (context, data) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                  ),
-                  AppSpacing.smallVertical,
-                  Text(
-                    data.content,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            DefaultTextStyle(
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: Colors.grey[700], fontWeight: FontWeight.bold),
-              child: Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: Row(
-                  children: [
-                    AppSpacing.smallHorizontal,
-                    Text('Like'),
-                    AppSpacing.largeHorizontal,
-                    TextButton(
-                      onPressed: () => _prepareReply(rootComment.id),
-                      child: Text(
-                        'Reply',
-                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[700],
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
+        return _buildCommentContent(
+          context,
+          data.content,
+          rootDisplayName,
+          rootPhotoUrl,
+          rootComment.id,
         );
       },
       contentChild: (context, data) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                  ),
-                  AppSpacing.smallVertical,
-                  Text(
-                    data.content,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            DefaultTextStyle(
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: Colors.grey[700], fontWeight: FontWeight.bold),
-              child: Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: Row(
-                  children: [
-                    AppSpacing.smallHorizontal,
-                    Text('Like'),
-                  ],
-                ),
-              ),
-            )
-          ],
+        return FutureBuilder<Map<String, dynamic>>(
+          future: userService.getUserNameAndAvatar(data.userId),
+          builder: (context, userSnapshot) {
+            if (!userSnapshot.hasData) {
+              return _buildCommentContent(
+                context,
+                data.content,
+                'Anonymous',
+                'assets/images/default_avatar.png',
+                null,
+              );
+            }
+            Map<String, dynamic> userData = userSnapshot.data!;
+            String displayName = userData['displayName'] ?? 'Anonymous';
+            String photoUrl =
+                userData['photoUrl'] ?? 'assets/images/default_avatar.png';
+            return _buildCommentContent(
+              context,
+              data.content,
+              displayName,
+              photoUrl,
+              data.id,
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _buildCommentContent(BuildContext context, String content,
+      String displayName, String photoUrl, String? commentId) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                displayName,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+              ),
+              AppSpacing.smallVertical,
+              Text(
+                content,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: Colors.black,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        DefaultTextStyle(
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              color: Colors.grey[700], fontWeight: FontWeight.bold),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                AppSpacing.smallHorizontal,
+                const Text('Like'),
+                if (commentId != null) ...[
+                  AppSpacing.largeHorizontal,
+                  TextButton(
+                    onPressed: () => _prepareReply(commentId),
+                    child: Text(
+                      'Reply',
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[700],
+                          ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 
   void _prepareReply(String commentId) {
     setState(() {
       _replyToCommentId = commentId;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Scrollable.ensureVisible(_commentFieldKey.currentContext!,
-            duration: Duration(milliseconds: 300));
-        FocusScope.of(context).requestFocus(focusNode);
-      });
+      _commentController.clear();
+      FocusScope.of(context).requestFocus(focusNode);
     });
   }
 }
