@@ -6,7 +6,7 @@ const generateToken = (uid, claims) => {
         uid,
         ...claims 
       };
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
 module.exports = { generateToken }

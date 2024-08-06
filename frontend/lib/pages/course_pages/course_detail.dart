@@ -105,6 +105,7 @@ class _CourseDetailState extends State<CourseDetail>
     try {
       final enrollmentStatus = await enrollmentService.checkEnrollment(
           widget.userId, widget.courseId);
+      log(enrollmentStatus['isEnrolled']);
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
         _enrollmentId = enrollmentStatus['enrollmentId'];

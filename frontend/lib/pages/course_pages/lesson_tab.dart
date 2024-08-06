@@ -68,6 +68,7 @@ class LessonTabState extends State<LessonTab> {
   List<String> completedLessons = [];
   @override
   void initState() {
+    log(quizService.idToken!);
     super.initState();
     _getInstructorInfo();
     _sortLessonsByIndex();
