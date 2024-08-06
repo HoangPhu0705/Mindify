@@ -53,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.ghostWhite,
       body: SafeArea(
         child: Container(
           decoration: BoxDecoration(

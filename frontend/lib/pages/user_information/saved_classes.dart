@@ -106,6 +106,7 @@ class _SavedClassesState extends State<SavedClasses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.ghostWhite,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -116,6 +117,7 @@ class _SavedClassesState extends State<SavedClasses> {
           ),
         ),
         backgroundColor: AppColors.ghostWhite,
+        surfaceTintColor: AppColors.ghostWhite,
       ),
       body: Container(
         decoration: const BoxDecoration(

@@ -17,7 +17,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.ghostWhite,
       appBar: AppBar(
+        backgroundColor: AppColors.ghostWhite,
+        surfaceTintColor: AppColors.ghostWhite,
         centerTitle: true,
         title: const Text(
           'Notifications',
