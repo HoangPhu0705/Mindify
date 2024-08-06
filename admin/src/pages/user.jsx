@@ -39,7 +39,7 @@ const UserManagement = () => {
     setLoading(true);
     try {
       // Get JWT token from local storage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       const response = await axios.get(
         "http://localhost:3000/admin/users-management",
@@ -78,7 +78,7 @@ const UserManagement = () => {
   const handleConfirmLockUser = async () => {
     try {
       // Get JWT token from local storage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       const action = selectedUser.disabled ? "unlock-user" : "lock-user";
       const response = await axios.post(
@@ -186,8 +186,17 @@ const UserManagement = () => {
           User Management
         </Typography>
         <div className="flex justify-between items-end mb-4">
-          <div>
-            <Typography variant="h6" color="black">
+          <div className="mt-2">
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              label="Search users..."
+            />
+          </div>
+
+          <div className = "flex items-center">
+            <Typography variant="h6" color="black" className="mr-2">
               Show
             </Typography>
             <Select
@@ -199,14 +208,6 @@ const UserManagement = () => {
               <Option value="50">50</Option>
             </Select>
           </div>
-          <div>
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search users..."
-            />
-          </div>
         </div>
         {loading ? (
           <div className="flex justify-center items-center">
@@ -217,7 +218,9 @@ const UserManagement = () => {
         )}
         <div className="flex justify-center items-center mt-4">
           <Button
-            color="blue-gray"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -225,7 +228,9 @@ const UserManagement = () => {
           </Button>
           <span className="mx-4">{`Page ${currentPage} of ${totalPages}`}</span>
           <Button
-            color="blue-gray"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
@@ -243,8 +248,9 @@ const UserManagement = () => {
         </DialogBody>
         <DialogFooter>
           <Button
-            variant="text"
-            color="blue-gray"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => setIsConfirmOpen(false)}
           >
             Cancel

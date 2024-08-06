@@ -159,7 +159,7 @@ const CourseManagement = () => {
           Course Management
         </Typography>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <div className="w-full md:w-auto mb-4 md:mb-0">
+          <div className="w-full md:w-auto mt-2 md:mb-0">
             <Input
               type="text"
               color="blue-gray"
@@ -190,9 +190,11 @@ const CourseManagement = () => {
         ) : (
           renderTable(COURSE_TABLE_HEAD, filteredCourses)
         )}
-        <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+        <div className="flex flex-col md:flex-row justify-center items-center mt-4">
           <Button
-            color="blue"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -201,12 +203,14 @@ const CourseManagement = () => {
           <Typography
             variant="small"
             color="blue-gray"
-            className="font-normal my-2 md:my-0"
+            className="font-normal mx-2 my-2 md:my-0"
           >
             Page {currentPage} of {totalPages}
           </Typography>
           <Button
-            color="blue"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >

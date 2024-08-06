@@ -96,11 +96,16 @@ const getAllUsersPaginated = async (limit, startAfter) => {
 // Course management
 const getAllCoursesPaginated = async (limit, startAfter) => {
   try {
-    let query = CourseCollection.orderBy('courseName').limit(limit);
+    let query = CourseCollection
+      .where('isPublic', '==', true) // Add this line to filter by isPublic
+      .orderBy('courseName')
+      .limit(limit);
+
     if (startAfter) {
       const startAfterDoc = await CourseCollection.doc(startAfter).get();
       query = query.startAfter(startAfterDoc);
     }
+
     const snapshot = await query.get();
     const totalCountSnapshot = await CourseCollection.where('isPublic', '==', true).get();
     const totalCount = totalCountSnapshot.size;
@@ -109,12 +114,14 @@ const getAllCoursesPaginated = async (limit, startAfter) => {
       id: doc.id,
       ...doc.data()
     }));
+
     return { courses, totalCount };
   } catch (error) {
     console.error('Error getting courses: ', error);
     throw new Error('Error getting courses: ' + error.message);
   }
 };
+
 // lock user
 const lockUser = async (uid) => {
   try {

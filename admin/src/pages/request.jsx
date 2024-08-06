@@ -1,39 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, Typography } from "@material-tailwind/react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
+import { Chip } from "@material-tailwind/react";
 
 const TABLE_HEAD = ["Full Name", "Email", "Category", "Status", "Detail"];
 
 const Request = () => {
   const [requests, setRequests] = useState([]);
-  const [error, setError] = useState('');
-  const [popupOpen, setPopupOpen] = useState(false);
-  const token = localStorage.getItem('token');
+  const [filteredRequests, setFilteredRequests] = useState([]);
+  const [error, setError] = useState("");
+  const [selectedTab, setSelectedTab] = useState("all");
+  const token = localStorage.getItem("token");
+
+  const data = [
+    { label: "All", value: "all" },
+    { label: "Approved", value: "approved" },
+    { label: "Pending", value: "pending" },
+    { label: "Declined", value: "declined" },
+  ];
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/users/requests/',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:3000/api/users/requests/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (Array.isArray(response.data)) {
-          const pendingRequests = response.data;
-          setRequests(pendingRequests);
+          setRequests(response.data);
+          setFilteredRequests(response.data);
         } else {
-          throw new Error('Invalid data format');
+          throw new Error("Invalid data format");
         }
       } catch (err) {
-        setError('Error fetching requests');
+        setError("Error fetching requests");
       }
     };
 
     fetchRequests();
-  }, []);
+  }, [token]);
+
+  useEffect(() => {
+    if (selectedTab === "all") {
+      setFilteredRequests(requests);
+    } else {
+      setFilteredRequests(requests.filter(request => request.status.toLowerCase() === selectedTab));
+    }
+  }, [selectedTab, requests]);
 
   if (error) {
     return <p>{error}</p>;
@@ -47,16 +63,24 @@ const Request = () => {
         </Typography>
       </div>
 
+      <div className="w-full mb-4 border border-black rounded-lg p-2">
+        <Tabs value={selectedTab}>
+          <TabsHeader>
+            {data.map(({ label, value }) => (
+              <Tab key={value} value={value} onClick={() => setSelectedTab(value)}>
+                {label}
+              </Tab>
+            ))}
+          </TabsHeader>
+        </Tabs>
+      </div>
+
       <table className="w-full min-w-max table-auto text-left">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
               <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                >
+                <Typography variant="small" color="blue-gray" className="font-bold leading-none text-lg">
                   {head}
                 </Typography>
               </th>
@@ -64,7 +88,7 @@ const Request = () => {
           </tr>
         </thead>
         <tbody>
-          {requests.map((request) => (
+          {filteredRequests.map((request) => (
             <tr key={request.id} className="even:bg-blue-gray-50/50">
               <td className="p-4">
                 <Typography variant="small" color="blue-gray" className="font-normal">
@@ -82,15 +106,20 @@ const Request = () => {
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
-                  {request.status}
-                </Typography>
+                <Chip
+                  className="inline-block w-auto"
+                  value={request.status}
+                  color={
+                    request.status === "Pending"
+                      ? "blue"
+                      : request.status === "Approved"
+                      ? "green"
+                      : "red"
+                  }
+                />
               </td>
               <td className="p-4">
-                <Link
-                  to={`/request/${request.id}`}
-                  className="bg-cyan-500 text-white px-3 py-1 rounded"
-                >
+                <Link to={`/request/${request.id}`} className="bg-cyan-500 text-white px-3 py-1 rounded">
                   View Details
                 </Link>
               </td>
@@ -98,7 +127,6 @@ const Request = () => {
           ))}
         </tbody>
       </table>
-
     </Card>
   );
 };
