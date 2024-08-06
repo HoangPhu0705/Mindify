@@ -373,6 +373,8 @@ class UserService {
   Future<Map<String, dynamic>> getUserNameAndAvatar(String userId) async {
     final response = await http.get(Uri.parse('$baseUrl/users/auth/$userId'));
     if (response.statusCode == 200) {
+      // log(userId);
+      // log(response.body);
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to load user details');

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/comment.dart';
 import 'package:frontend/services/models/lesson.dart';
@@ -13,6 +14,7 @@ import 'package:frontend/services/models/course.dart';
 class CourseService {
   // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final authService = AuthService();
   DocumentSnapshot? lastDocument;
   Future<List<Course>> fetchCourses() async {
     try {
@@ -91,8 +93,14 @@ class CourseService {
 
   Future<List<Course>> getTop5Courses() async {
     try {
-      final response =
-          await http.get(Uri.parse("${AppConstants.COURSE_API}/top5"));
+      String? idToken = await authService.getIdToken();
+      log("Token ne ${idToken!}");
+      final response = await http.get(
+        Uri.parse("${AppConstants.COURSE_API}/top5"),
+        headers: {
+          'Authorization': 'Bearer $idToken',
+        },
+      );
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data
@@ -163,7 +171,8 @@ class CourseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> searchCoursesAPI(String query, {bool isNewSearch = false, String? lastDocument}) async {
+  Future<List<Map<String, dynamic>>> searchCoursesAPI(String query,
+      {bool isNewSearch = false, String? lastDocument}) async {
     try {
       final response = await http.post(
         Uri.parse('${AppConstants.COURSE_API}/searchCourses'),
@@ -173,7 +182,9 @@ class CourseService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        List<Map<String, dynamic>> courses = (data['courses'] as List).map((course) => course as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> courses = (data['courses'] as List)
+            .map((course) => course as Map<String, dynamic>)
+            .toList();
         return courses;
       } else {
         throw Exception('Failed to load courses');
@@ -203,7 +214,8 @@ class CourseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> searchCourseOnChangedAPI(String query, {bool isNewSearch = false}) async {
+  Future<List<Map<String, dynamic>>> searchCourseOnChangedAPI(String query,
+      {bool isNewSearch = false}) async {
     try {
       final response = await http.post(
         Uri.parse('${AppConstants.COURSE_API}/searchOnChanged'),
@@ -223,31 +235,32 @@ class CourseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query, {bool isNewSearch = false}) async {
-  try {
-    if (isNewSearch) lastDocument = null;
+  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
+      {bool isNewSearch = false}) async {
+    try {
+      if (isNewSearch) lastDocument = null;
 
-    // courses
+      // courses
 
-    final filteredCourses = await searchCourseOnChangedAPI(query, isNewSearch: isNewSearch);
+      final filteredCourses =
+          await searchCourseOnChangedAPI(query, isNewSearch: isNewSearch);
 
-    // users
-    final userService = UserService();
-    List<Map<String, dynamic>> users = await userService.searchUsers(query);
+      // users
+      final userService = UserService();
+      List<Map<String, dynamic>> users = await userService.searchUsers(query);
 
-    final searchResults = [
-      ...filteredCourses,
-      ...users,
-    ];
+      final searchResults = [
+        ...filteredCourses,
+        ...users,
+      ];
 
-    log("Filtered Courses and Users: $searchResults");
-    return searchResults;
-  } catch (e) {
-    log("Error searching courses and users: $e");
-    return [];
+      log("Filtered Courses and Users: $searchResults");
+      return searchResults;
+    } catch (e) {
+      log("Error searching courses and users: $e");
+      return [];
+    }
   }
-}
-
 
   Future<List<Course>> getCourseByUserId(String userId) async {
     final response = await http.get(
