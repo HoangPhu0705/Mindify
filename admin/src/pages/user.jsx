@@ -38,10 +38,16 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
+      // Get JWT token from local storage
+      const token = localStorage.getItem('token');
+
       const response = await axios.get(
         "http://localhost:3000/admin/users-management",
         {
           params: { limit: userPage.limit, startAfter: userPage.startAfter },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const { users, totalCount } = response.data;
@@ -71,10 +77,18 @@ const UserManagement = () => {
 
   const handleConfirmLockUser = async () => {
     try {
+      // Get JWT token from local storage
+      const token = localStorage.getItem('token');
+
       const action = selectedUser.disabled ? "unlock-user" : "lock-user";
       const response = await axios.post(
         `http://localhost:3000/admin/${action}`,
-        { uid: selectedUser.id }
+        { uid: selectedUser.id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log(response.data.message);
       setIsConfirmOpen(false);

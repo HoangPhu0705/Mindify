@@ -24,6 +24,7 @@ function Login1() {
     try {
       const response = await axios.post(
         "http://localhost:3000/admin/admin-login",
+
         { email, password }
       );
       localStorage.setItem("token", response.data.token);
@@ -56,7 +57,7 @@ function Login1() {
               onSubmit={handleLogin}
               className="flex flex-col gap-4 md:mt-12"
             >
-             
+
               <div>
                 <label htmlFor="email">
                   <Typography
@@ -74,11 +75,14 @@ function Login1() {
                   type="email"
                   name="email"
                   placeholder="name@mail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)} 
                   className="w-full placeholder:opacity-100 focus:border-t-primary border-t-blue-gray-200"
                   labelProps={{
                     className: "before:mr-0 after:ml-0",
                   }}
                 />
+
               </div>
               <div>
                 <label htmlFor="password">
@@ -103,15 +107,15 @@ function Login1() {
                     className: "before:mr-0 after:ml-0",
                   }}
                 />
-                 {errorMessage && (
-                <Typography
-                  variant="small"
-                  color="red"
-                  className="text-center mt-4"
-                >
-                  {errorMessage}
-                </Typography>
-              )}
+                {errorMessage && (
+                  <Typography
+                    variant="small"
+                    color="red"
+                    className="text-center mt-4"
+                  >
+                    {errorMessage}
+                  </Typography>
+                )}
               </div>
               <Button size="lg" color="gray" fullWidth type="submit">
                 continue

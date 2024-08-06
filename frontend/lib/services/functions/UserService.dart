@@ -1,17 +1,37 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-
+// import 'dart:developer';
 class UserService {
+
   // Chỉ nên sử dụng service này khi đã login
   User get user => FirebaseAuth.instance.currentUser!;
+  String? idToken;
+  Future<void> getToken() async{
+    idToken = await AuthService.initializeIdToken(user);
+  }
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String baseUrl = AppConstants.baseUrl;
+  UserService() {
+    _initializeToken();
+  }
+
+  Future<void> _initializeToken() async {
+    idToken = await AuthService.initializeIdToken(user);
+  }
+
+  Future<String> getIdToken() async {
+    if (idToken == null) {
+      await _initializeToken();
+    }
+    return idToken!;
+  }
 
   String getUserId() {
     return user.uid;
@@ -71,7 +91,10 @@ class UserService {
   //search users
   Future<List<Map<String, dynamic>>> searchUsers(String query) async {
     final url = Uri.parse('${AppConstants.USER_API}/searchUsers?query=$query');
-    final response = await http.get(url);
+    final response = await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode == 200) {
       final List<dynamic> users = json.decode(response.body);
@@ -101,7 +124,10 @@ class UserService {
     try {
       final url = Uri.parse('${AppConstants.USER_API}/auth/$uid');
       final response =
-          await http.get(url, headers: {'Content-Type': 'application/json'});
+          await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         log(jsonResponse.toString());
@@ -117,9 +143,13 @@ class UserService {
   }
 
   Future<void> sendVerificationEmail(String uid) async {
+    log(idToken!);
     final response = await http.post(
       Uri.parse('${AppConstants.USER_API}/send-verification-email'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: json.encode({'uid': uid}),
     );
 
@@ -143,7 +173,10 @@ class UserService {
     final url = Uri.parse('$baseUrl/users/$userId/saveCourse');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode({'courseId': courseId}),
     );
 
@@ -156,7 +189,10 @@ class UserService {
     final url = Uri.parse('$baseUrl/users/$userId/unsaveCourse');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+     headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode({'courseId': courseId}),
     );
 
@@ -168,7 +204,10 @@ class UserService {
   Future<Set<String>> getSavedCourses(String userId) async {
     final url = Uri.parse('$baseUrl/users/$userId/savedCourses');
     final response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+        await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -182,7 +221,10 @@ class UserService {
   Future<bool> checkSavedCourse(String userId, String courseId) async {
     final url =
         Uri.parse('$baseUrl/users/$userId/checkSavedCourse?courseId=$courseId');
-    final response = await http.get(url);
+    final response = await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -196,7 +238,10 @@ class UserService {
     final url = Uri.parse(AppConstants.CREATE_INSTRUCTOR_REQUEST);
     return http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode(data),
     );
   }
@@ -205,7 +250,10 @@ class UserService {
   Future<Map<String, dynamic>> getUserData(String userId) async {
     final url = Uri.parse('${AppConstants.baseUrl}/users/$userId');
     final response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+        await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -235,7 +283,10 @@ class UserService {
       final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/follow');
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode({'followUserId': followUserId}),
       );
 
@@ -254,7 +305,10 @@ class UserService {
     try {
       final response = await http.get(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -276,7 +330,10 @@ class UserService {
       final url = Uri.parse('${AppConstants.baseUrl}/users/$userId/unfollow');
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode({'unfollowUserId': followUserId}),
       );
 
@@ -291,7 +348,11 @@ class UserService {
 
   Future<List<dynamic>> getWatchedHistories(String userId) async {
     final response = await http.get(
-        Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'));
+        Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -303,9 +364,10 @@ class UserService {
       String userId, String courseId, String lessonId, int time) async {
     final response = await http.patch(
       Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode(<String, dynamic>{
         'lessonId': lessonId,
         'courseId': courseId,
@@ -331,8 +393,9 @@ class UserService {
 
       final response = await http.get(
         uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
       );
 
@@ -370,7 +433,10 @@ class UserService {
 
   // get avt and displayname to display on discussion tab
   Future<Map<String, dynamic>> getUserNameAndAvatar(String userId) async {
-    final response = await http.get(Uri.parse('$baseUrl/users/auth/$userId'));
+    final response = await http.get(Uri.parse('$baseUrl/users/auth/$userId'), headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
     if (response.statusCode == 200) {
       // log(userId);
       // log(response.body);

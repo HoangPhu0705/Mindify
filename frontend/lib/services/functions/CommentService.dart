@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/services/models/comment.dart';
 import 'package:frontend/services/models/reply.dart';
 import 'package:frontend/utils/constants.dart';
@@ -8,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 class CommentService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String idToken = AuthService.idToken!;
+
   final CollectionReference comments =
       FirebaseFirestore.instance.collection('courses');
 
@@ -32,6 +35,10 @@ class CommentService {
   Future<List<Comment>> getComments(String courseId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/$courseId/comments"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -47,7 +54,10 @@ class CommentService {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/comments");
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(data),
       );
       if (response.statusCode == 201) {
@@ -69,7 +79,10 @@ class CommentService {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/comments/$commentId/replies");
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(data),
       );
       if (response.statusCode == 201) {

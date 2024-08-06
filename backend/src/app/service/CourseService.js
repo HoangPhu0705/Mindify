@@ -1,5 +1,6 @@
 const { firestore } = require('firebase-admin');
 const { CourseCollection } = require('./Collections');
+const admin = require('firebase-admin');
 
 exports.searchCourses = async (query, lastDocument = null) => {
   try {
@@ -40,8 +41,9 @@ exports.searchCourses = async (query, lastDocument = null) => {
   }
 };
 
-exports.searchCoursesOnChanged = async (query, isNewSearch) => {
+exports.searchCoursesAndUsers = async (query, isNewSearch) => {
   try {
+    // Search for courses
     let coursesQuery = CourseCollection.where('isPublic', '==', true);
 
     if (!isNewSearch && global.lastDocument) {
@@ -66,12 +68,32 @@ exports.searchCoursesOnChanged = async (query, isNewSearch) => {
       return courseName.includes(query.toLowerCase());
     }).slice(0, 3);
 
-    return filteredCourses;
+    // Search for users
+    const listUsersResult = await admin.auth().listUsers();
+    const users = listUsersResult.users;
+
+    const filteredUsers = users.filter(user => {
+      const displayName = user.displayName ? user.displayName.toLowerCase() : '';
+      return displayName.includes(query.toLowerCase());
+    }).map(user => ({
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL
+    }));
+
+    const limitedUsers = filteredUsers.slice(0, 3);
+
+    const results = {
+      courses: filteredCourses,
+      users: limitedUsers,
+    };
+
+    return results;
   } catch (error) {
-    console.error("Error searching courses: ", error);
-    throw new Error("Failed to search courses");
+    console.error("Error searching courses and users: ", error);
+    throw new Error("Failed to search courses and users");
   }
-}
+};
 
 exports.getAllCourses = async () => {
   const snapshot = await CourseCollection.get();

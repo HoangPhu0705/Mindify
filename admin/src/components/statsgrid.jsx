@@ -7,22 +7,38 @@ export default function DashboardStatsGrid() {
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
-
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get('http://localhost:3000/admin/total-users')
+    axios.get('http://localhost:3000/admin/total-users', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => setTotalUsers(response.data.totalUsers))
       .catch(error => console.error('Error fetching total users:', error));
 
-    axios.get('http://localhost:3000/admin/total-courses')
+    axios.get('http://localhost:3000/admin/total-courses', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => setTotalCourses(response.data.totalCourses))
       .catch(error => console.error('Error fetching total courses:', error));
 
-    axios.get('http://localhost:3000/admin/total-students')
+    axios.get('http://localhost:3000/admin/total-students', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => setTotalStudents(response.data.totalStudents))
       .catch(error => console.error('Error fetching total students:', error));
 
-    axios.get('http://localhost:3000/admin/get-revenue')
+    axios.get('http://localhost:3000/admin/get-revenue', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => setTotalRevenue(response.data.totalRevenue))
       .catch(error => console.error('Error fetching total revenue:', error));
   }, []);

@@ -29,12 +29,18 @@ const RequestDetail = () => {
   const [popupOpen, setPopupOpen] = useState(false);
   const [rejectionContent, setRejectionContent] = useState("");
   const [alertVisible, setAlertVisible] = useState(false);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/users/requests/${requestId}`
+          `http://localhost:3000/api/users/requests/${requestId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setDetails(response.data);
         setIsApproved(response.data.request.isApproved);
@@ -51,7 +57,12 @@ const RequestDetail = () => {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:3000/api/users/requests/${requestId}/approve`
+        `http://localhost:3000/api/users/requests/${requestId}/approve`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setIsApproved(true);
       setLoading(false);
@@ -71,7 +82,12 @@ const RequestDetail = () => {
     try {
       await axios.put(
         `http://localhost:3000/api/users/requests/${requestId}/reject`,
-        { content: rejectionContent }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }, 
+          content: rejectionContent
+        }
       );
       setIsRejected(true);
       setPopupOpen(false);
@@ -264,7 +280,7 @@ const RequestDetail = () => {
               labelProps={{
                 className: "hidden",
               }}
-              
+
               className="w-full placeholder:opacity-100 placeholder:text-black focus:border-t-black border-t-blue-gray-200"
             />
           </div>
@@ -277,12 +293,12 @@ const RequestDetail = () => {
           >
             Class description
           </Typography>
-          <Textarea 
+          <Textarea
             readOnly={true}
-            placeholder= {details.request.topicDescription}
+            placeholder={details.request.topicDescription}
             className="placeholder:opacity-100 placeholder:text-black focus:border-t-black border-t-blue-gray-200"
           />
-            
+
         </div>
         <RejectPopup
           open={popupOpen}

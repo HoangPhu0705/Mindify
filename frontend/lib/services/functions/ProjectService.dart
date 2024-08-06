@@ -1,11 +1,14 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ProjectService {
+  String idToken = AuthService.idToken!;
+
   //projects streambuilder
   Stream<QuerySnapshot> getProjectStream(String courseId) {
     try {
@@ -66,6 +69,10 @@ class ProjectService {
     try {
       final response = await http.get(
         Uri.parse("${AppConstants.PROJECT_API}/$courseId/$projectId"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       );
       if (response.statusCode != 200) {
         throw Exception('Failed to get project: ${response.body}');
@@ -81,7 +88,10 @@ class ProjectService {
     try {
       final response = await http.post(
         Uri.parse("${AppConstants.PROJECT_API}/$courseId"),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode({
           'courseId': courseId,
           ...projectData,
@@ -114,6 +124,10 @@ class ProjectService {
     try {
       final response = await http.delete(
         Uri.parse("${AppConstants.PROJECT_API}/$courseId/$projectId"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       );
       if (response.statusCode != 200) {
         throw Exception('Failed to remove project: ${response.body}');

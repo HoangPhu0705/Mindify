@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/folder.dart';
 import 'package:frontend/utils/constants.dart';
@@ -8,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 class FolderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String idToken = AuthService.idToken!;
 
   final CollectionReference folders =
       FirebaseFirestore.instance.collection('folders');
@@ -31,7 +33,10 @@ class FolderService {
   Future<void> createFolder(Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse(AppConstants.FOLDER_API),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode(data),
     );
 
@@ -44,6 +49,10 @@ class FolderService {
   Future<Folder> getFolder(String folderId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.FOLDER_API}/$folderId"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -57,6 +66,10 @@ class FolderService {
   Future<void> deleteFolder(String folderId) async {
     final response = await http.delete(
       Uri.parse("${AppConstants.FOLDER_API}/$folderId"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode != 200) {
@@ -67,6 +80,10 @@ class FolderService {
   Future<List<Folder>> getFoldersOfUser(String userId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.FOLDER_API}/userFolders?userId=$userId"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -83,8 +100,9 @@ class FolderService {
     final response = await http.post(
       Uri.parse("${AppConstants.FOLDER_API}/addCourseToFolder"),
       headers: {
-        "Content-Type": "application/json",
-      },
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: json.encode({'folderId': folderId, 'courseId': courseId}),
     );
 
@@ -97,6 +115,10 @@ class FolderService {
   Future<List<dynamic>> getCoursesIdFromFolder(String folderId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.FOLDER_API}/$folderId/courses"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
@@ -110,6 +132,10 @@ class FolderService {
     return http
         .delete(
       Uri.parse("${AppConstants.FOLDER_API}/$folderId/removeCourse/$courseId"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     )
         .then((response) {
       if (response.statusCode != 200) {

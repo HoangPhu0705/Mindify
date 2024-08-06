@@ -10,11 +10,11 @@ exports.searchCourses = async (req, res) => {
   }
 };
 
-exports.searchCoursesOnChanged = async (req, res) => {
+exports.searchCoursesAndUsers = async (req, res) => {
   try {
     const { query, isNewSearch } = req.body;
 
-    const courses = await CourseService.searchCoursesOnChanged(query, isNewSearch);
+    const courses = await CourseService.searchCoursesAndUsers(query, isNewSearch);
 
     return res.json(courses);
   } catch (error) {

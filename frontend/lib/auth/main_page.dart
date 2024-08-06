@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/auth/auth_page.dart';
@@ -15,6 +17,8 @@ class MainPage extends StatelessWidget {
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
+            log("haha");
+            log(snapshot.data.toString());
             return const VerifyEmailPage();
           }
           // user is NOT logged in

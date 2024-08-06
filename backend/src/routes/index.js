@@ -8,16 +8,17 @@ const adminRouter = require('./admin')
 const courseRequestRouter = require('./courseRequest')
 const projectRouter = require('./project')
 const qqRouter = require('./qq');
+const { authenticate } = require('../app/middleware/auth');
 
 function route(app){
     app.use('/admin', adminRouter)
     app.use('/api/courses', courseRouter)
     app.use('/api/users', userRouter)
-    app.use('/api/enrollments', enrollmentRouter)
-    app.use('/api/folders', folderRouter)
-    app.use('/api/projects', projectRouter)
-    app.use('/api/transactions', transactionRouter)
-    app.use('/api/quizzes', quizRouter)
+    app.use('/api/enrollments', authenticate, enrollmentRouter)
+    app.use('/api/folders', authenticate, folderRouter)
+    app.use('/api/projects', authenticate, projectRouter)
+    app.use('/api/transactions', authenticate, transactionRouter)
+    app.use('/api/quizzes', authenticate, quizRouter)
     app.use('/api/courseRequest', courseRequestRouter)
     // app.use('/lon', qqRouter)
 }

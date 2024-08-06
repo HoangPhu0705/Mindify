@@ -36,12 +36,17 @@ const CourseManagement = () => {
   const fetchCourses = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('token');
+
       const response = await axios.get(
         "http://localhost:3000/admin/courses-management",
         {
           params: {
             limit: coursePage.limit,
             startAfter: coursePage.startAfter,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
         }
       );

@@ -59,7 +59,7 @@ exports.searchUsers = async (query) => {
     }));
 
     const limitedUsers = filteredUsers.slice(0, 3);
-
+    console.log( limitedUsers);
     return limitedUsers;
 };
 

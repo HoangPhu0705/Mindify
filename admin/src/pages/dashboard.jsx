@@ -11,6 +11,8 @@ import 'react-date-range/dist/theme/default.css';
 const Dashboard = () => {
   const [filterType, setFilterType] = useState("month");
   const [filters, setFilters] = useState({ year: new Date().getFullYear(), startDate: new Date(), endDate: new Date() });
+  const token = localStorage.getItem('token');
+
   const [barChartConfig, setBarChartConfig] = useState({
     type: "bar",
     height: 240,
@@ -89,7 +91,11 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(url, { params });
+      const response = await axios.get(url, { params, 
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+       });
       const { enrollments } = response.data;
 
       const categories = Object.keys(enrollments).sort();
@@ -121,7 +127,12 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(url, { params });
+      const response = await axios.get(url, { 
+        params, 
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+       });
       const revenue = response.data;
 
       const categories = Object.keys(revenue).sort();

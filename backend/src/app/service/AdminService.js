@@ -45,13 +45,12 @@ const loginUser = async (email, password) => {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const uid = decodedToken.uid;
 
-    if (decodedToken.admin) {
-      console.log('User is an admin, generating JWT...');
-      const token = generateToken(uid);
-      return { uid, token };
-    } else {
-      throw new Error('User does not have admin privileges.');
-    }
+    console.log('Fetching custom claims from database or auth system...');
+    const customClaims = await admin.auth().getUser(uid).then(userRecord => userRecord.customClaims || {});
+
+    console.log('Generating JWT with custom claims...');
+    const token = generateToken(uid, customClaims);
+    return { uid, token };
   } catch (error) {
     console.error('Error logging in:', error);
     throw new Error('Error logging in: ' + error.message);

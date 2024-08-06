@@ -10,6 +10,7 @@ const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     fetchCourseDetail();
@@ -18,7 +19,11 @@ const CourseDetail = () => {
   const fetchCourseDetail = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3000/api/courses/${courseId}`);
+      const response = await axios.get(`http://localhost:3000/api/courses/${courseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const sortedLessons = response.data.lessons.sort((a, b) => a.index - b.index);
       setCourse({ ...response.data, lessons: sortedLessons });
       setSelectedLesson(sortedLessons[0]);
@@ -31,7 +36,11 @@ const CourseDetail = () => {
 
   const handleApprove = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/approve`);
+      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/approve`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       fetchCourseDetail();
     } catch (error) {
       console.error('Error approving course: ', error);
@@ -40,7 +49,11 @@ const CourseDetail = () => {
 
   const handleReject = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/reject`);
+      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/reject`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       fetchCourseDetail();
     } catch (error) {
       console.error('Error rejecting course: ', error);

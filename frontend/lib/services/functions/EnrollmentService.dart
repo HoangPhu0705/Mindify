@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/services/models/enrollment.dart';
@@ -8,6 +9,7 @@ import 'package:frontend/services/models/enrollment.dart';
 class EnrollmentService {
   // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String idToken = AuthService.idToken!;
 
   final CollectionReference enrollments =
       FirebaseFirestore.instance.collection('enrollments');
@@ -21,7 +23,10 @@ class EnrollmentService {
   Future<void> createEnrollment(Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse(AppConstants.ENROLLMENT_API),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode(data),
     );
 
@@ -35,6 +40,10 @@ class EnrollmentService {
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/checkEnrollment?userId=$userId&courseId=$courseId"),
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -48,6 +57,10 @@ class EnrollmentService {
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/userEnrollments?userId=$userId"),
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -67,8 +80,9 @@ class EnrollmentService {
     final response = await http.post(
       Uri.parse("${AppConstants.ENROLLMENT_API}/addLessonToEnrollment"),
       headers: {
-        "Content-Type": "application/json",
-      },
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: json.encode({'enrollmentId': enrollmentId, 'lessonId': lessonId}),
     );
 
@@ -82,6 +96,10 @@ class EnrollmentService {
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/downloadedLessons?userId=$userId"),
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -95,7 +113,10 @@ class EnrollmentService {
     final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode({'lessonId': lessonId}),
     );
 
@@ -106,7 +127,10 @@ class EnrollmentService {
 
   Future<List<String>> getProgressOfEnrollment(String enrollmentId) async {
     final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
-    final response = await http.get(url, headers: {'Content-Type': 'application/json'});
+    final response = await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode == 200) {
       List<dynamic> progressData = jsonDecode(response.body);

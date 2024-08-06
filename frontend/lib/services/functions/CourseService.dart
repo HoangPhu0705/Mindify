@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +15,9 @@ import 'package:frontend/services/models/course.dart';
 class CourseService {
   // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final authService = AuthService();
+  // final authService = AuthService();
+  String idToken = AuthService.idToken!;
+  // Future<>
   DocumentSnapshot? lastDocument;
   Future<List<Course>> fetchCourses() async {
     try {
@@ -42,8 +45,12 @@ class CourseService {
 
   Future<List<Course>> getRandomCourses() async {
     try {
-      final response =
-          await http.get(Uri.parse("${AppConstants.COURSE_API}/random"));
+      final response = await http.get(
+        Uri.parse("${AppConstants.COURSE_API}/random"),
+        headers: {
+          'Authorization': 'Bearer $idToken',
+        },
+      );
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data
@@ -60,8 +67,12 @@ class CourseService {
 
   Future<Course> getCourseById(String id) async {
     try {
-      final response =
-          await http.get(Uri.parse("${AppConstants.COURSE_API}/$id"));
+      final response = await http.get(
+        Uri.parse("${AppConstants.COURSE_API}/$id"),
+        headers: {
+          'Authorization': 'Bearer $idToken',
+        },
+      );
       if (response.statusCode == 200) {
         return Course.fromJson(json.decode(response.body));
       } else {
@@ -75,8 +86,12 @@ class CourseService {
 
   Future<List<Course>> getFiveNewestCourses() async {
     try {
-      final response =
-          await http.get(Uri.parse("${AppConstants.COURSE_API}/newest"));
+      final response = await http.get(
+        Uri.parse("${AppConstants.COURSE_API}/newest"),
+        headers: {
+          'Authorization': 'Bearer $idToken',
+        },
+      );
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data
@@ -93,8 +108,7 @@ class CourseService {
 
   Future<List<Course>> getTop5Courses() async {
     try {
-      String? idToken = await authService.getIdToken();
-      log("Token ne ${idToken!}");
+      log("Token ne $idToken");
       final response = await http.get(
         Uri.parse("${AppConstants.COURSE_API}/top5"),
         headers: {
@@ -140,7 +154,10 @@ class CourseService {
       final url = Uri.parse(AppConstants.COURSE_API);
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(data),
       );
       if (response.statusCode == 201) {
@@ -161,8 +178,10 @@ class CourseService {
   Future<Map<String, dynamic>> getLesson(
       String courseId, String lessonId) async {
     final response = await http.get(
-      Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId"),
-    );
+        Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId"),
+        headers: {
+          'Authorization': 'Bearer $idToken',
+        });
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -176,7 +195,10 @@ class CourseService {
     try {
       final response = await http.post(
         Uri.parse('${AppConstants.COURSE_API}/searchCourses'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode({'query': query, 'lastDocument': lastDocument}),
       );
 
@@ -214,57 +236,60 @@ class CourseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> searchCourseOnChangedAPI(String query,
-      {bool isNewSearch = false}) async {
-    try {
-      final response = await http.post(
-        Uri.parse('${AppConstants.COURSE_API}/searchOnChanged'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'query': query, 'isNewSearch': isNewSearch}),
-      );
+  Future<Map<String, dynamic>> searchCoursesAndUsersAPI(String query,
+    {bool isNewSearch = false}) async {
+  try {
+    // final idToken = await AuthService.idToken;
 
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        return data.cast<Map<String, dynamic>>();
-      } else {
-        throw Exception('Failed to load courses and users');
-      }
-    } catch (e) {
-      print("Error searching courses and users: $e");
-      return [];
+    final response = await http.post(
+      Uri.parse('${AppConstants.COURSE_API}/searchCoursesAndUsers'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+      body: jsonEncode({'query': query, 'isNewSearch': isNewSearch}),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load courses and users');
     }
+  } catch (e) {
+    log("Error searching courses and users: $e");
+    return {};
   }
+}
 
-  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
-      {bool isNewSearch = false}) async {
-    try {
-      if (isNewSearch) lastDocument = null;
+Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
+    {bool isNewSearch = false}) async {
+  try {
+    final results = await searchCoursesAndUsersAPI(query, isNewSearch: isNewSearch);
 
-      // courses
+    final filteredCourses = List<Map<String, dynamic>>.from(results['courses'] ?? []);
+    final users = List<Map<String, dynamic>>.from(results['users'] ?? []);
 
-      final filteredCourses =
-          await searchCourseOnChangedAPI(query, isNewSearch: isNewSearch);
+    final searchResults = [
+      ...filteredCourses,
+      ...users,
+    ];
 
-      // users
-      final userService = UserService();
-      List<Map<String, dynamic>> users = await userService.searchUsers(query);
-
-      final searchResults = [
-        ...filteredCourses,
-        ...users,
-      ];
-
-      log("Filtered Courses and Users: $searchResults");
-      return searchResults;
-    } catch (e) {
-      log("Error searching courses and users: $e");
-      return [];
-    }
+    log("Filtered Courses and Users: $searchResults");
+    return searchResults;
+  } catch (e) {
+    log("Error searching courses and users: $e");
+    return [];
   }
+}
+
 
   Future<List<Course>> getCourseByUserId(String userId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/users/$userId"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -278,6 +303,10 @@ class CourseService {
   Future<List<Course>> getCoursePublicByUserId(String userId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/users/$userId/public"),
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -291,7 +320,10 @@ class CourseService {
   Future<void> deleteCourse(String courseId) async {
     try {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId");
-      final response = await http.delete(url);
+      final response = await http.delete(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
       if (response.statusCode == 204) {
         log("Course deleted successfully");
       } else {
@@ -308,7 +340,10 @@ class CourseService {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId");
       final response = await http.patch(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(updateData),
       );
       if (response.statusCode == 204) {
@@ -336,7 +371,10 @@ class CourseService {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons");
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(data),
       );
       if (response.statusCode == 201) {
@@ -354,7 +392,10 @@ class CourseService {
     try {
       final url =
           Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
-      final response = await http.delete(url);
+      final response = await http.delete(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
       if (response.statusCode == 204) {
         log("Lesson deleted successfully");
       } else {
@@ -372,7 +413,10 @@ class CourseService {
           Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
       final response = await http.patch(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(data),
       );
       if (response.statusCode == 204) {
@@ -401,7 +445,10 @@ class CourseService {
       final url = Uri.parse("${AppConstants.COURSE_API}/categories");
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(categories),
       );
       if (response.statusCode == 200) {
@@ -419,7 +466,10 @@ class CourseService {
     try {
       final url =
           Uri.parse("${AppConstants.COURSE_API}/$courseId/combined-duration");
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -440,7 +490,10 @@ class CourseService {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId/resources");
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(resources),
       );
       if (response.statusCode == 200) {
@@ -461,7 +514,10 @@ class CourseService {
           "${AppConstants.COURSE_API}/$courseId/resources/$resourceId");
       final response = await http.delete(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       );
       if (response.statusCode == 200) {
         log("deleted resource");
@@ -481,7 +537,10 @@ class CourseService {
           "${AppConstants.COURSE_API}/$courseId/resources/$resourceId");
       final response = await http.patch(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
         body: jsonEncode(updates),
       );
       if (response.statusCode == 200) {
@@ -508,7 +567,10 @@ class CourseService {
       final url = Uri.parse("${AppConstants.baseUrl}/courseRequest/$courseId");
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       );
       if (response.statusCode == 200) {
         log("request Sent");

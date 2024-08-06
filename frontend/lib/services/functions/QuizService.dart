@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class QuizService {
   static String baseUrl = AppConstants.QUIZZES_API;
+  String idToken = AuthService.idToken!;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final CollectionReference quizzes =
@@ -29,9 +32,10 @@ class QuizService {
     log(baseUrl);
     final response = await http.post(
       Uri.parse(baseUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode(quizData),
     );
 
@@ -48,9 +52,10 @@ class QuizService {
   Future<List<dynamic>> getQuizzesByCourseId(String courseId) async {
     final response = await http.get(
       Uri.parse('$baseUrl/$courseId'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
     );
 
     if (response.statusCode == 200) {
@@ -63,7 +68,10 @@ class QuizService {
   }
 
   Future<void> deleteQuiz(String quizId) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$quizId'));
+    final response = await http.delete(Uri.parse('$baseUrl/$quizId'), headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete quiz');
@@ -75,8 +83,9 @@ class QuizService {
     try {
       final response = await http.patch(
         url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
         body: jsonEncode(data),
       );
@@ -116,8 +125,9 @@ class QuizService {
     try {
       final response = await http.get(
         url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
       );
       if (response.statusCode == 200) {
@@ -136,8 +146,9 @@ class QuizService {
     try {
       final response = await http.patch(
         url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
         body: jsonEncode(data),
       );
@@ -156,8 +167,9 @@ class QuizService {
     try {
       final response = await http.delete(
         url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
       );
       if (response.statusCode == 205) {
@@ -175,8 +187,9 @@ class QuizService {
     try {
       final response = await http.get(
         url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
       );
       if (response.statusCode == 200) {

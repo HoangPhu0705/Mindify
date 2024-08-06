@@ -1,14 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentService {
+  String idToken = AuthService.idToken!;
+
   Future<Map<String, dynamic>> createPaymentIntent(String userId, String courseId) async {
     final url = '${AppConstants.TRANSACTION_API}/createPaymentIntent';
     final response = await http.post(
       Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode({'userId': userId, 'courseId': courseId}),
     );
 
@@ -23,7 +29,10 @@ class PaymentService {
     final url = '${AppConstants.TRANSACTION_API}/confirmPayment';
     final response = await http.post(
       Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode({'paymentIntentId': paymentIntentId}),
     );
 

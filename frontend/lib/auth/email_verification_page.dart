@@ -51,7 +51,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   Future sendVerificationEmail() async {
     try {
-      log("chuan bi sent email");
+      log("Preparing to send email");
       final user = FirebaseAuth.instance.currentUser!;
       final uid = user.uid;
 

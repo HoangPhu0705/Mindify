@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class NoteService {
+  String idToken = AuthService.idToken!;
+
   Stream<QuerySnapshot> getNoteStream(String enrollmentId) {
     return FirebaseFirestore.instance
         .collection('enrollments')
@@ -17,7 +20,10 @@ class NoteService {
     final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/notes');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode({'enrollmentId': enrollmentId, 'data': data}),
     );
 
@@ -32,7 +38,10 @@ class NoteService {
   Future<void> deleteNote(String enrollmentId, String noteId) async {
     final url =
         Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/$noteId');
-    final response = await http.delete(url);
+    final response = await http.delete(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete note: ${response.body}');
@@ -45,7 +54,10 @@ class NoteService {
         Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/$noteId');
     final response = await http.put(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
       body: jsonEncode(data),
     );
 
@@ -57,7 +69,10 @@ class NoteService {
   Future<List<Map<String, dynamic>>> getAllNotesOfEnrollment(
       String enrollmentId) async {
     final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/notes');
-    final response = await http.get(url);
+    final response = await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },);
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body) as List;
