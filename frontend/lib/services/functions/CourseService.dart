@@ -16,23 +16,8 @@ class CourseService {
   // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   // final authService = AuthService();
-  String idToken = AuthService.idToken!;
-  // Future<>
+  String? idToken = AuthService.idToken;
   DocumentSnapshot? lastDocument;
-  Future<List<Course>> fetchCourses() async {
-    try {
-      final response = await http.get(Uri.parse(AppConstants.COURSE_API));
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        return data.map((course) => Course.fromJson(course)).toList();
-      } else {
-        throw Exception("Failed to load courses");
-      }
-    } catch (e) {
-      log("Error: $e");
-      throw Exception("Failed to load courses");
-    }
-  }
 
   Stream<QuerySnapshot> getCourseStreamByAuthorId(
       String userId, bool isRequest) {
@@ -111,9 +96,9 @@ class CourseService {
       log("Token ne $idToken");
       final response = await http.get(
         Uri.parse("${AppConstants.COURSE_API}/top5"),
-        // headers: {
-        //   'Authorization': 'Bearer $idToken',
-        // },
+        headers: {
+          'Authorization': 'Bearer $idToken',
+        },
       );
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
@@ -237,59 +222,60 @@ class CourseService {
   }
 
   Future<Map<String, dynamic>> searchCoursesAndUsersAPI(String query,
-    {bool isNewSearch = false}) async {
-  try {
-    // final idToken = await AuthService.idToken;
+      {bool isNewSearch = false}) async {
+    try {
+      // final idToken = await AuthService.idToken;
 
-    final response = await http.post(
-      Uri.parse('${AppConstants.COURSE_API}/searchCoursesAndUsers'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode({'query': query, 'isNewSearch': isNewSearch}),
-    );
+      final response = await http.post(
+        Uri.parse('${AppConstants.COURSE_API}/searchCoursesAndUsers'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({'query': query, 'isNewSearch': isNewSearch}),
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load courses and users');
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to load courses and users');
+      }
+    } catch (e) {
+      log("Error searching courses and users: $e");
+      return {};
     }
-  } catch (e) {
-    log("Error searching courses and users: $e");
-    return {};
   }
-}
 
-Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
-    {bool isNewSearch = false}) async {
-  try {
-    final results = await searchCoursesAndUsersAPI(query, isNewSearch: isNewSearch);
+  Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
+      {bool isNewSearch = false}) async {
+    try {
+      final results =
+          await searchCoursesAndUsersAPI(query, isNewSearch: isNewSearch);
 
-    final filteredCourses = List<Map<String, dynamic>>.from(results['courses'] ?? []);
-    final users = List<Map<String, dynamic>>.from(results['users'] ?? []);
+      final filteredCourses =
+          List<Map<String, dynamic>>.from(results['courses'] ?? []);
+      final users = List<Map<String, dynamic>>.from(results['users'] ?? []);
 
-    final searchResults = [
-      ...filteredCourses,
-      ...users,
-    ];
+      final searchResults = [
+        ...filteredCourses,
+        ...users,
+      ];
 
-    log("Filtered Courses and Users: $searchResults");
-    return searchResults;
-  } catch (e) {
-    log("Error searching courses and users: $e");
-    return [];
+      log("Filtered Courses and Users: $searchResults");
+      return searchResults;
+    } catch (e) {
+      log("Error searching courses and users: $e");
+      return [];
+    }
   }
-}
-
 
   Future<List<Course>> getCourseByUserId(String userId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/users/$userId"),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -304,9 +290,9 @@ Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/users/$userId/public"),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -320,10 +306,13 @@ Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
   Future<void> deleteCourse(String courseId) async {
     try {
       final url = Uri.parse("${AppConstants.COURSE_API}/$courseId");
-      final response = await http.delete(url, headers: {
+      final response = await http.delete(
+        url,
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $idToken',
-        },);
+        },
+      );
       if (response.statusCode == 204) {
         log("Course deleted successfully");
       } else {
@@ -392,10 +381,13 @@ Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
     try {
       final url =
           Uri.parse("${AppConstants.COURSE_API}/$courseId/lessons/$lessonId");
-      final response = await http.delete(url, headers: {
+      final response = await http.delete(
+        url,
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $idToken',
-        },);
+        },
+      );
       if (response.statusCode == 204) {
         log("Lesson deleted successfully");
       } else {
@@ -466,10 +458,13 @@ Future<List<Map<String, dynamic>>> searchCoursesAndUsers(String query,
     try {
       final url =
           Uri.parse("${AppConstants.COURSE_API}/$courseId/combined-duration");
-      final response = await http.get(url, headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $idToken',
-        },);
+        },
+      );
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {

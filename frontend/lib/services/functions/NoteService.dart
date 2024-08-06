@@ -6,7 +6,7 @@ import 'package:frontend/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class NoteService {
-  String idToken = AuthService.idToken!;
+  String? idToken = AuthService.idToken;
 
   Stream<QuerySnapshot> getNoteStream(String enrollmentId) {
     return FirebaseFirestore.instance

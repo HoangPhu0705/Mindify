@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ProjectService {
-  String idToken = AuthService.idToken!;
+  String? idToken = AuthService.idToken;
 
   //projects streambuilder
   Stream<QuerySnapshot> getProjectStream(String courseId) {

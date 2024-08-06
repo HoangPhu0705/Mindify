@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class FolderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String idToken = AuthService.idToken!;
+  String? idToken = AuthService.idToken;
 
   final CollectionReference folders =
       FirebaseFirestore.instance.collection('folders');

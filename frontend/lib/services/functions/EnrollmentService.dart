@@ -9,7 +9,7 @@ import 'package:frontend/services/models/enrollment.dart';
 class EnrollmentService {
   // final String baseUrl = AppConstants.baseUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String idToken = AuthService.idToken!;
+  String? idToken = AuthService.idToken;
 
   final CollectionReference enrollments =
       FirebaseFirestore.instance.collection('enrollments');

@@ -7,31 +7,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+
 // import 'dart:developer';
 class UserService {
-
   // Chỉ nên sử dụng service này khi đã login
   User get user => FirebaseAuth.instance.currentUser!;
-  String? idToken;
-  Future<void> getToken() async{
-    idToken = await AuthService.initializeIdToken(user);
-  }
+  String? idToken = AuthService.idToken;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String baseUrl = AppConstants.baseUrl;
-  UserService() {
-    _initializeToken();
-  }
-
-  Future<void> _initializeToken() async {
-    idToken = await AuthService.initializeIdToken(user);
-  }
-
-  Future<String> getIdToken() async {
-    if (idToken == null) {
-      await _initializeToken();
-    }
-    return idToken!;
-  }
 
   String getUserId() {
     return user.uid;
@@ -91,10 +75,13 @@ class UserService {
   //search users
   Future<List<Map<String, dynamic>>> searchUsers(String query) async {
     final url = Uri.parse('${AppConstants.USER_API}/searchUsers?query=$query');
-    final response = await http.get(url, headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> users = json.decode(response.body);
@@ -123,11 +110,13 @@ class UserService {
   Future<Map<String, dynamic>?> getAvatarAndDisplayName(String uid) async {
     try {
       final url = Uri.parse('${AppConstants.USER_API}/auth/$uid');
-      final response =
-          await http.get(url, headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $idToken',
-        },);
+        },
+      );
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         log(jsonResponse.toString());
@@ -147,9 +136,9 @@ class UserService {
     final response = await http.post(
       Uri.parse('${AppConstants.USER_API}/send-verification-email'),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: json.encode({'uid': uid}),
     );
 
@@ -174,9 +163,9 @@ class UserService {
     final response = await http.post(
       url,
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode({'courseId': courseId}),
     );
 
@@ -189,10 +178,10 @@ class UserService {
     final url = Uri.parse('$baseUrl/users/$userId/unsaveCourse');
     final response = await http.post(
       url,
-     headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode({'courseId': courseId}),
     );
 
@@ -203,11 +192,13 @@ class UserService {
 
   Future<Set<String>> getSavedCourses(String userId) async {
     final url = Uri.parse('$baseUrl/users/$userId/savedCourses');
-    final response =
-        await http.get(url, headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -221,10 +212,13 @@ class UserService {
   Future<bool> checkSavedCourse(String userId, String courseId) async {
     final url =
         Uri.parse('$baseUrl/users/$userId/checkSavedCourse?courseId=$courseId');
-    final response = await http.get(url, headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -239,9 +233,9 @@ class UserService {
     return http.post(
       url,
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode(data),
     );
   }
@@ -249,11 +243,13 @@ class UserService {
   //get user data by id
   Future<Map<String, dynamic>> getUserData(String userId) async {
     final url = Uri.parse('${AppConstants.baseUrl}/users/$userId');
-    final response =
-        await http.get(url, headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -348,11 +344,12 @@ class UserService {
 
   Future<List<dynamic>> getWatchedHistories(String userId) async {
     final response = await http.get(
-        Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+      Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -365,9 +362,9 @@ class UserService {
     final response = await http.patch(
       Uri.parse('${AppConstants.baseUrl}/users/$userId/watchedHistories'),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode(<String, dynamic>{
         'lessonId': lessonId,
         'courseId': courseId,
@@ -433,10 +430,13 @@ class UserService {
 
   // get avt and displayname to display on discussion tab
   Future<Map<String, dynamic>> getUserNameAndAvatar(String userId) async {
-    final response = await http.get(Uri.parse('$baseUrl/users/auth/$userId'), headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final response = await http.get(
+      Uri.parse('$baseUrl/users/auth/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
     if (response.statusCode == 200) {
       // log(userId);
       // log(response.body);

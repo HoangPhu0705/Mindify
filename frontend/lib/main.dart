@@ -9,6 +9,7 @@ import 'package:frontend/auth/main_page.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/splash_screen.dart';
+import 'package:frontend/services/functions/AuthService.dart';
 import 'package:frontend/services/functions/FolderService.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/services/providers/FolderProvider.dart';
@@ -54,6 +55,7 @@ class _MindifyAppState extends State<MindifyApp> {
   @override
   void initState() {
     _initializeNotificationService();
+    _initializeToken();
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: AppColors.ghostWhite,
       statusBarIconBrightness: Brightness.dark,
@@ -71,6 +73,13 @@ class _MindifyAppState extends State<MindifyApp> {
           await _notificationService.initialize();
         }
       });
+    }
+  }
+
+  Future<void> _initializeToken() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await AuthService.initializeIdToken(user);
     }
   }
 

@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class QuizService {
   static String baseUrl = AppConstants.QUIZZES_API;
-  String idToken = AuthService.idToken!;
+  String? idToken = AuthService.idToken;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -33,9 +33,9 @@ class QuizService {
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode(quizData),
     );
 
@@ -53,9 +53,9 @@ class QuizService {
     final response = await http.get(
       Uri.parse('$baseUrl/$courseId'),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -68,10 +68,13 @@ class QuizService {
   }
 
   Future<void> deleteQuiz(String quizId) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$quizId'), headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final response = await http.delete(
+      Uri.parse('$baseUrl/$quizId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete quiz');

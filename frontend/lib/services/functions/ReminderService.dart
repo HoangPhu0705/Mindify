@@ -6,15 +6,15 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ReminderService {
-  String idToken = AuthService.idToken!;
+  String? idToken = AuthService.idToken;
 
   Future<void> addReminder(String userId, String day, String time) async {
     final response = await http.post(
       Uri.parse('${AppConstants.USER_API}/$userId/Reminder'),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode(<String, String>{
         'day': day,
         'time': time,
@@ -42,9 +42,9 @@ class ReminderService {
     final response = await http.delete(
       Uri.parse('${AppConstants.USER_API}/$userId/reminder/$reminderId'),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode != 200) {
