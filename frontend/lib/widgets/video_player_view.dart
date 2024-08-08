@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:pod_player/pod_player.dart';
+import 'dart:io';
 
 class VideoPlayerView extends StatefulWidget {
   final String url;
@@ -28,19 +29,27 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
   late Future<void> _future;
 
   Future<void> initVideoPlayer() async {
+    PlayVideoFrom playVideoFrom;
+    if (widget.dataSourceType == DataSourceType.file) {
+      log("file");
+      playVideoFrom = PlayVideoFrom.file(File(widget.url));
+    } else {
+      log("network");
+      playVideoFrom = PlayVideoFrom.network(widget.url);
+    }
+
     _podPlayerController = PodPlayerController(
-      playVideoFrom: PlayVideoFrom.network(widget.url),
+      playVideoFrom: playVideoFrom,
       podPlayerConfig: const PodPlayerConfig(
         autoPlay: true,
         isLooping: false,
         videoQualityPriority: [1080, 720, 360],
       ),
     );
+
     await _podPlayerController.initialise();
     log("vo lai");
-    seekToPeriod(
-      Duration(seconds: widget.currentTime),
-    );
+    seekToPeriod(Duration(seconds: widget.currentTime));
   }
 
   @override
@@ -160,22 +169,3 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     );
   }
 }
-
-
-  // void _listenToEndVideo() {
-  //   if (_podPlayerController.videoPlayerValue != null) {
-  //     final videoPosition = _podPlayerController.videoPlayerValue!.position;
-  //     final videoDuration = _podPlayerController.videoPlayerValue!.duration;
-
-  //     log('Current Position: $videoPosition, Duration: $videoDuration');
-
-  //     if (videoPosition != null &&
-  //         videoDuration != null &&
-  //         videoPosition >= videoDuration) {
-  //       widget.onVideoEnd(widget.url);
-  //       setState() {
-  //         _future = initVideoPlayer();
-  //       }
-  //     }
-  //   }
-  // }
