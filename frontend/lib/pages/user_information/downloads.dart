@@ -8,7 +8,6 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:getwidget/getwidget.dart';
 
-
 class Downloads extends StatefulWidget {
   const Downloads({super.key});
 
@@ -70,8 +69,11 @@ class _DownloadsState extends State<Downloads> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child:
-                  MyLoading(width: 30, height: 30, color: AppColors.deepBlue),
+              child: MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.deepBlue,
+              ),
             );
           }
           if (snapshot.hasError) {
@@ -95,6 +97,16 @@ class _DownloadsState extends State<Downloads> {
               String fileName = videoFile.path.split('/').last;
 
               return GFListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VideoPlayerPage(
+                        videoUrl: videoFile.path,
+                      ),
+                    ),
+                  );
+                },
                 avatar: const Icon(
                   Icons.play_circle_fill,
                   size: 40,
@@ -106,23 +118,6 @@ class _DownloadsState extends State<Downloads> {
                     fontFamily: "Poppins",
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                  ),
-                ),
-                icon: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VideoPlayerPage(
-                          videoUrl: videoFile.path,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.download_for_offline_sharp,
-                    size: 32,
-                    color: AppColors.deepBlue,
                   ),
                 ),
               );

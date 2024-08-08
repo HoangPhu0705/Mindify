@@ -2,10 +2,13 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/services/functions/AuthService.dart';
+import 'package:frontend/services/functions/NotificationService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'dart:developer';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:frontend/widgets/my_loading.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -20,12 +23,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   String errorMessage = '';
   final userService = UserService();
   Timer? timer;
+  late Future _future;
+
+  final NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
     super.initState();
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    log(isEmailVerified.toString());
+
     if (!isEmailVerified) {
       sendVerificationEmail();
       timer = Timer.periodic(
@@ -33,6 +39,31 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         (_) => checkEmailVerified(),
       );
     }
+    _future = initToken();
+  }
+
+  Future<void> _initializeNotificationService() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await _notificationService.initialize();
+    } else {
+      FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+        if (user != null) {
+          await _notificationService.initialize();
+        }
+      });
+    }
+  }
+
+  Future<void> _initializeToken() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    await AuthService.initializeIdToken(user!);
+  }
+
+  Future<void> initToken() async {
+    await _initializeNotificationService();
+    await _initializeToken();
   }
 
   Future checkEmailVerified() async {
@@ -71,7 +102,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return const HomePage();
+      return FutureBuilder(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: MyLoading(
+                  width: 30,
+                  height: 30,
+                  color: AppColors.deepBlue,
+                ),
+              );
+            }
+
+            return const HomePage();
+          });
     } else {
       return Scaffold(
         appBar: AppBar(
