@@ -31,8 +31,17 @@ class NotificationService {
     // Cấu hình local notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+    );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
@@ -41,13 +50,15 @@ class NotificationService {
 
     // Lắng nghe các thông báo khi ứng dụng đang ở foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      log('Received message while app is in the foreground!');
+      
       log('Message data: ${message.data}');
       if (message.notification != null) {
         log('Message also contained a notification: ${message.notification}');
         _showLocalNotification(message.notification!);
       }
     });
+
+    
 
     // Lắng nghe khi người dùng nhấn vào thông báo
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -68,8 +79,15 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.high,
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const DarwinNotificationDetails darwinNotificationDetails =
+        DarwinNotificationDetails(
+      threadIdentifier: 'thread_id',
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: darwinNotificationDetails,
+    );
     await _flutterLocalNotificationsPlugin.show(
       notification.hashCode,
       notification.title,
@@ -80,7 +98,7 @@ class NotificationService {
 
   Future<void> saveTokenToDatabase() async {
     String? token = await _fcm.getToken();
-    log('FCM Token: $token');
+    log('FCM Tokkkkken: $token');
 
     if (token != null) {
       final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -101,6 +119,7 @@ class NotificationService {
                 tokens.add(token);
                 transaction.update(userRef, {'deviceTokens': tokens});
               }
+              log("added token roi");
             } else {
               transaction.set(userRef, {
                 'deviceTokens': [token],
@@ -116,7 +135,7 @@ class NotificationService {
 
   Future<void> deleteTokenFromDatabase() async {
     String? token = await _fcm.getToken();
-    log('FCM Token: $token');
+    log('FCM Token deleted: $token');
 
     if (token != null) {
       final userId = FirebaseAuth.instance.currentUser?.uid;

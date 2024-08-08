@@ -68,6 +68,7 @@ class _MindifyAppState extends State<MindifyApp> {
       await _notificationService.initialize();
     } else {
       FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+        
         if (user != null) {
           await _notificationService.initialize();
         }
