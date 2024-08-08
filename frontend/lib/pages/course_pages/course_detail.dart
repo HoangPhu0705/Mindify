@@ -104,8 +104,8 @@ class _CourseDetailState extends State<CourseDetail>
   Future<void> _checkEnrollment() async {
     try {
       final enrollmentStatus = await enrollmentService.checkEnrollment(
-          widget.userId, widget.courseId);
-      log(enrollmentStatus['isEnrolled']);
+          userId, widget.courseId);
+      // log(enrollmentStatus['isEnrolled'].toString());
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
         _enrollmentId = enrollmentStatus['enrollmentId'];

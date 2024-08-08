@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/quiz_page.dart';
@@ -21,6 +22,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:open_file/open_file.dart';
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
@@ -115,17 +117,39 @@ class LessonTabState extends State<LessonTab> {
     }
   }
 
-  Future<void> _downloadLesson(String lessonLink, String lessonId) async {
-    final directory = await getExternalStorageDirectory();
-    final path = directory?.path;
-    if (path != null) {
-      await FlutterDownloader.enqueue(
-        url: lessonLink,
-        savedDir: path,
-        fileName: 'lesson_$lessonId.mp4',
-        showNotification: true,
-        openFileFromNotification: true,
-      );
+  Future<void> _downloadLesson(String lessonLink, String lessonTitle) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final path = directory.path;
+
+      if (path != null) {
+        final userDirectory = Directory('$path/${widget.userId}');
+        if (!await userDirectory.exists()) {
+          await userDirectory.create();
+        }
+
+        final filePath = '${userDirectory.path}/$lessonTitle.mp4';
+
+        Dio dio = Dio();
+        await dio.download(
+          lessonLink,
+          filePath,
+          onReceiveProgress: (received, total) {
+            if (total != -1) {
+              log("${(received / total * 100).toStringAsFixed(0)}%");
+            }
+          },
+        );
+        log(filePath);
+        OpenFile.open(filePath);
+
+        if (mounted) {
+          showSuccessToast(context, 'Downloaded: $lessonTitle');
+        }
+      }
+    } catch (e) {
+      log("Error downloading lesson: $e");
+      if (mounted) showErrorToast(context, 'Failed to download lesson');
     }
   }
 

@@ -37,6 +37,7 @@ class EnrollmentService {
 
   Future<Map<String, dynamic>> checkEnrollment(
       String userId, String courseId) async {
+    // final idToken = 
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/checkEnrollment?userId=$userId&courseId=$courseId"),
@@ -47,6 +48,7 @@ class EnrollmentService {
     );
 
     if (response.statusCode == 200) {
+      log("body enroll ${response.body}");
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to check enrollment');
