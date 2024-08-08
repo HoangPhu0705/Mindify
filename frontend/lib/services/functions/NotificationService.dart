@@ -50,15 +50,12 @@ class NotificationService {
 
     // Lắng nghe các thông báo khi ứng dụng đang ở foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      
       log('Message data: ${message.data}');
       if (message.notification != null) {
         log('Message also contained a notification: ${message.notification}');
         _showLocalNotification(message.notification!);
       }
     });
-
-    
 
     // Lắng nghe khi người dùng nhấn vào thông báo
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -119,7 +116,6 @@ class NotificationService {
                 tokens.add(token);
                 transaction.update(userRef, {'deviceTokens': tokens});
               }
-              log("added token roi");
             } else {
               transaction.set(userRef, {
                 'deviceTokens': [token],

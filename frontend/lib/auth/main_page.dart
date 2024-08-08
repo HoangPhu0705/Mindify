@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/auth/auth_page.dart';
 import 'package:frontend/auth/email_verification_page.dart';
-import 'package:frontend/services/functions/AuthService.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +22,6 @@ class MainPage extends StatelessWidget {
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
-            log("changee");
             return const VerifyEmailPage();
           }
           // user is NOT logged in
