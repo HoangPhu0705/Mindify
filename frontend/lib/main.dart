@@ -29,11 +29,11 @@ import 'package:frontend/services/functions/NotificationService.dart';
 
 // import 'package:stripe_payment/stripe_payment.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // await Firebase.initializeApp();
-  log("Handling a background message: ${message.messageId}");
-}
+// @pragma('vm:entry-point')
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   // await Firebase.initializeApp();
+//   log("Handling a background message: ${message.messageId}");
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,7 +68,6 @@ class _MindifyAppState extends State<MindifyApp> {
       await _notificationService.initialize();
     } else {
       FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-        
         if (user != null) {
           await _notificationService.initialize();
         }
