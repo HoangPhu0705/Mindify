@@ -38,7 +38,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(const MindifyApp());
 }
@@ -79,9 +78,11 @@ class _MindifyAppState extends State<MindifyApp> {
 
   Future<void> _initializeToken() async {
     User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await AuthService.initializeIdToken(user);
-    }
+    // log(user.toString());
+    // if (user != null) {
+    await AuthService.initializeIdToken(user!);
+    log("token vao di");
+    // }
   }
 
   @override

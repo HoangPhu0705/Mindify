@@ -11,7 +11,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
-    await Firebase.initializeApp();
+    // await Firebase.initializeApp();
 
     NotificationSettings settings = await _fcm.requestPermission(
       alert: true,
@@ -167,7 +167,7 @@ class NotificationService {
 
   static Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
-    await Firebase.initializeApp();
+    // await Firebase.initializeApp();
     log("Handling a background message: ${message.messageId}");
   }
 }
