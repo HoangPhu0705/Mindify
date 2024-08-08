@@ -214,9 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Downloads(
-                                      userId: userId!,
-                                    ),
+                                    builder: (context) => Downloads(),
                                   ),
                                 );
                               },

@@ -19,6 +19,7 @@ import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_textfield.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:toastification/toastification.dart';
@@ -61,13 +62,24 @@ class _SignInState extends State<SignIn> {
     super.dispose();
   }
 
+  Future<void> saveUserIdToPreferences(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+    log("share preference $userId");
+  }
+
   Future<void> signInUser() async {
     try {
       // final _notificationService = NotificationService();
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      User? user = userCredential.user;
+      if (user != null) {
+        await saveUserIdToPreferences(user.uid);
+      }
       // await _notificationService.saveTokenToDatabase();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
@@ -110,6 +122,7 @@ class _SignInState extends State<SignIn> {
 
       if (user != null) {
         String uid = user.uid;
+        await saveUserIdToPreferences(uid);
         DocumentSnapshot userDoc =
             await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
