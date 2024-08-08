@@ -98,12 +98,13 @@ class _DownloadsState extends State<Downloads> {
 
               return GFListTile(
                 onTap: () {
-                  Navigator.push(
-                    context,
+                  Navigator.of(context, rootNavigator: true).push(
                     MaterialPageRoute(
-                      builder: (context) => VideoPlayerPage(
-                        videoUrl: videoFile.path,
-                      ),
+                      builder: (context) {
+                        return VideoPlayerPage(
+                          videoUrl: videoFile.path,
+                        );
+                      },
                     ),
                   );
                 },

@@ -104,6 +104,10 @@ class _SignInState extends State<SignIn> {
 
   void signInGoogle() async {
     try {
+      // Sign out from the previous account to force account picker
+      await GoogleSignIn().signOut();
+
+      // Proceed with Google sign-in
       GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
       if (gUser == null) {
         showErrorToast("Google sign-in aborted.");
@@ -171,7 +175,7 @@ class _SignInState extends State<SignIn> {
       context: context,
       title: Text(
         message,
-        style: TextStyle(fontWeight: FontWeight.w500),
+        style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       showProgressBar: false,
       alignment: Alignment.bottomLeft,

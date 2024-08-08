@@ -38,7 +38,6 @@ import 'package:frontend/services/functions/NotificationService.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(const MindifyApp());
 }
 
@@ -82,7 +81,7 @@ class _MindifyAppState extends State<MindifyApp> {
           // Uncomment this line to use provide flutter quill localizations
           // in your widgets app, otherwise the quill widgets will provide it
           // internally:
-          // FlutterQuillLocalizations.delegate,
+          // FlutterQuillLocalizations.delegate,`
         ],
         supportedLocales: FlutterQuillLocalizations.supportedLocales,
         debugShowCheckedModeBanner: false,

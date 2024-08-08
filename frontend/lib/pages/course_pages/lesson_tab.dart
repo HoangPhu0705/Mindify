@@ -23,6 +23,7 @@ import 'dart:io';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:open_file/open_file.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
@@ -55,7 +56,6 @@ class LessonTab extends StatefulWidget {
 }
 
 class LessonTabState extends State<LessonTab> {
-  DateTime? _lastNotificationTime;
   final userService = UserService();
   final enrollmentService = EnrollmentService();
   Map<String, dynamic> instructorInfo = {};
@@ -63,7 +63,10 @@ class LessonTabState extends State<LessonTab> {
   String instructorName = "";
   ScrollController scrollController = ScrollController();
   QuillController quillController = QuillController.basic();
-
+  bool isDownloading = false;
+  int? currentIndexDownload;
+  double downloadProgress = 0.0;
+  CancelToken cancelToken = CancelToken();
   FocusNode focusNode = FocusNode(canRequestFocus: false);
 
   QuizService quizService = QuizService();
@@ -122,30 +125,34 @@ class LessonTabState extends State<LessonTab> {
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
 
-      if (path != null) {
-        final userDirectory = Directory('$path/${widget.userId}');
-        if (!await userDirectory.exists()) {
-          await userDirectory.create();
-        }
+      final userDirectory = Directory('$path/${widget.userId}');
+      if (!await userDirectory.exists()) {
+        await userDirectory.create();
+      }
 
-        final filePath = '${userDirectory.path}/$lessonTitle.mp4';
+      final filePath = '${userDirectory.path}/$lessonTitle.mp4';
 
-        Dio dio = Dio();
-        await dio.download(
-          lessonLink,
-          filePath,
-          onReceiveProgress: (received, total) {
-            if (total != -1) {
-              log("${(received / total * 100).toStringAsFixed(0)}%");
-            }
-          },
-        );
-        log(filePath);
-        OpenFile.open(filePath);
+      Dio dio = Dio();
 
-        if (mounted) {
-          showSuccessToast(context, 'Downloaded: $lessonTitle');
-        }
+      if (cancelToken.isCancelled) {
+        cancelToken = CancelToken();
+      }
+
+      await dio.download(
+        lessonLink,
+        filePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            setState(() {
+              downloadProgress = (received / total * 100);
+            });
+          }
+        },
+        cancelToken: cancelToken,
+      );
+      OpenFile.open(filePath);
+      if (mounted) {
+        showSuccessToast(context, 'Downloaded: $lessonTitle');
       }
     } catch (e) {
       log("Error downloading lesson: $e");
@@ -153,14 +160,12 @@ class LessonTabState extends State<LessonTab> {
     }
   }
 
-  bool _canUpdateNotification() {
-    final now = DateTime.now();
-    if (_lastNotificationTime == null ||
-        now.difference(_lastNotificationTime!).inSeconds > 5) {
-      _lastNotificationTime = now;
-      return true;
-    }
-    return false;
+  void cancelDownload() {
+    setState(() {
+      cancelToken.cancel();
+      isDownloading = false;
+      currentIndexDownload = null;
+    });
   }
 
   Future<void> _followUser() async {
@@ -364,8 +369,6 @@ class LessonTabState extends State<LessonTab> {
                     itemBuilder: (context, index) {
                       final lesson = widget.course.lessons[index];
                       final isCompleted = completedLessons.contains(lesson.id);
-                      log(lesson.id);
-                      log(isCompleted.toString());
                       final isLessonAccessible =
                           widget.isEnrolled || index == 0;
 
@@ -415,19 +418,44 @@ class LessonTabState extends State<LessonTab> {
                           ),
                           trailing: widget.isEnrolled
                               ? IconButton(
-                                  icon: Icon(
-                                    Icons.download_for_offline_outlined,
-                                    size: 30,
-                                    color:
-                                        lesson.index == widget.currentVideoIndex
-                                            ? Colors.white
-                                            : Colors.black,
-                                  ),
+                                  icon: isDownloading &&
+                                          currentIndexDownload != null &&
+                                          currentIndexDownload == lesson.index
+                                      ? widget.currentVideoIndex == lesson.index
+                                          ? _buildLoading(
+                                              Colors.white,
+                                              () {
+                                                cancelDownload();
+                                              },
+                                            )
+                                          : _buildLoading(
+                                              Colors.black,
+                                              () {
+                                                cancelDownload();
+                                              },
+                                            )
+                                      : Icon(
+                                          Icons.download_for_offline_outlined,
+                                          size: 30,
+                                          color: lesson.index ==
+                                                  widget.currentVideoIndex
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
                                   onPressed: isLessonAccessible
-                                      ? () {
-                                          _downloadLesson(
-                                              lesson.link, lesson.title);
-                                          widget.onSaveLesson(lesson.id);
+                                      ? () async {
+                                          setState(() {
+                                            isDownloading = true;
+                                            currentIndexDownload = lesson.index;
+                                          });
+                                          await _downloadLesson(
+                                            lesson.link,
+                                            lesson.title,
+                                          );
+                                          setState(() {
+                                            isDownloading = false;
+                                            currentIndexDownload = null;
+                                          });
                                         }
                                       : null,
                                 )
@@ -637,6 +665,24 @@ class LessonTabState extends State<LessonTab> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildLoading(Color color, VoidCallback onCancel) {
+    return GestureDetector(
+      onTap: onCancel,
+      child: CircularPercentIndicator(
+        radius: 18,
+        lineWidth: 4,
+        center: Icon(
+          Icons.downloading_outlined,
+          color: color,
+        ),
+        circularStrokeCap: CircularStrokeCap.round,
+        progressColor: color,
+        animateFromLastPercent: true,
+        percent: downloadProgress / 100,
+      ),
     );
   }
 }

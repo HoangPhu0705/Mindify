@@ -18,13 +18,22 @@ class VideoPlayerPage extends StatelessWidget {
         backgroundColor: AppColors.ghostWhite,
         title: const Text('Video Player'),
       ),
-      body: VideoPlayerView(
-        url: videoUrl,
-        dataSourceType: DataSourceType.file, // Use .file for local file path
-        currentTime: 0,
-        onVideoEnd: (url) {
-          // Define what happens when the video ends
-        },
+      body: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              VideoPlayerView(
+                url: videoUrl,
+                dataSourceType:
+                    DataSourceType.file, // Use .file for local file path
+                currentTime: 0,
+                onVideoEnd: (url) {
+                  // Define what happens when the video ends
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
