@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/pages/course_pages/folder_detail.dart';
+import 'package:frontend/services/functions/ConnectivityService.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/FolderService.dart';
@@ -22,14 +23,14 @@ import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 class MyCoursePage extends StatefulWidget {
   @override
   _MyCoursesPageState createState() => _MyCoursesPageState();
 }
 
-class _MyCoursesPageState extends State<MyCoursePage>
-    with SingleTickerProviderStateMixin {
+class _MyCoursesPageState extends State<MyCoursePage> with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final folderNameController = TextEditingController();
 
@@ -39,23 +40,36 @@ class _MyCoursesPageState extends State<MyCoursePage>
   final courseService = CourseService();
   List<String> courseIdEnrolled = [];
   List<Course> enrolledCourses = [];
-  List<Course> selectedFolderCourses = []; // Declare the list here
+  List<Course> selectedFolderCourses = [];
   bool isLoading = true;
   String userId = '';
   Folder? selectedFolder;
   bool isFolderLoading = false;
+  late ConnectivityService _connectivityService;
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     userId = userService.getUserId();
+    _connectivityService = ConnectivityService();
   }
 
   @override
   void dispose() {
     _tabController?.dispose();
+    _connectivityService.dispose();
     super.dispose();
+  }
+
+  void _onRefresh() async {
+    setState(() {});
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    _refreshController.loadComplete();
   }
 
   void _showCreateFolderDialog(BuildContext context) {
@@ -205,38 +219,56 @@ class _MyCoursesPageState extends State<MyCoursePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.ghostWhite,
-          title: Text(
-            'My Courses',
-            style: AppStyles.largeTitleSearchPage,
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Courses'),
-              Tab(text: 'My Lists'),
-            ],
-            labelColor: Colors.black,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorColor: Colors.black,
-          ),
+      appBar: AppBar(
+        backgroundColor: AppColors.ghostWhite,
+        title: Text(
+          'My Courses',
+          style: AppStyles.largeTitleSearchPage,
         ),
-        body: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.only(
-              top: 12,
-            ),
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                //Courses tab
-                courseTab(context),
-                folderTab(context),
-              ],
-            ),
-          ),
-        ));
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Courses'),
+            Tab(text: 'My Lists'),
+          ],
+          labelColor: Colors.black,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorColor: Colors.black,
+        ),
+      ),
+      body: SafeArea(
+        child: SmartRefresher(
+          onRefresh: _onRefresh,
+          onLoading: _onLoading,
+          controller: _refreshController,
+          child: !_connectivityService.isConnected
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.wifi_off,
+                        size: 100,
+                        color: AppColors.blue,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "You are offline",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ],
+                  ),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    courseTab(context),
+                    folderTab(context),
+                  ],
+                ),
+        ),
+      ),
+    );
   }
 
   Widget courseTab(BuildContext context) {

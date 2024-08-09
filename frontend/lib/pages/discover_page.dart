@@ -229,106 +229,103 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.ghostWhite,
-      body: !connectivityService.isConnected
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.wifi_off,
-                    size: 100,
-                    color: AppColors.blue,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "You are offline",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ],
-              ),
-            )
-          :
-      FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const MyLoading(
-              width: 30,
-              height: 30,
-              color: AppColors.deepBlue,
-            );
-          } else if (snapshot.hasError) {
-            dev.log("FutureBuilder error: ${snapshot.error}");
-            return const Center(
-              child: Text("There was a problem. Please try again later."),
-            );
-          } else {
-            return SafeArea(
-              child: SmartRefresher(
-                onLoading: _onLoading,
-                onRefresh: _onRefresh,
-                controller: _refreshController,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text("Mindify",
-                          style: Theme.of(context).textTheme.headlineMedium),
-                      AppSpacing.smallVertical,
-                      if (_coursesFuture != null)
-                        buildPopularCourses(_coursesFuture!),
-                      Column(
+      body: SmartRefresher(
+        onLoading: _onLoading,
+        onRefresh: _onRefresh,
+        controller: _refreshController,
+        child: !connectivityService.isConnected
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.wifi_off,
+                      size: 100,
+                      color: AppColors.blue,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "You are offline",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ],
+                ),
+              )
+            : FutureBuilder(
+                future: _future,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const MyLoading(
+                      width: 30,
+                      height: 30,
+                      color: AppColors.deepBlue,
+                    );
+                  } else if (snapshot.hasError) {
+                    dev.log("FutureBuilder error: ${snapshot.error}");
+                    return const Center(
+                      child: Text("There was a problem. Please try again later."),
+                    );
+                  } else {
+                    return SingleChildScrollView(
+                      child: Column(
                         children: [
-                          buildCarouselCourses(
-                            _top5Courses!,
-                            "Recommend For You",
-                            "",
-                            userId,
-                          ),
-                          buildCarouselCourses(
-                            _newestCourses!,
-                            "New and Trending",
-                            "",
-                            userId,
-                          ),
-                          AppSpacing.mediumVertical,
-                          // ListView.builder(
-                          //   shrinkWrap: true,
-                          //   physics: const NeverScrollableScrollPhysics(),
-                          //   itemCount: categories.length,
-                          //   itemBuilder: (context, index) {
-                          //     String quotes = randomQuotes[
-                          //         Random().nextInt(randomQuotes.length)];
+                          Text("Mindify",
+                              style: Theme.of(context).textTheme.headlineMedium),
+                          AppSpacing.smallVertical,
+                          if (_coursesFuture != null)
+                            buildPopularCourses(_coursesFuture!),
+                          Column(
+                            children: [
+                              buildCarouselCourses(
+                                _top5Courses!,
+                                "Recommend For You",
+                                "",
+                                userId,
+                              ),
+                              buildCarouselCourses(
+                                _newestCourses!,
+                                "New and Trending",
+                                "",
+                                userId,
+                              ),
+                              AppSpacing.mediumVertical,
+                              //                         // ListView.builder(
+  //                         //   shrinkWrap: true,
+  //                         //   physics: const NeverScrollableScrollPhysics(),
+  //                         //   itemCount: categories.length,
+  //                         //   itemBuilder: (context, index) {
+  //                         //     String quotes = randomQuotes[
+  //                         //         Random().nextInt(randomQuotes.length)];
 
-                          //     String categoryName = categories[index];
-                          //     List<dynamic> courseList =
-                          //         _categoryCourses![categoryName];
-                          //     List<Course> courseByCategory = courseList
-                          //         .map((course) => Course.fromJson(course))
-                          //         .toList();
-                          //     return courseByCategory.isEmpty
-                          //         ? const SizedBox.shrink()
-                          //         : buildCarouselCourses(
-                          //             courseByCategory,
-                          //             quotes,
-                          //             categoryName,
-                          //             userId,
-                          //           );
-                          //   },
-                          // ),
+  //                         //     String categoryName = categories[index];
+  //                         //     List<dynamic> courseList =
+  //                         //         _categoryCourses![categoryName];
+  //                         //     List<Course> courseByCategory = courseList
+  //                         //         .map((course) => Course.fromJson(course))
+  //                         //         .toList();
+  //                         //     return courseByCategory.isEmpty
+  //                         //         ? const SizedBox.shrink()
+  //                         //         : buildCarouselCourses(
+  //                         //             courseByCategory,
+  //                         //             quotes,
+  //                         //             categoryName,
+  //                         //             userId,
+  //                         //           );
+  //                         //   },
+  //                         // ),
+                            ],
+                          ),
+                          AppSpacing.largeVertical,
                         ],
                       ),
-                      AppSpacing.largeVertical,
-                    ],
-                  ),
-                ),
+                    );
+                  }
+                },
               ),
-            );
-          }
-        },
       ),
     );
   }
-
+  
   Widget buildPopularCourses(List<Course> courses) {
     return Column(
       children: [
