@@ -120,7 +120,8 @@ class LessonTabState extends State<LessonTab> {
     }
   }
 
-  Future<void> _downloadLesson(String lessonLink, String lessonTitle) async {
+  Future<void> _downloadLesson(
+      String lessonLink, String courseName, String lessonTitle) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
@@ -130,7 +131,7 @@ class LessonTabState extends State<LessonTab> {
         await userDirectory.create();
       }
 
-      final filePath = '${userDirectory.path}/$lessonTitle.mp4';
+      final filePath = '${userDirectory.path}/${courseName}_$lessonTitle.mp4';
 
       Dio dio = Dio();
 
@@ -450,6 +451,7 @@ class LessonTabState extends State<LessonTab> {
                                           });
                                           await _downloadLesson(
                                             lesson.link,
+                                            widget.course.title,
                                             lesson.title,
                                           );
                                           setState(() {

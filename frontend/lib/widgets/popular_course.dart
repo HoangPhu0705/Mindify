@@ -33,21 +33,23 @@ class _PopularCourseState extends State<PopularCourse> {
           Colors.black.withOpacity(0.9),
           Colors.black.withOpacity(0.1),
         ])),
-        padding: EdgeInsets.only(bottom: 40),
+        padding: const EdgeInsets.only(bottom: 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
               widget.instructor,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
               // Portrait Sketchbooking: Explore the Human Face
             ),
-            Text(widget.courseName,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              widget.courseName,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ],
         ),
       ),

@@ -1,16 +1,13 @@
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
-import 'package:frontend/auth/email_verification_page.dart';
-import 'package:frontend/auth/main_page.dart';
+
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/splash_screen.dart';
-import 'package:frontend/services/functions/AuthService.dart';
-import 'package:frontend/services/functions/FolderService.dart';
+
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/services/providers/FolderProvider.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
@@ -25,7 +22,6 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalWidgetsLocalizations;
 import 'package:flutter_quill/flutter_quill.dart' show Document;
 import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
-import 'package:frontend/services/functions/NotificationService.dart';
 
 // import 'package:stripe_payment/stripe_payment.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';

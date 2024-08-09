@@ -73,6 +73,12 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     addPodListener();
   }
 
+  Future<void> goToDownloadedVideo(String filePath) async {
+    await _podPlayerController.changeVideo(
+      playVideoFrom: PlayVideoFrom.file(File(filePath)),
+    );
+  }
+
   int getCurrentTime() {
     int currentTime = _podPlayerController.currentVideoPosition.inSeconds;
     return currentTime;

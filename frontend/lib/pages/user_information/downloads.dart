@@ -1,7 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:frontend/pages/user_information/watch_video_download.dart';
+import 'package:frontend/widgets/video_player_view.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pod_player/pod_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
@@ -17,6 +18,8 @@ class Downloads extends StatefulWidget {
 
 class _DownloadsState extends State<Downloads> {
   late Future<List<File>> _downloadedVideosFuture;
+  String? currentVideoUrl;
+  final GlobalKey<VideoPlayerViewState> _videoPlayerKey = GlobalKey();
 
   @override
   void initState() {
@@ -64,67 +67,114 @@ class _DownloadsState extends State<Downloads> {
           ),
         ),
       ),
-      body: FutureBuilder<List<File>>(
-        future: _downloadedVideosFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: MyLoading(
-                width: 30,
-                height: 30,
-                color: AppColors.deepBlue,
-              ),
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No downloaded lessons.'),
-            );
-          }
-          var downloadedVideos = snapshot.data!;
-          return ListView.separated(
-            separatorBuilder: (context, index) {
-              return const Divider();
-            },
-            itemCount: downloadedVideos.length,
-            itemBuilder: (context, index) {
-              var videoFile = downloadedVideos[index];
-              String fileName = videoFile.path.split('/').last;
-
-              return GFListTile(
-                onTap: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return VideoPlayerPage(
-                          videoUrl: videoFile.path,
-                        );
-                      },
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            currentVideoUrl == null
+                ? const SizedBox.shrink()
+                : VideoPlayerView(
+                    key: _videoPlayerKey,
+                    url: currentVideoUrl!,
+                    dataSourceType:
+                        DataSourceType.file, // Use .file for local file path
+                    currentTime: 0,
+                    onVideoEnd: (url) {
+                      // Define what happens when the video ends
+                    },
+                  ),
+            FutureBuilder<List<File>>(
+              future: _downloadedVideosFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: MyLoading(
+                      width: 30,
+                      height: 30,
+                      color: AppColors.deepBlue,
                     ),
                   );
-                },
-                avatar: const Icon(
-                  Icons.play_circle_fill,
-                  size: 40,
-                  color: AppColors.deepSpace,
-                ),
-                title: Text(
-                  fileName,
-                  style: const TextStyle(
-                    fontFamily: "Poppins",
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                  ),
-                ),
-              );
-            },
-          );
-        },
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('No downloaded lessons.'),
+                  );
+                }
+                var downloadedVideos = snapshot.data!;
+                return ListView.separated(
+                  shrinkWrap: true,
+                  separatorBuilder: (context, index) {
+                    return const Divider();
+                  },
+                  itemCount: downloadedVideos.length,
+                  itemBuilder: (context, index) {
+                    var videoFile = downloadedVideos[index];
+                    String fileName =
+                        videoFile.path.split('/').last.replaceAll(".mp4", "");
+                    bool isPlaying = currentVideoUrl == videoFile.path;
+                    return GFListTile(
+                      padding: const EdgeInsets.all(20),
+                      onTap: () async {
+                        setState(() {
+                          currentVideoUrl = videoFile.path;
+                        });
+                        await _videoPlayerKey.currentState!
+                            .goToDownloadedVideo(currentVideoUrl!);
+                      },
+                      shadow: BoxShadow(
+                        color: AppColors.deepSpace.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                      color: isPlaying ? AppColors.deepSpace : Colors.white,
+                      avatar: isPlaying
+                          ? const Icon(
+                              Icons.play_circle_fill_outlined,
+                              size: 32,
+                              color: Colors.white,
+                            )
+                          : const Icon(
+                              Icons.play_circle_fill_outlined,
+                              size: 32,
+                              color: AppColors.deepSpace,
+                            ),
+                      icon: IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: AppColors.red,
+                          ),
+                          onPressed: () {
+                            videoFile.delete();
+                            setState(() {
+                              currentVideoUrl = null;
+                            });
+                          }),
+                      title: Text(
+                        fileName,
+                        style: isPlaying
+                            ? const TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                                color: Colors.white,
+                              )
+                            : const TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                              ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

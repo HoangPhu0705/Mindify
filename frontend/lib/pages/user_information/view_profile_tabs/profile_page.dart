@@ -163,63 +163,25 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: BoxDecoration(
                     color: AppColors.ghostWhite,
                   ),
-                  child: ListView(
+                  child: Column(
                     children: [
-                      FutureBuilder<List<String>>(
-                        future: getInfo(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return ListTile(
-                              leading: Icon(Icons.arrow_circle_down),
-                              title: Text(
-                                'Downloads',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(fontSize: 16),
-                              ),
-                              subtitle: Text('Loading...'),
-                              trailing: Icon(Icons.chevron_right),
-                            );
-                          } else if (snapshot.hasError) {
-                            return ListTile(
-                              leading: Icon(Icons.arrow_circle_down),
-                              title: Text(
-                                'Downloads',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(fontSize: 16),
-                              ),
-                              subtitle: Text('Error loading classes'),
-                              trailing: Icon(Icons.chevron_right),
-                            );
-                          } else {
-                            int numClasses = snapshot.data!.length;
-                            return ListTile(
-                              leading: Icon(Icons.arrow_circle_down),
-                              title: Text(
-                                'Downloads',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(fontSize: 16),
-                              ),
-                              subtitle: Text(numClasses == 1
-                                  ? '$numClasses class'
-                                  : '$numClasses classes'),
-                              trailing: Icon(Icons.chevron_right),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Downloads(),
-                                  ),
-                                );
-                              },
-                            );
-                          }
+                      ListTile(
+                        leading: Icon(Icons.arrow_circle_down),
+                        title: Text(
+                          'Downloads',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(fontSize: 16),
+                        ),
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Downloads(),
+                            ),
+                          );
                         },
                       ),
                       ListTile(
@@ -277,8 +239,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void signUserOut() async {
-    final _notificationService = NotificationService();
-    await _notificationService.deleteTokenFromDatabase();
+    final notificationService = NotificationService();
+    await notificationService.deleteTokenFromDatabase();
     FirebaseAuth.instance.signOut();
   }
 }
