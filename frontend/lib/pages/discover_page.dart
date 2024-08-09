@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as dev;
-import 'dart:math';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:frontend/services/functions/ConnectivityService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
@@ -49,6 +50,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     "Succeed in ",
     "Thrive in "
   ];
+  late ConnectivityService connectivityService;
   final _pageController = PageController(initialPage: 0);
 
   Future<void> _initPage() async {
@@ -150,11 +152,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
     super.initState();
     userId = userService.getUserId();
     _future = _initPage();
+    connectivityService = ConnectivityService();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    connectivityService.dispose();
     super.dispose();
   }
 
@@ -225,7 +229,26 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.ghostWhite,
-      body: FutureBuilder(
+      body: !connectivityService.isConnected
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.wifi_off,
+                    size: 100,
+                    color: AppColors.blue,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "You are offline",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
+              ),
+            )
+          :
+      FutureBuilder(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
