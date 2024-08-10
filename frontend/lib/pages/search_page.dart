@@ -339,8 +339,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             subtitle: Text(result['author']),
             onTap: () {
-              Navigator.push(
-                context,
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (context) => CourseDetail(
                     courseId: result['id'],
@@ -430,7 +429,6 @@ class _SearchPageState extends State<SearchPage> {
                     });
                     _onSearchSubmit(query);
                   },
-                  
                   searchResult: _isTyping
                       ? _buildSuggestionList()
                       : _buildSearchResults(),

@@ -152,6 +152,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       ),
     );
     super.initState();
+
     userId = userService.getUserId();
     _future = _initPage();
     connectivityService = ConnectivityService();
@@ -161,6 +162,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   void dispose() {
     _pageController.dispose();
     connectivityService.dispose();
+
     super.dispose();
   }
 

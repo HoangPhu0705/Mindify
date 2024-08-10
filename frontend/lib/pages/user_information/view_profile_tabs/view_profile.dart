@@ -13,11 +13,16 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:pie_menu/pie_menu.dart';
 import 'package:provider/provider.dart';
 
 class ViewProfile extends StatefulWidget {
-  const ViewProfile({super.key});
+  final PersistentTabController bottom_nav_controller;
+  const ViewProfile({
+    super.key,
+    required this.bottom_nav_controller,
+  });
 
   @override
   State<ViewProfile> createState() => _ViewProfileState();
@@ -190,7 +195,9 @@ class _ViewProfileState extends State<ViewProfile>
                 children: [
                   ProfileTab(),
                   TeachingTab(),
-                  AchievementTab(),
+                  AchievementTab(
+                    bottom_nav_controller: widget.bottom_nav_controller,
+                  ),
                 ],
               ),
             ),

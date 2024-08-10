@@ -1,12 +1,19 @@
+import 'dart:developer';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 class AchievementTab extends StatefulWidget {
-  const AchievementTab({super.key});
+  final PersistentTabController bottom_nav_controller;
+  const AchievementTab({
+    super.key,
+    required this.bottom_nav_controller,
+  });
 
   @override
   State<AchievementTab> createState() => _AchievementTabState();
@@ -37,7 +44,7 @@ class _AchievementTabState extends State<AchievementTab> {
                   ),
             ),
             AppSpacing.smallVertical,
-            Text(
+            const Text(
               "Earn a class certificate by completing a class and submitting a project",
               style: TextStyle(
                 fontSize: 16,
@@ -49,14 +56,17 @@ class _AchievementTabState extends State<AchievementTab> {
               color: AppColors.lightGrey,
               strokeCap: StrokeCap.round,
               borderType: BorderType.Rect,
-              dashPattern: [8, 4],
+              dashPattern: const [8, 4],
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 32,
+                ),
                 width: double.infinity,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       "You haven't earned a certificate yet.",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -64,7 +74,7 @@ class _AchievementTabState extends State<AchievementTab> {
                       ),
                     ),
                     AppSpacing.mediumVertical,
-                    Text(
+                    const Text(
                       "Complete a class and submit a project to earn your first class certificate.",
                       style: TextStyle(
                         fontSize: 14,
@@ -72,10 +82,12 @@ class _AchievementTabState extends State<AchievementTab> {
                     ),
                     AppSpacing.mediumVertical,
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        widget.bottom_nav_controller.jumpToTab(0);
+                      },
                       style: AppStyles.secondaryButtonStyle,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
                         child: Text("Find a class"),
                       ),
                     )

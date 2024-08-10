@@ -208,7 +208,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
                       },
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                 },
               ),
@@ -243,10 +243,10 @@ class _MyCoursesPageState extends State<MyCoursePage>
       ),
       body: !_connectivityService.isConnected
           ? NoConnection(
-              onRetry: () {
-                setState(() {});
-              },
-            )
+            onRetry: () {
+              setState(() {});
+            },
+          )
           : SafeArea(
               child: SmartRefresher(
                 onRefresh: _onRefresh,

@@ -17,12 +17,17 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final PersistentTabController bottom_nav_controller;
+  const ProfilePage({
+    super.key,
+    required this.bottom_nav_controller,
+  });
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -135,7 +140,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ViewProfile(),
+                                    builder: (context) => ViewProfile(
+                                      bottom_nav_controller:
+                                          widget.bottom_nav_controller,
+                                    ),
                                   ),
                                 );
                               },

@@ -103,20 +103,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) {
     if (isEmailVerified) {
       return FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: MyLoading(
-                  width: 30,
-                  height: 30,
-                  color: AppColors.deepBlue,
-                ),
-              );
-            }
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.deepBlue,
+              ),
+            );
+          }
 
-            return const HomePage();
-          });
+          return const HomePage();
+        },
+      );
     } else {
       return Scaffold(
         appBar: AppBar(
