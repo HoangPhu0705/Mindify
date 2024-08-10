@@ -109,6 +109,7 @@ class QuizService {
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $idToken',
         },
         body: jsonEncode(questionData),
       );

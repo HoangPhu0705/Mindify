@@ -176,7 +176,7 @@ class _CreateQuestionsState extends State<CreateQuestions> {
       "explanation": explanation,
       "questionImage": questionImage,
     };
-
+    log(questionData.toString());
     try {
       await quizzService.addQuestionsToQuiz(
         widget.quizId,

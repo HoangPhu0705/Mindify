@@ -66,6 +66,9 @@ class _PublishCourseState extends State<PublishCourse> {
 
   Future<void> _initCourseDetailPage() async {
     await _fetchCourseDetails();
+    if (myCourse.isPublic) {
+      priceController.text = myCourse.price.toString();
+    }
   }
 
   @override
@@ -589,7 +592,10 @@ class _PublishCourseState extends State<PublishCourse> {
                                 "lessonNum": widget.lessonNums,
                               },
                             );
-                            await courseService.requestCourse(widget.courseId);
+                            if (!myCourse.isPublic) {
+                              await courseService
+                                  .requestCourse(widget.courseId);
+                            }
                             btnStateController.update(AsyncBtnState.success);
                             await Future.delayed(
                               const Duration(milliseconds: 500),
@@ -601,9 +607,9 @@ class _PublishCourseState extends State<PublishCourse> {
                           btnStateController.update(AsyncBtnState.failure);
                         }
                       },
-                      child: const Text(
-                        "Publish Course",
-                        style: TextStyle(fontSize: 16),
+                      child: Text(
+                        myCourse.isPublic ? "Save & Publish" : "Publish Course",
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   ),

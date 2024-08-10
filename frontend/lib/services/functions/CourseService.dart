@@ -93,7 +93,6 @@ class CourseService {
 
   Future<List<Course>> getTop5Courses() async {
     try {
-      log("Token ne $idToken");
       final response = await http.get(
         Uri.parse("${AppConstants.COURSE_API}/top5"),
         headers: {

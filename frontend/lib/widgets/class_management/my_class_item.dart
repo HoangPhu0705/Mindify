@@ -74,38 +74,7 @@ class _MyClassItemState extends State<MyClassItem> {
                       maxLines: 2,
                     ),
                   ),
-                  PieMenu(
-                    actions: [
-                      PieAction.builder(
-                        buttonTheme: const PieButtonTheme(
-                          backgroundColor: AppColors.blue,
-                          iconColor: Colors.black,
-                        ),
-                        tooltip: const Text(''),
-                        onSelect: widget.onEditPressed,
-                        builder: (hovered) {
-                          return const Icon(Icons.edit);
-                        },
-                      ),
-                      PieAction.builder(
-                        buttonTheme: const PieButtonTheme(
-                          backgroundColor: AppColors.blue,
-                          iconColor: Colors.red,
-                        ),
-                        tooltip: const Text(''),
-                        onSelect: widget.onDeletePressed,
-                        builder: (hovered) {
-                          return const Icon(
-                            Icons.delete,
-                          );
-                        },
-                      ),
-                    ],
-                    child: const Icon(
-                      Icons.more_horiz,
-                      size: 32,
-                    ),
-                  ),
+                  widget.isPublic ? _buildPublishedPieMenu() : _buildPieMenu(),
                 ],
               ),
             ),
@@ -158,7 +127,65 @@ class _MyClassItemState extends State<MyClassItem> {
                 ),
               ),
             ),
+          AppSpacing.smallVertical,
         ],
+      ),
+    );
+  }
+
+  Widget _buildPieMenu() {
+    return PieMenu(
+      actions: [
+        PieAction.builder(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: AppColors.blue,
+            iconColor: Colors.black,
+          ),
+          tooltip: const Text(''),
+          onSelect: widget.onEditPressed,
+          builder: (hovered) {
+            return const Icon(Icons.edit);
+          },
+        ),
+        PieAction.builder(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: AppColors.blue,
+            iconColor: Colors.red,
+          ),
+          tooltip: const Text(''),
+          onSelect: widget.onDeletePressed,
+          builder: (hovered) {
+            return const Icon(
+              Icons.delete,
+            );
+          },
+        ),
+      ],
+      child: const Icon(
+        Icons.more_horiz,
+        size: 32,
+      ),
+    );
+  }
+
+  Widget _buildPublishedPieMenu() {
+    return PieMenu(
+      actions: [
+        PieAction.builder(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: AppColors.blue,
+            iconColor: Colors.black,
+          ),
+          tooltip: const Text(''),
+          onSelect: widget.onEditPressed,
+          builder: (hovered) {
+            return const Icon(Icons.edit);
+          },
+        ),
+      ],
+      child: const Icon(
+        Icons.more_horiz,
+        size: 32,
       ),
     );
   }

@@ -389,66 +389,44 @@ class _ManageClassState extends State<ManageClass> {
                           }
                         }),
                     StreamBuilder<QuerySnapshot>(
-                        stream: quizService
-                            .getQuizzesStreamByCourse(widget.courseId),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            int quizNum = snapshot.data!.docs.length;
-                            return ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              title: const Text(
-                                "Quizzes (Optional)",
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontWeight: FontWeight.w700,
-                                ),
+                      stream:
+                          quizService.getQuizzesStreamByCourse(widget.courseId),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          int quizNum = snapshot.data!.docs.length;
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text(
+                              "Quizzes (Optional)",
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w700,
                               ),
-                              trailing: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          CreateQuiz(courseId: widget.courseId),
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  "Manage",
-                                  style: TextStyle(
-                                    color: AppColors.deepBlue,
-                                    fontSize: 14,
+                            ),
+                            trailing: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CreateQuiz(courseId: widget.courseId),
                                   ),
+                                );
+                              },
+                              child: const Text(
+                                "Manage",
+                                style: TextStyle(
+                                  color: AppColors.deepBlue,
+                                  fontSize: 14,
                                 ),
                               ),
-                              subtitle: Text("$quizNum quiz(s)"),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        }),
-                    // ListTile(
-                    //   contentPadding: EdgeInsets.zero,
-                    //   title: const Text(
-                    //     "Flashcard (Optional)",
-                    //     style: TextStyle(
-                    //       fontFamily: "Poppins",
-                    //       fontWeight: FontWeight.w700,
-                    //     ),
-                    //   ),
-                    //   trailing: GestureDetector(
-                    //     onTap: () {
-                    //       log("Manage click");
-                    //     },
-                    //     child: const Text(
-                    //       "Create",
-                    //       style: TextStyle(
-                    //         color: AppColors.deepBlue,
-                    //         fontSize: 14,
-                    //       ),
-                    //     ),
-                    //   ),
-                    //   subtitle: Text("0 flashcard"),
-                    // ),
+                            ),
+                            subtitle: Text("$quizNum quiz(s)"),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
                     const Divider(),
                     AppSpacing.mediumVertical,
                     const Text(

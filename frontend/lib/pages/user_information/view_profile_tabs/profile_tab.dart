@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_management/manage_class.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/follow_topics.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -166,7 +167,19 @@ class _ProfileTabState extends State<ProfileTab> {
                               bool requestSent = course["request"];
                               return MyClassItem(
                                 classTitle: courseName,
-                                onEditPressed: () {},
+                                onEditPressed: () {
+                                  // Navigate to edit class page
+                                  Navigator.of(context, rootNavigator: true)
+                                      .push(
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ManageClass(
+                                            courseId: course.id,
+                                            isEditing: true);
+                                      },
+                                    ),
+                                  );
+                                },
                                 onDeletePressed: () {},
                                 thumbnail: thumbnail,
                                 isPublic: isPublic,
