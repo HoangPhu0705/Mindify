@@ -5,7 +5,7 @@ const admin = require('firebase-admin');
 exports.searchCourses = async (query, lastDocument = null) => {
   try {
     let queryRef = CourseCollection
-      .where('isPublic', '==', true)
+      .where('isPublic', '==', true);
 
     if (lastDocument) {
       const lastDocRef = CourseCollection.doc(lastDocument);
@@ -27,9 +27,15 @@ exports.searchCourses = async (query, lastDocument = null) => {
 
     const filteredCourses = courses.filter(course => {
       const courseName = course['courseName']?.toString().toLowerCase() || '';
+      const categories = course['category'] || [];
       const lowerCaseQuery = query.toLowerCase();
 
-      return courseName.includes(lowerCaseQuery);
+      const matchesCourseName = courseName.includes(lowerCaseQuery);
+      const matchesCategory = categories.some(category => 
+        category.toString().toLowerCase().includes(lowerCaseQuery)
+      );
+
+      return matchesCourseName || matchesCategory;
     });
 
     const lastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
@@ -40,6 +46,7 @@ exports.searchCourses = async (query, lastDocument = null) => {
     throw new Error('Error searching courses');
   }
 };
+
 
 exports.searchCoursesAndUsers = async (query, isNewSearch) => {
   try {

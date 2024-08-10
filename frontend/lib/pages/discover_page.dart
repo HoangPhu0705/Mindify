@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer' as dev;
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -11,7 +10,6 @@ import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
-import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
