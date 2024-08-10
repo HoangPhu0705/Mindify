@@ -78,9 +78,7 @@ class _DownloadsState extends State<Downloads> {
                     dataSourceType:
                         DataSourceType.file, // Use .file for local file path
                     currentTime: 0,
-                    onVideoEnd: (url) {
-                      // Define what happens when the video ends
-                    },
+                    onVideoEnd: (url) {},
                   ),
             FutureBuilder<List<File>>(
               future: _downloadedVideosFuture,
@@ -100,8 +98,27 @@ class _DownloadsState extends State<Downloads> {
                   );
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('No downloaded lessons.'),
+                  return Container(
+                    padding: const EdgeInsets.all(20),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.play_lesson_outlined,
+                          color: AppColors.deepSpace,
+                          size: 60,
+                        ),
+                        Text(
+                          'You have not downloaded any videos',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   );
                 }
                 var downloadedVideos = snapshot.data!;
@@ -115,6 +132,8 @@ class _DownloadsState extends State<Downloads> {
                     var videoFile = downloadedVideos[index];
                     String fileName =
                         videoFile.path.split('/').last.replaceAll(".mp4", "");
+                    String courseName = fileName.split('_').first;
+                    String videoName = fileName.split('_').last;
                     bool isPlaying = currentVideoUrl == videoFile.path;
                     return GFListTile(
                       padding: const EdgeInsets.all(20),
@@ -148,25 +167,51 @@ class _DownloadsState extends State<Downloads> {
                             Icons.delete,
                             color: AppColors.red,
                           ),
-                          onPressed: () {
-                            videoFile.delete();
+                          onPressed: () async {
+                            // videoFile.delete();
+                            // await _fetchDownloadedVideos();
                             setState(() {
                               currentVideoUrl = null;
                             });
+                            if (videoFile.existsSync()) {
+                              videoFile.delete();
+                            }
+                            _downloadedVideosFuture = _fetchDownloadedVideos();
                           }),
                       title: Text(
-                        fileName,
+                        courseName,
+                        maxLines: 2,
                         style: isPlaying
                             ? const TextStyle(
                                 fontFamily: "Poppins",
                                 fontWeight: FontWeight.w500,
-                                fontSize: 18,
+                                fontSize: 16,
                                 color: Colors.white,
+                                overflow: TextOverflow.ellipsis,
                               )
                             : const TextStyle(
                                 fontFamily: "Poppins",
                                 fontWeight: FontWeight.w500,
-                                fontSize: 18,
+                                fontSize: 16,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                      ),
+                      subTitle: Text(
+                        videoName,
+                        maxLines: 2,
+                        style: isPlaying
+                            ? const TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                color: Colors.white,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            : const TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                overflow: TextOverflow.ellipsis,
                               ),
                       ),
                     );

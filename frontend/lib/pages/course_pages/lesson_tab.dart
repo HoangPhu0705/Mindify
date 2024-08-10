@@ -424,7 +424,7 @@ class LessonTabState extends State<LessonTab> {
                                           currentIndexDownload == lesson.index
                                       ? widget.currentVideoIndex == lesson.index
                                           ? _buildLoading(
-                                              Colors.white,
+                                              AppColors.cream,
                                               () {
                                                 cancelDownload();
                                               },

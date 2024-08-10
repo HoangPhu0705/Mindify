@@ -184,8 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          Navigator.push(
-                            context,
+                          Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
                               builder: (context) => Downloads(),
                             ),
