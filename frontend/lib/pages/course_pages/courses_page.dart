@@ -21,6 +21,7 @@ import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_course.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:frontend/widgets/no_connection.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
@@ -30,7 +31,8 @@ class MyCoursePage extends StatefulWidget {
   _MyCoursesPageState createState() => _MyCoursesPageState();
 }
 
-class _MyCoursesPageState extends State<MyCoursePage> with SingleTickerProviderStateMixin {
+class _MyCoursesPageState extends State<MyCoursePage>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final folderNameController = TextEditingController();
 
@@ -46,7 +48,8 @@ class _MyCoursesPageState extends State<MyCoursePage> with SingleTickerProviderS
   Folder? selectedFolder;
   bool isFolderLoading = false;
   late ConnectivityService _connectivityService;
-  final RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -225,49 +228,44 @@ class _MyCoursesPageState extends State<MyCoursePage> with SingleTickerProviderS
           'My Courses',
           style: AppStyles.largeTitleSearchPage,
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Courses'),
-            Tab(text: 'My Lists'),
-          ],
-          labelColor: Colors.black,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorColor: Colors.black,
-        ),
+        bottom: !_connectivityService.isConnected
+            ? null
+            : TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Courses'),
+                  Tab(text: 'My Lists'),
+                ],
+                labelColor: Colors.black,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorColor: Colors.black,
+              ),
       ),
-      body: SafeArea(
-        child: SmartRefresher(
-          onRefresh: _onRefresh,
-          onLoading: _onLoading,
-          controller: _refreshController,
-          child: !_connectivityService.isConnected
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      body: !_connectivityService.isConnected
+          ? NoConnection(
+              onRetry: () {
+                setState(() {});
+              },
+            )
+          : SafeArea(
+              child: SmartRefresher(
+                onRefresh: _onRefresh,
+                onLoading: _onLoading,
+                controller: _refreshController,
+                child: Container(
+                  padding: const EdgeInsets.only(
+                    top: 12,
+                  ),
+                  child: TabBarView(
+                    controller: _tabController,
                     children: [
-                      const Icon(
-                        Icons.wifi_off,
-                        size: 100,
-                        color: AppColors.blue,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "You are offline",
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
+                      courseTab(context),
+                      folderTab(context),
                     ],
                   ),
-                )
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
-                    courseTab(context),
-                    folderTab(context),
-                  ],
                 ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 

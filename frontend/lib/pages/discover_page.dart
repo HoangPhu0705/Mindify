@@ -11,9 +11,11 @@ import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:frontend/widgets/no_connection.dart';
 import 'package:frontend/widgets/popular_course.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
@@ -229,103 +231,97 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.ghostWhite,
-      body: SmartRefresher(
-        onLoading: _onLoading,
-        onRefresh: _onRefresh,
-        controller: _refreshController,
-        child: !connectivityService.isConnected
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.wifi_off,
-                      size: 100,
-                      color: AppColors.blue,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      "You are offline",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ],
-                ),
-              )
-            : FutureBuilder(
-                future: _future,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const MyLoading(
+      body: !connectivityService.isConnected
+          ? NoConnection(
+              onRetry: () {
+                _future = _initPage();
+                setState(() {});
+              },
+            )
+          : FutureBuilder(
+              future: _future,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: MyLoading(
                       width: 30,
                       height: 30,
                       color: AppColors.deepBlue,
-                    );
-                  } else if (snapshot.hasError) {
-                    dev.log("FutureBuilder error: ${snapshot.error}");
-                    return const Center(
-                      child: Text("There was a problem. Please try again later."),
-                    );
-                  } else {
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Text("Mindify",
-                              style: Theme.of(context).textTheme.headlineMedium),
-                          AppSpacing.smallVertical,
-                          if (_coursesFuture != null)
-                            buildPopularCourses(_coursesFuture!),
-                          Column(
-                            children: [
-                              buildCarouselCourses(
-                                _top5Courses!,
-                                "Recommend For You",
-                                "",
-                                userId,
-                              ),
-                              buildCarouselCourses(
-                                _newestCourses!,
-                                "New and Trending",
-                                "",
-                                userId,
-                              ),
-                              AppSpacing.mediumVertical,
-                              //                         // ListView.builder(
-  //                         //   shrinkWrap: true,
-  //                         //   physics: const NeverScrollableScrollPhysics(),
-  //                         //   itemCount: categories.length,
-  //                         //   itemBuilder: (context, index) {
-  //                         //     String quotes = randomQuotes[
-  //                         //         Random().nextInt(randomQuotes.length)];
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  dev.log("FutureBuilder error: ${snapshot.error}");
+                  return const Center(
+                    child: Text("There was a problem. Please try again later."),
+                  );
+                } else {
+                  return SafeArea(
+                    child: SmartRefresher(
+                      onRefresh: _onRefresh,
+                      onLoading: _onLoading,
+                      controller: _refreshController,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Text("Mindify",
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium),
+                            AppSpacing.smallVertical,
+                            if (_coursesFuture != null)
+                              buildPopularCourses(_coursesFuture!),
+                            Column(
+                              children: [
+                                buildCarouselCourses(
+                                  _top5Courses!,
+                                  "Recommend For You",
+                                  "",
+                                  userId,
+                                ),
+                                buildCarouselCourses(
+                                  _newestCourses!,
+                                  "New and Trending",
+                                  "",
+                                  userId,
+                                ),
+                                AppSpacing.mediumVertical,
+                                //                         // ListView.builder(
+                                //                         //   shrinkWrap: true,
+                                //                         //   physics: const NeverScrollableScrollPhysics(),
+                                //                         //   itemCount: categories.length,
+                                //                         //   itemBuilder: (context, index) {
+                                //                         //     String quotes = randomQuotes[
+                                //                         //         Random().nextInt(randomQuotes.length)];
 
-  //                         //     String categoryName = categories[index];
-  //                         //     List<dynamic> courseList =
-  //                         //         _categoryCourses![categoryName];
-  //                         //     List<Course> courseByCategory = courseList
-  //                         //         .map((course) => Course.fromJson(course))
-  //                         //         .toList();
-  //                         //     return courseByCategory.isEmpty
-  //                         //         ? const SizedBox.shrink()
-  //                         //         : buildCarouselCourses(
-  //                         //             courseByCategory,
-  //                         //             quotes,
-  //                         //             categoryName,
-  //                         //             userId,
-  //                         //           );
-  //                         //   },
-  //                         // ),
-                            ],
-                          ),
-                          AppSpacing.largeVertical,
-                        ],
+                                //                         //     String categoryName = categories[index];
+                                //                         //     List<dynamic> courseList =
+                                //                         //         _categoryCourses![categoryName];
+                                //                         //     List<Course> courseByCategory = courseList
+                                //                         //         .map((course) => Course.fromJson(course))
+                                //                         //         .toList();
+                                //                         //     return courseByCategory.isEmpty
+                                //                         //         ? const SizedBox.shrink()
+                                //                         //         : buildCarouselCourses(
+                                //                         //             courseByCategory,
+                                //                         //             quotes,
+                                //                         //             categoryName,
+                                //                         //             userId,
+                                //                         //           );
+                                //                         //   },
+                                //                         // ),
+                              ],
+                            ),
+                            AppSpacing.largeVertical,
+                          ],
+                        ),
                       ),
-                    );
-                  }
-                },
-              ),
-      ),
+                    ),
+                  );
+                }
+              },
+            ),
     );
   }
-  
+
   Widget buildPopularCourses(List<Course> courses) {
     return Column(
       children: [

@@ -122,6 +122,7 @@ class _DownloadsState extends State<Downloads> {
                         setState(() {
                           currentVideoUrl = videoFile.path;
                         });
+
                         await _videoPlayerKey.currentState!
                             .goToDownloadedVideo(currentVideoUrl!);
                       },
