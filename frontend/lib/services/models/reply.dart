@@ -2,7 +2,7 @@ class Reply {
   String id;
   String userId;
   String content;
-  DateTime createdAt;
+  String createdAt;
 
   Reply({
     required this.id,
@@ -16,7 +16,7 @@ class Reply {
       id: json['id'] as String,
       userId: json['userId'] as String,
       content: json['content'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: json['createdAt'] as String,
     );
   }
 
@@ -25,7 +25,7 @@ class Reply {
       'id': id,
       'userId': userId,
       'content': content,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt,
     };
   }
 }

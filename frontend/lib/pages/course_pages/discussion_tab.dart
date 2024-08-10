@@ -11,6 +11,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Discussion extends StatefulWidget {
   final String courseId;
@@ -149,6 +150,13 @@ class _DiscussionState extends State<Discussion> {
               );
             }
             List<DocumentSnapshot> commentDocs = snapshot.data!.docs;
+
+            commentDocs.sort((a, b) {
+              DateTime aCreatedAt = DateTime.parse(a['createdAt']);
+              DateTime bCreatedAt = DateTime.parse(b['createdAt']);
+              return bCreatedAt.compareTo(aCreatedAt);
+            });
+
             return SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.fromLTRB(
@@ -208,6 +216,17 @@ class _DiscussionState extends State<Discussion> {
                                         }
                                         List<DocumentSnapshot> replyDocs =
                                             replySnapshot.data!.docs;
+
+                                        // Sắp xếp các trả lời theo createdAt từ mới nhất đến cũ nhất
+                                        replyDocs.sort((a, b) {
+                                          DateTime aCreatedAt =
+                                              DateTime.parse(a['createdAt']);
+                                          DateTime bCreatedAt =
+                                              DateTime.parse(b['createdAt']);
+                                          return bCreatedAt.compareTo(
+                                              aCreatedAt);
+                                        });
+
                                         List<Reply> replies = replyDocs
                                             .map(
                                               (doc) => Reply.fromJson(doc.data()
@@ -287,124 +306,146 @@ class _DiscussionState extends State<Discussion> {
         );
       },
       contentRoot: (context, data) {
-        return _buildCommentContent(
-          context,
-          data.content,
-          rootDisplayName,
-          rootComment.id,
-          false,
-        );
+        return _buildCommentContent(context, data, rootDisplayName,
+            rootPhotoUrl, rootComment.createdAt);
       },
       contentChild: (context, data) {
         return FutureBuilder<Map<String, dynamic>>(
           future: userService.getUserNameAndAvatar(data.userId),
           builder: (context, userSnapshot) {
             if (!userSnapshot.hasData) {
-              return GFShimmer(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: AppColors.grey,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                    AppSpacing.smallVertical,
-                    Container(
-                      height: 15,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        color: AppColors.grey,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                  ],
+              return const GFShimmer(
+                child: ListTile(
+                  title: Text(''),
                 ),
               );
             }
             Map<String, dynamic> userData = userSnapshot.data!;
             String displayName = userData['displayName'] ?? 'Mindify Member';
-            return _buildCommentContent(
-              context,
-              data.content,
-              displayName,
-              data.id,
-              true,
-            );
+            String photoUrl = userData['photoUrl'] ??
+                'assets/images/default_avatar.png';
+
+            return _buildReplyContent(context, data, displayName, photoUrl);
           },
         );
       },
     );
   }
 
-  Widget _buildCommentContent(BuildContext context, String content,
-      String displayName, String? commentId, bool isReplied) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildCommentContent(BuildContext context, Comment comment,
+    String displayName, String photoUrl, String createdAt) {
+  final DateTime createdAtDateTime = DateTime.parse(createdAt);
+  final timeAgo = timeago.format(createdAtDateTime, locale: 'en');
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              displayName,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(fontWeight: FontWeight.w600, color: Colors.black),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              comment.content,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
+            ),
+          ],
+        ),
+      ),
+      DefaultTextStyle(
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall!
+            .copyWith(color: Colors.grey[700], fontWeight: FontWeight.bold),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Row(
             children: [
               Text(
-                displayName,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+                timeAgo,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: AppColors.lightGrey),
               ),
-              AppSpacing.smallVertical,
-              Text(
-                content,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black,
-                    ),
+              const SizedBox(width: 16),
+              InkWell(
+                onTap: () {
+                  focusNode.requestFocus();
+                  setState(() {
+                    _replyToCommentId = comment.id;
+                  });
+                },
+                child: Text(
+                  'Reply',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(color: AppColors.lightGrey),
+                ),
               ),
             ],
           ),
         ),
-        DefaultTextStyle(
+      ),
+    ],
+  );
+}
+
+Widget _buildReplyContent(BuildContext context, Reply reply,
+    String displayName, String photoUrl) {
+  final DateTime createdAtDateTime = DateTime.parse(reply.createdAt);
+  final timeAgo = timeago.format(createdAtDateTime, locale: 'en');
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              displayName,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(fontWeight: FontWeight.w600, color: Colors.black),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              reply.content,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
+            ),
+          ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(
+          timeAgo,
           style: Theme.of(context)
               .textTheme
               .bodySmall!
-              .copyWith(color: Colors.grey[700], fontWeight: FontWeight.bold),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Row(
-              children: [
-                AppSpacing.smallHorizontal,
-                const Text('Like'),
-                if (commentId != null && !isReplied) ...[
-                  AppSpacing.mediumHorizontal,
-                  TextButton(
-                    onPressed: () => _prepareReply(commentId),
-                    child: Text(
-                      'Reply',
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
-                          ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
+              .copyWith(color: AppColors.lightGrey),
+        ),
+      ),
+    ],
+  );
+}
 
-  void _prepareReply(String commentId) {
-    setState(() {
-      _replyToCommentId = commentId;
-      _commentController.clear();
-      FocusScope.of(context).requestFocus(focusNode);
-    });
-  }
 }
