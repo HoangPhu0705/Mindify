@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Button, Select, Option, Spinner } from "@material-tailwind/react";
+import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Input } from "@material-tailwind/react";
 
 const COURSE_TABLE_HEAD = ["Course Name", "Author", "Email", "Price", "Detail"];
 
@@ -113,22 +114,34 @@ const CourseRequestManagement = () => {
 
   return (
     <Card className="h-full w-full overflow-scroll">
-      <div className="py-6 px-4 md:px-6 xl:px-7.5 bg-gray-100 dark:bg-gray-800">
+      <div className="py-6 px-4 md:px-6 xl:px-7.5 ">
         <Typography variant="h4" color="black" className="dark:text-white">
           Course Request Management
         </Typography>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <Typography variant="h6" color="black" className="dark:text-white mb-2 md:mb-0">
+        <div className="w-full md:w-auto mt-2 md:mb-0">
+            <Input
+              type="text"
+              color="blue-gray"
+              label="Search Course"
+              
+              fullWidth
+            />
+          </div>
+        <div className= "flex items-center">
+
+          <Typography variant="h6" color="black" className="dark:text-white mr-2">
             Show
           </Typography>
           <Select
             value={String(requestPage.limit)}
             onChange={(e) => handleLimitChange(e)}
-            className="ml-2"
+            className="mr-2"
           >
             <Option value="5">5</Option>
             <Option value="10">10</Option>
           </Select>
+        </div>
         </div>
         {loading ? (
           <div className="flex justify-center items-center">

@@ -57,13 +57,12 @@ const Request = () => {
 
   return (
     <Card className="h-full w-full overflow-scroll">
-      <div className="py-6 px-4 md:px-6 xl:px-7.5 bg-gray-100 dark:bg-gray-800">
+      <div className="py-6 px-4 md:px-6 xl:px-7.5 ">
         <Typography variant="h4" color="black" className="dark:text-white">
           Application Requests
         </Typography>
       </div>
 
-      <div className="w-full mb-4 border border-black rounded-lg p-2">
         <Tabs value={selectedTab}>
           <TabsHeader>
             {data.map(({ label, value }) => (
@@ -73,7 +72,6 @@ const Request = () => {
             ))}
           </TabsHeader>
         </Tabs>
-      </div>
 
       <table className="w-full min-w-max table-auto text-left">
         <thead>

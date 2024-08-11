@@ -9,6 +9,7 @@ import {
   UserCircleIcon,
   Cog6ToothIcon,
   PowerIcon,
+  ComputerDesktopIcon,
   AcademicCapIcon // Icon cho Course Management
 } from "@heroicons/react/24/solid";
 
@@ -72,18 +73,13 @@ export default function Sidebar() {
         <Link to="/courseRequest">
           <ListItem className={`hover:bg-[#062137] hover:text-white`}>
             <ListItemPrefix>
-              <UserCircleIcon className="h-5 w-5" />
+              <ComputerDesktopIcon className="h-5 w-5" />
             </ListItemPrefix>
-            Requests from Course
+            Course Request
           </ListItem>
         </Link>
 
-        <ListItem className={`hover:bg-[#062137] hover:text-white`}>
-          <ListItemPrefix>
-            <Cog6ToothIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Settings
-        </ListItem>
+       
         <ListItem onClick={handleLogout} className={`hover:bg-[#062137] hover:text-white cursor-pointer`}>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
