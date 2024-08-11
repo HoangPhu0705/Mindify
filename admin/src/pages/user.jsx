@@ -42,7 +42,7 @@ const UserManagement = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        "http://localhost:3000/admin/users-management",
+        "/admin/users-management",
         {
           params: { limit: userPage.limit, startAfter: userPage.startAfter },
           headers: {
@@ -82,7 +82,7 @@ const UserManagement = () => {
 
       const action = selectedUser.disabled ? "unlock-user" : "lock-user";
       const response = await axios.post(
-        `http://localhost:3000/admin/${action}`,
+        `/admin/${action}`,
         { uid: selectedUser.id },
         {
           headers: {

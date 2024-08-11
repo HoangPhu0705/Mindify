@@ -35,7 +35,7 @@ const RequestDetail = () => {
     const fetchDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/users/requests/${requestId}`,
+          `/api/users/requests/${requestId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ const RequestDetail = () => {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:3000/api/users/requests/${requestId}/approve`,
+        `/api/users/requests/${requestId}/approve`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ const RequestDetail = () => {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:3000/api/users/requests/${requestId}/reject`,
+        `/api/users/requests/${requestId}/reject`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

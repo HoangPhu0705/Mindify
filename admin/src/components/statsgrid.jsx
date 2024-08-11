@@ -10,7 +10,7 @@ export default function DashboardStatsGrid() {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get('http://localhost:3000/admin/total-users', {
+    axios.get('/admin/total-users', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -18,7 +18,7 @@ export default function DashboardStatsGrid() {
       .then(response => setTotalUsers(response.data.totalUsers))
       .catch(error => console.error('Error fetching total users:', error));
 
-    axios.get('http://localhost:3000/admin/total-courses', {
+    axios.get('/admin/total-courses', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -26,7 +26,7 @@ export default function DashboardStatsGrid() {
       .then(response => setTotalCourses(response.data.totalCourses))
       .catch(error => console.error('Error fetching total courses:', error));
 
-    axios.get('http://localhost:3000/admin/total-students', {
+    axios.get('/admin/total-students', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -34,7 +34,7 @@ export default function DashboardStatsGrid() {
       .then(response => setTotalStudents(response.data.totalStudents))
       .catch(error => console.error('Error fetching total students:', error));
 
-    axios.get('http://localhost:3000/admin/get-revenue', {
+    axios.get('/admin/get-revenue', {
       headers: {
         Authorization: `Bearer ${token}`,
       },

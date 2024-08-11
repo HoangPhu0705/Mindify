@@ -23,7 +23,7 @@ function Login1() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/admin/admin-login",
+        "/admin/admin-login",
 
         { email, password }
       );

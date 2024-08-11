@@ -24,7 +24,7 @@ const CourseRequestManagement = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.get('http://localhost:3000/api/courseRequest', {
+      const response = await axios.get('/api/courseRequest', {
         params: { limit: requestPage.limit, startAfter: requestPage.startAfter },
         headers: {
           Authorization: `Bearer ${token}`,

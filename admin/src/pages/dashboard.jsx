@@ -80,12 +80,12 @@ const Dashboard = () => {
     let params = {};
 
     if (filterType === "month") {
-      url = 'http://localhost:3000/admin/monthly-enrollments';
+      url = '/admin/monthly-enrollments';
       params.year = filters.year;
     } else if (filterType === "year") {
-      url = 'http://localhost:3000/admin/yearly-enrollments';
+      url = '/admin/yearly-enrollments';
     } else if (filterType === "dateRange") {
-      url = 'http://localhost:3000/admin/date-range-enrollments';
+      url = '/admin/date-range-enrollments';
       params.startDate = filters.startDate;
       params.endDate = filters.endDate;
     }
@@ -116,12 +116,12 @@ const Dashboard = () => {
     let params = {};
 
     if (filterType === "month") {
-      url = 'http://localhost:3000/admin/monthly-transactions';
+      url = '/admin/monthly-transactions';
       params.year = filters.year;
     } else if (filterType === "year") {
-      url = 'http://localhost:3000/admin/yearly-transactions';
+      url = '/admin/yearly-transactions';
     } else if (filterType === "dateRange") {
-      url = 'http://localhost:3000/admin/date-range-transactions';
+      url = '/admin/date-range-transactions';
       params.startDate = filters.startDate;
       params.endDate = filters.endDate;
     }

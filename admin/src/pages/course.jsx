@@ -39,7 +39,7 @@ const CourseManagement = () => {
       const token = localStorage.getItem('token');
 
       const response = await axios.get(
-        "http://localhost:3000/admin/courses-management",
+        "/admin/courses-management",
         {
           params: {
             limit: coursePage.limit,

@@ -24,7 +24,7 @@ const Request = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/users/requests/", {
+        const response = await axios.get("/api/users/requests/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

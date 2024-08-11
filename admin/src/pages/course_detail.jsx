@@ -19,7 +19,7 @@ const CourseDetail = () => {
   const fetchCourseDetail = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3000/api/courses/${courseId}`, {
+      const response = await axios.get(`/api/courses/${courseId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,7 +36,7 @@ const CourseDetail = () => {
 
   const handleApprove = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/approve`, {
+      await axios.post(`/api/courseRequest/${requestId}/approve`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -49,7 +49,7 @@ const CourseDetail = () => {
 
   const handleReject = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/courseRequest/${requestId}/reject`, {
+      await axios.post(`/api/courseRequest/${requestId}/reject`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
