@@ -51,6 +51,7 @@ class _MindifyAppState extends State<MindifyApp> {
       statusBarColor: AppColors.ghostWhite,
       statusBarIconBrightness: Brightness.dark,
     ));
+    
     super.initState();
   }
 

@@ -227,14 +227,24 @@ class LessonTabState extends State<LessonTab> {
                         ),
                   ),
                   AppSpacing.mediumVertical,
-                  Text("${widget.course.students} students"),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.people_outline_outlined,
+                        color: AppColors.grey,
+                      ),
+                      AppSpacing.smallHorizontal,
+                      Text(
+                        "${widget.course.students} students",
+                      ),
+                    ],
+                  ),
                   AppSpacing.mediumVertical,
                   _buildQuillEditor(
                     quillController,
                     scrollController,
                     false,
                   ),
-                  AppSpacing.mediumVertical,
                   Align(
                     alignment: Alignment.center,
                     child: GestureDetector(
@@ -250,6 +260,59 @@ class LessonTabState extends State<LessonTab> {
                         ),
                       ),
                     ),
+                  ),
+                  const Divider(),
+                  const Text(
+                    "Details",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                    ),
+                  ),
+                  AppSpacing.mediumVertical,
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.video_chat_outlined,
+                        weight: 10,
+                        size: 24,
+                      ),
+                      AppSpacing.smallHorizontal,
+                      Text(
+                        "${widget.course.lessons.length} lessons (${widget.course.duration})",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  AppSpacing.mediumVertical,
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.filter_alt_outlined,
+                      ),
+                      AppSpacing.smallHorizontal,
+                      Expanded(
+                        child: Wrap(
+                          spacing: 4.0,
+                          runSpacing: 0.0,
+                          children: widget.course.categories.map((category) {
+                            return Chip(
+                              padding: const EdgeInsets.all(4),
+                              label: Text(
+                                category,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
                   ),
                   AppSpacing.mediumVertical,
                   const Divider(),

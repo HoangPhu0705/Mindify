@@ -58,6 +58,7 @@ class _DownloadsState extends State<Downloads> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.ghostWhite,
+        surfaceTintColor: AppColors.ghostWhite,
         centerTitle: true,
         title: const Text(
           "Downloads",
@@ -100,20 +101,29 @@ class _DownloadsState extends State<Downloads> {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Container(
                     padding: const EdgeInsets.all(20),
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.9,
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.play_lesson_outlined,
+                          Icons.cloud_download_outlined,
                           color: AppColors.deepSpace,
                           size: 60,
                         ),
                         Text(
-                          'You have not downloaded any videos',
+                          'Wherever you go',
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          'Download your course lessons to watch them even when you are offline',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.lightGrey,
                           ),
                           textAlign: TextAlign.center,
                         ),

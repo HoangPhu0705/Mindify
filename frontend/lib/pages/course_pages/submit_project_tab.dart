@@ -239,7 +239,8 @@ class _SubmitProjectState extends State<SubmitProject> {
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                           return Center(
                             child: Text(
-                                "This class don't have submitted project yet"),
+                              "This class don't have submitted project yet",
+                            ),
                           );
                         }
 
@@ -306,7 +307,11 @@ class _SubmitProjectState extends State<SubmitProject> {
                     ),
                   ),
                   AppSpacing.mediumVertical,
-                  _buildQuillEditor(quillController, scrollController, false),
+                  _buildQuillEditor(
+                    quillController,
+                    scrollController,
+                    false,
+                  ),
                   AppSpacing.mediumVertical,
                   Align(
                     alignment: Alignment.bottomRight,

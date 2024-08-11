@@ -48,7 +48,9 @@ class _MyCoursesPageState extends State<MyCoursePage>
   Folder? selectedFolder;
   bool isFolderLoading = false;
   late ConnectivityService _connectivityService;
-  final RefreshController _refreshController =
+  final RefreshController _courseRefreshController =
+      RefreshController(initialRefresh: false);
+  final RefreshController _folderRefreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -63,16 +65,18 @@ class _MyCoursesPageState extends State<MyCoursePage>
   void dispose() {
     _tabController?.dispose();
     _connectivityService.dispose();
+    _courseRefreshController.dispose();
+    _folderRefreshController.dispose();
     super.dispose();
   }
 
   void _onRefresh() async {
     setState(() {});
-    _refreshController.refreshCompleted();
+    _courseRefreshController.refreshCompleted();
   }
 
   void _onLoading() async {
-    _refreshController.loadComplete();
+    _courseRefreshController.loadComplete();
   }
 
   void _showCreateFolderDialog(BuildContext context) {
@@ -243,26 +247,21 @@ class _MyCoursesPageState extends State<MyCoursePage>
       ),
       body: !_connectivityService.isConnected
           ? NoConnection(
-            onRetry: () {
-              setState(() {});
-            },
-          )
+              onRetry: () {
+                setState(() {});
+              },
+            )
           : SafeArea(
-              child: SmartRefresher(
-                onRefresh: _onRefresh,
-                onLoading: _onLoading,
-                controller: _refreshController,
-                child: Container(
-                  padding: const EdgeInsets.only(
-                    top: 12,
-                  ),
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      courseTab(context),
-                      folderTab(context),
-                    ],
-                  ),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 12,
+                ),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    courseTab(context),
+                    folderTab(context),
+                  ],
                 ),
               ),
             ),
@@ -298,85 +297,91 @@ class _MyCoursesPageState extends State<MyCoursePage>
               } else if (courseSnapshot.hasData) {
                 List<Map<String, dynamic>> courseDataList =
                     courseSnapshot.data!;
-                return ListView.builder(
-                  itemCount: courseDataList.length,
-                  itemBuilder: (context, index) {
-                    Course course = courseDataList[index]['course'];
-                    List<String> progress = courseDataList[index]['progress'];
-                    int totalLessons = course.lessonNum;
-                    int completedLessons = progress.length;
+                return SmartRefresher(
+                  onRefresh: _onRefresh,
+                  onLoading: _onLoading,
+                  controller: _courseRefreshController,
+                  child: ListView.builder(
+                    itemCount: courseDataList.length,
+                    itemBuilder: (context, index) {
+                      Course course = courseDataList[index]['course'];
+                      List<String> progress = courseDataList[index]['progress'];
+                      int totalLessons = course.lessonNum;
+                      int completedLessons = progress.length;
 
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (context) => CourseDetail(
-                              courseId: course.id,
-                              userId: FirebaseAuth.instance.currentUser!.uid,
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (context) => CourseDetail(
+                                courseId: course.id,
+                                userId: FirebaseAuth.instance.currentUser!.uid,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          MyCourseItem(
-                            imageUrl: course.thumbnail,
-                            title: course.title,
-                            author: course.instructorName,
-                            duration: course.duration,
-                            students: course.students.toString(),
-                            moreOnPress: () {
-                              showFolderBottomSheet(context, course.id);
-                            },
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Progress",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.deepBlue,
-                                    fontWeight: FontWeight.w500,
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            MyCourseItem(
+                              imageUrl: course.thumbnail,
+                              title: course.title,
+                              author: course.instructorName,
+                              duration: course.duration,
+                              students: course.students.toString(),
+                              moreOnPress: () {
+                                showFolderBottomSheet(context, course.id);
+                              },
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Progress",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.deepBlue,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: LinearProgressIndicator(
-                                        value: totalLessons > 0
-                                            ? completedLessons / totalLessons
-                                            : 0,
-                                        backgroundColor: Colors.grey.shade300,
-                                        color: AppColors.deepBlue,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        '$completedLessons of $totalLessons lessons',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: LinearProgressIndicator(
+                                          value: totalLessons > 0
+                                              ? completedLessons / totalLessons
+                                              : 0,
+                                          backgroundColor: Colors.grey.shade300,
+                                          color: AppColors.deepBlue,
                                         ),
-                                        textAlign: TextAlign
-                                            .right, // Align the text to the right
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '$completedLessons of $totalLessons lessons',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          textAlign: TextAlign
+                                              .right, // Align the text to the right
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const Divider(),
-                        ],
-                      ),
-                    );
-                  },
+                            const Divider(),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               } else {
                 return _emptyCourse(context);
