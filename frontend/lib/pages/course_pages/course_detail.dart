@@ -103,8 +103,8 @@ class _CourseDetailState extends State<CourseDetail>
 
   Future<void> _checkEnrollment() async {
     try {
-      final enrollmentStatus = await enrollmentService.checkEnrollment(
-          userId, widget.courseId);
+      final enrollmentStatus =
+          await enrollmentService.checkEnrollment(userId, widget.courseId);
       // log(enrollmentStatus['isEnrolled'].toString());
       setState(() {
         isEnrolled = enrollmentStatus['isEnrolled'];
@@ -290,6 +290,8 @@ class _CourseDetailState extends State<CourseDetail>
                         child: TextButton(
                           style: AppStyles.primaryButtonStyle,
                           onPressed: () async {
+                            //Stop video
+
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(

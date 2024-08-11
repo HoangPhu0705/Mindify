@@ -23,7 +23,8 @@ class ProfileTab extends StatefulWidget {
   State<ProfileTab> createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<ProfileTab> {
+class _ProfileTabState extends State<ProfileTab>
+    with AutomaticKeepAliveClientMixin {
   UserService userService = UserService();
   CourseService courseService = CourseService();
   List<String> followedTopic = [];
@@ -34,6 +35,10 @@ class _ProfileTabState extends State<ProfileTab> {
     super.initState();
     getFollowedTopics();
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 
   Future<void> getFollowedTopics() async {
     String uid = userService.getUserId();
@@ -50,169 +55,176 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
-    return PieCanvas(
-      theme: const PieTheme(
-        delayDuration: Duration.zero,
-        tooltipTextStyle: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
+    super.build(context);
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: PieCanvas(
+        theme: const PieTheme(
+          delayDuration: Duration.zero,
+          tooltipTextStyle: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-      child: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(12.0),
-          child: FutureBuilder(
-            future: getFollowedTopics(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const MyLoading(
-                  width: 30,
-                  height: 30,
-                  color: AppColors.deepBlue,
-                );
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'About me',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium!
-                        .copyWith(color: Colors.black),
-                  ),
-                  AppSpacing.mediumVertical,
-                  followedTopic.isEmpty
-                      ? _emptySkills()
-                      : Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: ChipList(
-                                listOfChipNames: followedTopic,
-                                listOfChipIndicesCurrentlySelected: const [],
-                                shouldWrap: true,
-                                borderRadiiList: const [20],
-                                style: const TextStyle(fontSize: 14),
-                                showCheckmark: false,
-                                activeBorderColorList: const [Colors.black],
-                                inactiveBgColorList: const [
-                                  AppColors.ghostWhite
-                                ],
-                                inactiveBorderColorList: const [
-                                  AppColors.lightGrey
-                                ],
-                                inactiveTextColorList: const [Colors.black],
-                                activeTextColorList: const [Colors.black],
-                                activeBgColorList: const [Colors.transparent],
-                                axis: Axis.horizontal,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                extraOnToggle: (val) {},
-                              ),
-                            ),
-                            AppSpacing.mediumVertical,
-                            GestureDetector(
-                              onTap: () async {
-                                await Navigator.of(context, rootNavigator: true)
-                                    .push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const FollowSkills(),
-                                  ),
-                                );
-                              },
-                              child: const Center(
-                                child: Text(
-                                  "Change topics",
-                                  style: TextStyle(
-                                    color: AppColors.deepBlue,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(12.0),
+            child: FutureBuilder(
+              future: getFollowedTopics(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const MyLoading(
+                    width: 30,
+                    height: 30,
+                    color: AppColors.deepBlue,
+                  );
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'About me',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(color: Colors.black),
+                    ),
+                    AppSpacing.mediumVertical,
+                    followedTopic.isEmpty
+                        ? _emptySkills()
+                        : Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: ChipList(
+                                  listOfChipNames: followedTopic,
+                                  listOfChipIndicesCurrentlySelected: const [],
+                                  shouldWrap: true,
+                                  borderRadiiList: const [20],
+                                  style: const TextStyle(fontSize: 14),
+                                  showCheckmark: false,
+                                  activeBorderColorList: const [Colors.black],
+                                  inactiveBgColorList: const [
+                                    AppColors.ghostWhite
+                                  ],
+                                  inactiveBorderColorList: const [
+                                    AppColors.lightGrey
+                                  ],
+                                  inactiveTextColorList: const [Colors.black],
+                                  activeTextColorList: const [Colors.black],
+                                  activeBgColorList: const [Colors.transparent],
+                                  axis: Axis.horizontal,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  extraOnToggle: (val) {},
                                 ),
                               ),
-                            ),
-                            AppSpacing.largeVertical,
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                'My teaching',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium!
-                                    .copyWith(color: Colors.black),
-                              ),
-                            ),
-                            AppSpacing.mediumVertical,
-                          ],
-                        ),
-                  StreamBuilder<QuerySnapshot>(
-                    stream: courseService.getCourseStreamByAuthorId(
-                      userService.getUserId(),
-                      true,
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                        List<DocumentSnapshot> courses = snapshot.data!.docs;
-
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: courses.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              DocumentSnapshot course = courses[index];
-                              String courseName = course["courseName"];
-                              String thumbnail = course["thumbnail"];
-                              bool isPublic = course["isPublic"];
-                              bool requestSent = course["request"];
-                              return MyClassItem(
-                                classTitle: courseName,
-                                onEditPressed: () {
-                                  // Navigate to edit class page
-                                  Navigator.of(context, rootNavigator: true)
+                              AppSpacing.mediumVertical,
+                              GestureDetector(
+                                onTap: () async {
+                                  await Navigator.of(context,
+                                          rootNavigator: true)
                                       .push(
                                     MaterialPageRoute(
-                                      builder: (context) {
-                                        return ManageClass(
-                                            courseId: course.id,
-                                            isEditing: true);
-                                      },
+                                      builder: (context) =>
+                                          const FollowSkills(),
                                     ),
                                   );
                                 },
-                                onDeletePressed: () {},
-                                thumbnail: thumbnail,
-                                isPublic: isPublic,
-                                requestSent: requestSent,
-                              );
-                            },
+                                child: const Center(
+                                  child: Text(
+                                    "Change topics",
+                                    style: TextStyle(
+                                      color: AppColors.deepBlue,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              AppSpacing.largeVertical,
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'My teaching',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .copyWith(color: Colors.black),
+                                ),
+                              ),
+                              AppSpacing.mediumVertical,
+                            ],
                           ),
-                        );
-                      }
+                    StreamBuilder<QuerySnapshot>(
+                      stream: courseService.getCourseStreamByAuthorId(
+                        userService.getUserId(),
+                        true,
+                      ),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData &&
+                            snapshot.data!.docs.isNotEmpty) {
+                          List<DocumentSnapshot> courses = snapshot.data!.docs;
 
-                      return const Column(
-                        children: [
-                          Icon(
-                            Icons.tv_off_outlined,
-                            size: 100,
-                            color: AppColors.deepSpace,
-                          ),
-                          Center(
-                            child: Text(
-                              "You don't have any published classes yet",
-                              style: TextStyle(
-                                color: AppColors.deepSpace,
-                                fontWeight: FontWeight.w500,
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: courses.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot course = courses[index];
+                                String courseName = course["courseName"];
+                                String thumbnail = course["thumbnail"];
+                                bool isPublic = course["isPublic"];
+                                bool requestSent = course["request"];
+                                return MyClassItem(
+                                  classTitle: courseName,
+                                  onEditPressed: () {
+                                    // Navigate to edit class page
+                                    Navigator.of(context, rootNavigator: true)
+                                        .push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ManageClass(
+                                              courseId: course.id,
+                                              isEditing: true);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  onDeletePressed: () {},
+                                  thumbnail: thumbnail,
+                                  isPublic: isPublic,
+                                  requestSent: requestSent,
+                                );
+                              },
+                            ),
+                          );
+                        }
+
+                        return const Column(
+                          children: [
+                            Icon(
+                              Icons.tv_off_outlined,
+                              size: 100,
+                              color: AppColors.deepSpace,
+                            ),
+                            Center(
+                              child: Text(
+                                "You don't have any published classes yet",
+                                style: TextStyle(
+                                  color: AppColors.deepSpace,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

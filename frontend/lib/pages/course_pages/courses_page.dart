@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
 import 'package:frontend/pages/course_pages/folder_detail.dart';
@@ -43,7 +44,8 @@ class _MyCoursesPageState extends State<MyCoursePage>
   List<String> courseIdEnrolled = [];
   List<Course> enrolledCourses = [];
   List<Course> selectedFolderCourses = [];
-  bool isLoading = true;
+  bool _isLoading = true;
+  List<Map<String, dynamic>>? _courseDataList;
   String userId = '';
   Folder? selectedFolder;
   bool isFolderLoading = false;
@@ -59,6 +61,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
     _tabController = TabController(length: 2, vsync: this);
     userId = userService.getUserId();
     _connectivityService = ConnectivityService();
+    _loadCourseData();
   }
 
   @override
@@ -70,8 +73,8 @@ class _MyCoursesPageState extends State<MyCoursePage>
     super.dispose();
   }
 
-  void _onRefresh() async {
-    setState(() {});
+  Future<void> _onRefresh() async {
+    await _loadCourseData();
     _courseRefreshController.refreshCompleted();
   }
 
@@ -223,6 +226,49 @@ class _MyCoursesPageState extends State<MyCoursePage>
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: MyLoading(
+        width: 30,
+        height: 30,
+        color: AppColors.deepBlue,
+      ),
+    );
+  }
+
+  Future<void> _loadCourseData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    var enrollmentStream = enrollmentService
+        .getEnrollmentStreamByUser(FirebaseAuth.instance.currentUser!.uid);
+    enrollmentStream.listen((snapshot) async {
+      if (snapshot.docs.isNotEmpty) {
+        List<DocumentSnapshot> enrollments = snapshot.docs;
+        List<Map<String, dynamic>> courseDataList = await Future.wait(
+          enrollments.map((document) async {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+            String courseId = data['courseId'];
+            Course course = await courseService.getCourseById(courseId);
+            List<String> progress =
+                await enrollmentService.getProgressOfEnrollment(document.id);
+            return {'course': course, 'progress': progress};
+          }).toList(),
+        );
+        setState(() {
+          _courseDataList = courseDataList;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _courseDataList = [];
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,7 +305,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    courseTab(context),
+                    _isLoading ? _buildLoadingIndicator() : courseTab(context),
                     folderTab(context),
                   ],
                 ),
@@ -269,129 +315,94 @@ class _MyCoursesPageState extends State<MyCoursePage>
   }
 
   Widget courseTab(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: enrollmentService
-          .getEnrollmentStreamByUser(FirebaseAuth.instance.currentUser!.uid),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<DocumentSnapshot> enrollments = snapshot.data!.docs;
-          return FutureBuilder<List<Map<String, dynamic>>>(
-            future: Future.wait(
-              enrollments.map((document) async {
-                Map<String, dynamic> data =
-                    document.data() as Map<String, dynamic>;
-                String courseId = data['courseId'];
-                Course course = await courseService.getCourseById(courseId);
-                List<String> progress = await enrollmentService
-                    .getProgressOfEnrollment(document.id);
-                return {'course': course, 'progress': progress};
-              }).toList(),
-            ),
-            builder: (context, courseSnapshot) {
-              if (courseSnapshot.connectionState == ConnectionState.waiting) {
-                return const MyLoading(
-                  width: 30,
-                  height: 30,
-                  color: AppColors.deepBlue,
-                );
-              } else if (courseSnapshot.hasData) {
-                List<Map<String, dynamic>> courseDataList =
-                    courseSnapshot.data!;
-                return SmartRefresher(
-                  onRefresh: _onRefresh,
-                  onLoading: _onLoading,
-                  controller: _courseRefreshController,
-                  child: ListView.builder(
-                    itemCount: courseDataList.length,
-                    itemBuilder: (context, index) {
-                      Course course = courseDataList[index]['course'];
-                      List<String> progress = courseDataList[index]['progress'];
-                      int totalLessons = course.lessonNum;
-                      int completedLessons = progress.length;
+    if (_courseDataList == null || _courseDataList!.isEmpty) {
+      return _emptyCourse(context);
+    }
+    return SmartRefresher(
+      onRefresh: _onRefresh,
+      onLoading: _onLoading,
+      controller: _courseRefreshController,
+      child: ListView.builder(
+        itemCount: _courseDataList!.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          Course course = _courseDataList![index]['course'];
+          List<String> progress = _courseDataList![index]['progress'];
+          int totalLessons = course.lessonNum;
+          int completedLessons = progress.length;
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                              builder: (context) => CourseDetail(
-                                courseId: course.id,
-                                userId: FirebaseAuth.instance.currentUser!.uid,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            MyCourseItem(
-                              imageUrl: course.thumbnail,
-                              title: course.title,
-                              author: course.instructorName,
-                              duration: course.duration,
-                              students: course.students.toString(),
-                              moreOnPress: () {
-                                showFolderBottomSheet(context, course.id);
-                              },
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Progress",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: AppColors.deepBlue,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 2,
-                                        child: LinearProgressIndicator(
-                                          value: totalLessons > 0
-                                              ? completedLessons / totalLessons
-                                              : 0,
-                                          backgroundColor: Colors.grey.shade300,
-                                          color: AppColors.deepBlue,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text(
-                                          '$completedLessons of $totalLessons lessons',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign
-                                              .right, // Align the text to the right
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Divider(),
-                          ],
-                        ),
-                      );
-                    },
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(
+                  builder: (context) => CourseDetail(
+                    courseId: course.id,
+                    userId: FirebaseAuth.instance.currentUser!.uid,
                   ),
-                );
-              } else {
-                return _emptyCourse(context);
-              }
+                ),
+              );
             },
+            child: Column(
+              children: [
+                MyCourseItem(
+                  imageUrl: course.thumbnail,
+                  title: course.title,
+                  author: course.instructorName,
+                  duration: course.duration,
+                  students: course.students.toString(),
+                  moreOnPress: () {
+                    showFolderBottomSheet(context, course.id);
+                  },
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Progress",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.deepBlue,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: LinearProgressIndicator(
+                              value: totalLessons > 0
+                                  ? completedLessons / totalLessons
+                                  : 0,
+                              backgroundColor: Colors.grey.shade300,
+                              color: AppColors.deepBlue,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              '$completedLessons of $totalLessons lessons',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign
+                                  .right, // Align the text to the right
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+              ],
+            ),
           );
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
+        },
+      ),
     );
   }
 

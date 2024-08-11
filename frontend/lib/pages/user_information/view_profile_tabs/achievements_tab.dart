@@ -26,33 +26,59 @@ class AchievementTab extends StatefulWidget {
   State<AchievementTab> createState() => _AchievementTabState();
 }
 
-class _AchievementTabState extends State<AchievementTab> {
+class _AchievementTabState extends State<AchievementTab>
+    with AutomaticKeepAliveClientMixin {
   EnrollmentService enrollmentService = EnrollmentService();
   CourseService courseService = CourseService();
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? displayName =
       FirebaseAuth.instance.currentUser!.displayName ?? "Mindify Member";
+  bool _isLoading = true;
+  List<Map<String, dynamic>>? progresses;
+  List<DocumentSnapshot>? _enrollments;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
+    log("init ne âs");
     super.initState();
+    _loadCourseData();
   }
 
-  Future<List<Map<String, dynamic>>> getEnrollmentsProgress(
-      List<DocumentSnapshot> enrollments) async {
-    return await Future.wait(enrollments.map((enrollment) async {
-      Map<String, dynamic> data = enrollment.data() as Map<String, dynamic>;
-      String courseId = data['courseId'];
+  Future<void> _loadCourseData() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-      Course course = await courseService.getCourseById(courseId);
-      List<String> progress =
-          await enrollmentService.getProgressOfEnrollment(enrollment.id);
-
-      return {
-        'course': course,
-        'progress': progress,
-      };
-    }).toList());
+    var enrollmentStream = enrollmentService
+        .getEnrollmentStreamByUser(FirebaseAuth.instance.currentUser!.uid);
+    enrollmentStream.listen((snapshot) async {
+      if (snapshot.docs.isNotEmpty) {
+        List<DocumentSnapshot> enrollments = snapshot.docs;
+        _enrollments = enrollments;
+        List<Map<String, dynamic>> courseDataList = await Future.wait(
+          enrollments.map((document) async {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+            String courseId = data['courseId'];
+            Course course = await courseService.getCourseById(courseId);
+            List<String> progress =
+                await enrollmentService.getProgressOfEnrollment(document.id);
+            return {'course': course, 'progress': progress};
+          }).toList(),
+        );
+        setState(() {
+          progresses = courseDataList;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          progresses = [];
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   @override
@@ -86,65 +112,50 @@ class _AchievementTabState extends State<AchievementTab> {
               ),
             ),
             AppSpacing.mediumVertical,
-            StreamBuilder(
-                stream: enrollmentService.getEnrollmentStreamByUser(uid),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const SizedBox.shrink();
-                  }
-                  List<DocumentSnapshot> enrollments = snapshot.data!.docs;
-                  return FutureBuilder(
-                    future: getEnrollmentsProgress(enrollments),
-                    builder: (context, progressSnapshot) {
-                      if (progressSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(
-                            child: MyLoading(
-                          width: 30,
-                          height: 30,
-                          color: AppColors.deepBlue,
-                        ));
-                      }
-                      if (!progressSnapshot.hasData ||
-                          progressSnapshot.data!.isEmpty) {
-                        return _emptyCertificate();
-                      }
-
-                      List<Map<String, dynamic>> progresses =
-                          progressSnapshot.data as List<Map<String, dynamic>>;
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: progresses.length,
-                        itemBuilder: (context, index) {
-                          Course course = progresses[index]['course'];
-                          List<String> progress = progresses[index]['progress'];
-                          int totalLessons = course.lessonNum;
-                          int completedLessons = progress.length;
-                          bool isDone = totalLessons == completedLessons;
-                          String courseName = course.title;
-                          List<String> skillsCovered = course.categories;
-                          String instructorName = course.instructorName;
-                          String enrollmentId = enrollments[index].id;
-
-                          return isDone
-                              ? _buildCertificate(
-                                  courseName,
-                                  displayName ?? "Mindify Member",
-                                  skillsCovered,
-                                  instructorName,
-                                  enrollmentId,
-                                )
-                              : const SizedBox.shrink();
-                        },
-                      );
-                    },
-                  );
-                })
+            _isLoading
+                ? const Center(
+                    child: MyLoading(
+                      width: 30,
+                      height: 30,
+                      color: AppColors.deepBlue,
+                    ),
+                  )
+                : _showCertificates(context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _showCertificates(BuildContext context) {
+    if (progresses == null || progresses!.isEmpty) {
+      return _emptyCertificate();
+    }
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: progresses!.length,
+      itemBuilder: (context, index) {
+        Course course = progresses![index]['course'];
+        List<String> progress = progresses![index]['progress'];
+        int totalLessons = course.lessonNum;
+        int completedLessons = progress.length;
+        bool isDone = totalLessons == completedLessons;
+        String courseName = course.title;
+        List<String> skillsCovered = course.categories;
+        String instructorName = course.instructorName;
+        String enrollmentId = _enrollments![index].id;
+
+        return isDone
+            ? _buildCertificate(
+                courseName,
+                displayName ?? "Mindify Member",
+                skillsCovered,
+                instructorName,
+                enrollmentId,
+              )
+            : const SizedBox.shrink();
+      },
     );
   }
 

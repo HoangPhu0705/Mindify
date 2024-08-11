@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:frontend/pages/course_pages/course_detail.dart';
@@ -68,10 +70,7 @@ class _TeachingTabTeacherState extends State<TeachingTabTeacher> {
         return SingleChildScrollView(
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 5,
-              vertical: 12
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               // mainAxisAlignment: MainAxisAlignment.start,

@@ -26,7 +26,8 @@ class TeachingTab extends StatefulWidget {
   State<TeachingTab> createState() => _TeachingTabState();
 }
 
-class _TeachingTabState extends State<TeachingTab> {
+class _TeachingTabState extends State<TeachingTab>
+    with AutomaticKeepAliveClientMixin {
   //Services
   UserService userService = UserService();
   CourseService courseService = CourseService();
@@ -36,6 +37,10 @@ class _TeachingTabState extends State<TeachingTab> {
   late Future<dynamic> _future;
   late dynamic userData;
   String uid = FirebaseAuth.instance.currentUser!.uid;
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -64,6 +69,7 @@ class _TeachingTabState extends State<TeachingTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FutureBuilder(
       future: _future,
       builder: (context, snapshot) {
@@ -83,146 +89,150 @@ class _TeachingTabState extends State<TeachingTab> {
         String role = userData['role'];
         bool requestSent = userData['requestSent'];
 
-        return PieCanvas(
-          theme: const PieTheme(
-            delayDuration: Duration.zero,
-            tooltipTextStyle: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
+        return Container(
+          height: MediaQuery.of(context).size.height,
+          child: PieCanvas(
+            theme: const PieTheme(
+              delayDuration: Duration.zero,
+              tooltipTextStyle: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          child: Builder(
-            builder: (context) {
-              return SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          text: 'Welcome to',
+            child: Builder(
+              builder: (context) {
+                return SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            text: 'Welcome to',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium!
+                                .copyWith(color: Colors.black),
+                            children: const [
+                              TextSpan(
+                                text: ' Teacher Hub',
+                                style: TextStyle(
+                                  color: AppColors.deepBlue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        AppSpacing.smallVertical,
+                        if (requestSent == false)
+                          Center(
+                            child: _becomeInstructor(),
+                          )
+                        else if (role != "teacher")
+                          _requestPending()
+                        else
+                          _startCreateClass(),
+                        AppSpacing.mediumVertical,
+                        Text(
+                          "Class drafts",
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
-                              .copyWith(color: Colors.black),
-                          children: const [
-                            TextSpan(
-                              text: ' Teacher Hub',
-                              style: TextStyle(
-                                color: AppColors.deepBlue,
+                              .copyWith(
+                                color: Colors.black,
+                                fontSize: 18,
                               ),
-                            ),
-                          ],
                         ),
-                      ),
-                      AppSpacing.smallVertical,
-                      if (requestSent == false)
-                        Center(
-                          child: _becomeInstructor(),
-                        )
-                      else if (role != "teacher")
-                        _requestPending()
-                      else
-                        _startCreateClass(),
-                      AppSpacing.mediumVertical,
-                      Text(
-                        "Class drafts",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium!
-                            .copyWith(
-                              color: Colors.black,
-                              fontSize: 18,
-                            ),
-                      ),
-                      AppSpacing.smallVertical,
-                      StreamBuilder<QuerySnapshot>(
-                        stream:
-                            courseService.getCourseStreamByAuthorId(uid, false),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData &&
-                              snapshot.data!.docs.isNotEmpty) {
-                            List<DocumentSnapshot> courses =
-                                snapshot.data!.docs;
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.25,
-                              child: ListView.builder(
-                                itemCount: courses.length,
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  DocumentSnapshot course = courses[index];
-                                  String courseName = course["courseName"];
-                                  String thumbnail = course["thumbnail"];
-                                  bool isPublic = course["isPublic"];
-                                  bool requestSent = course["request"];
-                                  return MyClassItem(
-                                    requestSent: requestSent,
-                                    classTitle: courseName,
-                                    onEditPressed: () async {
-                                      await Navigator.of(context,
-                                              rootNavigator: true)
-                                          .push(
-                                        MaterialPageRoute(
-                                          builder: (context) => ManageClass(
-                                            courseId: course.id,
-                                            isEditing: true,
+                        AppSpacing.smallVertical,
+                        StreamBuilder<QuerySnapshot>(
+                          stream: courseService.getCourseStreamByAuthorId(
+                              uid, false),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData &&
+                                snapshot.data!.docs.isNotEmpty) {
+                              List<DocumentSnapshot> courses =
+                                  snapshot.data!.docs;
+                              return SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
+                                child: ListView.builder(
+                                  itemCount: courses.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot course = courses[index];
+                                    String courseName = course["courseName"];
+                                    String thumbnail = course["thumbnail"];
+                                    bool isPublic = course["isPublic"];
+                                    bool requestSent = course["request"];
+                                    return MyClassItem(
+                                      requestSent: requestSent,
+                                      classTitle: courseName,
+                                      onEditPressed: () async {
+                                        await Navigator.of(context,
+                                                rootNavigator: true)
+                                            .push(
+                                          MaterialPageRoute(
+                                            builder: (context) => ManageClass(
+                                              courseId: course.id,
+                                              isEditing: true,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    onDeletePressed: () {
-                                      AwesomeDialog(
-                                        padding: EdgeInsets.all(16),
-                                        context: context,
-                                        dialogType: DialogType.noHeader,
-                                        dialogBorderRadius:
-                                            BorderRadius.circular(5),
-                                        dialogBackgroundColor:
-                                            AppColors.deepSpace,
-                                        title: 'Delete Class',
-                                        titleTextStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        desc:
-                                            'Deleting this will delete all of your content?',
-                                        btnCancelOnPress: () {},
-                                        btnOkColor: AppColors.cream,
-                                        descTextStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                        ),
-                                        buttonsTextStyle: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                        ),
-                                        btnOkOnPress: () async {
-                                          await courseService
-                                              .deleteCourse(course.id);
-                                        },
-                                      ).show();
-                                    },
-                                    thumbnail:
-                                        thumbnail.isNotEmpty ? thumbnail : "",
-                                    isPublic: isPublic,
-                                  );
-                                },
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        },
-                      ),
-                    ],
+                                        );
+                                      },
+                                      onDeletePressed: () {
+                                        AwesomeDialog(
+                                          padding: EdgeInsets.all(16),
+                                          context: context,
+                                          dialogType: DialogType.noHeader,
+                                          dialogBorderRadius:
+                                              BorderRadius.circular(5),
+                                          dialogBackgroundColor:
+                                              AppColors.deepSpace,
+                                          title: 'Delete Class',
+                                          titleTextStyle: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          desc:
+                                              'Deleting this will delete all of your content?',
+                                          btnCancelOnPress: () {},
+                                          btnOkColor: AppColors.cream,
+                                          descTextStyle: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
+                                          buttonsTextStyle: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                          ),
+                                          btnOkOnPress: () async {
+                                            await courseService
+                                                .deleteCourse(course.id);
+                                          },
+                                        ).show();
+                                      },
+                                      thumbnail:
+                                          thumbnail.isNotEmpty ? thumbnail : "",
+                                      isPublic: isPublic,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         );
       },
