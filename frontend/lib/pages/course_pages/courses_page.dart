@@ -294,7 +294,9 @@ class _MyCoursesPageState extends State<MyCoursePage>
       body: !_connectivityService.isConnected
           ? NoConnection(
               onRetry: () {
-                setState(() {});
+                setState(() {
+                  _isLoading = false;
+                });
               },
             )
           : SafeArea(
