@@ -19,6 +19,7 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+
 const auth = getAuth(firebaseApp);
 
 const sendEmail = async (email, subject, content) => {
