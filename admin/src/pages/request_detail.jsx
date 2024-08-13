@@ -80,16 +80,18 @@ const RequestDetail = () => {
   const rejectRequest = async () => {
     setLoading(true);
     console.log(token);
+    console.log(rejectionContent);
     try {
       await axios.put(
         `/api/users/requests/${requestId}/reject`,
+        { content: rejectionContent },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          }, 
-          content: rejectionContent
+          },
         }
       );
+      
       setIsRejected(true);
       setPopupOpen(false);
       setLoading(false);
