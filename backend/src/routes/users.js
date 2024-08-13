@@ -27,5 +27,6 @@ router.post('/requestInstructor', authenticate, UserController.createInstructorS
 router.get('/requests/:requestId', authenticateJWT, UserController.getRequestDetails);
 router.put('/requests/:requestId/approve', authenticateJWT, UserController.approveInstructorRequest);
 router.put('/requests/:requestId/reject', authenticateJWT, UserController.rejectInstructorRequest);
+router.delete('/requests/:requestId', authenticateJWT, UserController.deleteRequest);
 router.delete('/:userId/reminder/:reminderId', authenticate, ReminderController.deleteReminder);
 module.exports = router;

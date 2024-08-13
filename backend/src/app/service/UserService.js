@@ -45,6 +45,10 @@ const sendApprovalEmail = async (email, firstName) => {
     return transporter.sendMail(mailOptions);
 };
 
+
+
+
+
 exports.searchUsers = async (query) => {
     const listUsersResult = await admin.auth().listUsers();
     const users = listUsersResult.users;
@@ -293,6 +297,17 @@ exports.rejectInstructorRequest = async (requestId, content) => {
         throw new Error(`Error when rejecting request: ${error.message}`);
     }
 };
+
+
+exports.deleteRequest = async (requestId) => {
+    try {
+        const requestRef = RequestCollection.doc(requestId);
+        await requestRef.delete();
+        return { message: 'Request deleted successfully' };
+    } catch (error) {
+        throw new Error(`Error when deleting request: ${error.message}`);
+    }
+}
 
 exports.followUser = async (userId, followUserId) => {
     const userRef = UserCollection.doc(userId);
@@ -575,3 +590,6 @@ exports.getWatchedTime = async (userId, courseId, lessonId) => {
         throw new Error(`Error fetching watched time: ${error.message}`);
     }
 };
+
+
+

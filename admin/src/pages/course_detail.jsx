@@ -46,19 +46,36 @@ const CourseDetail = () => {
       console.error('Error approving course: ', error);
     }
   };
-
+  // await axios.put(
+  //   `/api/users/requests/${requestId}/reject`,
+  //   { content: rejectionContent },
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }
+  // );
   const handleReject = async () => {
     try {
-      await axios.post(`/api/courseRequest/${requestId}/reject`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.post(
+        `/api/courseRequest/${requestId}/reject`,
+        {}, // Empty body if not sending data
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       fetchCourseDetail();
     } catch (error) {
-      console.error('Error rejecting course: ', error);
+      console.error("Error rejecting course: ", error);
+      if (error.response && error.response.status === 401) {
+        // Handle 401 error, e.g., redirect to login or show a message
+        alert("Session expired. Please log in again.");
+      }
     }
   };
+  
 
   if (loading) {
     return (

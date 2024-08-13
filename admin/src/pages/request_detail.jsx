@@ -58,6 +58,7 @@ const RequestDetail = () => {
     try {
       await axios.put(
         `/api/users/requests/${requestId}/approve`,
+        { content: rejectionContent },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +71,7 @@ const RequestDetail = () => {
       setTimeout(() => {
         setAlertVisible(false);
         navigate("/request");
-      }, 2000); // 2 seconds delay
+      }, 2000); 
     } catch (err) {
       setLoading(false);
       console.error("Error approving request", err);

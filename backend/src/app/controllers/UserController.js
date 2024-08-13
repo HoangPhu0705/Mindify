@@ -107,6 +107,17 @@ exports.getRequestDetails = async (req, res) => {
 };
 
 
+exports.deleteRequest = async (req, res) => {
+    try {
+        const requestId = req.params.requestId;
+        const response = await UserService.deleteRequest(requestId);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).send({ message: 'Error deleting request', error: error.message });
+    }
+}
+
+
 exports.getUserData = async (req, res) => {
     try {
         const userId = req.params.userId;

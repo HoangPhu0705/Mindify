@@ -2,10 +2,25 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from "@material-tailwind/react";
+import {
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+  IconButton,
+} from "@material-tailwind/react";
 import { Chip } from "@material-tailwind/react";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
-const TABLE_HEAD = ["Full Name", "Email", "Category", "Status", "Detail"];
+const TABLE_HEAD = [
+  "Full Name",
+  "Email",
+  "Category",
+  "Status",
+  "Detail",
+  "Actions",
+];
 
 const Request = () => {
   const [requests, setRequests] = useState([]);
@@ -47,13 +62,30 @@ const Request = () => {
     if (selectedTab === "all") {
       setFilteredRequests(requests);
     } else {
-      setFilteredRequests(requests.filter(request => request.status.toLowerCase() === selectedTab));
+      setFilteredRequests(
+        requests.filter(
+          (request) => request.status.toLowerCase() === selectedTab
+        )
+      );
     }
   }, [selectedTab, requests]);
 
   if (error) {
     return <p>{error}</p>;
   }
+
+  const deleteRequest = async (requestId) => {
+    try {
+      await axios.delete(`/api/users/requests/${requestId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (err) {
+      console.error("Error deleting request", err);
+      throw new Error("Error deleting request");
+    }
+  };
 
   return (
     <Card className="h-full w-full overflow-scroll">
@@ -63,22 +95,33 @@ const Request = () => {
         </Typography>
       </div>
 
-        <Tabs value={selectedTab}>
-          <TabsHeader>
-            {data.map(({ label, value }) => (
-              <Tab key={value} value={value} onClick={() => setSelectedTab(value)}>
-                {label}
-              </Tab>
-            ))}
-          </TabsHeader>
-        </Tabs>
+      <Tabs value={selectedTab}>
+        <TabsHeader>
+          {data.map(({ label, value }) => (
+            <Tab
+              key={value}
+              value={value}
+              onClick={() => setSelectedTab(value)}
+            >
+              {label}
+            </Tab>
+          ))}
+        </TabsHeader>
+      </Tabs>
 
       <table className="w-full min-w-max table-auto text-left">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
-              <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                <Typography variant="small" color="blue-gray" className="font-bold leading-none text-lg">
+              <th
+                key={head}
+                className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+              >
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-bold leading-none text-lg"
+                >
                   {head}
                 </Typography>
               </th>
@@ -89,17 +132,29 @@ const Request = () => {
           {filteredRequests.map((request) => (
             <tr key={request.id} className="even:bg-blue-gray-50/50">
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {request.firstName} {request.lastName}
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {request.user_email}
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {request.category}
                 </Typography>
               </td>
@@ -117,9 +172,37 @@ const Request = () => {
                 />
               </td>
               <td className="p-4">
-                <Link to={`/request/${request.id}`} className="bg-cyan-500 text-white px-3 py-1 rounded">
+                <Link
+                  to={`/request/${request.id}`}
+                  className="bg-cyan-500 text-white px-3 py-1 rounded"
+                >
                   View Details
                 </Link>
+              </td>
+              <td className="p-4">
+                <IconButton
+                  onClick={async () => {
+                    if (
+                      request.status === "Approved" ||
+                      request.status === "Declined"
+                    ) {
+                      await deleteRequest(request.id);
+                      setRequests(requests.filter((req) => req.id !== request.id));
+                    } else {
+                      alert("You can only delete requests that are Approved or Declined.");
+                    }
+                  }}
+                  className={`rounded-lg ${
+                    request.status === "Approved" || request.status === "Declined"
+                      ? "bg-red-500"
+                      : "bg-gray-300 cursor-not-allowed"
+                  }`}
+                  disabled={
+                    request.status !== "Approved" && request.status !== "Declined"
+                  }
+                >
+                  <TrashIcon className="text-white size-6" />
+                </IconButton>
               </td>
             </tr>
           ))}
