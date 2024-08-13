@@ -1,25 +1,6 @@
-const express = require('express')
-const app = express()
+const app = require('./app'); // Import từ app.js
 const port = process.env.PORT || 3000;
-const cors = require('cors');
-const route = require("./routes");
-const bodyParser = require('body-parser');
 
-
-//use cors and express.json()
-app.use(bodyParser.json());
-app.use(cors());
-app.use(express.json()); 
-
-
-route(app);
-
-
-
-
-
-app.listen(port, () =>
-    console.log(`App is listening on : http://localhost:${port}`)
-);
-
-
+app.listen(port, () => {
+    console.log(`App is listening on : http://localhost:${port}`);
+});

@@ -4,7 +4,7 @@ exports.searchCourses = async (req, res) => {
   try {
     const { query, lastDocument } = req.body;
     const result = await CourseService.searchCourses(query, lastDocument);
-    res.json(result);
+    res.status(200).json(result);
   } catch (e) {
     res.status(500).send('Internal Server Error');
   }
@@ -16,7 +16,7 @@ exports.searchCoursesAndUsers = async (req, res) => {
 
     const courses = await CourseService.searchCoursesAndUsers(query, isNewSearch);
 
-    return res.json(courses);
+    return res.status(200).json(courses);
   } catch (error) {
     console.error("Error in: ", error);
     res.status(500).json({ error: error.message });
