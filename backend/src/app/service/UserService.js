@@ -263,7 +263,7 @@ exports.rejectInstructorRequest = async (requestId, content) => {
     try {
         const requestRef = RequestCollection.doc(requestId);
         const requestDoc = await requestRef.get();
-
+        console.log(requestId);
         if (!requestDoc.exists) {
             throw new Error("Request doesn't exist");
         }

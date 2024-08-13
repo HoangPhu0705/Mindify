@@ -7,17 +7,16 @@ import {
   IconButton,
   Typography,
   Input,
+  Textarea,
 } from "@material-tailwind/react";
 
 const RejectPopup = ({ open, handleOpen, onReject, setRejectionContent }) => {
   return (
     <Dialog className="p-4" size="md" open={open} handler={handleOpen}>
       <DialogHeader className="justify-between">
-        <img
-          src="/image/exclamation.svg"
-          alt="exclamation"
-          className="w-10 h-10"
-        />
+      <Typography color="blue-gray" className="mb-1 text-2xl font-bold">
+          Rejection Reason
+        </Typography>
         <IconButton
           color="gray"
           size="sm"
@@ -40,10 +39,8 @@ const RejectPopup = ({ open, handleOpen, onReject, setRejectionContent }) => {
           </svg>
         </IconButton>
       </DialogHeader>
-      <DialogBody className="overflow-y-scroll">
-        <Typography color="blue-gray" className="mb-1 font-bold">
-          Rejection Reason
-        </Typography>
+      <DialogBody >
+        
         <Typography
           variant="paragraph"
           className="font-normal text-gray-600 max-w-lg"
@@ -58,17 +55,18 @@ const RejectPopup = ({ open, handleOpen, onReject, setRejectionContent }) => {
             Enter your reason below:
           </Typography>
           <div className="flex flex-col md:flex-row gap-2">
-            <Input
+            <Textarea
               color="gray"
               label="Rejection Reason"
               size="lg"
-              className="w-full md:max-w-lg"
+              className="w-full line-clamp-3 " 
               onChange={(e) => setRejectionContent(e.target.value)}
             />
-            <Button color="gray" className="w-full lg:max-w-[15rem]" onClick={onReject}>
-              Reject
-            </Button>
+            
           </div>
+          <Button color="gray" className="w-full mt-2" onClick={onReject}>
+              Reject
+          </Button>
         </div>
       </DialogBody>
     </Dialog>

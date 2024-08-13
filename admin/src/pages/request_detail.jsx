@@ -43,8 +43,8 @@ const RequestDetail = () => {
           }
         );
         setDetails(response.data);
-        setIsApproved(response.data.request.isApproved);
-        setIsRejected(response.data.request.isRejected);
+        setIsApproved(response.data.request.status == "Approved");
+        setIsRejected(response.data.request.status == "Declined");
       } catch (err) {
         setError("Error fetching details");
       }
@@ -79,6 +79,7 @@ const RequestDetail = () => {
 
   const rejectRequest = async () => {
     setLoading(true);
+    console.log(token);
     try {
       await axios.put(
         `/api/users/requests/${requestId}/reject`,

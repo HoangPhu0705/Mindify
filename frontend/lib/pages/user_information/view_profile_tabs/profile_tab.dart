@@ -49,7 +49,12 @@ class _ProfileTabState extends State<ProfileTab>
       return;
     }
 
+    if (data["followedTopic"] == null) {
+      return;
+    }
+
     List<dynamic> topicData = data["followedTopic"];
+
     followedTopic = List<String>.from(topicData);
   }
 
@@ -141,19 +146,20 @@ class _ProfileTabState extends State<ProfileTab>
                                 ),
                               ),
                               AppSpacing.largeVertical,
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'My teaching',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium!
-                                      .copyWith(color: Colors.black),
-                                ),
-                              ),
-                              AppSpacing.mediumVertical,
                             ],
                           ),
+                    AppSpacing.mediumVertical,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'My teaching',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(color: Colors.black),
+                      ),
+                    ),
+                    AppSpacing.mediumVertical,
                     StreamBuilder<QuerySnapshot>(
                       stream: courseService.getCourseStreamByAuthorId(
                         userService.getUserId(),
