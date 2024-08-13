@@ -36,6 +36,7 @@ class _SearchPageState extends State<SearchPage> {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
+  bool canFilter = false;
   String _lastQuery = '';
   late Future<void> _future;
   bool _isTyping = false;
@@ -73,6 +74,9 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchChanged() {
+    setState(() {
+      canFilter = false;
+    });
     if (_debounce?.isActive ?? false) {
       _debounce?.cancel();
     }
@@ -124,6 +128,7 @@ class _SearchPageState extends State<SearchPage> {
       _searchResults = [];
       _lastQuery = query;
       _hasMoreData = true;
+      canFilter = true;
     });
     try {
       List<Map<String, dynamic>> courses =
@@ -237,11 +242,6 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  DateTime _parseCreatedAt(String createdAtString) {
-    final format = DateFormat("MMMM d, yyyy 'at' h:mm:ss a 'UTC'xxx");
-    return format.parse(createdAtString);
-  }
-
   Widget _buildSearchResults() {
     if (_isLoading) {
       return const MyLoading(
@@ -293,6 +293,7 @@ class _SearchPageState extends State<SearchPage> {
               child: MyCourseItem(
                 imageUrl: course['thumbnail'],
                 title: course['courseName'],
+                lessonNum: course["lessonNum"].toString(),
                 author: course['author'],
                 duration: course['duration'],
                 students: course['students'].toString(),
@@ -307,10 +308,11 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSuggestionList() {
     log("suggestion result BUILDDDD");
+
     if (_suggestionResults.isEmpty) {
       return const Center(
         child: Text(
-          'Search your courses you may like',
+          'Search courses you may like',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
       );
@@ -398,10 +400,12 @@ class _SearchPageState extends State<SearchPage> {
                 searchBar: SuperSearchBar(
                   actions: [
                     SuperAction(
-                      child: IconButton(
-                        icon: const Icon(Icons.filter_list),
-                        onPressed: _showFilterSheet,
-                      ),
+                      child: !canFilter
+                          ? const SizedBox.shrink()
+                          : IconButton(
+                              icon: const Icon(Icons.filter_list),
+                              onPressed: _showFilterSheet,
+                            ),
                     ),
                   ],
                   onFocused: (focus) {

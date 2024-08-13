@@ -171,7 +171,8 @@ class _SavedClassesState extends State<SavedClasses> {
                         builder: (context, courseProvider, child) {
                           final savedCourseIds = courseProvider.savedCourses;
                           final filteredCourses = _savedCourses
-                              .where((course) => savedCourseIds.contains(course.id))
+                              .where((course) =>
+                                  savedCourseIds.contains(course.id))
                               .toList();
                           return _savedCourses.isEmpty
                               ? const Center(
@@ -195,13 +196,16 @@ class _SavedClassesState extends State<SavedClasses> {
                                           MaterialPageRoute(
                                             builder: (context) => CourseDetail(
                                                 courseId: course.id,
-                                                userId: _userService.getUserId()),
+                                                userId:
+                                                    _userService.getUserId()),
                                           ),
                                         );
                                       },
                                       child: MyCourseItem(
                                         imageUrl: course.thumbnail,
                                         title: course.title,
+                                        lessonNum:
+                                            course.lessons.length.toString(),
                                         author: course.instructorName,
                                         duration: course.duration,
                                         students: course.students.toString(),

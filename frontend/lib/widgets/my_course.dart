@@ -6,6 +6,7 @@ class MyCourseItem extends StatefulWidget {
   final String imageUrl;
   final String title;
   final String author;
+  final String lessonNum;
   final String duration;
   final String students;
   final VoidCallback? moreOnPress;
@@ -16,7 +17,8 @@ class MyCourseItem extends StatefulWidget {
       required this.author,
       required this.duration,
       required this.students,
-      required this.moreOnPress});
+      required this.moreOnPress,
+      required this.lessonNum});
 
   @override
   State<MyCourseItem> createState() => _MyCourseItemState();
@@ -69,7 +71,7 @@ class _MyCourseItemState extends State<MyCourseItem> {
                     Icons.timer_sharp,
                     size: 20,
                   ),
-                  Text("${widget.duration}  •"),
+                  Text("${widget.lessonNum} lessons (${widget.duration})  •"),
                   AppSpacing.smallHorizontal,
                   const Icon(
                     Icons.person_2_outlined,

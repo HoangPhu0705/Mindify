@@ -167,6 +167,7 @@ class _FolderDetailState extends State<FolderDetail> {
                       child: MyCourseItem(
                         imageUrl: course.thumbnail,
                         title: course.title,
+                        lessonNum: course.lessons.length.toString(),
                         author: course.instructorName,
                         duration: course.duration,
                         students: course.students.toString(),

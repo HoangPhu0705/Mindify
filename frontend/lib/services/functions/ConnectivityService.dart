@@ -1,23 +1,26 @@
 import 'dart:async';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:developer';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class ConnectivityService {
-  final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  final InternetConnection _internetConnection = InternetConnection();
+  late StreamSubscription<InternetStatus> _connectivitySubscription;
   bool isOffline = false;
 
   ConnectivityService() {
-    _checkConnectivity();
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _checkInternetConnectivity();
+    _connectivitySubscription =
+        _internetConnection.onStatusChange.listen(_updateConnectionStatus);
   }
 
-  Future<void> _checkConnectivity() async {
-    List<ConnectivityResult> result = await _connectivity.checkConnectivity();
-    _updateConnectionStatus(result);
+  Future<void> _checkInternetConnectivity() async {
+    bool hasInternet = await _internetConnection.hasInternetAccess;
+    _updateConnectionStatus(
+        hasInternet ? InternetStatus.connected : InternetStatus.disconnected);
   }
 
-  void _updateConnectionStatus(List<ConnectivityResult> result) {
-    isOffline = result.contains(ConnectivityResult.none);
+  void _updateConnectionStatus(InternetStatus status) {
+    isOffline = status == InternetStatus.disconnected;
   }
 
   bool get isConnected => !isOffline;

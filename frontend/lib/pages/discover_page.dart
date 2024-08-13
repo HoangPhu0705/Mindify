@@ -15,6 +15,7 @@ import 'package:frontend/widgets/course_card.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/widgets/no_connection.dart';
 import 'package:frontend/widgets/popular_course.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
@@ -93,7 +94,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           if (info != null) {
             final data =
                 await userService.getAvatarAndDisplayName(course.instructorId);
-            dev.log(data.toString());
+            // dev.log(data.toString());
             instructorInfo[course.instructorId] = {
               ...info,
               'avatar': data!["photoUrl"],
@@ -116,7 +117,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               'avatar': data!["photoUrl"],
               'displayName': data["displayName"],
             };
-            dev.log(instructorInfo[course.instructorId].toString());
+            // dev.log(instructorInfo[course.instructorId].toString());
           }
         }
       }
@@ -233,7 +234,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       backgroundColor: AppColors.ghostWhite,
       body: !connectivityService.isConnected
           ? NoConnection(
-              onRetry: () {
+              onRetry: () async {
                 _future = _initPage();
                 setState(() {});
               },

@@ -33,7 +33,9 @@ import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MindifyApp());
 }
 
@@ -51,7 +53,7 @@ class _MindifyAppState extends State<MindifyApp> {
       statusBarColor: AppColors.ghostWhite,
       statusBarIconBrightness: Brightness.dark,
     ));
-    
+
     super.initState();
   }
 

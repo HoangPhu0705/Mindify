@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 
-
 class CourseCard extends StatefulWidget {
   final String thumbnail;
   final String instructor;
@@ -83,7 +82,9 @@ class _CourseCardState extends State<CourseCard> {
                           CircleAvatar(
                             backgroundImage: widget.avatar is Image
                                 ? (widget.avatar as Image).image
-                                : NetworkImage("https://i.ibb.co/tZxYspW/default-avatar.png"),
+                                : const NetworkImage(
+                                    "https://i.ibb.co/tZxYspW/default-avatar.png",
+                                  ),
                           ),
                           AppSpacing.mediumHorizontal,
                           Column(
@@ -110,6 +111,7 @@ class _CourseCardState extends State<CourseCard> {
                       padding: const EdgeInsets.all(10),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             widget.courseName,

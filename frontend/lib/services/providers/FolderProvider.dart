@@ -22,7 +22,7 @@ class FolderProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
+  } 
 
   Future<void> createFolder(String userId, String folderName) async {
     try {

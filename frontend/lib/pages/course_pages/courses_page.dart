@@ -349,6 +349,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
                 MyCourseItem(
                   imageUrl: course.thumbnail,
                   title: course.title,
+                  lessonNum: course.lessons.length.toString(),
                   author: course.instructorName,
                   duration: course.duration,
                   students: course.students.toString(),
