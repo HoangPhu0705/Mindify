@@ -38,3 +38,12 @@ exports.rejectRequest = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.deleteCourseRequest = async (req, res) => {
+    try {
+        const result = await CourseRequestService.deleteCourseRequest(req.params.requestId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

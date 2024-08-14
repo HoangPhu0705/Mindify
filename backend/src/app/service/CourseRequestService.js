@@ -70,6 +70,7 @@ exports.sendRequest = async (courseId) => {
       email: email,
       authorId: courseData.authorId,
       createdAt: firestore.FieldValue.serverTimestamp(),
+      status: 'Pending',
       courseId: courseId
     });
 
@@ -216,3 +217,14 @@ exports.rejectRequest = async (requestId) => {
     throw new Error(`Error happened when rejecting request: ${error.message}`);
   }
 };
+
+
+exports.deleteCourseRequest = async (requestId) => {
+  try {
+    await CourseRequestCollection.doc(requestId).delete();
+    console.log('Course Request deleted successfully');
+    return { message: 'Course Request deleted successfully' };
+  } catch (error) {
+    throw new Error(`Error happened when deleting Course request: ${error.message}`);
+  }
+}

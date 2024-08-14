@@ -7,5 +7,6 @@ router.get('/', authenticateJWT, CourseRequestController.getRequests);
 router.post('/:courseId', authenticate, CourseRequestController.sendRequest);
 router.post('/:requestId/approve', authenticateJWT, CourseRequestController.approveRequest);
 router.post('/:requestId/reject', authenticateJWT, CourseRequestController.rejectRequest);
+router.delete('/:requestId', authenticateJWT, CourseRequestController.deleteCourseRequest);
 
 module.exports = router;

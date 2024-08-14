@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { TrashIcon } from "@heroicons/react/24/solid";
+
 import {
   Card,
   Typography,
@@ -9,6 +11,7 @@ import {
   Option,
   Spinner,
   Chip,
+  IconButton,
 } from "@material-tailwind/react";
 import {
   Tabs,
@@ -26,6 +29,7 @@ const COURSE_TABLE_HEAD = [
   "Price",
   "Status",
   "Detail",
+  "Action",
 ];
 
 const CourseRequestManagement = () => {
@@ -41,7 +45,6 @@ const CourseRequestManagement = () => {
     { label: "All", value: "all" },
     { label: "Approved", value: "approved" },
     { label: "Pending", value: "pending" },
-    { label: "Declined", value: "declined" },
   ];
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -105,6 +108,20 @@ const CourseRequestManagement = () => {
     setCurrentPage(1);
   };
 
+  const deleteCourseRequest = async (requestId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/api/courseRequest/${requestId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (err) {
+      console.error("Error deleting course request", err);
+      throw new Error("Error deleting course request");
+    }
+  };
+
   const renderTable = (headers, data) => (
     <div className="overflow-auto">
       <table className="w-full min-w-max table-auto text-left">
@@ -156,6 +173,16 @@ const CourseRequestManagement = () => {
                   {item.email}
                 </Typography>
               </td>
+
+              <td className="p-4">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
+                  {item.coursePrice}
+                </Typography>
+              </td>
               <td className="p-4">
                 <Chip
                   className="inline-block w-auto"
@@ -169,23 +196,7 @@ const CourseRequestManagement = () => {
                   }
                 />
               </td>
-              <td className="p-4">
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
-                >
-                  {item.coursePrice}
-                </Typography>
-              </td>
-              {/* <td className="p-4">
-                <Button color="green" onClick={() => approveRequest(item.id)}>
-                  Approve
-                </Button>
-                <Button color="red" onClick={() => rejectRequest(item.id)}>
-                  Reject
-                </Button>
-              </td> */}
+
               <td className="p-4">
                 <Button
                   color="cyan"
@@ -193,6 +204,27 @@ const CourseRequestManagement = () => {
                 >
                   Detail
                 </Button>
+              </td>
+              <td className="p-4">
+                <IconButton
+                  onClick={async () => {
+                    if (
+                      item.status === "Approved" ||
+                      item.status === "Declined"
+                    ) {
+                      await deleteCourseRequest(item.id);
+                      setRequests(
+                        filteredRequests.filter((req) => req.id !== item.id)
+                      );
+                    } else {
+                      alert(
+                        "You can only delete requests that are Approved or Declined."
+                      );
+                    }
+                  }}
+                >
+                  <TrashIcon className="text-white size-6" />
+                </IconButton>
               </td>
             </tr>
           ))}
@@ -233,21 +265,23 @@ const CourseRequestManagement = () => {
               <Option value="10">10</Option>
             </Select>
           </div>
-          
         </div>
-        <Tabs value={selectedTab}>
-        <TabsHeader>
-          {data.map(({ label, value }) => (
-            <Tab
-              key={value}
-              value={value}
-              onClick={() => setSelectedTab(value)}
-            >
-              {label}
-            </Tab>
-          ))}
-        </TabsHeader>
-      </Tabs>
+        <div className = "flex">
+          <Tabs value={selectedTab} className="mb-2 flex-2">
+            <TabsHeader>
+              {data.map(({ label, value }) => (
+                <Tab
+                  key={value}
+                  value={value}
+                  onClick={() => setSelectedTab(value)}
+                >
+                  {label}
+                </Tab>
+              ))}
+            </TabsHeader>
+          </Tabs>
+        </div>
+
         {loading ? (
           <div className="flex justify-center items-center">
             <Spinner color="blue" />

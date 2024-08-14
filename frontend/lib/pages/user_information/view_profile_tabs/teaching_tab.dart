@@ -14,6 +14,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/pages/user_information/instructor/introduction.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/class_management/my_class_item.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:pie_menu/pie_menu.dart';
@@ -183,6 +184,14 @@ class _TeachingTabState extends State<TeachingTab>
                                         );
                                       },
                                       onDeletePressed: () {
+                                        if (course["students"] > 0) {
+                                          showErrorToast(
+                                            context,
+                                            "You can't delete a class with students",
+                                          );
+                                          return;
+                                        }
+
                                         AwesomeDialog(
                                           padding: EdgeInsets.all(16),
                                           context: context,

@@ -105,6 +105,11 @@ const CourseManagement = () => {
           {data.map((item) => (
             <tr key={item.id} className="even:bg-blue-gray-50/50">
               <td className="p-4">
+               <div className="flex items-center justify-between"> 
+               <img
+                  className="h-32 w-32 rounded-lg object-cover"
+                  src={item.thumbnail}
+                />
                 <Typography
                   variant="small"
                   color="blue-gray"
@@ -112,6 +117,8 @@ const CourseManagement = () => {
                 >
                   {item.courseName}
                 </Typography>
+                <div></div>
+               </div>
               </td>
               <td className="p-4">
                 <Typography

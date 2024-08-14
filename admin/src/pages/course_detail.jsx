@@ -1,7 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { Card, Typography, Spinner, Button } from "@material-tailwind/react";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import axios from "axios";
+import ReactQuill from "react-quill"; // Import ReactQuill
+import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import {
+  Card,
+  Typography,
+  Spinner,
+  Button,
+  Chip,
+} from "@material-tailwind/react";
+import { PlayCircleIcon } from "@heroicons/react/24/solid";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -10,8 +19,8 @@ const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState(null);
-  const token = localStorage.getItem('token');
-
+  const token = localStorage.getItem("token");
+  
   useEffect(() => {
     fetchCourseDetail();
   }, [courseId]);
@@ -24,11 +33,13 @@ const CourseDetail = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const sortedLessons = response.data.lessons.sort((a, b) => a.index - b.index);
+      const sortedLessons = response.data.lessons.sort(
+        (a, b) => a.index - b.index
+      );
       setCourse({ ...response.data, lessons: sortedLessons });
       setSelectedLesson(sortedLessons[0]);
     } catch (error) {
-      console.error('Error fetching course details: ', error);
+      console.error("Error fetching course details: ", error);
     } finally {
       setLoading(false);
     }
@@ -47,18 +58,10 @@ const CourseDetail = () => {
       );
       fetchCourseDetail();
     } catch (error) {
-      console.error('Error approving course: ', error);
+      console.error("Error approving course: ", error);
     }
   };
-  // await axios.put(
-  //   `/api/users/requests/${requestId}/reject`,
-  //   { content: rejectionContent },
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   }
-  // );
+
   const handleReject = async () => {
     try {
       await axios.post(
@@ -74,12 +77,10 @@ const CourseDetail = () => {
     } catch (error) {
       console.error("Error rejecting course: ", error);
       if (error.response && error.response.status === 401) {
-        // Handle 401 error, e.g., redirect to login or show a message
         alert("Session expired. Please log in again.");
       }
     }
   };
-  
 
   if (loading) {
     return (
@@ -92,54 +93,133 @@ const CourseDetail = () => {
   if (!course) {
     return (
       <div className="flex justify-center items-center h-full">
-        <Typography variant="h5" color="red">Course not found</Typography>
+        <Typography variant="h5" color="red">
+          Course not found
+        </Typography>
       </div>
     );
   }
 
   return (
-    <Card className="h-full w-full p-6">
+    <div className="w-full p-2">
       {course.isPublic === false && requestId && (
         <div className="flex flex-row justify-end mt-4 space-x-2">
-          <Button color="green" onClick={handleApprove}>Approve</Button>
-          <Button color="red" onClick={handleReject}>Reject</Button>
+          <Button color="green" onClick={handleApprove}>
+            Approve
+          </Button>
+          <Button color="red" onClick={handleReject}>
+            Reject
+          </Button>
         </div>
       )}
-      <div className="flex flex-col md:flex-row items-start h-full">
-        <div className="w-4/6">
-          {selectedLesson && (
-            <video
-              key={selectedLesson.id}
-              className="h-full w-full rounded-lg object-fit"
-              controls
-              autoPlay
-            >
-              <source src={selectedLesson.link} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          )}
-          <Typography variant="h3" color="black" className="mb-4">{course.courseName}</Typography>
-          <Typography variant="h5" color="black" className="mb-2">Author: {course.author}</Typography>
-          <Typography variant="h6" color="black" className="mb-4">Lessons: {course.lessonNum}</Typography>
+      <div className="flex flex-col items-center">
+        <div className="w-full">
+          <div className="flex w-full justify-center items-center">
+            {selectedLesson && (
+              <video
+                key={selectedLesson.id}
+                className="h-[40rem] rounded-lg object-fit"
+                controls
+                autoPlay
+              >
+                <source src={selectedLesson.link} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+
+          <div className="mt-5">
+            <Typography variant="h3" color="black" className="mb-4">
+              {course.courseName}
+            </Typography>
+            <Typography variant="h5" color="black" className="mb-2">
+              Author: {course.author}
+            </Typography>
+          </div>
+
+          <div className="flex flex-col gap-2 mb-5 justify-start items-start">
+            <Typography variant="h5" color="black">
+              Categories:
+            </Typography>
+            <div className="flex mb-4">
+              {course.category.map((category) => (
+                <Chip className="mr-2" size="lg" value={category} />
+              ))}
+            </div>
+          </div>
+
+          {/* Render the course description */}
+          <div className="w-full mb-5 ">
+            <Typography className="text-4xl font-bold mb-2" color="black">
+              Description:
+            </Typography>
+            <ReactQuill
+              // Set the value to the Quill JSON data
+              value={JSON.parse(course.description)}
+              readOnly={true} // Make it read-only
+              theme="bubble"
+
+            />
+            
+          </div>  
         </div>
-        <div className="w-2/6 md:pl-6 overflow-y-auto h-full">
-          <div className="space-y-2">
+
+        <div className="w-full overflow-y-auto">
+          <div>
+            <Typography
+              variant="h6"
+              color="black"
+              className="mb-4 font-bold text-2xl"
+            >
+              {course.lessonNum} Lessons ({course.duration})
+            </Typography>
+          </div>
+          <div>
             {course.lessons.map((lesson) => (
-              <Button
+              <div
                 key={lesson.id}
-                color="cyan"
-                className="w-full p-4 flex items-center justify-center"
+                className={`cursor-pointer p-4 my-2 rounded-lg  ${
+                  selectedLesson?.id === lesson.id
+                    ? "bg-[#062137] text-white shadow-lg"
+                    : "hover:border border-[#39464B]"
+                }`}
                 onClick={() => setSelectedLesson(lesson)}
               >
-                <div className="text-left line-clamp-2">
-                  {lesson.title}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <PlayCircleIcon
+                      className={`h-6 w-6 mr-2 ${
+                        selectedLesson?.id === lesson.id
+                          ? "text-white"
+                          : "text-black"
+                      }`}
+                    />
+                    <Typography
+                      className={`font-bold text-xl ${
+                        selectedLesson?.id === lesson.id
+                          ? "text-white"
+                          : "text-black"
+                      }`}
+                    >
+                      {lesson.title}
+                    </Typography>
+                  </div>
+                  <Typography
+                    className={`font-bold text-lg ${
+                      selectedLesson?.id === lesson.id
+                        ? "text-white"
+                        : "text-black"
+                    }`}
+                  >
+                    {lesson.duration}
+                  </Typography>
                 </div>
-              </Button>
+              </div>
             ))}
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
