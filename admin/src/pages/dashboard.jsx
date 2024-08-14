@@ -10,7 +10,7 @@ import 'react-date-range/dist/theme/default.css';
 
 const Dashboard = () => {
   const [filterType, setFilterType] = useState("month");
-  const [filters, setFilters] = useState({ year: new Date().getFullYear(), startDate: new Date(), endDate: new Date() });
+  const [filters, setFilters] = useState({ year: new Date().getFullYear().toString(), startDate: new Date(), endDate: new Date() });
   const token = localStorage.getItem('token');
 
   const [barChartConfig, setBarChartConfig] = useState({
@@ -18,7 +18,7 @@ const Dashboard = () => {
     height: 240,
     series: [
       { name: "Enrollments", data: [] },
-      { name: "Revenue", data: [], show: false } 
+      { name: "Revenue", data: [], show: false }
     ],
     options: {
       chart: {
@@ -27,7 +27,10 @@ const Dashboard = () => {
           legendClick: (chartContext, seriesIndex, config) => {
             if (seriesIndex === 1) {
               fetchRevenue();
-            }
+            }else if (seriesIndex === 0){
+              fetchEnrollments()
+
+            }else{}
           },
         },
       },
@@ -65,15 +68,28 @@ const Dashboard = () => {
   });
 
   const handleFilterTypeChange = (val) => setFilterType(val);
-  const handleFilterChange = (e) => setFilters({ ...filters, [e.target.name]: e.target.value });
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
   const handleDateChange = (ranges) => {
     const { selection } = ranges;
+
+    const startDateLocal = new Date(selection.startDate.getTime() - selection.startDate.getTimezoneOffset() * 60000);
+    const endDateLocal = new Date(selection.endDate.getTime() - selection.endDate.getTimezoneOffset() * 60000);
+
     setFilters({
       ...filters,
-      startDate: selection.startDate.toISOString().split('T')[0],
-      endDate: selection.endDate.toISOString().split('T')[0]
+      startDate: startDateLocal.toISOString().split('T')[0],
+      endDate: endDateLocal.toISOString().split('T')[0],
     });
   };
+
 
   const fetchEnrollments = async () => {
     let url;
@@ -91,13 +107,14 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(url, { params, 
+      const response = await axios.get(url, {
+        params,
         headers: {
           Authorization: `Bearer ${token}`,
         },
-       });
+      });
       const { enrollments } = response.data;
-
+      console.log(response.data);
       const categories = Object.keys(enrollments).sort();
       const data = categories.map(key => enrollments[key]);
 
@@ -127,12 +144,12 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(url, { 
-        params, 
+      const response = await axios.get(url, {
+        params,
         headers: {
           Authorization: `Bearer ${token}`,
         },
-       });
+      });
       const revenue = response.data;
 
       const categories = Object.keys(revenue).sort();
@@ -171,27 +188,31 @@ const Dashboard = () => {
           <div className="flex flex-wrap gap-4">
             <Select name="filterType" value={filterType} onChange={(e) => handleFilterTypeChange(e)} label="Filter Type">
               <Option value="month">Month</Option>
-              <Option value="year">Year</Option>
+              <Option value="year">All</Option>
               <Option value="dateRange">Date Range</Option>
             </Select>
             {filterType === "month" && (
               <Select name="year" value={filters.year} onChange={handleFilterChange} label="Year">
-                {[2023, 2024, 2025].map(year => <Option key={year} value={year}>{year}</Option>)}
+                {["2023", "2024", "2025"].map(year => <Option key={year} value={year}>{year}</Option>)}
               </Select>
             )}
             {filterType === "dateRange" && (
-              <DateRangePicker
-                ranges={[{
-                  startDate: new Date(filters.startDate) || new Date(),
-                  endDate: new Date(filters.endDate) || addDays(new Date(), 30),
-                  key: 'selection'
-                }]}
-                onChange={handleDateChange}
-              />
+              <div>
+                <DateRangePicker
+                  ranges={[{
+                    startDate: new Date(filters.startDate) || new Date(),
+                    endDate: new Date(filters.endDate) || addDays(new Date(), 30),
+                    key: 'selection'
+                  }]}
+                  onChange={handleDateChange}
+                />
+                <div className="w-full flex justify-end items-end mb-5">
+                  <Button className="" onClick={() => { fetchEnrollments(); fetchRevenue(); }}>Apply Filters</Button>
+                </div>
+              </div>
+
             )}
-            <div className = "w-full flex justify-end items-end mb-5">
-              <Button className="" onClick={() => { fetchEnrollments(); fetchRevenue(); }}>Apply Filters</Button>
-            </div>
+
           </div>
         </CardBody>
       </Card>
