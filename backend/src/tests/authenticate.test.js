@@ -35,8 +35,8 @@ describe('Firebase Authentication', () => {
     token = await signInUser(email, password);
     // token = idToken.token
     expect(token).toBeDefined();
-    console.log('Retrieved ID token:', JSON.stringify(token));
-    console.log('Token:', token); // Thêm dòng này trong test của bạn
+    // console.log('Retrieved ID token:', JSON.stringify(token));
+    // console.log('Token:', token);
 
   });
 });
