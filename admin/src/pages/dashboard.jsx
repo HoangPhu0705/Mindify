@@ -13,30 +13,16 @@ const Dashboard = () => {
   const [filters, setFilters] = useState({ year: new Date().getFullYear().toString(), startDate: new Date(), endDate: new Date() });
   const token = localStorage.getItem('token');
 
-  const [barChartConfig, setBarChartConfig] = useState({
+  // State for Enrollments chart
+  const [enrollmentsChartConfig, setEnrollmentsChartConfig] = useState({
     type: "bar",
     height: 240,
-    series: [
-      { name: "Enrollments", data: [] },
-      { name: "Revenue", data: [], show: false }
-    ],
+    series: [{ name: "Enrollments", data: [] }],
     options: {
-      chart: {
-        toolbar: { show: false },
-        events: {
-          legendClick: (chartContext, seriesIndex, config) => {
-            if (seriesIndex === 1) {
-              fetchRevenue();
-            }else if (seriesIndex === 0){
-              fetchEnrollments()
-
-            }else{}
-          },
-        },
-      },
-      title: { text: "Revenue and Enrollments", align: 'center' },
+      chart: { toolbar: { show: false } },
+      title: { text: "Enrollments", align: 'center' },
       dataLabels: { enabled: false },
-      colors: ["#020617", "#28a745"],
+      colors: ["#020617"],
       plotOptions: { bar: { columnWidth: "40%", borderRadius: 2 } },
       xaxis: {
         axisTicks: { show: false },
@@ -58,12 +44,40 @@ const Dashboard = () => {
       },
       fill: { opacity: 0.8 },
       tooltip: { theme: "dark" },
-      legend: {
-        show: true,
-        onItemClick: {
-          toggleDataSeries: true,
+    },
+  });
+
+  // State for Revenue chart
+  const [revenueChartConfig, setRevenueChartConfig] = useState({
+    type: "bar",
+    height: 240,
+    series: [{ name: "Revenue", data: [] }],
+    options: {
+      chart: { toolbar: { show: false } },
+      title: { text: "Revenue", align: 'center' },
+      dataLabels: { enabled: false },
+      colors: ["#28a745"],
+      plotOptions: { bar: { columnWidth: "40%", borderRadius: 2 } },
+      xaxis: {
+        axisTicks: { show: false },
+        axisBorder: { show: false },
+        labels: {
+          style: { colors: "#616161", fontSize: "12px", fontFamily: "inherit", fontWeight: 400 },
+        },
+        categories: [],
+      },
+      yaxis: {
+        labels: {
+          style: { colors: "#616161", fontSize: "12px", fontFamily: "inherit", fontWeight: 400 },
         },
       },
+      grid: {
+        show: true, borderColor: "#dddddd", strokeDashArray: 5,
+        xaxis: { lines: { show: true } },
+        padding: { top: 5, right: 20 },
+      },
+      fill: { opacity: 0.8 },
+      tooltip: { theme: "dark" },
     },
   });
 
@@ -90,7 +104,6 @@ const Dashboard = () => {
     });
   };
 
-
   const fetchEnrollments = async () => {
     let url;
     let params = {};
@@ -115,12 +128,13 @@ const Dashboard = () => {
       });
       const { enrollments } = response.data;
       console.log(response.data);
-      const categories = Object.keys(enrollments).sort();
+
+      const categories = Object.keys(enrollments).sort((a, b) => new Date(a) - new Date(b));
       const data = categories.map(key => enrollments[key]);
 
-      setBarChartConfig(prevConfig => ({
+      setEnrollmentsChartConfig(prevConfig => ({
         ...prevConfig,
-        series: [{ name: "Enrollments", data: data }, { name: "Revenue", data: prevConfig.series[1].data, show: false }],
+        series: [{ name: "Enrollments", data: data }],
         options: { ...prevConfig.options, xaxis: { ...prevConfig.options.xaxis, categories: categories } },
       }));
     } catch (error) {
@@ -152,15 +166,12 @@ const Dashboard = () => {
       });
       const revenue = response.data;
 
-      const categories = Object.keys(revenue).sort();
+      const categories = Object.keys(revenue).sort((a, b) => new Date(a) - new Date(b));
       const data = categories.map(key => revenue[key]);
 
-      setBarChartConfig(prevConfig => ({
+      setRevenueChartConfig(prevConfig => ({
         ...prevConfig,
-        series: [
-          { name: "Enrollments", data: prevConfig.series[0].data },
-          { name: "Revenue", data: data, show: true }
-        ],
+        series: [{ name: "Revenue", data: data }],
         options: { ...prevConfig.options, xaxis: { ...prevConfig.options.xaxis, categories: categories } },
       }));
     } catch (error) {
@@ -170,6 +181,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchEnrollments();
+    fetchRevenue();
   }, [filters, filterType]);
 
   return (
@@ -209,6 +221,7 @@ const Dashboard = () => {
                 <div className="w-full flex justify-end items-end mb-5">
                   <Button className="" onClick={() => { fetchEnrollments(); fetchRevenue(); }}>Apply Filters</Button>
                 </div>
+
               </div>
 
             )}
@@ -218,18 +231,21 @@ const Dashboard = () => {
       </Card>
 
       <Card>
-        <CardHeader floated={false} shadow={false} color="transparent" className="flex flex-col gap-4 rounded-none md:flex-row md:items-center">
-          <div>
-            <Typography variant="h6" color="blue-gray">Bar Chart</Typography>
-            <Typography variant="small" color="gray" className="max-w-sm font-normal">
-              Mindify enrollments and revenue data
-            </Typography>
+        <CardBody>
+          <div id="chart">
+            <Chart {...enrollmentsChartConfig} />
           </div>
-        </CardHeader>
-        <CardBody className="px-2 pb-0">
-          <Chart {...barChartConfig} />
         </CardBody>
       </Card>
+
+      <Card>
+        <CardBody>
+          <div id="chart">
+            <Chart {...revenueChartConfig} />
+          </div>
+        </CardBody>
+      </Card>
+
     </div>
   );
 };
