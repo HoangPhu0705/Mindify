@@ -58,6 +58,43 @@ class _ProfileTabState extends State<ProfileTab>
     followedTopic = List<String>.from(topicData);
   }
 
+  Future<void> unpublishCourse(String courseId) async {
+    var updatedData = {
+      "isPublic": false,
+      "request": false,
+    };
+    await courseService.updateCourse(courseId, updatedData);
+  }
+
+  Future<void> showWarningAndUnpublish(
+      BuildContext context, String courseId) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Unpublish course"),
+          content:
+              const Text("Are you sure you want to unpublish this course?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await unpublishCourse(courseId);
+              },
+              child: const Text("Unpublish"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -191,13 +228,19 @@ class _ProfileTabState extends State<ProfileTab>
                                       MaterialPageRoute(
                                         builder: (context) {
                                           return ManageClass(
-                                              courseId: course.id,
-                                              isEditing: true);
+                                            courseId: course.id,
+                                            isEditing: true,
+                                          );
                                         },
                                       ),
                                     );
                                   },
-                                  onDeletePressed: () {},
+                                  onDeletePressed: () async {
+                                    await showWarningAndUnpublish(
+                                      context,
+                                      course.id,
+                                    );
+                                  },
                                   thumbnail: thumbnail,
                                   isPublic: isPublic,
                                   requestSent: requestSent,

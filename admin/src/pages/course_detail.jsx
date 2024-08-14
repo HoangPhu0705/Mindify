@@ -36,11 +36,15 @@ const CourseDetail = () => {
 
   const handleApprove = async () => {
     try {
-      await axios.post(`/api/courseRequest/${requestId}/approve`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.post(
+        `/api/courseRequest/${requestId}/approve`,
+        {}, // Empty body if not sending data
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       fetchCourseDetail();
     } catch (error) {
       console.error('Error approving course: ', error);

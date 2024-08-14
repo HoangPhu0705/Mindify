@@ -1,16 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Card, Typography, Button, Select, Option, Spinner } from "@material-tailwind/react";
-import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Input } from "@material-tailwind/react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {
+  Card,
+  Typography,
+  Button,
+  Select,
+  Option,
+  Spinner,
+  Chip,
+} from "@material-tailwind/react";
+import {
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+  Input,
+} from "@material-tailwind/react";
 
-const COURSE_TABLE_HEAD = ["Course Name", "Author", "Email", "Price", "Detail"];
+const COURSE_TABLE_HEAD = [
+  "Course Name",
+  "Author",
+  "Email",
+  "Price",
+  "Status",
+  "Detail",
+];
 
 const CourseRequestManagement = () => {
   const [requests, setRequests] = useState([]);
-  const [requestPage, setRequestPage] = useState({ limit: 5, startAfter: null });
+  const [requestPage, setRequestPage] = useState({
+    limit: 5,
+    startAfter: null,
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedTab, setSelectedTab] = useState("all");
+  const data = [
+    { label: "All", value: "all" },
+    { label: "Approved", value: "approved" },
+    { label: "Pending", value: "pending" },
+    { label: "Declined", value: "declined" },
+  ];
+  const [filteredRequests, setFilteredRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -22,23 +55,40 @@ const CourseRequestManagement = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
-      const response = await axios.get('/api/courseRequest', {
-        params: { limit: requestPage.limit, startAfter: requestPage.startAfter },
+      const response = await axios.get("/api/courseRequest", {
+        params: {
+          limit: requestPage.limit,
+          startAfter: requestPage.startAfter,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const { requests, totalCount } = response.data;
       setRequests(requests);
+      setFilteredRequests(requests);
+
       setTotalPages(Math.ceil(totalCount / requestPage.limit));
     } catch (error) {
-      console.error('Error fetching requests: ', error);
+      console.error("Error fetching requests: ", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedTab === "all") {
+      setFilteredRequests(requests);
+    } else {
+      setFilteredRequests(
+        requests.filter(
+          (request) => request.status.toLowerCase() === selectedTab
+        )
+      );
+    }
+  }, [selectedTab, requests]);
 
   const goToCourseDetail = (courseId, requestId) => {
     navigate(`/course/${courseId}`, { state: { requestId } });
@@ -61,8 +111,15 @@ const CourseRequestManagement = () => {
         <thead>
           <tr>
             {headers.map((head) => (
-              <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">
+              <th
+                key={head}
+                className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+              >
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal leading-none opacity-70"
+                >
                   {head}
                 </Typography>
               </th>
@@ -73,22 +130,51 @@ const CourseRequestManagement = () => {
           {data.map((item) => (
             <tr key={item.id} className="even:bg-blue-gray-50/50">
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {item.courseName}
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {item.author}
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {item.email}
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">
+                <Chip
+                  className="inline-block w-auto"
+                  value={item.status}
+                  color={
+                    item.status === "Pending"
+                      ? "blue"
+                      : item.status === "Approved"
+                      ? "green"
+                      : "red"
+                  }
+                />
+              </td>
+              <td className="p-4">
+                <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal"
+                >
                   {item.coursePrice}
                 </Typography>
               </td>
@@ -101,7 +187,10 @@ const CourseRequestManagement = () => {
                 </Button>
               </td> */}
               <td className="p-4">
-                <Button color="cyan" onClick={() => goToCourseDetail(item.courseId, item.id)}>
+                <Button
+                  color="cyan"
+                  onClick={() => goToCourseDetail(item.courseId, item.id)}
+                >
                   Detail
                 </Button>
               </td>
@@ -119,36 +208,52 @@ const CourseRequestManagement = () => {
           Course Request Management
         </Typography>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-        <div className="w-full md:w-auto mt-2 md:mb-0">
+          <div className="w-full md:w-auto mt-2 md:mb-0">
             <Input
               type="text"
               color="blue-gray"
               label="Search Course"
-              
               fullWidth
             />
           </div>
-        <div className= "flex items-center">
-
-          <Typography variant="h6" color="black" className="dark:text-white mr-2">
-            Show
-          </Typography>
-          <Select
-            value={String(requestPage.limit)}
-            onChange={(e) => handleLimitChange(e)}
-            className="mr-2"
-          >
-            <Option value="5">5</Option>
-            <Option value="10">10</Option>
-          </Select>
+          <div className="flex items-center">
+            <Typography
+              variant="h6"
+              color="black"
+              className="dark:text-white mr-2"
+            >
+              Show
+            </Typography>
+            <Select
+              value={String(requestPage.limit)}
+              onChange={(e) => handleLimitChange(e)}
+              className="mr-2"
+            >
+              <Option value="5">5</Option>
+              <Option value="10">10</Option>
+            </Select>
+          </div>
+          
         </div>
-        </div>
+        <Tabs value={selectedTab}>
+        <TabsHeader>
+          {data.map(({ label, value }) => (
+            <Tab
+              key={value}
+              value={value}
+              onClick={() => setSelectedTab(value)}
+            >
+              {label}
+            </Tab>
+          ))}
+        </TabsHeader>
+      </Tabs>
         {loading ? (
           <div className="flex justify-center items-center">
             <Spinner color="blue" />
           </div>
         ) : (
-          renderTable(COURSE_TABLE_HEAD, requests)
+          renderTable(COURSE_TABLE_HEAD, filteredRequests)
         )}
         <div className="flex flex-col md:flex-row justify-between items-center mt-4">
           <Button
@@ -158,7 +263,11 @@ const CourseRequestManagement = () => {
           >
             Previous
           </Button>
-          <Typography variant="small" color="blue-gray" className="font-normal my-2 md:my-0">
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="font-normal my-2 md:my-0"
+          >
             Page {currentPage} of {totalPages}
           </Typography>
           <Button

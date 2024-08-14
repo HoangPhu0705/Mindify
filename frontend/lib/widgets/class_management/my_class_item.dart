@@ -13,14 +13,15 @@ class MyClassItem extends StatefulWidget {
   final String thumbnail;
   final bool isPublic;
   final bool requestSent;
-  const MyClassItem(
-      {super.key,
-      required this.classTitle,
-      required this.onEditPressed,
-      required this.onDeletePressed,
-      required this.thumbnail,
-      required this.isPublic,
-      required this.requestSent});
+  const MyClassItem({
+    super.key,
+    required this.classTitle,
+    required this.onEditPressed,
+    required this.onDeletePressed,
+    required this.thumbnail,
+    required this.isPublic,
+    required this.requestSent,
+  });
 
   @override
   State<MyClassItem> createState() => _MyClassItemState();
@@ -149,14 +150,15 @@ class _MyClassItemState extends State<MyClassItem> {
         ),
         PieAction.builder(
           buttonTheme: const PieButtonTheme(
-            backgroundColor: AppColors.blue,
-            iconColor: Colors.red,
+            backgroundColor: AppColors.red,
+            iconColor: Colors.white,
           ),
           tooltip: const Text(''),
           onSelect: widget.onDeletePressed,
           builder: (hovered) {
             return const Icon(
-              Icons.delete,
+              Icons.delete_outline,
+              color: Colors.white,
             );
           },
         ),
@@ -180,6 +182,20 @@ class _MyClassItemState extends State<MyClassItem> {
           onSelect: widget.onEditPressed,
           builder: (hovered) {
             return const Icon(Icons.edit);
+          },
+        ),
+        PieAction.builder(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: AppColors.red,
+            iconColor: Colors.white,
+          ),
+          tooltip: const Text(''),
+          onSelect: widget.onDeletePressed,
+          builder: (hovered) {
+            return const Icon(
+              Icons.remove_circle_outline,
+              color: Colors.white,
+            );
           },
         ),
       ],

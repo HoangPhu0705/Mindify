@@ -358,8 +358,8 @@ class _PublishCourseState extends State<PublishCourse> {
                           if (value.isEmpty) {
                             return "Please enter a price";
                           }
-                          if (int.parse(value) < 100000) {
-                            return "Price must be at least 100,000 VND";
+                          if (int.parse(value) < 20000) {
+                            return "Price must be at least 20,000 VND";
                           }
                         }
                         return null;
