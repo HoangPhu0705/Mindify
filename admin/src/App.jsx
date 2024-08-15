@@ -12,6 +12,7 @@ import CourseManagement from "./pages/course";
 import CourseDetail from "./pages/course_detail";
 import CourseRequestManagement from "./pages/course_request";
 import TransactionManagement from "./pages/transaction";
+import Report from "./pages/report";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} /> 
           <Route path="/course-management" element={<ProtectedRoute><CourseManagement /></ProtectedRoute>} /> 
           <Route path="/transaction-management" element={<ProtectedRoute><TransactionManagement /></ProtectedRoute>} /> 
+          <Route path="/report" element={<ProtectedRoute><Report /></ProtectedRoute>} /> 
           <Route path="/course/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
           <Route path="/courseRequest" element={<ProtectedRoute><CourseRequestManagement /></ProtectedRoute>} />
           <Route path="/request" element={<ProtectedRoute><Request /></ProtectedRoute>} />

@@ -2,7 +2,7 @@ const { initializeApp } = require('firebase/app');
 // const { getAuth } = require('firebase-admin/auth');
 const { getAuth, signInWithEmailAndPassword } = require('firebase/auth');
 const { generateToken } = require('../../utils/jwt.util');
-const { UserCollection, CourseCollection, EnrollmentCollection, TransactionCollection } = require('./Collections')
+const { UserCollection, CourseCollection, EnrollmentCollection, TransactionCollection, ReportCollection } = require('./Collections')
 const { transporter } = require('../../utils/sender.util')
 const dotenv = require('dotenv');
 const admin = require('firebase-admin');
@@ -505,12 +505,48 @@ const getRevenue = async() => {
   }
 }
 
+const getAllReportsPaginated = async (limit, startAfter, searchQuery) => {
+  try {
+    let query = ReportCollection.orderBy('timestamp', 'desc').limit(limit);
+
+    // Apply search query if provided
+    if (searchQuery) {
+      query = query.where('from', '>=', searchQuery)
+                   .where('from', '<=', searchQuery + '\uf8ff');
+    }
+
+    // Apply pagination if provided
+    if (startAfter) {
+      const startAfterDoc = await ReportCollection.doc(startAfter).get();
+      query = query.startAfter(startAfterDoc);
+    }
+
+    const snapshot = await query.get();
+    const totalCountSnapshot = await ReportCollection.get();
+    const totalCount = totalCountSnapshot.size;
+
+    const reports = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  
+
+    console.log(reports)
+
+    return { reports, totalCount };
+  } catch (error) {
+    console.error('Error getting reports: ', error);
+    throw new Error('Error getting reports: ' + error.message);
+  }
+};
+
 module.exports = {
   loginUser,
   logout,
   getAllUsersPaginated,
   getAllCoursesPaginated,
   getAllTransactionsPaginated,
+  getAllReportsPaginated,
   lockUser,
   unlockUser,
   getTotalStudents,

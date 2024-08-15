@@ -8,8 +8,10 @@ import {
   PaperAirplaneIcon,
   UserCircleIcon,
   Cog6ToothIcon,
+  ClipboardDocumentListIcon,
   PowerIcon,
   ComputerDesktopIcon,
+  ExclamationCircleIcon,
   AcademicCapIcon // Icon cho Course Management
 } from "@heroicons/react/24/solid";
 
@@ -64,9 +66,18 @@ export default function Sidebar() {
         <Link to="/transaction-management">
           <ListItem className={`hover:bg-[#062137] hover:text-white`}>
             <ListItemPrefix>
-              <PresentationChartBarIcon className="h-5 w-5" />
+              <ClipboardDocumentListIcon className="h-5 w-5" />
             </ListItemPrefix>
             Transaction Management
+          </ListItem>
+        </Link>
+
+        <Link to="/report">
+          <ListItem className={`hover:bg-[#062137] hover:text-white`}>
+            <ListItemPrefix>
+              <ExclamationCircleIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Reports
           </ListItem>
         </Link>
 
