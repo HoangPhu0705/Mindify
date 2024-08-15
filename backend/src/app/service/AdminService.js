@@ -103,6 +103,54 @@ const getAllUsersPaginated = async (limit, startAfter, searchQuery) => {
   }
 };
 
+// transaction management
+const getAllTransactionsPaginated = async (limit, startAfter, searchQuery) => {
+  try {
+    let query = TransactionCollection.where('status', '==', 'succeeded').orderBy('confirmedAt', 'desc').limit(limit);
+
+    // Apply search query if provided
+    // if (searchQuery) {
+    //   query = query.where('email', '>=', searchQuery)
+    //                .where('email', '<=', searchQuery + '\uf8ff');
+    // }
+
+    // Apply pagination if provided
+    if (startAfter) {
+      const startAfterDoc = await TransactionCollection.doc(startAfter).get();
+      query = query.startAfter(startAfterDoc);
+    }
+
+    const snapshot = await query.get();
+    const totalCountSnapshot = await TransactionCollection
+      .where('status', '==', 'succeeded') // Filter by status
+      .get();
+    const totalCount = totalCountSnapshot.size;
+
+    const transactions = await Promise.all(snapshot.docs.map(async (doc) => {
+      const transactionData = doc.data();
+      const userInfo = await admin.auth().getUser(transactionData.userId);
+      return {
+        id: doc.id,
+        currency: transactionData.currency,
+        amount: transactionData.amount,
+        confirmedAt: transactionData.confirmedAt,
+        userData: {
+          User: userInfo.displayName,
+          email: userInfo.email,
+        }
+      }
+    })
+
+    )
+    console.log(transactions)
+
+    return { transactions, totalCount };
+  } catch (error) {
+    console.error('Error getting transactions: ', error);
+    throw new Error('Error getting transactions: ' + error.message);
+  }
+};
+
 
 // Course management
 const getAllCoursesPaginated = async (limit, startAfter, searchQuery) => {
@@ -462,6 +510,7 @@ module.exports = {
   logout,
   getAllUsersPaginated,
   getAllCoursesPaginated,
+  getAllTransactionsPaginated,
   lockUser,
   unlockUser,
   getTotalStudents,

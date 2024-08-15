@@ -61,6 +61,15 @@ export default function Sidebar() {
           </ListItem>
         </Link>
 
+        <Link to="/transaction-management">
+          <ListItem className={`hover:bg-[#062137] hover:text-white`}>
+            <ListItemPrefix>
+              <PresentationChartBarIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Transaction Management
+          </ListItem>
+        </Link>
+
         <Link to="/request">
           <ListItem className={`hover:bg-[#062137] hover:text-white`}>
             <ListItemPrefix>

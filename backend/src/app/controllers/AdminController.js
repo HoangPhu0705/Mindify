@@ -3,6 +3,7 @@ const {
   logout,
   getAllUsersPaginated,
   getAllCoursesPaginated,
+  getAllTransactionsPaginated,
   lockUser,
   unlockUser,
   getTotalStudents,
@@ -65,6 +66,20 @@ class AdminController {
         searchQuery || "" // Pass searchQuery to getAllCoursesPaginated
       );
       res.status(200).json({ courses, totalCount });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+  showAllTransactions = async (req, res) => {
+    const { limit, startAfter, searchQuery } = req.query;
+    try {
+      const { transactions, totalCount } = await getAllTransactionsPaginated(
+        parseInt(limit),
+        startAfter,
+        searchQuery || "" // Pass searchQuery to getAllCoursesPaginated
+      );
+      res.status(200).json({ transactions, totalCount });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

@@ -57,6 +57,7 @@ exports.confirmPayment = async (paymentIntentId) => {
             const enrollment = await EnrollmentService.createEnrollment({ userId, courseId, paymentIntentId });
 
             await TransactionCollection.doc(paymentIntentId).update({
+                userId: userId,
                 status: 'succeeded',
                 amount: paymentIntent.amount,
                 currency: paymentIntent.currency,
