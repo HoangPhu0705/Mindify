@@ -78,6 +78,24 @@ exports.confirmPayment = async (paymentIntentId) => {
     }
 };
 
+exports.deleteTransaction = async (paymentIntentId) => {
+    try {
+        const transactionDoc = await TransactionCollection.doc(paymentIntentId).get();
+
+        if (!transactionDoc.exists) {
+            throw new Error('Transaction not found');
+        }
+
+        await TransactionCollection.doc(paymentIntentId).delete();
+
+        return { success: true, message: 'Transaction deleted successfully' };
+    } catch (error) {
+        console.error('Error deleting transaction:', error);
+        throw error;
+    }
+};
+
+
 // VNPAY
 exports.createVnpayPaymentUrl = async (courseId, userId, amount) => {
     const tmnCode = configVNP.vnp_TmnCode;

@@ -44,4 +44,22 @@ class PaymentService {
       throw Exception('Failed to confirm payment: ${response.body}');
     }
   }
+
+  Future<void> deletePayment(String paymentIntentId) async {
+    final url = '${AppConstants.TRANSACTION_API}/$paymentIntentId';
+    final response = await http.delete(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      log('Transaction deleted successfully');
+    } else {
+      log('Error deleting transaction: ${response.body}');
+      throw Exception('Failed to delete transaction: ${response.body}');
+    }
+  }
 }
