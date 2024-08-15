@@ -212,6 +212,7 @@ class _PreviewClassState extends State<PreviewClass>
                       Discussion(
                         isPreviewing: true,
                         courseId: course!.id,
+                        instructorId: course!.instructorId,
                         isEnrolled: isEnrolled,
                       ),
                       const Center(

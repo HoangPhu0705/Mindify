@@ -10,6 +10,7 @@ import 'package:frontend/pages/course_pages/note_tab.dart';
 import 'package:frontend/pages/course_pages/payment_page.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/functions/ReportService.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/utils/colors.dart';
@@ -17,6 +18,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/my_loading.dart';
+import 'package:frontend/widgets/report_dialog.dart';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
@@ -52,6 +54,7 @@ class _CourseDetailState extends State<CourseDetail>
   String? _enrollmentId;
   String userId = '';
   late Future<void> _future;
+  ReportService reportService = ReportService();
 
   final GlobalKey<VideoPlayerViewState> _videoPlayerKey =
       GlobalKey<VideoPlayerViewState>();
@@ -244,6 +247,19 @@ class _CourseDetailState extends State<CourseDetail>
     );
   }
 
+  void showReportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportDialog(
+          courseId: course!.id,
+          courseTitle: course!.title,
+          authorId: course!.instructorId,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -261,6 +277,7 @@ class _CourseDetailState extends State<CourseDetail>
           );
         }
         return Scaffold(
+          resizeToAvoidBottomInset: true,
           bottomSheet: isEnrolled || widget.userId == course!.instructorId
               ? const SizedBox.shrink()
               : Container(
@@ -347,8 +364,10 @@ class _CourseDetailState extends State<CourseDetail>
                 ),
               ),
               IconButton(
-                onPressed: () {},
-                icon: const Icon(CupertinoIcons.share),
+                onPressed: () {
+                  showReportDialog(context);
+                },
+                icon: const Icon(Icons.flag_outlined),
               )
             ],
           ),
@@ -406,6 +425,7 @@ class _CourseDetailState extends State<CourseDetail>
                       Discussion(
                         isPreviewing: false,
                         courseId: course!.id,
+                        instructorId: course!.instructorId,
                         isEnrolled: isEnrolled,
                       ),
                       NoteTab(
