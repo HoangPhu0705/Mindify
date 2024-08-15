@@ -64,13 +64,22 @@ const logout = async () => {
 }
 
 // User management
-const getAllUsersPaginated = async (limit, startAfter) => {
+const getAllUsersPaginated = async (limit, startAfter, searchQuery) => {
   try {
     let query = UserCollection.orderBy('email').limit(limit);
+
+    // Apply search query if provided
+    if (searchQuery) {
+      query = query.where('email', '>=', searchQuery)
+                   .where('email', '<=', searchQuery + '\uf8ff');
+    }
+
+    // Apply pagination if provided
     if (startAfter) {
       const startAfterDoc = await UserCollection.doc(startAfter).get();
       query = query.startAfter(startAfterDoc);
     }
+
     const snapshot = await query.get();
     const totalCountSnapshot = await UserCollection.get();
     const totalCount = totalCountSnapshot.size;
@@ -94,13 +103,19 @@ const getAllUsersPaginated = async (limit, startAfter) => {
   }
 };
 
+
 // Course management
-const getAllCoursesPaginated = async (limit, startAfter) => {
+const getAllCoursesPaginated = async (limit, startAfter, searchQuery) => {
   try {
     let query = CourseCollection
-      .where('isPublic', '==', true) // Add this line to filter by isPublic
+      .where('isPublic', '==', true) // Filter by isPublic
       .orderBy('courseName')
       .limit(limit);
+
+    if (searchQuery) {
+      query = query.where('courseName', '>=', searchQuery)
+                   .where('courseName', '<=', searchQuery + '\uf8ff');
+    }
 
     if (startAfter) {
       const startAfterDoc = await CourseCollection.doc(startAfter).get();
@@ -108,7 +123,9 @@ const getAllCoursesPaginated = async (limit, startAfter) => {
     }
 
     const snapshot = await query.get();
-    const totalCountSnapshot = await CourseCollection.where('isPublic', '==', true).get();
+    const totalCountSnapshot = await CourseCollection
+      .where('isPublic', '==', true) // Filter by isPublic
+      .get();
     const totalCount = totalCountSnapshot.size;
 
     const courses = snapshot.docs.map(doc => ({
@@ -122,6 +139,7 @@ const getAllCoursesPaginated = async (limit, startAfter) => {
     throw new Error('Error getting courses: ' + error.message);
   }
 };
+
 
 // lock user
 const lockUser = async (uid) => {
