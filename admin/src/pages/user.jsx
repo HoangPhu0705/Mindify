@@ -18,7 +18,6 @@ const USER_TABLE_HEAD = ["Email", "Display Name", "Role", "Lock Account"];
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [userPage, setUserPage] = useState({ limit: 10, startAfter: null });
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,25 +30,23 @@ const UserManagement = () => {
     fetchUsers();
   }, [userPage, currentPage]);
 
-  useEffect(() => {
-    filterUsers();
-  }, [searchQuery, users]);
-
   const fetchUsers = async () => {
+    console.log("fetching users");
     setLoading(true);
     try {
-      // Get JWT token from local storage
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(
-        "/admin/users-management",
-        {
-          params: { limit: userPage.limit, startAfter: userPage.startAfter },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get("/admin/users-management", {
+        params: {
+          limit: userPage.limit,
+          startAfter: userPage.startAfter,
+          searchQuery: searchQuery,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       const { users, totalCount } = response.data;
       setUsers(users);
       setTotalPages(Math.ceil(totalCount / userPage.limit));
@@ -60,14 +57,10 @@ const UserManagement = () => {
     }
   };
 
-  const filterUsers = () => {
-    const filtered = users.filter((user) =>
-      [user.email, user.displayName, user.role]
-        .join(" ")
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    );
-    setFilteredUsers(filtered);
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setUserPage({ ...userPage, startAfter: null });
+    fetchUsers();
   };
 
   const handleLockUser = (user) => {
@@ -77,9 +70,7 @@ const UserManagement = () => {
 
   const handleConfirmLockUser = async () => {
     try {
-      // Get JWT token from local storage
       const token = localStorage.getItem("token");
-
       const action = selectedUser.disabled ? "unlock-user" : "lock-user";
       const response = await axios.post(
         `/admin/${action}`,
@@ -186,22 +177,25 @@ const UserManagement = () => {
           User Management
         </Typography>
         <div className="flex justify-between items-end mb-4">
-          <div className="mt-2">
+          <div className="flex">
             <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               label="Search users..."
             />
+            <Button className="ml-4" onClick={handleSearch}>
+              Search
+            </Button>
           </div>
 
-          <div className = "flex items-center">
+          <div className="flex items-center">
             <Typography variant="h6" color="black" className="mr-2">
               Show
             </Typography>
             <Select
               value={String(userPage.limit)}
-              onChange={(e) => handleLimitChange(e)}
+              onChange={(e) => handleLimitChange(e.target.value)}
             >
               <Option value="10">10</Option>
               <Option value="20">20</Option>
@@ -214,7 +208,7 @@ const UserManagement = () => {
             <Spinner color="blue" />
           </div>
         ) : (
-          renderTable(USER_TABLE_HEAD, filteredUsers)
+          renderTable(USER_TABLE_HEAD, users)
         )}
         <div className="flex justify-center items-center mt-4">
           <Button
@@ -249,7 +243,7 @@ const UserManagement = () => {
         <DialogFooter>
           <Button
             color="black"
-            className="hover:bg-black hover:text-white"
+            className="hover:bg-black hover:text-white mr-2"
             variant="outlined"
             onClick={() => setIsConfirmOpen(false)}
           >

@@ -34,22 +34,21 @@ const CourseManagement = () => {
   }, [coursePage, currentPage]);
 
   const fetchCourses = async () => {
+    console.log("fetching courses");
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
-      const response = await axios.get(
-        "/admin/courses-management",
-        {
-          params: {
-            limit: coursePage.limit,
-            startAfter: coursePage.startAfter,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get("/admin/courses-management", {
+        params: {
+          limit: coursePage.limit,
+          startAfter: coursePage.startAfter,
+          searchQuery: searchQuery,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const { courses, totalCount } = response.data;
       setCourses(courses);
       setTotalPages(Math.ceil(totalCount / coursePage.limit));
@@ -75,10 +74,14 @@ const CourseManagement = () => {
     setCurrentPage(1);
   };
 
-  // Filter courses based on the search query
-  const filteredCourses = courses.filter((course) =>
-    course.courseName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setCoursePage({ ...coursePage, startAfter: null });
+    fetchCourses();
+  };
+
 
   const renderTable = (headers, data) => (
     <div className="overflow-auto">
@@ -105,20 +108,20 @@ const CourseManagement = () => {
           {data.map((item) => (
             <tr key={item.id} className="even:bg-blue-gray-50/50">
               <td className="p-4">
-               <div className="flex items-center justify-between"> 
-               <img
-                  className="h-32 w-32 rounded-lg object-cover"
-                  src={item.thumbnail}
-                />
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
-                >
-                  {item.courseName}
-                </Typography>
-                <div></div>
-               </div>
+                <div className="flex items-center justify-between">
+                  <img
+                    className="h-32 w-32 rounded-lg object-cover"
+                    src={item.thumbnail}
+                  />
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    {item.courseName}
+                  </Typography>
+                  <div></div>
+                </div>
               </td>
               <td className="p-4">
                 <Typography
@@ -166,15 +169,22 @@ const CourseManagement = () => {
           Course Management
         </Typography>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <div className="w-full md:w-auto mt-2 md:mb-0">
+          <div className="flex w-full md:w-auto mt-2 md:mb-0">
             <Input
               type="text"
               color="blue-gray"
               label="Search Course"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              fullWidth
             />
+            <Button 
+            className="ml-4"
+              onClick={() => {
+                handleSearch();
+              }}
+            >
+              Search
+            </Button>
           </div>
           <div className="flex items-center">
             <Typography variant="h6" color="black" className="mr-2">
@@ -195,7 +205,7 @@ const CourseManagement = () => {
             <Spinner color="blue" />
           </div>
         ) : (
-          renderTable(COURSE_TABLE_HEAD, filteredCourses)
+          renderTable(COURSE_TABLE_HEAD, courses)
         )}
         <div className="flex flex-col md:flex-row justify-center items-center mt-4">
           <Button
