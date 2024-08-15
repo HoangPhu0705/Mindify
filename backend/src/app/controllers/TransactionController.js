@@ -27,6 +27,17 @@ exports.confirmPayment = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.deleteTransaction = async (req, res) => {
+    try {
+        const { paymentIntentId } = req.params;
+        const result = await TransactionService.deleteTransaction(paymentIntentId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // VNPAY
 exports.createVnpayPaymentUrl = async (req, res) => {
     const { courseId, userId, amount } = req.body;

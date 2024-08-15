@@ -141,6 +141,8 @@ class _PaymentPageState extends State<PaymentPage> {
                         Navigator.pop(context, true);
                       } on StripeException catch (e) {
                         if (e.error.code == FailureCode.Canceled) {
+                            await paymentService.deletePayment(intentId);
+
                           showErrorToast(context, 'Payment flow canceled.');
                         } else {
                           log('Confirmation error: $e');

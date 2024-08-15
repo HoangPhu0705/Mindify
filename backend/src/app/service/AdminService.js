@@ -402,16 +402,21 @@ const getMonthlyRevenue = async (year) => {
 const getRevenueByDateRange = async (startDate, endDate) => {
   try {
     const snapshot = await TransactionCollection.where('status', '==', 'succeeded').get();
+
     const revenue = {};
 
     snapshot.forEach(doc => {
       const transactionData = doc.data();
+      // console.log(transactionData)
       const transactionDate = transactionData.createdAt.toDate();
 
       if (startDate && endDate && (transactionDate < new Date(startDate) || transactionDate > new Date(endDate))) return;
 
       const dateKey = transactionDate.toISOString().split('T')[0];
-
+      console.log(dateKey)
+      // const dateKey1 = new Date(transactionDate.getTime() - transactionDate.getTimezoneOffset() * 60000)
+      // console.log(dateKey1)
+      // const dateKey = dateKey1.toISOString().split('T')[0];
       if (!revenue[dateKey]) {
         revenue[dateKey] = 0;
       }
