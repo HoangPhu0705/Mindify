@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comment_tree/comment_tree.dart' as ct;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/CommentService.dart';
 import 'package:frontend/services/functions/UserService.dart';
@@ -16,6 +17,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class Discussion extends StatefulWidget {
   final String courseId;
   final bool isEnrolled;
+  final String instructorId;
   final bool isPreviewing;
 
   const Discussion({
@@ -23,6 +25,7 @@ class Discussion extends StatefulWidget {
     required this.courseId,
     required this.isEnrolled,
     required this.isPreviewing,
+    required this.instructorId,
   });
 
   @override
@@ -223,8 +226,8 @@ class _DiscussionState extends State<Discussion> {
                                               DateTime.parse(a['createdAt']);
                                           DateTime bCreatedAt =
                                               DateTime.parse(b['createdAt']);
-                                          return bCreatedAt.compareTo(
-                                              aCreatedAt);
+                                          return bCreatedAt
+                                              .compareTo(aCreatedAt);
                                         });
 
                                         List<Reply> replies = replyDocs
@@ -271,8 +274,10 @@ class _DiscussionState extends State<Discussion> {
     return ct.CommentTreeWidget<Comment, Reply>(
       rootComment,
       rootComment.replies,
-      treeThemeData:
-          const ct.TreeThemeData(lineColor: AppColors.cream, lineWidth: 3),
+      treeThemeData: const ct.TreeThemeData(
+        lineColor: AppColors.cream,
+        lineWidth: 3,
+      ),
       avatarRoot: (context, data) => PreferredSize(
         preferredSize: const Size.fromRadius(18),
         child: CircleAvatar(
@@ -306,8 +311,13 @@ class _DiscussionState extends State<Discussion> {
         );
       },
       contentRoot: (context, data) {
-        return _buildCommentContent(context, data, rootDisplayName,
-            rootPhotoUrl, rootComment.createdAt);
+        return _buildCommentContent(
+          context,
+          data,
+          rootDisplayName,
+          rootPhotoUrl,
+          rootComment.createdAt,
+        );
       },
       contentChild: (context, data) {
         return FutureBuilder<Map<String, dynamic>>(
@@ -322,130 +332,239 @@ class _DiscussionState extends State<Discussion> {
             }
             Map<String, dynamic> userData = userSnapshot.data!;
             String displayName = userData['displayName'] ?? 'Mindify Member';
-            String photoUrl = userData['photoUrl'] ??
-                'assets/images/default_avatar.png';
+            String photoUrl =
+                userData['photoUrl'] ?? 'assets/images/default_avatar.png';
 
-            return _buildReplyContent(context, data, displayName, photoUrl);
+            return _buildReplyContent(
+              context,
+              rootComment.id,
+              data,
+              displayName,
+              photoUrl,
+            );
           },
         );
       },
     );
   }
 
-  Widget _buildCommentContent(BuildContext context, Comment comment,
-    String displayName, String photoUrl, String createdAt) {
-  final DateTime createdAtDateTime = DateTime.parse(createdAt);
-  final timeAgo = timeago.format(createdAtDateTime, locale: 'en');
+  Widget _buildCommentContent(
+    BuildContext context,
+    Comment comment,
+    String displayName,
+    String photoUrl,
+    String createdAt,
+  ) {
+    final DateTime createdAtDateTime = DateTime.parse(createdAt);
+    final timeAgo = timeago.format(createdAtDateTime, locale: 'en');
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              displayName,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w600, color: Colors.black),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              comment.content,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
-            ),
-          ],
-        ),
-      ),
-      DefaultTextStyle(
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall!
-            .copyWith(color: Colors.grey[700], fontWeight: FontWeight.bold),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    displayName,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w600, color: Colors.black),
+                  ),
+                  widget.instructorId == userId
+                      ? GestureDetector(
+                          onTap: () {
+                            //Dont need to pass the reply id because delete the root comment
+                            _showBottomSheet(
+                              context,
+                              comment.id,
+                              "",
+                              "comment",
+                            );
+                          },
+                          child: const Icon(
+                            Icons.more_vert,
+                            size: 20,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
+              const SizedBox(height: 4),
               Text(
-                timeAgo,
+                comment.content,
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall!
-                    .copyWith(color: AppColors.lightGrey),
+                    .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
               ),
-              const SizedBox(width: 16),
-              InkWell(
-                onTap: () {
-                  focusNode.requestFocus();
-                  setState(() {
-                    _replyToCommentId = comment.id;
-                  });
-                },
-                child: Text(
-                  'Reply',
+            ],
+          ),
+        ),
+        DefaultTextStyle(
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                color: Colors.grey[700],
+                fontWeight: FontWeight.bold,
+              ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                Text(
+                  timeAgo,
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall!
                       .copyWith(color: AppColors.lightGrey),
                 ),
+                const SizedBox(width: 16),
+                InkWell(
+                  onTap: () {
+                    focusNode.requestFocus();
+                    setState(() {
+                      _replyToCommentId = comment.id;
+                    });
+                  },
+                  child: Text(
+                    'Reply',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .copyWith(color: AppColors.lightGrey),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReplyContent(
+    BuildContext context,
+    String rootCommentId,
+    Reply reply,
+    String displayName,
+    String photoUrl,
+  ) {
+    final DateTime createdAtDateTime = DateTime.parse(reply.createdAt);
+    final timeAgo = timeago.format(createdAtDateTime, locale: 'en');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    displayName,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w600, color: Colors.black),
+                  ),
+                  widget.instructorId == userId
+                      ? GestureDetector(
+                          onTap: () {
+                            _showBottomSheet(
+                              context,
+                              rootCommentId,
+                              reply.id,
+                              "reply",
+                            );
+                          },
+                          child: const Icon(
+                            Icons.more_vert,
+                            size: 20,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                reply.content,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
               ),
             ],
           ),
         ),
-      ),
-    ],
-  );
-}
-
-Widget _buildReplyContent(BuildContext context, Reply reply,
-    String displayName, String photoUrl) {
-  final DateTime createdAtDateTime = DateTime.parse(reply.createdAt);
-  final timeAgo = timeago.format(createdAtDateTime, locale: 'en');
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              displayName,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w600, color: Colors.black),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              reply.content,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w300, color: Colors.black),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            timeAgo,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: AppColors.lightGrey),
+          ),
         ),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Text(
-          timeAgo,
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall!
-              .copyWith(color: AppColors.lightGrey),
-        ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
+  void _showBottomSheet(
+      BuildContext context, String commentId, String replyId, String type) {
+    showModalBottomSheet(
+      useRootNavigator: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.ghostWhite,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(10),
+            ),
+          ),
+          height: MediaQuery.of(context).size.height * 0.07,
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(
+                  CupertinoIcons.trash,
+                  color: Colors.red,
+                ),
+                titleAlignment: ListTileTitleAlignment.center,
+                title: const Text(
+                  "Remove comment",
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                ),
+                onTap: () async {
+                  try {
+                    Navigator.pop(context);
+                    if (type == "comment") {
+                      await commentService.deleteComment(
+                        widget.courseId,
+                        commentId,
+                      );
+                    } else if (type == "reply") {
+                      await commentService.deleteReply(
+                        widget.courseId,
+                        commentId,
+                        replyId,
+                      );
+                    }
+                  } catch (e) {
+                    log("Error deleting comment or reply: $e");
+                    rethrow;
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

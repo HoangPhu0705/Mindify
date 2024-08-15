@@ -425,6 +425,7 @@ class _CourseDetailState extends State<CourseDetail>
                       Discussion(
                         isPreviewing: false,
                         courseId: course!.id,
+                        instructorId: course!.instructorId,
                         isEnrolled: isEnrolled,
                       ),
                       NoteTab(

@@ -45,13 +45,40 @@ class CommentService {
         .toList();
   }
 
+  Future<void> deleteComment(String courseId, String commentId) async {
+    try {
+      await comments
+          .doc(courseId)
+          .collection('comments')
+          .doc(commentId)
+          .delete();
+    } catch (e) {
+      log('Error deleting comment: $e');
+    }
+  }
+
+  Future<void> deleteReply(
+      String courseId, String commentId, String replyId) async {
+    try {
+      await comments
+          .doc(courseId)
+          .collection('comments')
+          .doc(commentId)
+          .collection('replies')
+          .doc(replyId)
+          .delete();
+    } catch (e) {
+      log('Error deleting reply: $e');
+    }
+  }
+
   Future<List<Comment>> getComments(String courseId) async {
     final response = await http.get(
       Uri.parse("${AppConstants.COURSE_API}/$courseId/comments"),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
