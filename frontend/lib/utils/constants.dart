@@ -44,6 +44,8 @@ class AppConstants {
     'assets/images/category/writing.jpg',
   ];
 
+
+
   static String CREATE_INSTRUCTOR_REQUEST = "$baseUrl/users/requestInstructor";
   static String USER_API = "$baseUrl/users";
   static String COURSE_API = "$baseUrl/courses";

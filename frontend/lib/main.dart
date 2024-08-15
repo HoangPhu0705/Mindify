@@ -77,7 +77,7 @@ class _MindifyAppState extends State<MindifyApp> {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-          
+
           // FlutterQuillLocalizations.delegate,
         ],
         supportedLocales: FlutterQuillLocalizations.supportedLocales,
