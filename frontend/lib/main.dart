@@ -77,10 +77,8 @@ class _MindifyAppState extends State<MindifyApp> {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-          // Uncomment this line to use provide flutter quill localizations
-          // in your widgets app, otherwise the quill widgets will provide it
-          // internally:
-          // FlutterQuillLocalizations.delegate,`
+          
+          // FlutterQuillLocalizations.delegate,
         ],
         supportedLocales: FlutterQuillLocalizations.supportedLocales,
         debugShowCheckedModeBanner: false,
