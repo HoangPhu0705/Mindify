@@ -22,7 +22,7 @@ class ReportDialog extends StatefulWidget {
 
 class _ReportDialogState extends State<ReportDialog> {
   String? _selectedReason;
-  TextEditingController _customReasonController = TextEditingController();
+  final _customReasonController = TextEditingController();
   bool _showCustomReasonField = false;
   ReportService reportService = ReportService();
 
@@ -58,6 +58,7 @@ class _ReportDialogState extends State<ReportDialog> {
                 RadioListTile<String>(
                   value: reason,
                   groupValue: _selectedReason,
+                  contentPadding: EdgeInsets.zero,
                   title: Text(reason),
                   onChanged: (String? value) {
                     setState(() {
