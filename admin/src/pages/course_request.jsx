@@ -292,9 +292,11 @@ const CourseRequestManagement = () => {
         ) : (
           renderTable(COURSE_TABLE_HEAD, filteredRequests)
         )}
-        <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+        <div className="flex flex-col md:flex-row justify-center items-center mt-4">
           <Button
-            color="blue"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -303,12 +305,14 @@ const CourseRequestManagement = () => {
           <Typography
             variant="small"
             color="blue-gray"
-            className="font-normal my-2 md:my-0"
+            className="font-normal my-2 mx-2 md:my-0"
           >
             Page {currentPage} of {totalPages}
           </Typography>
           <Button
-            color="blue"
+            color="black"
+            className="hover:bg-black hover:text-white"
+            variant="outlined"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
