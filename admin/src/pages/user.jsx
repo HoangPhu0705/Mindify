@@ -195,7 +195,7 @@ const UserManagement = () => {
             </Typography>
             <Select
               value={String(userPage.limit)}
-              onChange={(e) => handleLimitChange(e.target.value)}
+              onChange={(e) => handleLimitChange(e)}
             >
               <Option value="10">10</Option>
               <Option value="20">20</Option>
