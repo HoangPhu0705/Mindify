@@ -248,6 +248,6 @@ class _ProfilePageState extends State<ProfilePage> {
   void signUserOut() async {
     final notificationService = NotificationService();
     await notificationService.deleteTokenFromDatabase();
-    FirebaseAuth.instance.signOut();
+    await FirebaseAuth.instance.signOut();
   }
 }

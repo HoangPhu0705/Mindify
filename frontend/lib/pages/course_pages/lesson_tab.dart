@@ -73,7 +73,7 @@ class LessonTabState extends State<LessonTab> {
   List<String> completedLessons = [];
   @override
   void initState() {
-    log(quizService.idToken!);
+    // log(quizService.idToken!);
     super.initState();
     _getInstructorInfo();
     _sortLessonsByIndex();
@@ -576,11 +576,18 @@ class LessonTabState extends State<LessonTab> {
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
                                   ),
-                                  child: buildQuizCard(
-                                    quizId,
-                                    quizName,
-                                    totalQuestion,
-                                  ),
+                                  child: widget.isEnrolled
+                                      ? buildQuizCard(
+                                          quizId,
+                                          quizName,
+                                          totalQuestion,
+                                        )
+                                      : const Text(
+                                          "You need to enroll to access quizzes",
+                                          style: TextStyle(
+                                            color: AppColors.lightGrey,
+                                          ),
+                                        ),
                                 ),
                               ],
                             );

@@ -67,7 +67,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
           },
         ),
         title: const Text(
-          "Teacher Info",
+          "User Info",
           style: TextStyle(
             fontSize: 20,
             color: Colors.white,
