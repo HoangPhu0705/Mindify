@@ -1,6 +1,7 @@
 const {
   loginUser,
   logout,
+  unpublishCourse,
   getAllUsersPaginated,
   getAllCoursesPaginated,
   getAllTransactionsPaginated,
@@ -71,6 +72,17 @@ class AdminController {
       res.status(500).json({ message: error.message });
     }
   };
+
+  unpublishCourse = async (req, res) => {
+    try{
+      const { courseId } = req.params
+      const { authorId, courseName, unpublishReason, reportId } = req.body
+      const message = await unpublishCourse(courseId, authorId, courseName, unpublishReason, reportId);
+      res.status(204).json(message);
+    }catch(error){
+      res.status(500).json({ message: error.message });
+    }
+  }
 
   showAllTransactions = async (req, res) => {
     const { limit, startAfter, searchQuery } = req.query;

@@ -63,6 +63,76 @@ const logout = async () => {
   console.log('User logged out successfully.');
 }
 
+const unpublishCourse = async (courseId, authorId, courseName, unpublishReason, reportId) => {
+  try {
+    const user = await admin.auth().getUser(authorId);
+    const content = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Course Unpublish Notification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #333;
+      font-size: 24px;
+    }
+    
+    p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Course Unpublish Notification</h1>
+    <p>Dear ${user.displayName},</p>
+    <p>We regret to inform you that your course, <strong>${courseName}</strong>, has been unpublished from our platform. This decision was made due to the following reason:</p>
+    <p><em>${unpublishReason}</em></p>
+    <p>Please review our terms of service to ensure that your content aligns with our guidelines. We encourage you to make any necessary adjustments and resubmit your course for approval.</p>
+    <p>If you have any questions or need further assistance, please feel free to reach out to our support team.</p>
+    <p>Best regards,<br>
+    The Mindify Team</p>
+  </div>
+</body>
+</html>
+`;
+
+    await CourseCollection.doc(courseId).update(
+      {
+        isPublic: false,
+        request: false
+      }
+    );
+    await ReportCollection.doc(reportId).delete();
+    await sendEmail(user.email, "You Course has been unpublished", content);
+
+    return { "message": "Unpublish course successfully" };
+  } catch (error) {
+    console.error('Error update course: ', error);
+    throw new Error('Error update course: ' + error.message);
+  }
+
+}
+
 // User management
 const getAllUsersPaginated = async (limit, startAfter, searchQuery) => {
   try {
@@ -71,7 +141,7 @@ const getAllUsersPaginated = async (limit, startAfter, searchQuery) => {
     // Apply search query if provided
     if (searchQuery) {
       query = query.where('email', '>=', searchQuery)
-                   .where('email', '<=', searchQuery + '\uf8ff');
+        .where('email', '<=', searchQuery + '\uf8ff');
     }
 
     // Apply pagination if provided
@@ -162,7 +232,7 @@ const getAllCoursesPaginated = async (limit, startAfter, searchQuery) => {
 
     if (searchQuery) {
       query = query.where('courseName', '>=', searchQuery)
-                   .where('courseName', '<=', searchQuery + '\uf8ff');
+        .where('courseName', '<=', searchQuery + '\uf8ff');
     }
 
     if (startAfter) {
@@ -478,28 +548,28 @@ const getRevenueByDateRange = async (startDate, endDate) => {
   }
 };
 
-const getTotalCourses = async() => {
-  try{
+const getTotalCourses = async () => {
+  try {
     const totalCountSnapshot = await CourseCollection.where('isPublic', '==', true).get();
     const totalCourseCount = totalCountSnapshot.size;
     return totalCourseCount;
-  } catch(error) {
+  } catch (error) {
     console.error('Error getting total courses:', error);
     throw new Error('Error getting total courses: ' + error.message);
   }
-  
+
 }
 
-const getRevenue = async() => {
-  try{
+const getRevenue = async () => {
+  try {
     const snapshot = await TransactionCollection.where('status', '==', 'succeeded').get();
     let totalRevenue = 0;
     snapshot.forEach(doc => {
       const revenue = doc.data();
       totalRevenue += revenue.amount || 0;
-    }); 
+    });
     return totalRevenue;
-  }catch(error) {
+  } catch (error) {
     console.error('Error getting total revenue:', error);
     throw new Error('Error getting total revenue: ' + error.message);
   }
@@ -512,7 +582,7 @@ const getAllReportsPaginated = async (limit, startAfter, searchQuery) => {
     // Apply search query if provided
     if (searchQuery) {
       query = query.where('from', '>=', searchQuery)
-                   .where('from', '<=', searchQuery + '\uf8ff');
+        .where('from', '<=', searchQuery + '\uf8ff');
     }
 
     // Apply pagination if provided
@@ -529,7 +599,7 @@ const getAllReportsPaginated = async (limit, startAfter, searchQuery) => {
       id: doc.id,
       ...doc.data()
     }));
-  
+
 
     console.log(reports)
 
@@ -558,5 +628,6 @@ module.exports = {
   getYearlyRevenue,
   getMonthlyRevenue,
   getRevenueByDateRange,
-  getTotalUsers
+  getTotalUsers,
+  unpublishCourse
 };

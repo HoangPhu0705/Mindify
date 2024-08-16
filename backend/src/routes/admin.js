@@ -21,5 +21,5 @@ router.get('/monthly-transactions', authenticateJWT, AdminController.getMonthlyR
 router.get('/date-range-transactions', authenticateJWT, AdminController.getRevenueByDateRange);
 router.post('/lock-user', authenticateJWT, AdminController.lockUser);
 router.post('/unlock-user', authenticateJWT, AdminController.unlockUser);
-
+router.patch('/unpublish/:courseId', authenticateJWT, AdminController.unpublishCourse);
 module.exports = router;

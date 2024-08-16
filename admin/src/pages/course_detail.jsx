@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import UnpublishPopup from "../components/unpublish_popup";
 import ReactQuill from "react-quill"; // Import ReactQuill
 import "react-quill/dist/quill.snow.css"; // Import Quill styles
 import {
@@ -9,6 +10,7 @@ import {
   Spinner,
   Button,
   Chip,
+  Alert,
 } from "@material-tailwind/react";
 import { PlayCircleIcon } from "@heroicons/react/24/solid";
 
@@ -16,10 +18,16 @@ const CourseDetail = () => {
   const { courseId } = useParams();
   const { state } = useLocation();
   const requestId = state?.requestId;
+  const reportId = state?.id;
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [unpublishContent, setUnpublishContent] = useState("");
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
   
   useEffect(() => {
     fetchCourseDetail();
@@ -82,6 +90,38 @@ const CourseDetail = () => {
     }
   };
 
+  const handleUnpublish = async () => {
+    try {
+      await axios.patch(
+        `/admin/unpublish/${courseId}`,
+        {
+          // authorId, courseName, unpublishReason
+          authorId: course.authorId,
+          courseName: course.courseName,
+          unpublishReason: unpublishContent,
+          reportId: reportId
+        }, // Empty body if not sending data
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setPopupOpen(false)
+      setAlertVisible(true);
+      setTimeout(() => {
+        setAlertVisible(false);
+        navigate("/course-management");
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Error rejecting course: ", error);
+      if (error.response && error.response.status === 401) {
+        alert("Session expired. Please log in again.");
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -112,6 +152,12 @@ const CourseDetail = () => {
           </Button>
         </div>
       )}
+      {course.isPublic && (
+        <Button color="red" onClick={()=>setPopupOpen(true)}>
+            Unpublish
+        </Button>
+      )}
+      {alertVisible && <Alert color="blue">Sent email successfully.</Alert>}
       <div className="flex flex-col items-center">
         <div className="w-full">
           <div className="flex w-full justify-center items-center">
@@ -219,6 +265,13 @@ const CourseDetail = () => {
           </div>
         </div>
       </div>
+      <UnpublishPopup
+      open={popupOpen}
+      handleOpen={() => setPopupOpen(!popupOpen)}
+      onUnpublish={handleUnpublish}
+      setUnpublishContent={setUnpublishContent}
+      />
+      
     </div>
   );
 };

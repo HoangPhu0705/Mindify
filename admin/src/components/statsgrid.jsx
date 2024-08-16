@@ -74,7 +74,7 @@ export default function DashboardStatsGrid() {
         <div className="pl-4">
           <span className="text-sm text-gray-500 font-light">Total Revenue</span>
           <div className="flex items-center">
-            <strong className="text-xl text-gray-700 font-semibold">{totalRevenue} VNĐ</strong>
+            <strong className="text-xl text-gray-700 font-semibold">{new Intl.NumberFormat('de-DE').format(totalRevenue)} VND</strong>
           </div>
         </div>
       </BoxWrapper>

@@ -15,47 +15,20 @@ import {
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-const billingCardData = [
-  {
-    icon: <ExclamationCircleIcon className="h-12 w-12 text-gray-900" />,
-    courseTitle: "Burrito Vikings",
-    from: "Company",
-    options: {
-      Contact: "Emma Roberts",
-      "Email Address": "emma@mail.com",
-      "VAT Number": "FRB12354712",
-    },
-  },
-  {
-    icon: <ExclamationCircleIcon className="h-12 w-12 text-gray-900" />,
-    courseTitle: "Stone Tech Zone",
-    from: "Company",
-    options: {
-      Contact: "Marcel Glock",
-      "Email Address": "marcel@mail.com",
-      "VAT Number": "FRB12354712",
-    },
-  },
-  {
-    icon: <ExclamationCircleIcon className="h-12 w-12 text-gray-900" />,
-    courseTitle: "Fiber Notion",
-    from: "Company",
-    options: {
-      Contact: "Misha Stam",
-      "Email Address": "misha@mail.com",
-      "VAT Number": "FRB1235476",
-    },
-  },
-];
-
 function BillingCard({ id, courseTitle, timestamp, from, reason, courseId }) {
   const navigate = useNavigate();
-  const goToCourseDetail = (courseId) => {
-    navigate(`/course/${courseId}`);
+  const goToCourseDetail = (courseId, id) => {
+    navigate(`/course/${courseId}`, { state: { id } });
   };
+
+//   const goToCourseDetail = (courseId, requestId) => {
+//     navigate(`/course/${courseId}`, { state: { requestId } });
+//   };
   return (
+    
     <Card shadow={false} className="rounded-lg border border-gray-300 p-4">
       <div className="mb-4 flex items-start justify-between">
+        {/* <div>${id}</div> */}
         <div className="flex items-center gap-3">
           <ExclamationCircleIcon className="h-12 w-12 text-gray-900" />
           <div>
@@ -86,7 +59,7 @@ function BillingCard({ id, courseTitle, timestamp, from, reason, courseId }) {
             color="black"
             className="hover:bg-black hover:text-white"
             variant="outlined"
-            onClick={() => goToCourseDetail(courseId)}
+            onClick={() => goToCourseDetail(courseId, id)}
           >
             Go to course
           </Button>
@@ -199,6 +172,7 @@ const Report = () => {
               <Spinner color="blue" />
             </div>
           ) : (
+            
             reports.map((props, key) => <BillingCard key={key} {...props} />)
           )}
         </CardBody>
