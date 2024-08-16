@@ -218,10 +218,22 @@ const CourseRequestManagement = () => {
                       );
                     } else {
                       alert(
-                        "You can only delete requests that are Approved or Declined."
+                        "You can only delete course requests that are Approved or Declined."
                       );
                     }
+                    
                   }}
+
+                  className={`rounded-lg ${
+                    item.status === "Approved" ||
+                    item.status === "Declined"
+                      ? "bg-red-500"
+                      : "bg-gray-300 cursor-not-allowed"
+                  }`}
+                  disabled={
+                    item.status !== "Approved" &&
+                    item.status !== "Declined"
+                  }
                 >
                   <TrashIcon className="text-white size-6" />
                 </IconButton>
@@ -239,15 +251,21 @@ const CourseRequestManagement = () => {
         <Typography variant="h4" color="black" className="dark:text-white">
           Course Request Management
         </Typography>
-        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <div className="w-full md:w-auto mt-2 md:mb-0">
-            <Input
-              type="text"
-              color="blue-gray"
-              label="Search Course"
-              fullWidth
-            />
-          </div>
+
+        <div className="flex justify-between items-center my-2 ">
+          <Tabs value={selectedTab} className="mb-2 flex-">
+            <TabsHeader>
+              {data.map(({ label, value }) => (
+                <Tab
+                  key={value}
+                  value={value}
+                  onClick={() => setSelectedTab(value)}
+                >
+                  <div className="px-4">{label}</div>
+                </Tab>
+              ))}
+            </TabsHeader>
+          </Tabs>
           <div className="flex items-center">
             <Typography
               variant="h6"
@@ -265,21 +283,6 @@ const CourseRequestManagement = () => {
               <Option value="10">10</Option>
             </Select>
           </div>
-        </div>
-        <div className = "flex">
-          <Tabs value={selectedTab} className="mb-2 flex-2">
-            <TabsHeader>
-              {data.map(({ label, value }) => (
-                <Tab
-                  key={value}
-                  value={value}
-                  onClick={() => setSelectedTab(value)}
-                >
-                  {label}
-                </Tab>
-              ))}
-            </TabsHeader>
-          </Tabs>
         </div>
 
         {loading ? (

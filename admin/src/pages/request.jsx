@@ -94,20 +94,21 @@ const Request = () => {
           Application Requests
         </Typography>
       </div>
-
-      <Tabs value={selectedTab}>
-        <TabsHeader>
-          {data.map(({ label, value }) => (
-            <Tab
-              key={value}
-              value={value}
-              onClick={() => setSelectedTab(value)}
-            >
-              {label}
-            </Tab>
-          ))}
-        </TabsHeader>
-      </Tabs>
+      <div className="flex my-2 mx-4">
+        <Tabs value={selectedTab}>
+          <TabsHeader>
+            {data.map(({ label, value }) => (
+              <Tab
+                key={value}
+                value={value}
+                onClick={() => setSelectedTab(value)}
+              >
+                <div className="px-4">{label}</div>
+              </Tab>
+            ))}
+          </TabsHeader>
+        </Tabs>
+      </div>
 
       <table className="w-full min-w-max table-auto text-left">
         <thead>
@@ -120,7 +121,6 @@ const Request = () => {
                 <Typography
                   variant="small"
                   color="blue-gray"
-                  className="font-bold leading-none text-lg"
                 >
                   {head}
                 </Typography>
@@ -187,18 +187,24 @@ const Request = () => {
                       request.status === "Declined"
                     ) {
                       await deleteRequest(request.id);
-                      setRequests(requests.filter((req) => req.id !== request.id));
+                      setRequests(
+                        requests.filter((req) => req.id !== request.id)
+                      );
                     } else {
-                      alert("You can only delete requests that are Approved or Declined.");
+                      alert(
+                        "You can only delete requests that are Approved or Declined."
+                      );
                     }
                   }}
                   className={`rounded-lg ${
-                    request.status === "Approved" || request.status === "Declined"
+                    request.status === "Approved" ||
+                    request.status === "Declined"
                       ? "bg-red-500"
                       : "bg-gray-300 cursor-not-allowed"
                   }`}
                   disabled={
-                    request.status !== "Approved" && request.status !== "Declined"
+                    request.status !== "Approved" &&
+                    request.status !== "Declined"
                   }
                 >
                   <TrashIcon className="text-white size-6" />
