@@ -98,7 +98,7 @@ class _TeachingTabTeacherState extends State<TeachingTabTeacher> {
                         isPublic: course.isPublic,
                         onTap: () {
                           // Navigate to course detail page
-                          Navigator.of(context).push(
+                          Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
                               builder: (context) => CourseDetail(
                                 courseId: course.id,

@@ -125,7 +125,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
                       },
                       child: Text(
                         "$followers Followers •",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
@@ -145,7 +145,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
                       },
                       child: Text(
                         " $following Following ",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
