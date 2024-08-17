@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import UnpublishPopup from "../components/unpublish_popup";
-import ReactQuill from "react-quill"; // Import ReactQuill
-import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   Card,
   Typography,
@@ -21,6 +21,7 @@ const CourseDetail = () => {
   const reportId = state?.id;
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingAction, setLoadingAction] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -28,7 +29,6 @@ const CourseDetail = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     fetchCourseDetail();
   }, [courseId]);
@@ -54,10 +54,11 @@ const CourseDetail = () => {
   };
 
   const handleApprove = async () => {
+    setLoadingAction(true);
     try {
       await axios.post(
         `/api/courseRequest/${requestId}/approve`,
-        {}, // Empty body if not sending data
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -67,14 +68,17 @@ const CourseDetail = () => {
       fetchCourseDetail();
     } catch (error) {
       console.error("Error approving course: ", error);
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   const handleReject = async () => {
+    setLoadingAction(true);
     try {
       await axios.post(
         `/api/courseRequest/${requestId}/reject`,
-        {}, // Empty body if not sending data
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -87,38 +91,41 @@ const CourseDetail = () => {
       if (error.response && error.response.status === 401) {
         alert("Session expired. Please log in again.");
       }
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   const handleUnpublish = async () => {
+    setLoadingAction(true);
     try {
       await axios.patch(
         `/admin/unpublish/${courseId}`,
         {
-          // authorId, courseName, unpublishReason
           authorId: course.authorId,
           courseName: course.courseName,
           unpublishReason: unpublishContent,
-          reportId: reportId
-        }, // Empty body if not sending data
+          reportId: reportId,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setPopupOpen(false)
+      setPopupOpen(false);
       setAlertVisible(true);
       setTimeout(() => {
         setAlertVisible(false);
         navigate("/course-management");
       }, 2000);
-      
     } catch (error) {
-      console.error("Error rejecting course: ", error);
+      console.error("Error unpublishing course: ", error);
       if (error.response && error.response.status === 401) {
         alert("Session expired. Please log in again.");
       }
+    } finally {
+      setLoadingAction(false);
     }
   };
 
@@ -144,17 +151,29 @@ const CourseDetail = () => {
     <div className="w-full p-2">
       {course.isPublic === false && requestId && (
         <div className="flex flex-row justify-end mt-4 space-x-2">
-          <Button color="green" onClick={handleApprove}>
-            Approve
+          <Button
+            color="green"
+            onClick={handleApprove}
+            disabled={loadingAction}
+          >
+            {loadingAction ? <Spinner size="sm" /> : "Approve"}
           </Button>
-          <Button color="red" onClick={handleReject}>
-            Reject
+          <Button
+            color="red"
+            onClick={handleReject}
+            disabled={loadingAction}
+          >
+            {loadingAction ? <Spinner size="sm" /> : "Reject"}
           </Button>
         </div>
       )}
       {course.isPublic && (
-        <Button color="red" onClick={()=>setPopupOpen(true)}>
-            Unpublish
+        <Button
+          color="red"
+          onClick={() => setPopupOpen(true)}
+          disabled={loadingAction}
+        >
+          {loadingAction ? <Spinner size="sm" /> : "Unpublish"}
         </Button>
       )}
       {alertVisible && <Alert color="blue">Sent email successfully.</Alert>}
@@ -200,14 +219,11 @@ const CourseDetail = () => {
               Description:
             </Typography>
             <ReactQuill
-              // Set the value to the Quill JSON data
               value={JSON.parse(course.description)}
-              readOnly={true} // Make it read-only
+              readOnly={true}
               theme="bubble"
-
             />
-            
-          </div>  
+          </div>
         </div>
 
         <div className="w-full overflow-y-auto">
@@ -224,7 +240,7 @@ const CourseDetail = () => {
             {course.lessons.map((lesson) => (
               <div
                 key={lesson.id}
-                className={`cursor-pointer p-4 my-2 rounded-lg  ${
+                className={`cursor-pointer p-4 my-2 rounded-lg ${
                   selectedLesson?.id === lesson.id
                     ? "bg-[#062137] text-white shadow-lg"
                     : "hover:border border-[#39464B]"
@@ -266,12 +282,11 @@ const CourseDetail = () => {
         </div>
       </div>
       <UnpublishPopup
-      open={popupOpen}
-      handleOpen={() => setPopupOpen(!popupOpen)}
-      onUnpublish={handleUnpublish}
-      setUnpublishContent={setUnpublishContent}
+        open={popupOpen}
+        handleOpen={() => setPopupOpen(!popupOpen)}
+        onUnpublish={handleUnpublish}
+        setUnpublishContent={setUnpublishContent}
       />
-      
     </div>
   );
 };

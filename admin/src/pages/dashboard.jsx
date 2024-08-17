@@ -9,7 +9,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
 const Dashboard = () => {
-  const [filterType, setFilterType] = useState("month");
+  const [filterType, setFilterType] = useState("today");
   const [filters, setFilters] = useState({ year: new Date().getFullYear().toString(), startDate: new Date(), endDate: new Date() });
   const token = localStorage.getItem('token');
 
@@ -107,8 +107,9 @@ const Dashboard = () => {
   const fetchEnrollments = async () => {
     let url;
     let params = {};
-
-    if (filterType === "month") {
+    if (filterType === "today") {
+      url = '/admin/enrollments-today';
+    } else if (filterType === "month") {
       url = '/admin/monthly-enrollments';
       params.year = filters.year;
     } else if (filterType === "year") {
@@ -146,7 +147,9 @@ const Dashboard = () => {
     let url;
     let params = {};
 
-    if (filterType === "month") {
+    if (filterType === "today") {
+      url = '/admin/revenue-today';
+    } else if (filterType === "month") {
       url = '/admin/monthly-transactions';
       params.year = filters.year;
     } else if (filterType === "year") {
@@ -199,7 +202,8 @@ const Dashboard = () => {
         <CardBody className="px-2 pb-5">
           <div className="flex flex-wrap gap-4">
             <Select name="filterType" value={filterType} onChange={(e) => handleFilterTypeChange(e)} label="Filter Type">
-              <Option value="month">Month</Option>
+            <Option value="today">Today</Option>
+              <Option value="month">Year</Option>
               <Option value="year">All</Option>
               <Option value="dateRange">Date Range</Option>
             </Select>

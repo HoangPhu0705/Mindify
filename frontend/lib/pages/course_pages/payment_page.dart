@@ -11,6 +11,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:frontend/utils/constants.dart';
+import 'package:intl/intl.dart';
 
 class PaymentPage extends StatefulWidget {
   final String userId;
@@ -103,7 +104,9 @@ class _PaymentPageState extends State<PaymentPage> {
             const Divider(),
             AppSpacing.mediumVertical,
             Text(
-              'Price: ${widget.price}đ',
+              "Price: ${NumberFormat.decimalPattern('vi').format(widget.price)}đ",
+
+              // 'Price: ${widget.price}đ',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -141,7 +144,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Navigator.pop(context, true);
                       } on StripeException catch (e) {
                         if (e.error.code == FailureCode.Canceled) {
-                            await paymentService.deletePayment(intentId);
+                          await paymentService.deletePayment(intentId);
 
                           showErrorToast(context, 'Payment flow canceled.');
                         } else {

@@ -1,6 +1,8 @@
 const {
   loginUser,
   logout,
+  getEnrollmentsToday,
+  getRevenueToday,
   unpublishCourse,
   getAllUsersPaginated,
   getAllCoursesPaginated,
@@ -173,6 +175,23 @@ class AdminController {
       res.status(500).json({ message: "Error getting enrollments" });
     }
   };
+  getEnrollmentsToday = async (req, res) => {
+    try {
+      const enrollments = await getEnrollmentsToday();
+      res.status(200).json({enrollments})
+    }catch (error) {
+      console.error("Error getting enrollments:", error);
+      res.status(500).json({ message: "Error getting enrollments" });
+    }
+  }
+  getRevenueToday = async (req, res) => {
+    try {
+      const revenue = await getRevenueToday();
+      res.status(200).json(revenue)
+    }catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 
   // transactions
   getYearlyRevenue = async (req, res) => {
