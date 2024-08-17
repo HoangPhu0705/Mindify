@@ -6,9 +6,11 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_management/manage_class.dart';
+import 'package:frontend/pages/course_pages/show_all_projects.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/follow_topics.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/UserService.dart';
+import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
@@ -215,6 +217,12 @@ class _ProfileTabState extends State<ProfileTab>
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
                                 DocumentSnapshot course = courses[index];
+                                Map<String, dynamic> courseData =
+                                    course.data() as Map<String, dynamic>;
+                                courseData['id'] = course.id;
+                                Course myCourse =
+                                    Course.fromJsonWithoutLesson(courseData);
+
                                 String courseName = course["courseName"];
                                 String thumbnail = course["thumbnail"];
                                 bool isPublic = course["isPublic"];
@@ -244,6 +252,18 @@ class _ProfileTabState extends State<ProfileTab>
                                   thumbnail: thumbnail,
                                   isPublic: isPublic,
                                   requestSent: requestSent,
+                                  onShowProjectsPressed: () {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ShowAllProjects(
+                                            course: myCourse,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             ),

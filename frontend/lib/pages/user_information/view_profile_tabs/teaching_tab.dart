@@ -164,6 +164,7 @@ class _TeachingTabState extends State<TeachingTab>
                                   scrollDirection: Axis.horizontal,
                                   itemBuilder: (context, index) {
                                     DocumentSnapshot course = courses[index];
+                                    log(course.toString());
                                     String courseName = course["courseName"];
                                     String thumbnail = course["thumbnail"];
                                     bool isPublic = course["isPublic"];
@@ -227,6 +228,7 @@ class _TeachingTabState extends State<TeachingTab>
                                       thumbnail:
                                           thumbnail.isNotEmpty ? thumbnail : "",
                                       isPublic: isPublic,
+                                      onShowProjectsPressed: () {},
                                     );
                                   },
                                 ),

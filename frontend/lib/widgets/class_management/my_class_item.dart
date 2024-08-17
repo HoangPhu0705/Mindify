@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/course_pages/show_all_projects.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:pie_menu/pie_menu.dart';
@@ -10,6 +11,7 @@ class MyClassItem extends StatefulWidget {
   final String classTitle;
   final VoidCallback onEditPressed;
   final VoidCallback onDeletePressed;
+  final VoidCallback onShowProjectsPressed;
   final String thumbnail;
   final bool isPublic;
   final bool requestSent;
@@ -21,6 +23,7 @@ class MyClassItem extends StatefulWidget {
     required this.thumbnail,
     required this.isPublic,
     required this.requestSent,
+    required this.onShowProjectsPressed,
   });
 
   @override
@@ -182,6 +185,19 @@ class _MyClassItemState extends State<MyClassItem> {
           onSelect: widget.onEditPressed,
           builder: (hovered) {
             return const Icon(Icons.edit);
+          },
+        ),
+        PieAction.builder(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: AppColors.blue,
+            iconColor: Colors.black,
+          ),
+          tooltip: const Text(''),
+          onSelect: widget.onShowProjectsPressed,
+          builder: (hovered) {
+            return const Icon(
+              Icons.assignment_outlined,
+            );
           },
         ),
         PieAction.builder(
