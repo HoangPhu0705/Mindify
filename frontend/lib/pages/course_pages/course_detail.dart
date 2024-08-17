@@ -23,6 +23,7 @@ import 'package:frontend/widgets/video_player_view.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/UserService.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -296,7 +297,7 @@ class _CourseDetailState extends State<CourseDetail>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "${course!.price.toString()}đ",
+                        "${NumberFormat.decimalPattern('vi').format(course!.price)}đ",
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

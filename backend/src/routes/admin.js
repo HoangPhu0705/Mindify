@@ -7,6 +7,8 @@ router.post('/admin-login', AdminController.loginController);
 router.get('/admin-logout', AdminController.logOut);
 router.get('/users-management', authenticateJWT, AdminController.showAllUsers);
 router.get('/transactions-management', authenticateJWT, AdminController.showAllTransactions);
+router.get('/revenue-today', authenticateJWT, AdminController.getRevenueToday);
+router.get('/enrollments-today', authenticateJWT, AdminController.getEnrollmentsToday);
 router.get('/reports', authenticateJWT, AdminController.showAllReports);
 router.get('/courses-management', authenticateJWT, AdminController.showAllCourses);
 router.get('/total-students', authenticateJWT, AdminController.getTotalStudentsController);

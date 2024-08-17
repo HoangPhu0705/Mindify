@@ -122,7 +122,10 @@ const unpublishCourse = async (courseId, authorId, courseName, unpublishReason, 
         request: false
       }
     );
-    await ReportCollection.doc(reportId).delete();
+    if (reportId != null) {
+
+      await ReportCollection.doc(reportId).delete();
+    }
     await sendEmail(user.email, "You Course has been unpublished", content);
 
     return { "message": "Unpublish course successfully" };
@@ -610,9 +613,59 @@ const getAllReportsPaginated = async (limit, startAfter, searchQuery) => {
   }
 };
 
+const getEnrollmentsToday = async () => {
+  try {
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999));
+    const result = {}
+    const snapshot = await EnrollmentCollection
+      .where("enrollmentDay", ">=", admin.firestore.Timestamp.fromDate(startOfToday))
+      .where("enrollmentDay", "<=", admin.firestore.Timestamp.fromDate(endOfToday))
+      .get();
+
+    const enrollmentsToday = snapshot.size;
+    const dateKey = startOfToday.toISOString().split('T')[0];
+    result[dateKey] = enrollmentsToday
+    return result
+  } catch (error) {
+    console.error('Error getting enrollments today:', error);
+    throw new Error('Error getting enrollments today: ' + error.message);
+  }
+};
+
+
+const getRevenueToday = async () => {
+  try {
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999));
+    let total = 0;
+    const result = {}
+
+    const snapshot = await TransactionCollection
+      .where("confirmedAt", ">=", admin.firestore.Timestamp.fromDate(startOfToday))
+      .where("confirmedAt", "<=", admin.firestore.Timestamp.fromDate(endOfToday))
+      .get();
+    snapshot.forEach(doc => {
+      const transactionData = doc.data();
+      total += transactionData.amount;
+    });
+    const dateKey = startOfToday.toISOString().split('T')[0];
+    result[dateKey] = total
+
+    return result;
+  } catch (error) {
+    console.error('Error getting enrollment today:', error);
+    throw new Error('Error getting enrollment today: ' + error.message);
+  }
+}
+
 module.exports = {
   loginUser,
   logout,
+  getEnrollmentsToday,
+  getRevenueToday,
   getAllUsersPaginated,
   getAllCoursesPaginated,
   getAllTransactionsPaginated,
