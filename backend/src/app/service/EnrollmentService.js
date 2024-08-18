@@ -1,5 +1,6 @@
 const { firestore } = require('firebase-admin');
 const { EnrollmentCollection, CourseCollection } = require('./Collections');
+const UserService = require('./UserService');
 
 exports.createEnrollment = async (data) => {
     try {
@@ -152,5 +153,35 @@ exports.addProgressToEnrollment = async (enrollmentId, lessonId) => {
         throw error;
     }
 };
+
+exports.showStudentsOfCourse = async (courseId) => {
+    try{
+        const courseEnrollmentRef = EnrollmentCollection.where("courseId", "==", courseId);
+        const courseEnrollment = await courseEnrollmentRef.get();
+        const studentNum = courseEnrollment.size;
+        const result = {}
+        const students = []
+        for (const enrollmentDoc of courseEnrollment.docs) {
+            const enrollmentData = enrollmentDoc.data();
+            const userId = enrollmentData.userId;
+            const enrollmentDay = enrollmentData.enrollmentDay;
+
+            const { displayName, photoUrl } = await UserService.getUserNameAndAvatar(userId);
+
+            students.push({
+                userId,
+                displayName,
+                photoUrl,
+                enrollmentDay: enrollmentDay.toDate(),
+            });
+        }
+        result['studentNum'] = studentNum;
+        result['students'] = students
+        return result;
+    }catch(error){
+        console.error('Error get students', error);
+        throw error;
+    }
+}
 
 

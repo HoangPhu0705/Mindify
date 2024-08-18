@@ -8,6 +8,7 @@ router.get('/userEnrollments', EnrollmentController.getUserEnrollments);
 router.get('/downloadedLessons', EnrollmentController.getDownloadedLessons);
 router.get('/:enrollmentId/notes', NoteController.getAllNotesOfEnrollmentController);
 router.get('/:enrollmentId/progress', EnrollmentController.getProgressOfEnrollment);
+router.get('/:courseId/students', EnrollmentController.showStudentsOfCourse);
 router.post('/:enrollmentId/notes', NoteController.addNoteController);
 router.post('/:enrollmentId/progress', EnrollmentController.addProgressToEnrollment);
 router.post('/addLessonToEnrollment', EnrollmentController.addLessonToEnrollment);

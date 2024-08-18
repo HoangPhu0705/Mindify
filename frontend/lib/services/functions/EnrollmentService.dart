@@ -20,13 +20,19 @@ class EnrollmentService {
     return enrollmentsStream;
   }
 
+  Stream<QuerySnapshot> getEnrollmentStreamByCourse(String courseId) {
+    final enrollmentsStream =
+        enrollments.where('courseId', isEqualTo: courseId).snapshots();
+    return enrollmentsStream;
+  }
+
   Future<void> createEnrollment(Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse(AppConstants.ENROLLMENT_API),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode(data),
     );
 
@@ -37,14 +43,14 @@ class EnrollmentService {
 
   Future<Map<String, dynamic>> checkEnrollment(
       String userId, String courseId) async {
-    // final idToken = 
+    // final idToken =
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/checkEnrollment?userId=$userId&courseId=$courseId"),
-          headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -59,10 +65,10 @@ class EnrollmentService {
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/userEnrollments?userId=$userId"),
-          headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -82,9 +88,9 @@ class EnrollmentService {
     final response = await http.post(
       Uri.parse("${AppConstants.ENROLLMENT_API}/addLessonToEnrollment"),
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: json.encode({'enrollmentId': enrollmentId, 'lessonId': lessonId}),
     );
 
@@ -98,10 +104,10 @@ class EnrollmentService {
     final response = await http.get(
       Uri.parse(
           "${AppConstants.ENROLLMENT_API}/downloadedLessons?userId=$userId"),
-          headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -111,14 +117,16 @@ class EnrollmentService {
     }
   }
 
-  Future<void> addProgressToEnrollment(String enrollmentId, String lessonId) async {
-    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
+  Future<void> addProgressToEnrollment(
+      String enrollmentId, String lessonId) async {
+    final url =
+        Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
     final response = await http.post(
       url,
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode({'lessonId': lessonId}),
     );
 
@@ -128,11 +136,15 @@ class EnrollmentService {
   }
 
   Future<List<String>> getProgressOfEnrollment(String enrollmentId) async {
-    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
-    final response = await http.get(url, headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },);
+    final url =
+        Uri.parse('${AppConstants.ENROLLMENT_API}/$enrollmentId/progress');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> progressData = jsonDecode(response.body);
@@ -143,4 +155,40 @@ class EnrollmentService {
     }
   }
 
+  Future<Map<String, dynamic>?> getStudentsOfCourse(String courseId) async {
+    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/$courseId/students');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+      );
+      log(response.toString());
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['success']) {
+          final Map<String, dynamic> result = {};
+          final List<dynamic> students = responseData['data']['students'];
+          final int studentNum = responseData['data']['studentNum'];
+          result['studentNum'] = studentNum;
+          result['students'] = students;
+          return result;
+        } else {
+          log('Failed to get students: ${responseData['message']}');
+          return null;
+        }
+      } else {
+        log('Failed to load students. Status code: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      log('Error occurred: $error');
+      return null;
+    }
+  }
 }

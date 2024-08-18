@@ -192,6 +192,7 @@ class _TeachingTabState extends State<TeachingTab>
                                           );
                                           return;
                                         }
+                                      
 
                                         AwesomeDialog(
                                           padding: EdgeInsets.all(16),
@@ -229,6 +230,7 @@ class _TeachingTabState extends State<TeachingTab>
                                           thumbnail.isNotEmpty ? thumbnail : "",
                                       isPublic: isPublic,
                                       onShowProjectsPressed: () {},
+                                      onShowStudentsPressed: () {},
                                     );
                                   },
                                 ),

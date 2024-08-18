@@ -12,9 +12,11 @@ class MyClassItem extends StatefulWidget {
   final VoidCallback onEditPressed;
   final VoidCallback onDeletePressed;
   final VoidCallback onShowProjectsPressed;
+  final VoidCallback onShowStudentsPressed; 
   final String thumbnail;
   final bool isPublic;
   final bool requestSent;
+  
   const MyClassItem({
     super.key,
     required this.classTitle,
@@ -24,6 +26,7 @@ class MyClassItem extends StatefulWidget {
     required this.isPublic,
     required this.requestSent,
     required this.onShowProjectsPressed,
+    required this.onShowStudentsPressed, 
   });
 
   @override
@@ -197,6 +200,19 @@ class _MyClassItemState extends State<MyClassItem> {
           builder: (hovered) {
             return const Icon(
               Icons.assignment_outlined,
+            );
+          },
+        ),
+        PieAction.builder(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: AppColors.blue,
+            iconColor: Colors.black,
+          ),
+          tooltip: const Text(''),
+          onSelect: widget.onShowStudentsPressed,
+          builder: (hovered) {
+            return const Icon(
+              Icons.people,
             );
           },
         ),

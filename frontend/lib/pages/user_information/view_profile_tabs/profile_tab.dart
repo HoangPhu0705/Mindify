@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/pages/course_management/manage_class.dart';
 import 'package:frontend/pages/course_pages/show_all_projects.dart';
 import 'package:frontend/pages/user_information/view_profile_tabs/follow_topics.dart';
+import 'package:frontend/pages/user_information/view_profile_tabs/student_list_page.dart';
 import 'package:frontend/services/functions/CourseService.dart';
+import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
@@ -29,6 +31,7 @@ class _ProfileTabState extends State<ProfileTab>
     with AutomaticKeepAliveClientMixin {
   UserService userService = UserService();
   CourseService courseService = CourseService();
+  EnrollmentService enrollmentService = EnrollmentService();
   List<String> followedTopic = [];
 
   @override
@@ -263,6 +266,24 @@ class _ProfileTabState extends State<ProfileTab>
                                         },
                                       ),
                                     );
+                                  },
+                                  onShowStudentsPressed: () async {
+                                    final studentsData = await enrollmentService.getStudentsOfCourse(course.id);
+
+                                    if (studentsData != null) {
+                                      Navigator.of(context, rootNavigator: true).push(
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return StudentListPage(
+                                              students: studentsData['students'],
+                                              studentNum: studentsData['studentNum'],
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    } else {
+                                      log('Failed to retrieve students for course $courseName');
+                                    }
                                   },
                                 );
                               },

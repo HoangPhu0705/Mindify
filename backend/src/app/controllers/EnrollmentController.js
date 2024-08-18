@@ -93,3 +93,17 @@ exports.getProgressOfEnrollment = async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 }
+
+exports.showStudentsOfCourse = async (req, res) => {
+    const { courseId } = req.params;
+    try {
+        const result = await EnrollmentService.showStudentsOfCourse(courseId);
+        res.status(200).send({ 
+            message: "get student success",
+            success: true,
+            data: result
+        })
+    } catch (error) {
+        res.status(500).send({ error: error.message })
+    }
+}
