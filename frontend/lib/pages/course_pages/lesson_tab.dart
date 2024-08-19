@@ -432,6 +432,7 @@ class LessonTabState extends State<LessonTab> {
                     itemCount: widget.course.lessons.length,
                     itemBuilder: (context, index) {
                       final lesson = widget.course.lessons[index];
+
                       final isCompleted = completedLessons.contains(lesson.id);
                       final isLessonAccessible =
                           widget.isEnrolled || index == 0;
@@ -448,7 +449,10 @@ class LessonTabState extends State<LessonTab> {
                                   widget.isPreviewing ||
                                   widget.userId == widget.instructorId
                               ? () {
-                                  widget.onLessonTap(lesson.link, lesson.index);
+                                  widget.onLessonTap(
+                                    lesson.link,
+                                    lesson.index,
+                                  );
                                 }
                               : null,
                           title: Text(
@@ -477,7 +481,7 @@ class LessonTabState extends State<LessonTab> {
                                 : Icons.lock,
                             size: 30,
                             color: lesson.index == widget.currentVideoIndex
-                                ? Colors.white
+                                ? (isCompleted ? AppColors.cream : Colors.white)
                                 : Colors.black,
                           ),
                           trailing: widget.isEnrolled

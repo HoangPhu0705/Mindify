@@ -41,6 +41,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   Map<String, dynamic>? userInfo;
   late Future<void> _future;
   FocusNode focusNode = FocusNode();
+  bool isTeacher = false;
   bool canComment = false;
   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final commentController = TextEditingController();
@@ -70,6 +71,12 @@ class _ViewMyProjectState extends State<ViewMyProject> {
         currentUserId == widget.teacherId) {
       setState(() {
         canComment = true;
+      });
+    }
+
+    if (currentUserId == widget.teacherId) {
+      setState(() {
+        isTeacher = true;
       });
     }
   }
@@ -183,6 +190,17 @@ class _ViewMyProjectState extends State<ViewMyProject> {
             fontSize: 20,
           ),
         ),
+        actions: [
+          isTeacher
+              ? IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.edit_document,
+                    color: AppColors.deepBlue,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ],
       ),
       body: FutureBuilder(
         future: _future,

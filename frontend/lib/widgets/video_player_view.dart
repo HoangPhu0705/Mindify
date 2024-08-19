@@ -42,7 +42,6 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
       playVideoFrom: playVideoFrom,
       podPlayerConfig: const PodPlayerConfig(
         autoPlay: true,
-        isLooping: false,
         videoQualityPriority: [1080, 720, 360],
       ),
     );
@@ -61,6 +60,7 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
 
   @override
   void dispose() {
+    removePodListener();
     _podPlayerController.dispose();
     super.dispose();
   }
@@ -79,6 +79,11 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     );
   }
 
+  bool islooping() {
+    bool isLooping = _podPlayerController.isVideoLooping;
+    return isLooping;
+  }
+
   int getCurrentTime() {
     int currentTime = _podPlayerController.currentVideoPosition.inSeconds;
     return currentTime;
@@ -89,15 +94,18 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
   }
 
   bool lessonEnded() {
-    if (_podPlayerController.videoPlayerValue != null) {
+    if (_podPlayerController.videoPlayerValue != null &&
+        _podPlayerController.videoPlayerValue!.isInitialized) {
       final videoPosition = _podPlayerController.videoPlayerValue!.position;
       final videoDuration = _podPlayerController.videoPlayerValue!.duration;
 
       log('Current Position: $videoPosition, Duration: $videoDuration');
-      if (videoPosition >= videoDuration) {
+      if (videoPosition == videoDuration) {
         removePodListener();
-        log("Video ${widget.url} het roi");
+
         widget.onVideoEnd(widget.url);
+        log('Lesson Ended');
+
         addPodListener();
         return true;
       }

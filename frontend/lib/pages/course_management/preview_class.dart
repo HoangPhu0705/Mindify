@@ -42,6 +42,7 @@ class _PreviewClassState extends State<PreviewClass>
   Course? course;
   String _currentVideoUrl = '';
   int _currentVideoIndex = 0;
+
   String? _enrollmentId;
   String userId = '';
   late Future<void> _future;
