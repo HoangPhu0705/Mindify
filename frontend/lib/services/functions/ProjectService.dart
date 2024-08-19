@@ -94,6 +94,7 @@ class ProjectService {
         },
         body: jsonEncode({
           'courseId': courseId,
+          'grade': -1,
           ...projectData,
         }),
       );

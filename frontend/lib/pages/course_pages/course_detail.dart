@@ -222,14 +222,30 @@ class _CourseDetailState extends State<CourseDetail>
   }
 
   void _handleVideoEnd(String videoUrl) async {
-    log("Video $videoUrl ended");
+    bool isLooping = _videoPlayerKey.currentState!.islooping();
+    if (!isLooping) {
+      if (_currentVideoIndex == course!.lessons.length - 1) {
+        return;
+      }
+      final nextVideoUrl = course!.lessons[_currentVideoIndex + 1].link;
+      log("next title" + course!.lessons[_currentVideoIndex + 1].title);
+      setState(() {
+        _currentVideoUrl = nextVideoUrl;
+        _currentVideoIndex++;
+      });
+      _addProgressToEnrollment();
+      await _videoPlayerKey.currentState?.goToVideo(nextVideoUrl);
+    }
 
     _addProgressToEnrollment();
   }
 
   // void _handleVideoEnd() {}
 
-  Future<void> _onLessonTap(String videoUrl, int index) async {
+  Future<void> _onLessonTap(
+    String videoUrl,
+    int index,
+  ) async {
     setState(() {
       _currentVideoUrl = videoUrl;
       _currentVideoIndex = index;

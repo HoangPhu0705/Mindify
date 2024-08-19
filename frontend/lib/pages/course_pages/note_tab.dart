@@ -178,7 +178,10 @@ class _NoteTabState extends State<NoteTab> {
                               return ListTile(
                                 onTap: () {
                                   widget.onNoteTap(
-                                      lessonLink, lessonIndex, time);
+                                    lessonLink,
+                                    lessonIndex,
+                                    time,
+                                  );
                                 },
                                 leading: const Icon(
                                   Icons.note_alt,
