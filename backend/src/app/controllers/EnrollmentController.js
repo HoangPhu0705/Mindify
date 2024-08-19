@@ -107,3 +107,31 @@ exports.showStudentsOfCourse = async (req, res) => {
         res.status(500).send({ error: error.message })
     }
 }
+
+exports.getStudentsOfMonth = async (req, res) => {
+    const { userId } = req.params;
+    try{
+        const totalEnrollments = await EnrollmentService.getStudentsOfMonth(userId);
+        res.status(200).send({ 
+            message: "get num of student success",
+            success: true,
+            data: totalEnrollments
+        })
+    }catch (error) {
+        res.status(500).send({ error: error.message })
+    }
+}
+
+exports.getRevenueOfMonth = async (req, res) => {
+    const { userId } = req.params;
+    try{
+        const totalEnrollments = await EnrollmentService.getRevenueOfMonth(userId);
+        res.status(200).send({ 
+            message: "get num of student success",
+            success: true,
+            data: totalEnrollments
+        })
+    }catch (error) {
+        res.status(500).send({ error: error.message })
+    }
+}

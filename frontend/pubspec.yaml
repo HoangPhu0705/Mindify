@@ -109,6 +109,7 @@ dependencies:
   shared_preferences: ^2.3.1
   open_file: ^3.3.2
   internet_connection_checker_plus: ^2.5.1
+  d_chart: ^2.6.9
   
 dev_dependencies:
   flutter_test:

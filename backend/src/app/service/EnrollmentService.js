@@ -1,6 +1,7 @@
 const { firestore } = require('firebase-admin');
-const { EnrollmentCollection, CourseCollection } = require('./Collections');
+const { EnrollmentCollection, CourseCollection, TransactionCollection } = require('./Collections');
 const UserService = require('./UserService');
+// const { Timestamp } = firestore;
 
 exports.createEnrollment = async (data) => {
     try {
@@ -184,4 +185,75 @@ exports.showStudentsOfCourse = async (courseId) => {
     }
 }
 
+exports.getStudentsOfMonth = async (userId) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    console.log(now)
 
+    const startOfMonth = firestore.Timestamp.fromDate(new Date(year, month - 1, 1));
+    const endOfMonth = firestore.Timestamp.fromDate(new Date(year, month, 0, 23, 59, 59));
+
+    const courseSnapshot = await CourseCollection.where("authorId", "==", userId).get();
+
+    let totalEnrollments = 0;
+
+    for (const courseDoc of courseSnapshot.docs) {
+        const courseId = courseDoc.id;
+
+        const courseEnrollmentRef = EnrollmentCollection
+                                        .where("courseId", "==", courseId)
+                                        .where("enrollmentDay", ">=", startOfMonth)
+                                        .where("enrollmentDay", "<=", endOfMonth);
+
+        const enrollmentSnapshot = await courseEnrollmentRef.get();
+
+        totalEnrollments += enrollmentSnapshot.size;
+    }
+
+    return {
+        month: `${month.toString().padStart(2, '0')}-${year}`,
+        totalEnrollments
+    };
+}
+
+exports.getRevenueOfMonth = async (userId) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const startOfMonth = firestore.Timestamp.fromDate(new Date(year, month, 1));
+    const endOfMonth = firestore.Timestamp.fromDate(new Date(year, month + 1, 0, 23, 59, 59));
+
+    const courseSnapshot = await CourseCollection.where("authorId", "==", userId).get();
+
+    let totalRevenue = 0;
+
+    for (const courseDoc of courseSnapshot.docs) {
+        const courseId = courseDoc.id;
+
+        const enrollmentSnapshot = await EnrollmentCollection
+                                        .where("courseId", "==", courseId)
+                                        .get();
+
+        for (const enrollmentDoc of enrollmentSnapshot.docs) {
+            const enrollmentId = enrollmentDoc.id;
+
+            const transactionSnapshot = await TransactionCollection
+                                            .where("enrollmentId", "==", enrollmentId)
+                                            .where("confirmedAt", ">=", startOfMonth)
+                                            .where("confirmedAt", "<=", endOfMonth)
+                                            .get();
+
+            transactionSnapshot.forEach(transactionDoc => {
+                const transactionData = transactionDoc.data();
+                totalRevenue += transactionData.amount;
+            });
+        }
+    }
+
+    return {
+        month: `${month.toString().padStart(2, '0')}-${year}`,
+        totalRevenue
+    };
+}

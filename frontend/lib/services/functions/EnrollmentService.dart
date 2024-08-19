@@ -191,4 +191,82 @@ class EnrollmentService {
       return null;
     }
   }
+
+  // Future<Map<String, dynamic>> getStudentsOfMonth(String userId) async {
+  //   final response = await http.get(Uri.parse('${AppConstants.ENROLLMENT_API}/studentsOfMonth/$userId'));
+
+  //   if (response.statusCode == 200) {
+  //     final Map<String, dynamic> data = json.decode(response.body);
+  //     return data;
+  //   } else {
+  //     throw Exception('Failed to load data');
+  //   }
+  // }
+
+  Future<Map<String, dynamic>?> getStudentsOfMonth(String userId) async {
+    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/studentsOfMonth/$userId');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['success']) {
+          
+          final Map<String, dynamic> data = responseData['data'];
+          return data;
+        } else {
+          log('Failed to get revenue: ${responseData['message']}');
+          return null;
+        }
+      } else {
+        log('Failed to load revenue. Status code: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      log('Error occurred: $error');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getRevenueOfMonth(String userId) async {
+    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/revenueOfMonth/$userId');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['success']) {
+          
+          final Map<String, dynamic> data = responseData['data'];
+          return data;
+        } else {
+          log('Failed to get revenue: ${responseData['message']}');
+          return null;
+        }
+      } else {
+        log('Failed to load revenue. Status code: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      log('Error occurred: $error');
+      return null;
+    }
+  }
 }
+

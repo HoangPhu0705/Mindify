@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/auth/sign_in.dart';
+import 'package:frontend/pages/user_information/dashboard.dart';
 import 'package:frontend/pages/user_information/downloads.dart';
 import 'package:frontend/pages/user_information/saved_classes.dart';
 import 'package:frontend/pages/user_information/setting_page.dart';
@@ -225,6 +226,25 @@ class _ProfilePageState extends State<ProfilePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => WatchHistory(),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.dashboard),
+                        title: Text(
+                          'My Dashboard',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(fontSize: 16),
+                        ),
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DashboardPage(userId: userId!,),
                             ),
                           );
                         },
