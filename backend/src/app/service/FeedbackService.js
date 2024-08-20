@@ -2,11 +2,10 @@ const { firestore } = require('firebase-admin');
 const { CourseCollection } = require('./Collections');
 // const admin = require('firebase-admin');
 
-exports.giveFeedback = async (courseId, userId, feedback) => {
+exports.giveFeedback = async (courseId, feedback) => {
     try {
         const newFeedback = {
             ...feedback,
-            userId: userId,
             createdAt: firestore.FieldValue.serverTimestamp(),
         };
     

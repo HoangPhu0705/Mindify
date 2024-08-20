@@ -3,8 +3,8 @@ const FeedbackService = require("../service/FeedbackService")
 exports.giveFeedback = async (req, res) => {
     try {
         const { courseId } = req.params;
-        const { userId, feedback } = req.body;
-        const result = await FeedbackService.giveFeedback(courseId, userId, feedback);
+        const feedbackResult = req.body;
+        const result = await FeedbackService.giveFeedback(courseId, feedbackResult);
         res.status(201).send({
             message: "create feedback successfully",
             success: true,

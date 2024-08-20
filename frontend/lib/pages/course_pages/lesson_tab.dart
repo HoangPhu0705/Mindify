@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/quiz_page.dart';
@@ -19,6 +21,7 @@ import 'package:frontend/services/models/lesson.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -26,6 +29,8 @@ import 'package:frontend/services/functions/UserService.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:open_file/open_file.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:getwidget/getwidget.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class LessonTab extends StatefulWidget {
   bool isFollowed;
@@ -72,6 +77,8 @@ class LessonTabState extends State<LessonTab> {
   double downloadProgress = 0.0;
   CancelToken cancelToken = CancelToken();
   FocusNode focusNode = FocusNode(canRequestFocus: false);
+  final GlobalKey<FormState> feedbackFormKey = GlobalKey<FormState>();
+  final feedBackController = TextEditingController();
 
   QuizService quizService = QuizService();
   List<String> completedLessons = [];
@@ -125,74 +132,115 @@ class LessonTabState extends State<LessonTab> {
   }
 
   Future<void> _showRatingDialog() async {
-  if (widget.isEnrolled) {
     double? rating = await showDialog<double>(
       context: context,
       builder: (context) {
         double rating = 0.0;
         return AlertDialog(
-          title: const Text('Rate this course'),
+          title: const Text(
+            'Rate this course',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          backgroundColor: AppColors.deepSpace,
           content: StatefulBuilder(
             builder: (context, setState) {
-              return PannableRatingBar(
-                rate: rating,
-                items: List.generate(
-                    5,
-                    (index) => const RatingWidget(
-                          selectedColor: Colors.yellow,
-                          unSelectedColor: Colors.grey,
-                          child: Icon(
-                            Icons.star,
-                            size: 48,
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PannableRatingBar(
+                    rate: rating,
+                    items: List.generate(
+                        5,
+                        (index) => const RatingWidget(
+                              selectedColor: AppColors.cream,
+                              unSelectedColor: AppColors.lightGrey,
+                              child: Icon(
+                                Icons.star_rate_rounded,
+                                size: 48,
+                              ),
+                            )),
+                    onChanged: (value) {
+                      setState(() {
+                        rating = value;
+                      });
+                    },
+                  ),
+                  AppSpacing.mediumVertical,
+                  Form(
+                    key: feedbackFormKey,
+                    child: TextFormField(
+                      controller: feedBackController,
+                      cursorColor: AppColors.cream,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please provide feedback";
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Say something',
+                        hintStyle: TextStyle(
+                          color: AppColors.lightGrey,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.lightGrey,
                           ),
-                        )),
-                onChanged: (value) {
-                  setState(() {
-                    rating = value;
-                  });
-                },
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.cream,
+                          ),
+                        ),
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               );
             },
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              style: TextButton.styleFrom(
-                backgroundColor: AppColors.lighterGrey,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+              style: AppStyles.primaryButtonStyle.copyWith(
+                backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                side: WidgetStateProperty.all(
+                  const BorderSide(
+                    color: AppColors.cream,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
                 ),
               ),
               child: const Text(
                 "Cancel",
                 style: TextStyle(
-                  color: Colors.black,
+                  color: AppColors.cream,
                   fontSize: 16,
                 ),
               ),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(rating);
+                if (feedbackFormKey.currentState!.validate()) {
+                  Navigator.of(context).pop(rating);
+                }
               },
-              style: TextButton.styleFrom(
-                backgroundColor: AppColors.deepBlue,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
+              style: AppStyles.primaryButtonStyle,
               child: const Text(
                 "Submit",
                 style: TextStyle(
-                  color: Colors.white,
                   fontSize: 16,
                 ),
               ),
@@ -206,21 +254,26 @@ class LessonTabState extends State<LessonTab> {
       await _submitRating(rating);
     }
   }
-}
 
-Future<void> _submitRating(double rating) async {
-  try {
-    final feedback = {
-      'rating': rating,
-    };
-    await feedbackService.giveFeedback(
-        widget.course.id, widget.userId, feedback);
-    showSuccessToast(context, 'Thank you for your feedback!');
-  } catch (e) {
-    showErrorToast(context, 'Failed to submit feedback');
+  Future<void> _submitRating(double rating) async {
+    try {
+      final feedback = {
+        'rating': rating,
+        'userId': widget.userId,
+        'displayName': FirebaseAuth.instance.currentUser!.displayName,
+        'photoUrl': FirebaseAuth.instance.currentUser!.photoURL ?? '',
+        'content': feedBackController.text,
+      };
+      await feedbackService.giveFeedback(
+        widget.course.id,
+        feedback,
+      );
+      feedBackController.clear();
+      showSuccessToast(context, 'Thank you for your feedback!');
+    } catch (e) {
+      showErrorToast(context, 'Failed to submit feedback');
+    }
   }
-}
-
 
   Future<void> _downloadLesson(
       String lessonLink, String courseName, String lessonTitle) async {
@@ -387,33 +440,6 @@ Future<void> _submitRating(double rating) async {
                           fontSize: 16,
                         ),
                       ),
-                      AppSpacing.smallHorizontal,
-                      if (widget.isEnrolled)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Center(
-                            child: TextButton(
-                              onPressed: _showRatingDialog,
-                              style: TextButton.styleFrom(
-                                backgroundColor: AppColors.deepBlue,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: const Text(
-                                "Leave a Rating",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                   AppSpacing.mediumVertical,
@@ -734,7 +760,124 @@ Future<void> _submitRating(double rating) async {
                         ),
                       );
                     },
-                  )
+                  ),
+                  AppSpacing.mediumVertical,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Student feedback",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        widget.isEnrolled
+                            ? GestureDetector(
+                                onTap: () {
+                                  _showRatingDialog();
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add_circle_outline_rounded,
+                                      color: AppColors.deepBlue,
+                                    ),
+                                    Text(
+                                      "Leave feedback",
+                                      style: TextStyle(
+                                        color: AppColors.deepBlue,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                  AppSpacing.mediumVertical,
+                  StreamBuilder<QuerySnapshot>(
+                      stream: feedbackService.getTopFeedBackStream(
+                        widget.course.id,
+                      ),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Text(
+                            "No feedback available",
+                            style: TextStyle(
+                              color: AppColors.lightGrey,
+                            ),
+                          );
+                        }
+
+                        List<DocumentSnapshot> feedbacks = snapshot.data!.docs;
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot feedback = feedbacks[index];
+                            String content = feedback['content'];
+                            String photoUrl = feedback['photoUrl'];
+                            String displayName = feedback['displayName'];
+                            var rating = feedback['rating'];
+                            var createdAtDateTime =
+                                (feedback['createdAt'] as Timestamp).toDate();
+                            var timeAgo = timeago.format(createdAtDateTime);
+
+                            return GFCard(
+                              margin: const EdgeInsets.only(
+                                bottom: 12,
+                              ),
+                              boxFit: BoxFit.cover,
+                              titlePosition: GFPosition.start,
+                              title: GFListTile(
+                                padding: EdgeInsets.zero,
+                                avatar: GFAvatar(
+                                  radius: 20,
+                                  backgroundImage: photoUrl.isNotEmpty
+                                      ? NetworkImage(photoUrl)
+                                      : const NetworkImage(
+                                          "https://i.ibb.co/tZxYspW/default-avatar.png"),
+                                ),
+                                titleText: displayName,
+                                subTitleText: timeAgo,
+                              ),
+                              content: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    textAlign: TextAlign.start,
+                                    content,
+                                  ),
+                                  PannableRatingBar(
+                                    rate: rating,
+                                    items: List.generate(
+                                      5,
+                                      (index) => const RatingWidget(
+                                        selectedColor: AppColors.deepBlue,
+                                        unSelectedColor: AppColors.lightGrey,
+                                        child: Icon(
+                                          Icons.star_rate_rounded,
+                                          size: 24,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          itemCount: feedbacks.length,
+                        );
+                      })
                 ],
               ),
             ),
