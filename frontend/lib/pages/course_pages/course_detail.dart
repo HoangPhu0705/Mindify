@@ -58,6 +58,8 @@ class _CourseDetailState extends State<CourseDetail>
   String userId = '';
   late Future<void> _future;
   ReportService reportService = ReportService();
+  final feedbackService = FeedbackService();
+  double? ratingAverage;
 
   final GlobalKey<VideoPlayerViewState> _videoPlayerKey =
       GlobalKey<VideoPlayerViewState>();
@@ -83,6 +85,16 @@ class _CourseDetailState extends State<CourseDetail>
     } catch (e) {
       log("Error fetching course details: $e");
     }
+  }
+
+  Future<void> _getRatingAverage() async {
+    log("haha");
+    final rating = await feedbackService.getCourseRating(widget.courseId);
+    log("rating ne" + rating.toString());
+    log(ratingAverage.toString());
+    setState(() {
+        ratingAverage = rating;
+      });
   }
 
   Future<void> _getWatchingData() async {
@@ -136,6 +148,7 @@ class _CourseDetailState extends State<CourseDetail>
   Future<void> _initCourseDetailPage() async {
     await _fetchCourseDetails();
     await _checkEnrollment();
+    await _getRatingAverage();
     await _checkIfFollowed();
     await _getWatchingData();
   }
@@ -438,6 +451,7 @@ class _CourseDetailState extends State<CourseDetail>
                         onLessonTap: _onLessonTap,
                         onSaveLesson: _saveLesson,
                         isPreviewing: false,
+                        ratingAverage: ratingAverage!
                       ),
                       SubmitProject(
                         course: course!,

@@ -38,6 +38,7 @@ class LessonTab extends StatefulWidget {
   final int currentVideoIndex;
   final void Function(String, int) onLessonTap;
   final void Function(String) onSaveLesson;
+  final double ratingAverage;
 
   LessonTab({
     Key? key,
@@ -51,6 +52,7 @@ class LessonTab extends StatefulWidget {
     required this.onLessonTap,
     required this.onSaveLesson,
     required this.currentVideoIndex,
+    required this.ratingAverage,
   }) : super(key: key);
 
   @override
@@ -75,10 +77,13 @@ class LessonTabState extends State<LessonTab> {
 
   QuizService quizService = QuizService();
   List<String> completedLessons = [];
+  // double? ratingAvg;
+
   @override
   void initState() {
     // log(quizService.idToken!);
     super.initState();
+    
     _getInstructorInfo();
     _sortLessonsByIndex();
     if (widget.enrollmentId.isNotEmpty) {
@@ -89,6 +94,7 @@ class LessonTabState extends State<LessonTab> {
     quillController.document = Document.fromJson(
       jsonDecode(widget.course.description),
     );
+    
   }
 
   Future<void> setFetchProgress() async {
@@ -339,6 +345,37 @@ Future<void> _submitRating(double rating) async {
                       Text(
                         "${widget.course.students} students",
                       ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        color: AppColors.grey,
+                      ),
+                      AppSpacing.smallHorizontal,
+                      Text(
+                        widget.ratingAverage.toStringAsFixed(1), 
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                        ),
+                      ),
+                      // AppSpacing.smallHorizontal,
+                      // PannableRatingBar(
+                      //   rate: ratingAvg,
+                      //   items: List.generate(
+                      //       5,
+                      //       (index) => const RatingWidget(
+                      //             selectedColor: Colors.yellow,
+                      //             unSelectedColor: Colors.grey,
+                      //             child: Icon(
+                      //               Icons.star,
+                      //               size: 20,
+                      //             ),
+                      //           )),
+                      //   isReadOnly: true, // Không cho phép người dùng thay đổi rating
+                      // ),
                     ],
                   ),
                   AppSpacing.mediumVertical,

@@ -20,7 +20,7 @@ exports.giveFeedback = async (courseId, userId, feedback) => {
 };
 
 exports.ratingOfCourse = async (courseId) => {
-    try{
+    try {
         const feedbacksSnapshot = await CourseCollection.doc(courseId).collection('feedbacks').get();
 
         if (feedbacksSnapshot.empty) {
@@ -32,15 +32,18 @@ exports.ratingOfCourse = async (courseId) => {
 
         feedbacksSnapshot.forEach(doc => {
             const feedback = doc.data();
-            if (feedback.rating && Number(feedback.rating)) {
+            if (feedback.rating && typeof feedback.rating === 'number') {
                 totalRating += feedback.rating;
                 count++;
             }
         });
 
-        const averageRating = count > 0 ? totalRating / count : 0;
+        const averageRating = count > 0 ? totalRating / count : 0.0;
+        console.log(averageRating); 
+
         return parseFloat(averageRating.toFixed(2));
-    }catch(error){
-        console.log("Error getting rating of course")
+    } catch (error) {
+        console.log("Error getting rating of course", error);
+        return 0; 
     }
-}
+};
