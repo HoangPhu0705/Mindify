@@ -20,7 +20,7 @@ exports.getCourseRating = async (req, res) => {
 
     try {
         const averageRating = await FeedbackService.ratingOfCourse(courseId);
-        return res.status(200).json({ message: "get rating successfully", success: true, averageRating });
+        return res.status(200).json({ message: "get rating successfully", success: true, data: averageRating });
     } catch (error) {
         console.error("Error getting course rating:", error);
         return res.status(500).json({ success: false, error: 'Internal Server Error' });

@@ -205,6 +205,7 @@ class _PreviewClassState extends State<PreviewClass>
                         isEnrolled: isEnrolled,
                         onLessonTap: _onLessonTap,
                         onSaveLesson: _saveLesson,
+                        ratingAverage: 0,
                       ),
                       SubmitProject(
                         course: course!,
