@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/pages/course_management/quiz_page.dart';
 import 'package:frontend/pages/course_pages/instructor_profile.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/functions/FeedbackService.dart';
 import 'package:frontend/services/functions/QuizService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/services/models/lesson.dart';
@@ -58,6 +60,8 @@ class LessonTab extends StatefulWidget {
 class LessonTabState extends State<LessonTab> {
   final userService = UserService();
   final enrollmentService = EnrollmentService();
+  final feedbackService = FeedbackService();
+
   Map<String, dynamic> instructorInfo = {};
   String instructorAvatar = "";
   String instructorName = "";
@@ -119,6 +123,104 @@ class LessonTabState extends State<LessonTab> {
       });
     }
   }
+
+  Future<void> _showRatingDialog() async {
+  if (widget.isEnrolled) {
+    double? rating = await showDialog<double>(
+      context: context,
+      builder: (context) {
+        double rating = 0.0;
+        return AlertDialog(
+          title: const Text('Rate this course'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return PannableRatingBar(
+                rate: rating,
+                items: List.generate(
+                    5,
+                    (index) => const RatingWidget(
+                          selectedColor: Colors.yellow,
+                          unSelectedColor: Colors.grey,
+                          child: Icon(
+                            Icons.star,
+                            size: 48,
+                          ),
+                        )),
+                onChanged: (value) {
+                  setState(() {
+                    rating = value;
+                  });
+                },
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.lighterGrey,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(rating);
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.deepBlue,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                "Submit",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (rating != null) {
+      await _submitRating(rating);
+    }
+  }
+}
+
+Future<void> _submitRating(double rating) async {
+  try {
+    final feedback = {
+      'rating': rating,
+    };
+    await feedbackService.giveFeedback(
+        widget.course.id, widget.userId, feedback);
+    showSuccessToast(context, 'Thank you for your feedback!');
+  } catch (e) {
+    showErrorToast(context, 'Failed to submit feedback');
+  }
+}
+
 
   Future<void> _downloadLesson(
       String lessonLink, String courseName, String lessonTitle) async {
@@ -285,6 +387,33 @@ class LessonTabState extends State<LessonTab> {
                           fontSize: 16,
                         ),
                       ),
+                      AppSpacing.smallHorizontal,
+                      if (widget.isEnrolled)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: TextButton(
+                              onPressed: _showRatingDialog,
+                              style: TextButton.styleFrom(
+                                backgroundColor: AppColors.deepBlue,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                "Leave a Rating",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                   AppSpacing.mediumVertical,

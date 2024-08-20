@@ -4,6 +4,7 @@ const CourseController = require('../app/controllers/CourseController');
 const LessonController = require('../app/controllers/LessonController');
 const CommentController = require('../app/controllers/CommentController');
 const ProjectController = require('../app/controllers/ProjectController');
+const FeedbackController = require('../app/controllers/FeedbackController')
 const { authenticate, combinedAuthenticate } = require('../app/middleware/auth');
 // const {getRandomCourses} = require('../app/controllers/CourseController')
 // Courses
@@ -24,6 +25,7 @@ router.get('/users/:id/public', authenticate, CourseController.getCoursePublicBy
 router.get('/:id', combinedAuthenticate, CourseController.getCourseById);
 router.get('/:id/comments', authenticate, CommentController.showComments);
 router.get('/:id/projects', authenticate, ProjectController.getAllProjects);
+router.get('/:courseId/rating', authenticate, FeedbackController.getCourseRating);
 router.patch('/update-descriptions', authenticate, CourseController.updateCourseDescriptions);
 router.patch('/:id', authenticate, CourseController.updateCourse);
 
@@ -34,6 +36,8 @@ router.post('/changeId', authenticate, CourseController.changeTheInstructorId);
 router.post('/updateLessonLinkByIndex', authenticate, CourseController.updateLessonLinkByIndex);
 router.post('/updateLessonCount', authenticate, CourseController.updateLessonCountForCourses);
 router.post('/:id/comments', authenticate, CommentController.createComment);
+router.post('/:courseId/feedback', authenticate, FeedbackController.giveFeedback);
+
 router.post('/:id/projects', authenticate, ProjectController.submitProject);
 // Lessons
 router.get('/:courseId/lessons', authenticate, LessonController.getAllLesson);

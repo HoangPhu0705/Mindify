@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:frontend/pages/course_pages/discussion_tab.dart';
 import 'package:frontend/pages/course_pages/lesson_tab.dart';
 import 'package:frontend/pages/course_pages/note_tab.dart';
 import 'package:frontend/pages/course_pages/payment_page.dart';
 import 'package:frontend/pages/course_pages/submit_project_tab.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/functions/FeedbackService.dart';
 import 'package:frontend/services/functions/ReportService.dart';
 import 'package:frontend/services/providers/CourseProvider.dart';
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
@@ -159,9 +161,11 @@ class _CourseDetailState extends State<CourseDetail>
   @override
   void dispose() {
     _tabController?.dispose();
-
+    // _showRatingDialog();
     super.dispose();
   }
+
+  
 
   Future<void> _saveWatchedTime(int time) async {
     try {
