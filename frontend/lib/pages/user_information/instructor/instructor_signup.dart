@@ -2,9 +2,11 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:comment_tree/comment_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +23,7 @@ import 'package:frontend/widgets/instructor_signup_forms/category_selection.dart
 import 'package:frontend/widgets/instructor_signup_forms/describe_class.dart';
 import 'package:frontend/widgets/instructor_signup_forms/personal_detail.dart';
 import 'package:frontend/widgets/instructor_signup_forms/sign_up_successfully.dart';
+import 'package:image_picker/image_picker.dart';
 
 class InstructorSignUp extends StatefulWidget {
   const InstructorSignUp({super.key});
@@ -55,6 +58,7 @@ class InstructorSignUpState extends State<InstructorSignUp> {
   final _countryNameController = TextEditingController();
   final _dobController = TextEditingController();
   final _topicDescription = TextEditingController();
+  String idCardPath = "";
 
   //Services
   UserService _userService = UserService();
@@ -62,8 +66,14 @@ class InstructorSignUpState extends State<InstructorSignUp> {
   @override
   void initState() {
     // TODO: implement initState
-    
+
     super.initState();
+  }
+
+  void onIdCardChanged(String path) {
+    setState(() {
+      idCardPath = path;
+    });
   }
 
   @override
@@ -108,6 +118,7 @@ class InstructorSignUpState extends State<InstructorSignUp> {
           phoneNumberController: _phoneNumberController,
           countryNameController: _countryNameController,
           dobController: _dobController,
+          onIdCardSelected: onIdCardChanged,
         ),
       ),
       FormPageModel(
@@ -163,6 +174,22 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                 progress: ProgressIndicatorType.linear,
                 pages: pages,
                 onFormSubmitted: () async {
+                  if (idCardPath.isEmpty) {
+                    print("No valid file selected.");
+                    return;
+                  }
+                  File file = File(idCardPath);
+                  if (!file.existsSync()) {
+                    print("File does not exist at path: ${idCardPath}");
+                    return;
+                  }
+
+                  FirebaseStorage storage = FirebaseStorage.instance;
+                  Reference ref = storage.ref().child(
+                      'idCards/card_${FirebaseAuth.instance.currentUser!.uid}');
+                  await ref.putFile(file);
+                  String idCardImage = await ref.getDownloadURL();
+
                   var data = {
                     'user_id': FirebaseAuth.instance.currentUser!.uid,
                     'user_email': FirebaseAuth.instance.currentUser!.email,
@@ -175,6 +202,7 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                     'topicDescription': _topicDescription.text,
                     'status': 'Pending',
                     'isApproved': false,
+                    'idCard': idCardImage,
                   };
                   await _userService.sendInstructorRequest(data);
                   await _userService.updateUserRequestStatus(

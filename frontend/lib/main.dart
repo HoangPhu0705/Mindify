@@ -1,13 +1,9 @@
 import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:frontend/firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/pages/splash_screen.dart';
-
 import 'package:frontend/services/providers/EnrollmentProvider.dart';
 import 'package:frontend/services/providers/FolderProvider.dart';
 import 'package:frontend/services/providers/UserProvider.dart';
@@ -22,14 +18,6 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalWidgetsLocalizations;
 import 'package:flutter_quill/flutter_quill.dart' show Document;
 import 'package:flutter_quill/translations.dart' show FlutterQuillLocalizations;
-
-// import 'package:stripe_payment/stripe_payment.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart';
-// @pragma('vm:entry-point')
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   // await Firebase.initializeApp();
-//   log("Handling a background message: ${message.messageId}");
-// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +41,7 @@ class _MindifyAppState extends State<MindifyApp> {
       statusBarColor: AppColors.ghostWhite,
       statusBarIconBrightness: Brightness.dark,
     ));
-    
+
     super.initState();
   }
 
@@ -77,7 +65,6 @@ class _MindifyAppState extends State<MindifyApp> {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-
           // FlutterQuillLocalizations.delegate,
         ],
         supportedLocales: FlutterQuillLocalizations.supportedLocales,

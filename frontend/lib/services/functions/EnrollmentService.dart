@@ -204,7 +204,8 @@ class EnrollmentService {
   // }
 
   Future<Map<String, dynamic>?> getStudentsOfMonth(String userId) async {
-    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/studentsOfMonth/$userId');
+    final url =
+        Uri.parse('${AppConstants.ENROLLMENT_API}/studentsOfMonth/$userId');
 
     try {
       final response = await http.get(
@@ -219,7 +220,6 @@ class EnrollmentService {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         if (responseData['success']) {
-          
           final Map<String, dynamic> data = responseData['data'];
           return data;
         } else {
@@ -237,7 +237,8 @@ class EnrollmentService {
   }
 
   Future<Map<String, dynamic>?> getRevenueOfMonth(String userId) async {
-    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/revenueOfMonth/$userId');
+    final url =
+        Uri.parse('${AppConstants.ENROLLMENT_API}/revenueOfMonth/$userId');
 
     try {
       final response = await http.get(
@@ -252,7 +253,6 @@ class EnrollmentService {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         if (responseData['success']) {
-          
           final Map<String, dynamic> data = responseData['data'];
           return data;
         } else {
@@ -269,4 +269,3 @@ class EnrollmentService {
     }
   }
 }
-

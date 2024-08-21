@@ -63,11 +63,9 @@ class FeedbackService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        log(responseData.toString());
         if (responseData['success']) {
           final rating = responseData['data'];
-          log(rating.toString());
-          return rating;
+          return rating + .0;
         } else {
           return 0.0;
         }

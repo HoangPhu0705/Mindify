@@ -2,7 +2,11 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:fl_country_code_picker/fl_country_code_picker.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:ndialog/ndialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,8 +24,9 @@ class PersonalDetail extends StatefulWidget {
   final TextEditingController phoneNumberController;
   final TextEditingController countryNameController;
   final TextEditingController dobController;
+  final Function(String) onIdCardSelected;
 
-  const PersonalDetail({
+  PersonalDetail({
     super.key,
     required this.formKey,
     required this.firstNameController,
@@ -29,6 +34,7 @@ class PersonalDetail extends StatefulWidget {
     required this.phoneNumberController,
     required this.countryNameController,
     required this.dobController,
+    required this.onIdCardSelected,
   });
 
   @override
@@ -37,12 +43,38 @@ class PersonalDetail extends StatefulWidget {
 
 class _PersonalDetailState extends State<PersonalDetail> {
   //Variables
-  String? country;
   DateTime? _selectedDate;
+  XFile? idCard;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  void selectIdCard() async {
+    XFile? image = await pickSingleImage(ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        idCard = image;
+      });
+      widget.onIdCardSelected(image.path);
+    }
+  }
+
+  void takePhoto() async {
+    XFile? image = await pickSingleImage(ImageSource.camera);
+    if (image != null) {
+      setState(() {
+        idCard = image;
+      });
+      widget.onIdCardSelected(image.path);
+    }
+  }
+
+  Future<XFile?> pickSingleImage(ImageSource source) async {
+    final ImagePicker _imagePicker = ImagePicker();
+    return await _imagePicker.pickImage(source: source);
   }
 
   @override
@@ -267,47 +299,91 @@ class _PersonalDetailState extends State<PersonalDetail> {
               keyboardType: TextInputType.datetime,
               validator: _validateBirthday,
             ),
-            // AppSpacing.mediumVertical,
-            //Upload or take ID cards
-            // Text(
-            //   "Upload your ID card photo*",
-            //   style: TextStyle(
-            //     color: Colors.grey,
-            //     fontSize: 16,
-            //     fontWeight: FontWeight.w400,
-            //   ),
-            // ),
-            // AppSpacing.mediumVertical,
+            AppSpacing.mediumVertical,
+            // Upload or take ID cards
 
-            // GestureDetector(
-            //   onTap: () {
-            //     selectImageFromGallery();
-            //   },
-            //   child: DottedBorder(
-            //     strokeWidth: 2,
-            //     color: AppColors.lightGrey,
-            //     strokeCap: StrokeCap.round,
-            //     dashPattern: const [5, 5],
-            //     child: Container(
-            //       padding:
-            //           const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            //       width: double.infinity,
-            //       child: const Column(
-            //         mainAxisAlignment: MainAxisAlignment.center,
-            //         children: [
-            //           Icon(
-            //             Icons.add_card_outlined,
-            //             color: Colors.grey,
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add_card_outlined,
+                  color: Colors.grey,
+                ),
+                AppSpacing.mediumHorizontal,
+                Text(
+                  "Upload your ID card photo*",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
 
-            Container(
-              height: 1000,
-            )
+            AppSpacing.mediumVertical,
+
+            FocusedMenuHolder(
+              onPressed: () => debugPrint('Tap on the icon'),
+              openWithTap: true,
+              menuWidth: MediaQuery.of(context).size.width * 0.92,
+              menuOffset: 5,
+              menuItems: [
+                FocusedMenuItem(
+                  title: const Text('Take photo'),
+                  backgroundColor: Colors.white,
+                  trailingIcon: const Icon(CupertinoIcons.photo_camera),
+                  onPressed: () {
+                    takePhoto();
+                  },
+                ),
+                FocusedMenuItem(
+                  title: const Text('Open photos'),
+                  backgroundColor: Colors.white,
+                  trailingIcon: const Icon(CupertinoIcons.photo_on_rectangle),
+                  onPressed: () {
+                    selectIdCard();
+                  },
+                ),
+              ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: idCard == null ? Colors.grey : Colors.green,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                width: double.infinity,
+                child: idCard == null
+                    ? const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.image_outlined,
+                            color: Colors.grey,
+                          ),
+                          Text(
+                            "Card's front",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          )
+                        ],
+                      )
+                    : Image.file(
+                        File(
+                          idCard!.path,
+                        ),
+                      ),
+              ),
+            ),
           ],
         ),
       ),
