@@ -78,7 +78,7 @@ function Login1() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full placeholder:opacity-100 focus:border-t-primary border-t-blue-gray-200"
                   labelProps={{
-                    className: "before:mr-0 after:ml-0",
+                    className: "before:mr-0 after:ml-0",  
                   }}
                 />
               </div>

@@ -67,7 +67,7 @@ class FeedbackService {
         if (responseData['success']) {
           final rating = responseData['data'];
           log(rating.toString());
-          return rating;
+          return rating+.0;
         } else {
           return 0.0;
         }

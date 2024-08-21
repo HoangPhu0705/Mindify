@@ -408,27 +408,12 @@ class LessonTabState extends State<LessonTab> {
                       ),
                       AppSpacing.smallHorizontal,
                       Text(
-                        widget.ratingAverage.toStringAsFixed(1), 
+                        "${widget.ratingAverage.toStringAsFixed(1)}/5 points",
                         style: const TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 16,
                         ),
                       ),
-                      // AppSpacing.smallHorizontal,
-                      // PannableRatingBar(
-                      //   rate: ratingAvg,
-                      //   items: List.generate(
-                      //       5,
-                      //       (index) => const RatingWidget(
-                      //             selectedColor: Colors.yellow,
-                      //             unSelectedColor: Colors.grey,
-                      //             child: Icon(
-                      //               Icons.star,
-                      //               size: 20,
-                      //             ),
-                      //           )),
-                      //   isReadOnly: true, // Không cho phép người dùng thay đổi rating
-                      // ),
                     ],
                   ),
                   AppSpacing.mediumVertical,
