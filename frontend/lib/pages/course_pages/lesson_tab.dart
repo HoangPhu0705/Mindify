@@ -23,6 +23,7 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/toasts.dart';
+import 'package:frontend/widgets/my_loading.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:frontend/services/functions/UserService.dart';
@@ -858,7 +859,11 @@ class LessonTabState extends State<LessonTab> {
                               if (!userSnapshot.hasData) {
                                 return const GFCard(
                                   content: Center(
-                                    child: CircularProgressIndicator(),
+                                    child: MyLoading(
+                                      width: 30,
+                                      height: 30,
+                                      color: AppColors.deepBlue,
+                                    ),
                                   ),
                                 );
                               }
