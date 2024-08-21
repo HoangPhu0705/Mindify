@@ -93,8 +93,8 @@ class _CourseDetailState extends State<CourseDetail>
     log("rating ne" + rating.toString());
     log(ratingAverage.toString());
     setState(() {
-        ratingAverage = rating;
-      });
+      ratingAverage = rating;
+    });
   }
 
   Future<void> _getWatchingData() async {
@@ -178,8 +178,6 @@ class _CourseDetailState extends State<CourseDetail>
     super.dispose();
   }
 
-  
-
   Future<void> _saveWatchedTime(int time) async {
     try {
       await userService.addToWatchedHistories(widget.userId, widget.courseId,
@@ -239,22 +237,24 @@ class _CourseDetailState extends State<CourseDetail>
   }
 
   void _handleVideoEnd(String videoUrl) async {
-    bool isLooping = _videoPlayerKey.currentState!.islooping();
-    if (!isLooping) {
-      if (_currentVideoIndex == course!.lessons.length - 1) {
-        return;
+    if (isEnrolled) {
+      bool isLooping = _videoPlayerKey.currentState!.islooping();
+      if (!isLooping) {
+        if (_currentVideoIndex == course!.lessons.length - 1) {
+          return;
+        }
+        final nextVideoUrl = course!.lessons[_currentVideoIndex + 1].link;
+        log("next title" + course!.lessons[_currentVideoIndex + 1].title);
+        setState(() {
+          _currentVideoUrl = nextVideoUrl;
+          _currentVideoIndex++;
+        });
+        _addProgressToEnrollment();
+        await _videoPlayerKey.currentState?.goToVideo(nextVideoUrl);
       }
-      final nextVideoUrl = course!.lessons[_currentVideoIndex + 1].link;
-      log("next title" + course!.lessons[_currentVideoIndex + 1].title);
-      setState(() {
-        _currentVideoUrl = nextVideoUrl;
-        _currentVideoIndex++;
-      });
-      _addProgressToEnrollment();
-      await _videoPlayerKey.currentState?.goToVideo(nextVideoUrl);
-    }
 
-    _addProgressToEnrollment();
+      _addProgressToEnrollment();
+    }
   }
 
   // void _handleVideoEnd() {}
@@ -441,18 +441,17 @@ class _CourseDetailState extends State<CourseDetail>
                     controller: _tabController,
                     children: [
                       LessonTab(
-                        isFollowed: isFollowed,
-                        instructorId: course!.instructorId,
-                        userId: userId,
-                        course: course!,
-                        enrollmentId: _enrollmentId ?? "",
-                        currentVideoIndex: _currentVideoIndex,
-                        isEnrolled: isEnrolled,
-                        onLessonTap: _onLessonTap,
-                        onSaveLesson: _saveLesson,
-                        isPreviewing: false,
-                        ratingAverage: ratingAverage!
-                      ),
+                          isFollowed: isFollowed,
+                          instructorId: course!.instructorId,
+                          userId: userId,
+                          course: course!,
+                          enrollmentId: _enrollmentId ?? "",
+                          currentVideoIndex: _currentVideoIndex,
+                          isEnrolled: isEnrolled,
+                          onLessonTap: _onLessonTap,
+                          onSaveLesson: _saveLesson,
+                          isPreviewing: false,
+                          ratingAverage: ratingAverage!),
                       SubmitProject(
                         course: course!,
                         isPreviewing: false,
