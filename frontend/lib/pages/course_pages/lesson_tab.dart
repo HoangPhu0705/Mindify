@@ -90,7 +90,7 @@ class LessonTabState extends State<LessonTab> {
   void initState() {
     // log(quizService.idToken!);
     super.initState();
-    
+
     _getInstructorInfo();
     _sortLessonsByIndex();
     if (widget.enrollmentId.isNotEmpty) {
@@ -101,7 +101,6 @@ class LessonTabState extends State<LessonTab> {
     quillController.document = Document.fromJson(
       jsonDecode(widget.course.description),
     );
-    
   }
 
   Future<void> setFetchProgress() async {
@@ -266,8 +265,8 @@ class LessonTabState extends State<LessonTab> {
       final feedback = {
         'rating': rating,
         'userId': widget.userId,
-        'displayName': FirebaseAuth.instance.currentUser!.displayName,
-        'photoUrl': FirebaseAuth.instance.currentUser!.photoURL ?? '',
+        // 'displayName': FirebaseAuth.instance.currentUser!.displayName,
+        // 'photoUrl': FirebaseAuth.instance.currentUser!.photoURL ?? '',
         'content': feedBackController.text,
       };
       await feedbackService.giveFeedback(
@@ -826,80 +825,96 @@ class LessonTabState extends State<LessonTab> {
                   ),
                   AppSpacing.mediumVertical,
                   StreamBuilder<QuerySnapshot>(
-                      stream: feedbackService.getTopFeedBackStream(
-                        widget.course.id,
-                      ),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return const Text(
-                            "No feedback available",
-                            style: TextStyle(
-                              color: AppColors.lightGrey,
-                            ),
-                          );
-                        }
+                    stream: feedbackService.getTopFeedBackStream(
+                      widget.course.id,
+                    ),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Text(
+                          "No feedback available",
+                          style: TextStyle(
+                            color: AppColors.lightGrey,
+                          ),
+                        );
+                      }
 
-                        List<DocumentSnapshot> feedbacks = snapshot.data!.docs;
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            DocumentSnapshot feedback = feedbacks[index];
-                            String content = feedback['content'];
-                            String photoUrl = feedback['photoUrl'];
-                            String displayName = feedback['displayName'];
-                            var rating = feedback['rating'];
-                            var createdAtDateTime =
-                                (feedback['createdAt'] as Timestamp).toDate();
-                            var timeAgo = timeago.format(createdAtDateTime);
+                      List<DocumentSnapshot> feedbacks = snapshot.data!.docs;
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: feedbacks.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot feedback = feedbacks[index];
+                          String content = feedback['content'];
+                          String userId = feedback['userId'];
+                          var rating = feedback['rating'];
+                          var createdAtDateTime =
+                              (feedback['createdAt'] as Timestamp).toDate();
+                          var timeAgo = timeago.format(createdAtDateTime);
 
-                            return GFCard(
-                              margin: const EdgeInsets.only(
-                                bottom: 12,
-                              ),
-                              boxFit: BoxFit.cover,
-                              titlePosition: GFPosition.start,
-                              title: GFListTile(
-                                padding: EdgeInsets.zero,
-                                avatar: GFAvatar(
-                                  radius: 20,
-                                  backgroundImage: photoUrl.isNotEmpty
-                                      ? NetworkImage(photoUrl)
-                                      : const NetworkImage(
-                                          "https://i.ibb.co/tZxYspW/default-avatar.png"),
-                                ),
-                                titleText: displayName,
-                                subTitleText: timeAgo,
-                              ),
-                              content: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    textAlign: TextAlign.start,
-                                    content,
+                          return FutureBuilder<Map<String, dynamic>?>(
+                            future: userService.getAvatarAndDisplayName(userId),
+                            builder: (context, userSnapshot) {
+                              if (!userSnapshot.hasData) {
+                                return const GFCard(
+                                  content: Center(
+                                    child: CircularProgressIndicator(),
                                   ),
-                                  PannableRatingBar(
-                                    rate: rating,
-                                    items: List.generate(
-                                      5,
-                                      (index) => const RatingWidget(
-                                        selectedColor: AppColors.deepBlue,
-                                        unSelectedColor: AppColors.lightGrey,
-                                        child: Icon(
-                                          Icons.star_rate_rounded,
-                                          size: 24,
+                                );
+                              }
+
+                              final userInfo = userSnapshot.data;
+                              String photoUrl = userInfo?['photoUrl'] ??
+                                  "https://i.ibb.co/tZxYspW/default-avatar.png";
+                              String displayName =
+                                  userInfo?['displayName'] ?? "Unknown User";
+
+                              return GFCard(
+                                margin: const EdgeInsets.only(
+                                  bottom: 12,
+                                ),
+                                boxFit: BoxFit.cover,
+                                titlePosition: GFPosition.start,
+                                title: GFListTile(
+                                  padding: EdgeInsets.zero,
+                                  avatar: GFAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(photoUrl),
+                                  ),
+                                  titleText: displayName,
+                                  subTitleText: timeAgo,
+                                ),
+                                content: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      textAlign: TextAlign.start,
+                                      content,
+                                    ),
+                                    PannableRatingBar(
+                                      rate: rating,
+                                      items: List.generate(
+                                        5,
+                                        (index) => const RatingWidget(
+                                          selectedColor: AppColors.deepBlue,
+                                          unSelectedColor: AppColors.lightGrey,
+                                          child: Icon(
+                                            Icons.star_rate_rounded,
+                                            size: 24,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          itemCount: feedbacks.length,
-                        );
-                      })
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  )
                 ],
               ),
             ),
