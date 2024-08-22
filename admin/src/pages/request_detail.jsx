@@ -71,7 +71,7 @@ const RequestDetail = () => {
       setTimeout(() => {
         setAlertVisible(false);
         navigate("/request");
-      }, 2000); 
+      }, 2000);
     } catch (err) {
       setLoading(false);
       console.error("Error approving request", err);
@@ -92,7 +92,7 @@ const RequestDetail = () => {
           },
         }
       );
-      
+
       setIsRejected(true);
       setPopupOpen(false);
       setLoading(false);
@@ -304,6 +304,24 @@ const RequestDetail = () => {
           />
 
         </div>
+        <div className="w-full">
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="mb-2 font-medium"
+          >
+            ID Card
+          </Typography>
+          <div className="w-full">
+            <img
+              className="h-auto w-1/2 rounded-lg object-cover"
+              src={ details.request.image ||
+                "https://lawnet.vn/uploads/image/2023/07/29/080048220.png"}
+              alt="nature image"
+            />
+          </div>
+        </div>
+
         <RejectPopup
           open={popupOpen}
           handleOpen={() => setPopupOpen(!popupOpen)}

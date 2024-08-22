@@ -12,6 +12,10 @@ import {
   DialogFooter,
   Spinner,
   Input,
+  Chip,
+  Tabs,
+  TabsHeader,
+  Tab,
 } from "@material-tailwind/react";
 
 const USER_TABLE_HEAD = ["Email", "Display Name", "Role", "Lock Account"];
@@ -25,13 +29,29 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("all");
+  const roles = [
+    { label: "All", value: "all" },
+    { label: "Teacher", value: "teacher" },
+    { label: "User", value: "user" },
+  ];
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     fetchUsers();
   }, [userPage, currentPage]);
 
+  useEffect(() => {
+    if (selectedTab === "all") {
+      setFilteredUsers(users);
+    } else {
+      setFilteredUsers(
+        users.filter((user) => user.role.toLowerCase() === selectedTab)
+      );
+    }
+  }, [selectedTab, users]);
+
   const fetchUsers = async () => {
-    console.log("fetching users");
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -49,6 +69,7 @@ const UserManagement = () => {
 
       const { users, totalCount } = response.data;
       setUsers(users);
+      setFilteredUsers(users);
       setTotalPages(Math.ceil(totalCount / userPage.limit));
     } catch (error) {
       console.error("Error fetching users: ", error);
@@ -147,13 +168,17 @@ const UserManagement = () => {
                 </Typography>
               </td>
               <td className="p-4">
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
-                >
-                  {user.role}
-                </Typography>
+                <Chip
+                  className="inline-block w-auto"
+                  value={user.role}
+                  color={
+                    user.role === "teacher"
+                      ? "blue"
+                      : user.role === "user"
+                      ? "green"
+                      : "red"
+                  }
+                />
               </td>
               <td className="p-4">
                 <Button
@@ -203,12 +228,25 @@ const UserManagement = () => {
             </Select>
           </div>
         </div>
+        <Tabs value={selectedTab} className="mb-2 flex-">
+          <TabsHeader>
+            {roles.map(({ label, value }) => (
+              <Tab
+                key={value}
+                value={value}
+                onClick={() => setSelectedTab(value)}
+              >
+                <div className="px-4">{label}</div>
+              </Tab>
+            ))}
+          </TabsHeader>
+        </Tabs>
         {loading ? (
           <div className="flex justify-center items-center">
             <Spinner color="blue" />
           </div>
         ) : (
-          renderTable(USER_TABLE_HEAD, users)
+          renderTable(USER_TABLE_HEAD, filteredUsers)
         )}
         <div className="flex justify-center items-center mt-4">
           <Button
@@ -237,8 +275,9 @@ const UserManagement = () => {
           {selectedUser?.disabled ? "Unlock User" : "Lock User"}
         </DialogHeader>
         <DialogBody>
-          Are you sure you want to {selectedUser?.disabled ? "unlock" : "lock"}{" "}
-          user {selectedUser?.email}?
+          Are you sure you want to{" "}
+          {selectedUser?.disabled ? "unlock" : "lock"} user{" "}
+          {selectedUser?.email}?
         </DialogBody>
         <DialogFooter>
           <Button

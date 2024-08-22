@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:frontend/widgets/video_player_view.dart';
 import 'package:path_provider/path_provider.dart';

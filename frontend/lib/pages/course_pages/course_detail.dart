@@ -245,12 +245,13 @@ class _CourseDetailState extends State<CourseDetail>
         }
         final nextVideoUrl = course!.lessons[_currentVideoIndex + 1].link;
         log("next title" + course!.lessons[_currentVideoIndex + 1].title);
+        _addProgressToEnrollment();
         setState(() {
           _currentVideoUrl = nextVideoUrl;
           _currentVideoIndex++;
         });
-        _addProgressToEnrollment();
         await _videoPlayerKey.currentState?.goToVideo(nextVideoUrl);
+        return;
       }
 
       _addProgressToEnrollment();
