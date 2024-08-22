@@ -23,6 +23,7 @@ class TeacherClassItem extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 5),
         width: MediaQuery.of(context).size.width * 0.7,
+        height: MediaQuery.of(context).size.height * 0.3,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
           border: Border.all(

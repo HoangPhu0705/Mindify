@@ -76,6 +76,7 @@ class _ShowAllProjectsState extends State<ShowAllProjects> {
                         String displayName =
                             userData?['displayName'] ?? 'Unknown User';
                         String photoUrl = userData?['photoUrl'] ?? '';
+                        final grade = project["grade"];
 
                         return GestureDetector(
                           onTap: () {
@@ -123,6 +124,16 @@ class _ShowAllProjectsState extends State<ShowAllProjects> {
                                   ),
                                 ),
                                 subtitle: Text(displayName),
+                                trailing: grade < 0
+                                    ? const Text('Not graded yet')
+                                    : Text(
+                                        '$grade / 10',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.deepBlue,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                               ),
                               AppSpacing.mediumVertical,
                             ],

@@ -137,4 +137,23 @@ class ProjectService {
       throw Exception('Failed to remove project: $error');
     }
   }
+
+  Future<void> updateProject(
+      String courseId, String projectId, var updatedData) async {
+    try {
+      final response = await http.put(
+        Uri.parse("${AppConstants.PROJECT_API}/$courseId/$projectId"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode(updatedData),
+      );
+      if (response.statusCode != 204) {
+        throw Exception('Failed to update project: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception('Failed to update project: $error');
+    }
+  }
 }

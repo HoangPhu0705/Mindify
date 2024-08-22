@@ -6,10 +6,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/functions/UserService.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -132,9 +134,117 @@ class _ViewMyProjectState extends State<ViewMyProject> {
     }
   }
 
+  void _showGradeProjectDialog(BuildContext context) {
+    TextEditingController _controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: const Text(
+            "Grade Project",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Row(
+            children: [
+              Flexible(
+                child: TextField(
+                  controller: _controller,
+                  autofocus: true,
+                  keyboardType: TextInputType.number,
+                  cursorColor: AppColors.deepBlue,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.deepBlue,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d*\.?\d{0,1}$'),
+                    ),
+                    FilteringTextInputFormatter.deny(
+                      RegExp(r'^0[0-9]'),
+                    ),
+                  ],
+                  decoration: const InputDecoration(
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.deepBlue,
+                        width: 2,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.deepBlue,
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty && double.tryParse(value)! > 10) {
+                      _controller.text = '10';
+                      _controller.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _controller.text.length),
+                      );
+                    }
+                  },
+                ),
+              ),
+              AppSpacing.smallHorizontal,
+              const Text(
+                "/10",
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              style: AppStyles.secondaryButtonStyle,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              style: AppStyles.primaryButtonStyle,
+              onPressed: () {
+                // Handle grading logic here
+                if (_controller.text.isEmpty) {
+                  return;
+                }
+
+                double grade = double.parse(_controller.text);
+                var updatedData = {
+                  "grade": grade,
+                };
+                projectService.updateProject(
+                  widget.courseId,
+                  widget.projectId,
+                  updatedData,
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text("Grade"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.ghostWhite,
       bottomSheet: !canComment
           ? const SizedBox.shrink()
@@ -193,7 +303,9 @@ class _ViewMyProjectState extends State<ViewMyProject> {
         actions: [
           isTeacher
               ? IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _showGradeProjectDialog(context);
+                  },
                   icon: const Icon(
                     Icons.edit_document,
                     color: AppColors.deepBlue,
@@ -279,7 +391,8 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                         ),
                       ),
                       AppSpacing.smallVertical,
-                      widget.project["contentImages"] == null
+                      widget.project["contentImages"] == null ||
+                              widget.project["contentImages"].isEmpty
                           ? const SizedBox.shrink()
                           : SizedBox(
                               height: 200,
@@ -303,7 +416,8 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                                 },
                               ),
                             ),
-                      widget.project["files"] == null
+                      widget.project["files"] == null ||
+                              widget.project["files"].isEmpty
                           ? const SizedBox.shrink()
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
