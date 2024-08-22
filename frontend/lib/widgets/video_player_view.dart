@@ -100,7 +100,7 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
       final videoDuration = _podPlayerController.videoPlayerValue!.duration;
 
       log('Current Position: $videoPosition, Duration: $videoDuration');
-      if (videoPosition == videoDuration) {
+      if (videoPosition >= videoDuration - Duration(milliseconds: 500)) {
         removePodListener();
 
         widget.onVideoEnd(widget.url);

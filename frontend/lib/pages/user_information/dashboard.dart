@@ -10,10 +10,12 @@ import 'package:frontend/services/functions/EnrollmentService.dart';
 class DashboardPage extends StatefulWidget {
   final String userId;
 
-  DashboardPage({required this.userId});
+  DashboardPage({
+    super.key,
+    required this.userId});
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
