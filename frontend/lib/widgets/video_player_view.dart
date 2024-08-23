@@ -69,6 +69,7 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
     await _podPlayerController.changeVideo(
       playVideoFrom: PlayVideoFrom.network(url),
     );
+   
     removePodListener();
     addPodListener();
   }
@@ -100,13 +101,12 @@ class VideoPlayerViewState extends State<VideoPlayerView> {
       final videoDuration = _podPlayerController.videoPlayerValue!.duration;
 
       log('Current Position: $videoPosition, Duration: $videoDuration');
-      if (videoPosition >= videoDuration - Duration(milliseconds: 500)) {
+      if (videoPosition >= videoDuration - Duration(milliseconds: 900)) {
         removePodListener();
-
-        widget.onVideoEnd(widget.url);
         log('Lesson Ended');
 
-        addPodListener();
+        widget.onVideoEnd(widget.url);
+
         return true;
       }
     }

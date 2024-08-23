@@ -221,7 +221,7 @@ class _CourseDetailState extends State<CourseDetail>
     }
   }
 
-  void _addProgressToEnrollment() async {
+  Future<void> _addProgressToEnrollment() async {
     try {
       final lessonId = course!.lessons[_currentVideoIndex].id;
       if (_enrollmentId != null) {
@@ -237,28 +237,26 @@ class _CourseDetailState extends State<CourseDetail>
   }
 
   void _handleVideoEnd(String videoUrl) async {
-    if (isEnrolled) {
-      bool isLooping = _videoPlayerKey.currentState!.islooping();
-      if (!isLooping) {
-        if (_currentVideoIndex == course!.lessons.length - 1) {
-          return;
-        }
-        final nextVideoUrl = course!.lessons[_currentVideoIndex + 1].link;
-        log("next title" + course!.lessons[_currentVideoIndex + 1].title);
-        _addProgressToEnrollment();
-        setState(() {
-          _currentVideoUrl = nextVideoUrl;
-          _currentVideoIndex++;
-        });
-        await _videoPlayerKey.currentState?.goToVideo(nextVideoUrl);
-        return;
-      }
+    if (!isEnrolled) return; 
 
-      _addProgressToEnrollment();
+    await _addProgressToEnrollment();
+    
+    bool isLooping = _videoPlayerKey.currentState!.islooping();
+
+    if (isLooping) {
+      log("Video is looping, staying on the same video.");
+      return;
+    }
+
+    if (_currentVideoIndex < course!.lessons.length - 1) {
+      final nextVideoUrl = course!.lessons[_currentVideoIndex + 1].link;
+      setState(() {
+        _currentVideoUrl = nextVideoUrl;
+        _currentVideoIndex++;
+      });
+      await _videoPlayerKey.currentState?.goToVideo(nextVideoUrl);
     }
   }
-
-  // void _handleVideoEnd() {}
 
   Future<void> _onLessonTap(
     String videoUrl,

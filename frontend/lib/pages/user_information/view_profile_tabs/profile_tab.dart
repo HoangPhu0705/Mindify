@@ -231,61 +231,54 @@ class _ProfileTabState extends State<ProfileTab>
                                 bool isPublic = course["isPublic"];
                                 bool requestSent = course["request"];
                                 return MyClassItem(
-                                  classTitle: courseName,
-                                  onEditPressed: () {
-                                    // Navigate to edit class page
-                                    Navigator.of(context, rootNavigator: true)
-                                        .push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ManageClass(
-                                            courseId: course.id,
-                                            isEditing: true,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  onDeletePressed: () async {
-                                    await showWarningAndUnpublish(
-                                      context,
-                                      course.id,
-                                    );
-                                  },
-                                  thumbnail: thumbnail,
-                                  isPublic: isPublic,
-                                  requestSent: requestSent,
-                                  onShowProjectsPressed: () {
-                                    Navigator.of(context, rootNavigator: true)
-                                        .push(
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ShowAllProjects(
-                                            course: myCourse,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  onShowStudentsPressed: () async {
-                                    final studentsData = await enrollmentService.getStudentsOfCourse(course.id);
-
-                                    if (studentsData != null) {
-                                      Navigator.of(context, rootNavigator: true).push(
+                                    classTitle: courseName,
+                                    onEditPressed: () {
+                                      // Navigate to edit class page
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(
                                         MaterialPageRoute(
                                           builder: (context) {
-                                            return StudentListPage(
-                                              students: studentsData['students'],
-                                              studentNum: studentsData['studentNum'],
+                                            return ManageClass(
+                                              courseId: course.id,
+                                              isEditing: true,
                                             );
                                           },
                                         ),
                                       );
-                                    } else {
-                                      log('Failed to retrieve students for course $courseName');
-                                    }
-                                  },
-                                );
+                                    },
+                                    onDeletePressed: () async {
+                                      await showWarningAndUnpublish(
+                                        context,
+                                        course.id,
+                                      );
+                                    },
+                                    thumbnail: thumbnail,
+                                    isPublic: isPublic,
+                                    requestSent: requestSent,
+                                    onShowProjectsPressed: () {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return ShowAllProjects(
+                                              course: myCourse,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    onShowStudentsPressed: () async {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .push(
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return StudentListPage(
+                                              courseId: course.id,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    });
                               },
                             ),
                           );

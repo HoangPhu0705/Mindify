@@ -115,7 +115,6 @@ class ProjectService {
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      log("wiwi");
       return querySnapshot.docs.first;
     }
     return null;

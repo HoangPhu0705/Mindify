@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:frontend/services/functions/CourseService.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
+import 'package:frontend/services/functions/ProjectService.dart';
 import 'package:frontend/services/models/course.dart';
 import 'package:frontend/utils/colors.dart';
 import 'package:frontend/utils/spacing.dart';
@@ -30,12 +31,14 @@ class _AchievementTabState extends State<AchievementTab>
     with AutomaticKeepAliveClientMixin {
   EnrollmentService enrollmentService = EnrollmentService();
   CourseService courseService = CourseService();
+  ProjectService projectService = ProjectService();
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? displayName =
       FirebaseAuth.instance.currentUser!.displayName ?? "Mindify Member";
   bool _isLoading = true;
   List<Map<String, dynamic>>? progresses;
   List<DocumentSnapshot>? _enrollments;
+  List<DocumentSnapshot>? _projects;
 
   @override
   bool get wantKeepAlive => true;
@@ -63,9 +66,16 @@ class _AchievementTabState extends State<AchievementTab>
             Map<String, dynamic> data = document.data() as Map<String, dynamic>;
             String courseId = data['courseId'];
             Course course = await courseService.getCourseById(courseId);
+            DocumentSnapshot? courseProject =
+                await projectService.getProjectId(courseId, uid);
+
             List<String> progress =
                 await enrollmentService.getProgressOfEnrollment(document.id);
-            return {'course': course, 'progress': progress};
+            return {
+              'course': course,
+              'progress': progress,
+              'project': courseProject,
+            };
           }).toList(),
         );
         setState(() {
@@ -131,22 +141,29 @@ class _AchievementTabState extends State<AchievementTab>
     if (progresses == null || progresses!.isEmpty) {
       return _emptyCertificate();
     }
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: progresses!.length,
       itemBuilder: (context, index) {
         Course course = progresses![index]['course'];
+        DocumentSnapshot? project;
+        if (progresses![index]['project'] != null) {
+          project = progresses![index]['project'];
+        }
         List<String> progress = progresses![index]['progress'];
         int totalLessons = course.lessonNum;
         int completedLessons = progress.length;
         bool isDone = totalLessons == completedLessons;
+        bool isProjectDone = project != null && project['grade'] >= 0;
         String courseName = course.title;
         List<String> skillsCovered = course.categories;
         String instructorName = course.instructorName;
         String enrollmentId = _enrollments![index].id;
+        
 
-        return isDone
+        return isDone && isProjectDone
             ? _buildCertificate(
                 courseName,
                 displayName ?? "Mindify Member",

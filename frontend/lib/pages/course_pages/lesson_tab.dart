@@ -400,19 +400,16 @@ class LessonTabState extends State<LessonTab> {
                       ),
                     ],
                   ),
+                  AppSpacing.mediumVertical,
                   Row(
                     children: [
                       const Icon(
-                        Icons.star,
-                        color: AppColors.grey,
+                        Icons.star_rounded,
+                        color: AppColors.deepBlue,
                       ),
                       AppSpacing.smallHorizontal,
                       Text(
-                        "${widget.ratingAverage.toStringAsFixed(1)}/5 points",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                        ),
+                        "${widget.ratingAverage.toStringAsFixed(1)} / 5 rating",
                       ),
                     ],
                   ),
