@@ -157,6 +157,8 @@ exports.addProgressToEnrollment = async (enrollmentId, lessonId) => {
 
 exports.showStudentsOfCourse = async (courseId) => {
     try{
+        const course = await CourseCollection.doc(courseId).get();
+        const lessonNum = course.data().lessonNum;
         const courseEnrollmentRef = EnrollmentCollection.where("courseId", "==", courseId);
         const courseEnrollment = await courseEnrollmentRef.get();
         const studentNum = courseEnrollment.size;
@@ -166,10 +168,11 @@ exports.showStudentsOfCourse = async (courseId) => {
             const enrollmentData = enrollmentDoc.data();
             const userId = enrollmentData.userId;
             const enrollmentDay = enrollmentData.enrollmentDay;
-
+            const enrollmentId = enrollmentDoc.id;
             const { displayName, photoUrl } = await UserService.getUserNameAndAvatar(userId);
 
             students.push({
+                enrollmentId,
                 userId,
                 displayName,
                 photoUrl,
@@ -177,7 +180,8 @@ exports.showStudentsOfCourse = async (courseId) => {
             });
         }
         result['studentNum'] = studentNum;
-        result['students'] = students
+        result['lessonNum'] = lessonNum;
+        result['students'] = students;
         return result;
     }catch(error){
         console.error('Error get students', error);
@@ -185,12 +189,7 @@ exports.showStudentsOfCourse = async (courseId) => {
     }
 }
 
-exports.getStudentsOfMonth = async (userId) => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    console.log(now)
-
+exports.getStudentsOfMonth = async (userId, month, year) => {
     const startOfMonth = firestore.Timestamp.fromDate(new Date(year, month - 1, 1));
     const endOfMonth = firestore.Timestamp.fromDate(new Date(year, month, 0, 23, 59, 59));
 
@@ -215,15 +214,11 @@ exports.getStudentsOfMonth = async (userId) => {
         month: `${month.toString().padStart(2, '0')}-${year}`,
         totalEnrollments
     };
-}
+};
 
-exports.getRevenueOfMonth = async (userId) => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
-    const startOfMonth = firestore.Timestamp.fromDate(new Date(year, month, 1));
-    const endOfMonth = firestore.Timestamp.fromDate(new Date(year, month + 1, 0, 23, 59, 59));
+exports.getRevenueOfMonth = async (userId, month, year) => {
+    const startOfMonth = firestore.Timestamp.fromDate(new Date(year, month - 1, 1));
+    const endOfMonth = firestore.Timestamp.fromDate(new Date(year, month, 0, 23, 59, 59));
 
     const courseSnapshot = await CourseCollection.where("authorId", "==", userId).get();
 
@@ -256,4 +251,4 @@ exports.getRevenueOfMonth = async (userId) => {
         month: `${month.toString().padStart(2, '0')}-${year}`,
         totalRevenue
     };
-}
+};

@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:frontend/utils/colors.dart';
@@ -24,12 +22,15 @@ class _StudentListPageState extends State<StudentListPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   Future<Map<String, dynamic>?> getStudentData() async {
     return await enrollmentService.getStudentsOfCourse(widget.courseId);
+  }
+
+  Future<List<String>?> getStudentProgress(String enrollmentId) async {
+    return await enrollmentService.getProgressOfEnrollment(enrollmentId);
   }
 
   @override
@@ -64,34 +65,102 @@ class _StudentListPageState extends State<StudentListPage> {
               );
             }
 
-            log(snapshot.data.toString());
-
             final students = snapshot.data!["students"];
+            log(students.toString());
             final studentNum = snapshot.data!["studentNum"];
+            final totalLessons = snapshot.data!["lessonNum"];
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: studentNum,
+                    itemBuilder: (context, index) {
+                      final student = students![index];
+                      return FutureBuilder(
+                        future: getStudentProgress(student['enrollmentId']),
+                        builder: (context, progressSnapshot) {
+                          if (progressSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const MyLoading(
+                              width: 30,
+                              height: 30,
+                              color: AppColors.deepBlue,
+                            );
+                          }
 
-            return Container(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: studentNum,
-                      itemBuilder: (context, index) {
-                        final student = students![index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(student['photoUrl']),
-                          ),
-                          title: Text(student['displayName']),
-                          subtitle: Text(
-                            'Enrolled on: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(student['enrollmentDay']))}',
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                          if (progressSnapshot.hasError) {
+                            return Text('Error: ${progressSnapshot.error}');
+                          }
+
+                          final progress = progressSnapshot.data!.length;
+
+                          return Column(
+                            children: [
+                              ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(student['photoUrl']),
+                                ),
+                                title: Text(student['displayName']),
+                                subtitle: Text(
+                                  'Enrolled on: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(student['enrollmentDay']))}',
+                                ),
+                              ),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Progress",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.deepBlue,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: LinearProgressIndicator(
+                                            value: totalLessons > 0
+                                                ? progress /
+                                                    totalLessons
+                                                : 0,
+                                            backgroundColor:
+                                                Colors.grey.shade300,
+                                            color: AppColors.deepBlue,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Text(
+                                            '$progress of $totalLessons lessons',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Divider(),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
             );
           }),

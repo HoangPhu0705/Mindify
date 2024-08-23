@@ -111,6 +111,8 @@ dependencies:
   internet_connection_checker_plus: ^2.5.1
   d_chart: ^2.6.9
   flutter_pannable_rating_bar: ^2.7.2+1
+  flutter_staggered_grid_view: ^0.7.0
+  syncfusion_flutter_datepicker: ^26.2.10
   
 dev_dependencies:
   flutter_test:

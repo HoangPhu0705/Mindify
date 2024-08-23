@@ -175,7 +175,10 @@ class EnrollmentService {
           final Map<String, dynamic> result = {};
           final List<dynamic> students = responseData['data']['students'];
           final int studentNum = responseData['data']['studentNum'];
+          final int lessonNum = responseData['data']['lessonNum'];
+
           result['studentNum'] = studentNum;
+          result['lessonNum'] = lessonNum;
           result['students'] = students;
           return result;
         } else {
@@ -203,9 +206,8 @@ class EnrollmentService {
   //   }
   // }
 
-  Future<Map<String, dynamic>?> getStudentsOfMonth(String userId) async {
-    final url =
-        Uri.parse('${AppConstants.ENROLLMENT_API}/studentsOfMonth/$userId');
+  Future<Map<String, dynamic>?> getDashboardData(String userId, int month, int year) async {
+    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/dashboard/$userId?month=$month&year=$year');
 
     try {
       final response = await http.get(
@@ -223,44 +225,11 @@ class EnrollmentService {
           final Map<String, dynamic> data = responseData['data'];
           return data;
         } else {
-          log('Failed to get revenue: ${responseData['message']}');
+          log('Failed to get dashboard data: ${responseData['message']}');
           return null;
         }
       } else {
-        log('Failed to load revenue. Status code: ${response.statusCode}');
-        return null;
-      }
-    } catch (error) {
-      log('Error occurred: $error');
-      return null;
-    }
-  }
-
-  Future<Map<String, dynamic>?> getRevenueOfMonth(String userId) async {
-    final url =
-        Uri.parse('${AppConstants.ENROLLMENT_API}/revenueOfMonth/$userId');
-
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-
-        if (responseData['success']) {
-          final Map<String, dynamic> data = responseData['data'];
-          return data;
-        } else {
-          log('Failed to get revenue: ${responseData['message']}');
-          return null;
-        }
-      } else {
-        log('Failed to load revenue. Status code: ${response.statusCode}');
+        log('Failed to load dashboard data. Status code: ${response.statusCode}');
         return null;
       }
     } catch (error) {

@@ -38,22 +38,35 @@ class _ProfilePageState extends State<ProfilePage> {
   UserService userService = UserService();
   EnrollmentService enrollmentService = EnrollmentService();
   String? userId;
+  String? role;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       userId = userService.getUserId();
       String displayName = userService.getUsername();
       Provider.of<UserProvider>(context, listen: false)
           .setDisplayName(displayName);
       String photoUrl = userService.getPhotoUrl();
       Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
+      await getUserRole();
+      setState(() {
+      
     });
+    });
+    
   }
 
   Future<List<String>> getInfo() async {
     return await enrollmentService.getUserEnrollments(userId!);
+  }
+
+   Future<void> getUserRole() async {
+    if (userId != null) {
+      final userInfo = await userService.getUserInfoById(userId!);
+      role = userInfo?['role'];
+    }
   }
 
   @override
@@ -230,25 +243,28 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         },
                       ),
-                      ListTile(
-                        leading: Icon(Icons.dashboard),
-                        title: Text(
-                          'My Dashboard',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(fontSize: 16),
+                      if (role == 'teacher') 
+                        ListTile(
+                          leading: Icon(Icons.dashboard),
+                          title: Text(
+                            'My Dashboard',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(fontSize: 16),
+                          ),
+                          trailing: Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DashboardPage(
+                                  userId: userId!,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DashboardPage(userId: userId!,),
-                            ),
-                          );
-                        },
-                      ),
                       ListTile(
                         leading: Icon(Icons.logout),
                         title: Text('Logout'),

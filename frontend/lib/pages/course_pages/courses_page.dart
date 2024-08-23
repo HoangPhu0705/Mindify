@@ -317,9 +317,20 @@ class _MyCoursesPageState extends State<MyCoursePage>
   }
 
   Widget courseTab(BuildContext context) {
-    if (_courseDataList == null || _courseDataList!.isEmpty) {
+    if (_courseDataList == null) {
+      return const Center(
+        child: MyLoading(
+          width: 30,
+          height: 30,
+          color: AppColors.deepBlue,
+        ),
+      );
+    }
+
+    if (_courseDataList!.isEmpty) {
       return _emptyCourse(context);
     }
+
     return SmartRefresher(
       onRefresh: _onRefresh,
       onLoading: _onLoading,
@@ -391,8 +402,7 @@ class _MyCoursesPageState extends State<MyCoursePage>
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500,
                               ),
-                              textAlign: TextAlign
-                                  .right, // Align the text to the right
+                              textAlign: TextAlign.right,
                             ),
                           ),
                         ],

@@ -108,30 +108,54 @@ exports.showStudentsOfCourse = async (req, res) => {
     }
 }
 
-exports.getStudentsOfMonth = async (req, res) => {
-    const { userId } = req.params;
-    try{
-        const totalEnrollments = await EnrollmentService.getStudentsOfMonth(userId);
-        res.status(200).send({ 
-            message: "get num of student success",
-            success: true,
-            data: totalEnrollments
-        })
-    }catch (error) {
-        res.status(500).send({ error: error.message })
-    }
-}
+// exports.getStudentsOfMonth = async (req, res) => {
+//     const { userId } = req.params;
+//     try{
+//         const totalEnrollments = await EnrollmentService.getStudentsOfMonth(userId);
+//         res.status(200).send({ 
+//             message: "get num of student success",
+//             success: true,
+//             data: totalEnrollments
+//         })
+//     }catch (error) {
+//         res.status(500).send({ error: error.message })
+//     }
+// }
 
-exports.getRevenueOfMonth = async (req, res) => {
+// exports.getRevenueOfMonth = async (req, res) => {
+//     const { userId } = req.params;
+//     try{
+//         const totalEnrollments = await EnrollmentService.getRevenueOfMonth(userId);
+//         res.status(200).send({ 
+//             message: "get num of student success",
+//             success: true,
+//             data: totalEnrollments
+//         })
+//     }catch (error) {
+//         res.status(500).send({ error: error.message })
+//     }
+// }
+exports.getDashboardData = async (req, res) => {
     const { userId } = req.params;
-    try{
-        const totalEnrollments = await EnrollmentService.getRevenueOfMonth(userId);
-        res.status(200).send({ 
+    const { month, year } = req.query;
+
+    if (!month || !year) {
+        return res.status(400).json({ error: "Month and year are required" });
+    }
+
+    try {
+        const totalEnrollments = await EnrollmentService.getStudentsOfMonth(userId, parseInt(month), parseInt(year));
+        const totalRevenue = await EnrollmentService.getRevenueOfMonth(userId, parseInt(month), parseInt(year));
+
+        res.status(200).json({
             message: "get num of student success",
             success: true,
-            data: totalEnrollments
-        })
-    }catch (error) {
-        res.status(500).send({ error: error.message })
+            data: {
+            enrollments: totalEnrollments,
+            revenue: totalRevenue
+        }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-}
+};
