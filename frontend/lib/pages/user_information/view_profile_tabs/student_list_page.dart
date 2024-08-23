@@ -19,18 +19,34 @@ class StudentListPage extends StatefulWidget {
 
 class _StudentListPageState extends State<StudentListPage> {
   EnrollmentService enrollmentService = EnrollmentService();
+  bool _isLoading = true;
+  Map<String, dynamic>? _studentData;
 
   @override
   void initState() {
     super.initState();
+    _loadStudentData();
   }
 
-  Future<Map<String, dynamic>?> getStudentData() async {
-    return await enrollmentService.getStudentsOfCourse(widget.courseId);
-  }
-
-  Future<List<String>?> getStudentProgress(String enrollmentId) async {
-    return await enrollmentService.getProgressOfEnrollment(enrollmentId);
+  Future<void> _loadStudentData() async {
+    try {
+      Map<String, dynamic>? studentData = await enrollmentService.getStudentsOfCourse(widget.courseId);
+      if (studentData != null) {
+        for (var student in studentData['students']) {
+          List<String>? progress = await enrollmentService.getProgressOfEnrollment(student['enrollmentId']);
+          student['progress'] = progress;
+        }
+        setState(() {
+          _studentData = studentData;
+        });
+      }
+    } catch (error) {
+      log('Error loading student data: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -46,62 +62,35 @@ class _StudentListPageState extends State<StudentListPage> {
           ),
         ),
       ),
-      body: FutureBuilder(
-          future: getStudentData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: MyLoading(
-                  width: 30,
-                  height: 30,
-                  color: AppColors.deepBlue,
-                ),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            }
-
-            final students = snapshot.data!["students"];
-            log(students.toString());
-            final studentNum = snapshot.data!["studentNum"];
-            final totalLessons = snapshot.data!["lessonNum"];
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: studentNum,
-                    itemBuilder: (context, index) {
-                      final student = students![index];
-                      return FutureBuilder(
-                        future: getStudentProgress(student['enrollmentId']),
-                        builder: (context, progressSnapshot) {
-                          if (progressSnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const MyLoading(
-                              width: 30,
-                              height: 30,
-                              color: AppColors.deepBlue,
-                            );
-                          }
-
-                          if (progressSnapshot.hasError) {
-                            return Text('Error: ${progressSnapshot.error}');
-                          }
-
-                          final progress = progressSnapshot.data!.length;
+      body: _isLoading
+          ? const Center(
+              child: MyLoading(
+                width: 30,
+                height: 30,
+                color: AppColors.deepBlue,
+              ),
+            )
+          : _studentData == null
+              ? const Center(
+                  child: Text('Failed to load student data'),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _studentData!['studentNum'],
+                        itemBuilder: (context, index) {
+                          final student = _studentData!['students'][index];
+                          final progress = student['progress'].length;
+                          final totalLessons = _studentData!['lessonNum'];
 
                           return Column(
                             children: [
                               ListTile(
                                 leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(student['photoUrl']),
+                                  backgroundImage: NetworkImage(student['photoUrl']),
                                 ),
                                 title: Text(student['displayName']),
                                 subtitle: Text(
@@ -109,8 +98,7 @@ class _StudentListPageState extends State<StudentListPage> {
                                 ),
                               ),
                               Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -127,12 +115,8 @@ class _StudentListPageState extends State<StudentListPage> {
                                         Expanded(
                                           flex: 2,
                                           child: LinearProgressIndicator(
-                                            value: totalLessons > 0
-                                                ? progress /
-                                                    totalLessons
-                                                : 0,
-                                            backgroundColor:
-                                                Colors.grey.shade300,
+                                            value: totalLessons > 0 ? progress / totalLessons : 0,
+                                            backgroundColor: Colors.grey.shade300,
                                             color: AppColors.deepBlue,
                                           ),
                                         ),
@@ -157,13 +141,10 @@ class _StudentListPageState extends State<StudentListPage> {
                             ],
                           );
                         },
-                      );
-                    },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }),
+                ),
     );
   }
 }
