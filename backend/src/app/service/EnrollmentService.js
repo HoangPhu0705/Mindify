@@ -252,3 +252,37 @@ exports.getRevenueOfMonth = async (userId, month, year) => {
         totalRevenue
     };
 };
+
+exports.getNumStudentsAndRevenue = async (userId) => {
+    try {
+        const coursesSnapshot = await CourseCollection.where('authorId', '==', userId).get();
+
+        if (coursesSnapshot.empty) {
+            return [];
+        }
+
+        const result = [];
+
+        coursesSnapshot.forEach(doc => {
+            const courseData = doc.data();
+            const courseName = courseData.courseName;
+            const students = courseData.students ? courseData.students.length : 0;
+            const revenue = students * courseData.price;
+
+            result.push({
+                courseId: doc.id,
+                courseName: courseName,
+                students: students,
+                revenue: revenue
+            });
+        });
+
+        result.sort((a, b) => b.students - a.students);
+
+        return result;
+
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        throw new Error('Could not retrieve courses');
+    }
+};

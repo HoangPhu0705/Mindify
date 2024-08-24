@@ -159,3 +159,23 @@ exports.getDashboardData = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getNumStudentsAndRevenue = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const data = await EnrollmentService.getNumStudentsAndRevenue(userId);
+
+        return res.status(200).json({
+            message: "get stats of courses success",
+            success: true,
+            data: data
+        });
+    } catch (error) {
+        console.error('Error in getNumStudentsAndRevenueController:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Could not retrieve courses'
+        });
+    }
+};

@@ -237,4 +237,34 @@ class EnrollmentService {
       return null;
     }
   }
+
+  Future<List<Map<String, dynamic>>?> getNumStudentsAndRevenue(String userId) async {
+    final url = Uri.parse('${AppConstants.ENROLLMENT_API}/stats/$userId');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['success']) {
+          final data = responseData['data'];
+          return data;
+        } else {
+          log('Failed to get dashboard data: ${responseData['message']}');
+          return null;
+        }
+      } else {
+        throw Exception('Failed to load course stats');
+      }
+    } catch (e) {
+      throw Exception('Error fetching course stats: $e');
+    }
+  }
 }

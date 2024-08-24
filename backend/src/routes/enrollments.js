@@ -7,6 +7,7 @@ router.get('/checkEnrollment', EnrollmentController.checkEnrollment);
 router.get('/userEnrollments', EnrollmentController.getUserEnrollments);
 router.get('/downloadedLessons', EnrollmentController.getDownloadedLessons);
 router.get('/dashboard/:userId', EnrollmentController.getDashboardData);
+router.get('/stats/:userId', EnrollmentController.getNumStudentsAndRevenue);
 // router.get('/revenueOfMonth/:userId', EnrollmentController.getRevenueOfMonth);
 
 router.get('/:enrollmentId/notes', NoteController.getAllNotesOfEnrollmentController);
