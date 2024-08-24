@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Card,
   Typography,
@@ -28,20 +30,27 @@ const RequestDetail = () => {
   const [loading, setLoading] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [rejectionContent, setRejectionContent] = useState("");
-  const [alertVisible, setAlertVisible] = useState(false);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
+  const notify = () =>
+    toast("Email sent!", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const response = await axios.get(
-          `/api/users/requests/${requestId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`/api/users/requests/${requestId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setDetails(response.data);
         setIsApproved(response.data.request.status == "Approved");
         setIsRejected(response.data.request.status == "Declined");
@@ -67,11 +76,8 @@ const RequestDetail = () => {
       );
       setIsApproved(true);
       setLoading(false);
-      setAlertVisible(true);
-      setTimeout(() => {
-        setAlertVisible(false);
-        navigate("/request");
-      }, 2000);
+      notify();
+     
     } catch (err) {
       setLoading(false);
       console.error("Error approving request", err);
@@ -80,8 +86,9 @@ const RequestDetail = () => {
 
   const rejectRequest = async () => {
     setLoading(true);
-    console.log(token);
-    console.log(rejectionContent);
+    setPopupOpen(false);
+
+
     try {
       await axios.put(
         `/api/users/requests/${requestId}/reject`,
@@ -94,13 +101,9 @@ const RequestDetail = () => {
       );
 
       setIsRejected(true);
-      setPopupOpen(false);
       setLoading(false);
-      setAlertVisible(true);
-      setTimeout(() => {
-        setAlertVisible(false);
-        navigate("/request");
-      }, 2000); // 2 seconds delay
+      notify();
+    
     } catch (err) {
       setLoading(false);
       console.error("Error rejecting request", err);
@@ -120,7 +123,9 @@ const RequestDetail = () => {
   };
 
   return (
-    <Card className="h-full w-full p-6 shadow-lg">
+    <div className="h-full w-full p-6">
+          <ToastContainer />
+
       <div className="flex flex-row justify-between">
         <Typography variant="h4" color="black" className="dark:text-white mb-4">
           Request Details
@@ -145,9 +150,6 @@ const RequestDetail = () => {
           </Button>
         </div>
       </div>
-
-      {alertVisible && <Alert color="blue">Sent email successfully.</Alert>}
-
       <div className="flex flex-col mt-8">
         <div className="mb-6 flex flex-col items-end gap-4 md:flex-row">
           <div className="w-full">
@@ -284,7 +286,6 @@ const RequestDetail = () => {
               labelProps={{
                 className: "hidden",
               }}
-
               className="w-full placeholder:opacity-100 placeholder:text-black focus:border-t-black border-t-blue-gray-200"
             />
           </div>
@@ -302,7 +303,6 @@ const RequestDetail = () => {
             placeholder={details.request.topicDescription}
             className="placeholder:opacity-100 placeholder:text-black focus:border-t-black border-t-blue-gray-200"
           />
-
         </div>
         <div className="w-full">
           <Typography
@@ -312,16 +312,14 @@ const RequestDetail = () => {
           >
             ID Card
           </Typography>
-          <div className="w-full">
+          <div className="flex justify-center mb-8">
             <img
-              className="h-auto w-1/2 rounded-lg object-cover"
-              src={ details.request.image ||
-                "https://lawnet.vn/uploads/image/2023/07/29/080048220.png"}
-              alt="nature image"
+              className="h-96 w-1/2 rounded-lg object-cover object-center"
+              src={details.request.idCard}
+              alt="User Id"
             />
           </div>
         </div>
-
         <RejectPopup
           open={popupOpen}
           handleOpen={() => setPopupOpen(!popupOpen)}
@@ -329,7 +327,7 @@ const RequestDetail = () => {
           setRejectionContent={setRejectionContent}
         />
       </div>
-    </Card>
+    </div>
   );
 };
 

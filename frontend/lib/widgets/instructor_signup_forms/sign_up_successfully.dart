@@ -42,7 +42,7 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -52,7 +52,7 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
                 style: TextStyle(
                   color: Colors.grey[200],
                   fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -62,7 +62,7 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
                 style: TextStyle(
                   color: Colors.grey[200],
                   fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),

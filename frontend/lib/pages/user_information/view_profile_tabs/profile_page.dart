@@ -51,18 +51,15 @@ class _ProfilePageState extends State<ProfilePage> {
       String photoUrl = userService.getPhotoUrl();
       Provider.of<UserProvider>(context, listen: false).setPhotoUrl(photoUrl);
       await getUserRole();
-      setState(() {
-      
+      setState(() {});
     });
-    });
-    
   }
 
   Future<List<String>> getInfo() async {
     return await enrollmentService.getUserEnrollments(userId!);
   }
 
-   Future<void> getUserRole() async {
+  Future<void> getUserRole() async {
     if (userId != null) {
       final userInfo = await userService.getUserInfoById(userId!);
       role = userInfo?['role'];
@@ -243,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         },
                       ),
-                      if (role == 'teacher') 
+                      if (role == 'teacher')
                         ListTile(
                           leading: Icon(Icons.dashboard),
                           title: Text(

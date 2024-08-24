@@ -19,6 +19,7 @@ import 'package:frontend/utils/colors.dart';
 import 'package:form_page_view/form_page_view.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/toasts.dart';
 import 'package:frontend/widgets/instructor_signup_forms/category_selection.dart';
 import 'package:frontend/widgets/instructor_signup_forms/describe_class.dart';
 import 'package:frontend/widgets/instructor_signup_forms/personal_detail.dart';
@@ -175,7 +176,7 @@ class InstructorSignUpState extends State<InstructorSignUp> {
                 pages: pages,
                 onFormSubmitted: () async {
                   if (idCardPath.isEmpty) {
-                    print("No valid file selected.");
+                    showErrorToast(context, "Id card is required");
                     return;
                   }
                   File file = File(idCardPath);

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/colors.dart';
+import 'package:frontend/utils/spacing.dart';
+import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:googleapis/admob/v1.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -45,36 +48,53 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void _showMonthYearPicker() {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Select Month and Year"),
-        content: SizedBox(
-          height: 350,
-          width: 50,
-          child: SfDateRangePicker(
-            view: DateRangePickerView.year,
-            selectionMode: DateRangePickerSelectionMode.single,
-            onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-              if (args.value is DateTime) {
-                setState(() {
-                  selectedMonthYear = DateFormat('MM-yyyy').format(args.value);
-                  futureData = fetchData(widget.userId);
-                });
-              }
-              Navigator.of(context).pop();
-            },
-            showActionButtons: true,
-            onCancel: () => Navigator.of(context).pop(),
-            onSubmit: (value) => Navigator.of(context).pop(),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
           ),
-        ),
-      );
-    },
-  );
-}
-
+          title: const Text(
+            "Select Month and Year",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          actions: [
+            TextButton(
+              style: AppStyles.secondaryButtonStyle,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+          ],
+          content: SizedBox(
+            height: 350,
+            width: 300,
+            child: SfDateRangePicker(
+              view: DateRangePickerView.year,
+              selectionMode: DateRangePickerSelectionMode.single,
+              monthFormat: 'MMM',
+              enableMultiView: false,
+              allowViewNavigation: false,
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                if (args.value is DateTime) {
+                  setState(() {
+                    selectedMonthYear =
+                        DateFormat('MM-yyyy').format(args.value);
+                    futureData = fetchData(widget.userId);
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today),
+            icon: const Icon(Icons.calendar_today),
             onPressed: _showMonthYearPicker,
           ),
         ],
@@ -116,24 +136,25 @@ class _DashboardPageState extends State<DashboardPage> {
             final int totalEnrollments = snapshot.data!['enrollment'];
             final int totalRevenue = snapshot.data!['revenue'];
 
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: StaggeredGrid.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 2,
-                crossAxisSpacing: 1,
+            return Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Column(
                 children: [
                   _buildDashboardCard(
                     title: 'Enrollments for $selectedMonthYear',
                     value: totalEnrollments > 1
-                        ? '${totalEnrollments.toString()}\nstudents'
-                        : '${totalEnrollments.toString()}\nstudent',
+                        ? '${totalEnrollments.toString()} students'
+                        : '${totalEnrollments.toString()} student',
                     icon: Icons.person,
                     backgroundColor: AppColors.blue,
                   ),
+                  AppSpacing.mediumVertical,
                   _buildDashboardCard(
                     title: 'Revenue for $selectedMonthYear',
-                    value: '${NumberFormat.decimalPattern('vi').format(totalRevenue)} VND',
+                    value:
+                        '${NumberFormat.decimalPattern('vi').format(totalRevenue)} VND',
                     icon: Icons.attach_money,
                     backgroundColor: AppColors.deepSpace,
                   ),
@@ -152,42 +173,64 @@ class _DashboardPageState extends State<DashboardPage> {
     required IconData icon,
     required Color backgroundColor,
   }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: backgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              icon,
-              size: 40,
-              color: Colors.white,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              value,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [backgroundColor.withOpacity(0.7), backgroundColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: backgroundColor.withOpacity(0.4),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: 30,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
