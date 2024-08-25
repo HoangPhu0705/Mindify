@@ -255,7 +255,7 @@ exports.getRevenueOfMonth = async (userId, month, year) => {
 
 exports.getNumStudentsAndRevenue = async (userId) => {
     try {
-        const coursesSnapshot = await CourseCollection.where('authorId', '==', userId).get();
+        const coursesSnapshot = await CourseCollection.where('isPublic', '==', true).where('authorId', '==', userId).get();
 
         if (coursesSnapshot.empty) {
             return [];
@@ -266,7 +266,7 @@ exports.getNumStudentsAndRevenue = async (userId) => {
         coursesSnapshot.forEach(doc => {
             const courseData = doc.data();
             const courseName = courseData.courseName;
-            const students = courseData.students ? courseData.students.length : 0;
+            const students = courseData.students;
             const revenue = students * courseData.price;
 
             result.push({
@@ -276,7 +276,7 @@ exports.getNumStudentsAndRevenue = async (userId) => {
                 revenue: revenue
             });
         });
-
+        console.log(result.length)
         result.sort((a, b) => b.students - a.students);
 
         return result;

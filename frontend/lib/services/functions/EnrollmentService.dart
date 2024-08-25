@@ -252,10 +252,12 @@ class EnrollmentService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-
+        log(responseData['success'].toString());
         if (responseData['success']) {
           final data = responseData['data'];
-          return data;
+          // log(data.toString());
+          log(data.cast<Map<String, dynamic>>().toString());
+          return data.cast<Map<String, dynamic>>();
         } else {
           log('Failed to get dashboard data: ${responseData['message']}');
           return null;

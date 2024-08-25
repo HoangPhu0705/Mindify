@@ -4,8 +4,6 @@ import 'package:frontend/utils/spacing.dart';
 import 'package:frontend/utils/styles.dart';
 import 'package:frontend/widgets/my_loading.dart';
 import 'package:frontend/services/functions/EnrollmentService.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:googleapis/admob/v1.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -34,8 +32,10 @@ class _DashboardPageState extends State<DashboardPage> {
     final month = int.parse(parts[0]);
     final year = int.parse(parts[1]);
     final data = await enrollmentService.getDashboardData(userId, month, year);
+    
     final enrollmentData = data!['enrollments'];
     final revenueData = data['revenue'];
+    final coursesData = await enrollmentService.getNumStudentsAndRevenue(userId);
 
     if (enrollmentData == null || revenueData == null) {
       throw Exception('Failed to fetch data');
@@ -44,6 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return {
       'enrollment': enrollmentData['totalEnrollments'],
       'revenue': revenueData['totalRevenue'],
+      'courses': coursesData, 
     };
   }
 
@@ -135,7 +136,7 @@ class _DashboardPageState extends State<DashboardPage> {
           } else {
             final int totalEnrollments = snapshot.data!['enrollment'];
             final int totalRevenue = snapshot.data!['revenue'];
-
+            final List<Map<String, dynamic>> courses = List<Map<String, dynamic>>.from(snapshot.data!['courses']);  
             return Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 10,
@@ -157,6 +158,25 @@ class _DashboardPageState extends State<DashboardPage> {
                         '${NumberFormat.decimalPattern('vi').format(totalRevenue)} VND',
                     icon: Icons.attach_money,
                     backgroundColor: AppColors.deepSpace,
+                  ),
+                  AppSpacing.mediumVertical,
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: courses.length,
+                      itemBuilder: (context, index) {
+                        final course = courses[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            title: Text(course['courseName']),
+                            subtitle: Text(
+                              '${course['students']} students | Revenue: ${NumberFormat.decimalPattern('vi').format(course['revenue'])} VND',
+                            ),
+                            leading: const Icon(Icons.book),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
