@@ -17,6 +17,7 @@ class PopularCourse extends StatefulWidget {
   State<PopularCourse> createState() => _PopularCourseState();
 }
 
+
 class _PopularCourseState extends State<PopularCourse> {
   @override
   Widget build(BuildContext context) {
@@ -56,3 +57,4 @@ class _PopularCourseState extends State<PopularCourse> {
     );
   }
 }
+
