@@ -244,7 +244,6 @@ class _ViewMyProjectState extends State<ViewMyProject> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.ghostWhite,
       bottomSheet: !canComment
           ? const SizedBox.shrink()
@@ -281,6 +280,8 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                       setState(() {
                         commentController.clear();
                       });
+                      //unfocus the textfield
+                      FocusManager.instance.primaryFocus?.unfocus();
                     },
                     icon: const Icon(
                       Icons.send,
