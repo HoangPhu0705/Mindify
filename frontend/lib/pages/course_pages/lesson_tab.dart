@@ -739,6 +739,15 @@ class LessonTabState extends State<LessonTab> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                         List<DocumentSnapshot> quizzes = snapshot.data!.docs;
+                        if (!widget.isEnrolled && !widget.isPreviewing && widget.instructorId != widget.userId) {
+                          return const Text(
+                            "You need to enroll to access quizzes",
+                            style: TextStyle(
+                              color: AppColors.lightGrey,
+                            ),
+                          );
+                        }
+
                         return ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -754,18 +763,11 @@ class LessonTabState extends State<LessonTab> {
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
                                   ),
-                                  child: widget.isEnrolled
-                                      ? buildQuizCard(
-                                          quizId,
-                                          quizName,
-                                          totalQuestion,
-                                        )
-                                      : const Text(
-                                          "You need to enroll to access quizzes",
-                                          style: TextStyle(
-                                            color: AppColors.lightGrey,
-                                          ),
-                                        ),
+                                  child: buildQuizCard(
+                                    quizId,
+                                    quizName,
+                                    totalQuestion,
+                                  ),
                                 ),
                               ],
                             );
