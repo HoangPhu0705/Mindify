@@ -268,15 +268,16 @@ exports.getNumStudentsAndRevenue = async (userId) => {
             const courseName = courseData.courseName;
             const students = courseData.students;
             const revenue = students * courseData.price;
-
+            const thumbnail = courseData.thumbnail;
             result.push({
                 courseId: doc.id,
+                thumbnail: thumbnail,
                 courseName: courseName,
                 students: students,
                 revenue: revenue
             });
         });
-        console.log(result.length)
+        // console.log(result.length)
         result.sort((a, b) => b.students - a.students);
 
         return result;

@@ -357,7 +357,7 @@ class _ViewMyProjectState extends State<ViewMyProject> {
                           ),
                         ),
                         title: Text(
-                          userInfo!["displayName"],
+                          userInfo!["displayName"] ?? "Mindify member",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

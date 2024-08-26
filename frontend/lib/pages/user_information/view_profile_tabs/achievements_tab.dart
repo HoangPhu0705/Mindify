@@ -45,7 +45,6 @@ class _AchievementTabState extends State<AchievementTab>
 
   @override
   void initState() {
-    log("init ne âs");
     super.initState();
     _loadCourseData();
   }
@@ -161,7 +160,7 @@ class _AchievementTabState extends State<AchievementTab>
         List<String> skillsCovered = course.categories;
         String instructorName = course.instructorName;
         String enrollmentId = _enrollments![index].id;
-        
+        int grade = project!['grade'];
 
         return isDone && isProjectDone
             ? _buildCertificate(
@@ -170,6 +169,7 @@ class _AchievementTabState extends State<AchievementTab>
                 skillsCovered,
                 instructorName,
                 enrollmentId,
+                grade
               )
             : const SizedBox.shrink();
       },
@@ -177,7 +177,7 @@ class _AchievementTabState extends State<AchievementTab>
   }
 
   Widget _buildCertificate(String courseName, String studentName,
-      List<String> skillsCovered, String instructorName, String certificateId) {
+      List<String> skillsCovered, String instructorName, String certificateId, int grade) {
     return Container(
       padding: const EdgeInsets.all(12.0),
       margin: const EdgeInsets.only(bottom: 16.0),
@@ -231,6 +231,15 @@ class _AchievementTabState extends State<AchievementTab>
             'Course completed by: $studentName',
             style: const TextStyle(
               fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          AppSpacing.mediumVertical,
+          Text(
+            'Grade: $grade',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           ),

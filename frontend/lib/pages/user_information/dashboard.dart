@@ -32,10 +32,11 @@ class _DashboardPageState extends State<DashboardPage> {
     final month = int.parse(parts[0]);
     final year = int.parse(parts[1]);
     final data = await enrollmentService.getDashboardData(userId, month, year);
-    
+
     final enrollmentData = data!['enrollments'];
     final revenueData = data['revenue'];
-    final coursesData = await enrollmentService.getNumStudentsAndRevenue(userId);
+    final coursesData =
+        await enrollmentService.getNumStudentsAndRevenue(userId);
 
     if (enrollmentData == null || revenueData == null) {
       throw Exception('Failed to fetch data');
@@ -44,7 +45,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return {
       'enrollment': enrollmentData['totalEnrollments'],
       'revenue': revenueData['totalRevenue'],
-      'courses': coursesData, 
+      'courses': coursesData,
     };
   }
 
@@ -136,7 +137,8 @@ class _DashboardPageState extends State<DashboardPage> {
           } else {
             final int totalEnrollments = snapshot.data!['enrollment'];
             final int totalRevenue = snapshot.data!['revenue'];
-            final List<Map<String, dynamic>> courses = List<Map<String, dynamic>>.from(snapshot.data!['courses']);  
+            final List<Map<String, dynamic>> courses =
+                List<Map<String, dynamic>>.from(snapshot.data!['courses']);
             return Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 10,
@@ -160,6 +162,15 @@ class _DashboardPageState extends State<DashboardPage> {
                     backgroundColor: AppColors.deepSpace,
                   ),
                   AppSpacing.mediumVertical,
+                  const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text("Top courses",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        )),
+                  ),
+                  AppSpacing.mediumVertical,
                   Expanded(
                     child: ListView.builder(
                       itemCount: courses.length,
@@ -167,12 +178,20 @@ class _DashboardPageState extends State<DashboardPage> {
                         final course = courses[index];
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 8),
+                          color: Colors.transparent,
+                          elevation: 0,
                           child: ListTile(
-                            title: Text(course['courseName']),
+                            title: Text(
+                              course['courseName'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  overflow: TextOverflow.ellipsis),
+                              maxLines: 2,
+                            ),
                             subtitle: Text(
                               '${course['students']} students | Revenue: ${NumberFormat.decimalPattern('vi').format(course['revenue'])} VND',
                             ),
-                            leading: const Icon(Icons.book),
+                            leading: Image.network(course['thumbnail']),
                           ),
                         );
                       },

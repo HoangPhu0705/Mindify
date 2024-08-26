@@ -259,7 +259,6 @@ class EnrollmentService {
           log(data.cast<Map<String, dynamic>>().toString());
           return data.cast<Map<String, dynamic>>();
         } else {
-          log('Failed to get dashboard data: ${responseData['message']}');
           return null;
         }
       } else {
