@@ -160,7 +160,6 @@ class _AchievementTabState extends State<AchievementTab>
         List<String> skillsCovered = course.categories;
         String instructorName = course.instructorName;
         String enrollmentId = _enrollments![index].id;
-        int grade = project!['grade'];
 
         return isDone && isProjectDone
             ? _buildCertificate(
@@ -169,15 +168,20 @@ class _AchievementTabState extends State<AchievementTab>
                 skillsCovered,
                 instructorName,
                 enrollmentId,
-                grade
+                project['grade'],
               )
             : const SizedBox.shrink();
       },
     );
   }
 
-  Widget _buildCertificate(String courseName, String studentName,
-      List<String> skillsCovered, String instructorName, String certificateId, int grade) {
+  Widget _buildCertificate(
+      String courseName,
+      String studentName,
+      List<String> skillsCovered,
+      String instructorName,
+      String certificateId,
+      dynamic grade) {
     return Container(
       padding: const EdgeInsets.all(12.0),
       margin: const EdgeInsets.only(bottom: 16.0),

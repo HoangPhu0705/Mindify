@@ -96,7 +96,8 @@ class _SignUpState extends State<SignUp> {
       // Add to Firestore
       Map<String, dynamic> userData = {
         'id': uid,
-        'displayName': FirebaseAuth.instance.currentUser!.displayName ?? "Mindify Member",
+        'displayName':
+            FirebaseAuth.instance.currentUser!.displayName ?? "Mindify Member",
         'email': email,
         'role': 'user',
         'requestSent': false,

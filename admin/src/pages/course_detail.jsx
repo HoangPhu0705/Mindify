@@ -85,7 +85,7 @@ const CourseDetail = () => {
           },
         }
       );
-      fetchCourseDetail();
+      navigate("/courseRequest");
     } catch (error) {
       console.error("Error rejecting course: ", error);
       if (error.response && error.response.status === 401) {

@@ -12,6 +12,7 @@ import {
   Spinner,
   Chip,
   IconButton,
+  Badge,
 } from "@material-tailwind/react";
 import {
   Tabs,
@@ -35,7 +36,7 @@ const COURSE_TABLE_HEAD = [
 const CourseRequestManagement = () => {
   const [requests, setRequests] = useState([]);
   const [requestPage, setRequestPage] = useState({
-    limit: 5,
+    limit: 10,
     startAfter: null,
   });
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,6 +49,7 @@ const CourseRequestManagement = () => {
   ];
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -72,7 +74,9 @@ const CourseRequestManagement = () => {
       const { requests, totalCount } = response.data;
       setRequests(requests);
       setFilteredRequests(requests);
-
+      setPendingCount(
+        requests.filter((req) => req.status === "Pending").length
+      );
       setTotalPages(Math.ceil(totalCount / requestPage.limit));
     } catch (error) {
       console.error("Error fetching requests: ", error);
@@ -221,18 +225,14 @@ const CourseRequestManagement = () => {
                         "You can only delete course requests that are Approved or Declined."
                       );
                     }
-                    
                   }}
-
                   className={`rounded-lg ${
-                    item.status === "Approved" ||
-                    item.status === "Declined"
+                    item.status === "Approved" || item.status === "Declined"
                       ? "bg-red-500"
                       : "bg-gray-300 cursor-not-allowed"
                   }`}
                   disabled={
-                    item.status !== "Approved" &&
-                    item.status !== "Declined"
+                    item.status !== "Approved" && item.status !== "Declined"
                   }
                 >
                   <TrashIcon className="text-white size-6" />
@@ -261,11 +261,20 @@ const CourseRequestManagement = () => {
                   value={value}
                   onClick={() => setSelectedTab(value)}
                 >
-                  <div className="px-4">{label}</div>
+                  {value === "pending" && pendingCount > 0 ? (
+                    <div className="relative">
+                      <Badge content={pendingCount} className="absolute top-3  h-2 w-2 ">
+                        <div className="px-4">{label}</div>
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="px-4">{label}</div>
+                  )}
                 </Tab>
               ))}
             </TabsHeader>
           </Tabs>
+
           <div className="flex items-center">
             <Typography
               variant="h6"

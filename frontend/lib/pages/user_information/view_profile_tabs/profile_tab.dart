@@ -77,17 +77,31 @@ class _ProfileTabState extends State<ProfileTab>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Unpublish course"),
-          content:
-              const Text("Are you sure you want to unpublish this course?"),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: const Text(
+            "Unpublish course",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: const Text(
+            "Are you sure you want to unpublish this course?",
+            style: TextStyle(
+              color: AppColors.grey,
+            ),
+          ),
           actions: [
             TextButton(
+              style: AppStyles.secondaryButtonStyle,
               onPressed: () {
                 Navigator.of(context).pop();
               },
               child: const Text("Cancel"),
             ),
             TextButton(
+              style: AppStyles.primaryButtonStyle,
               onPressed: () async {
                 Navigator.of(context).pop();
                 await unpublishCourse(courseId);
