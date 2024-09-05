@@ -71,7 +71,7 @@ class _SendSuccessfullyState extends State<SendSuccessfully> {
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => HomePage(),
+                        builder: (context) => const MainPage(),
                       ),
                       (Route<dynamic> route) => false);
                 },

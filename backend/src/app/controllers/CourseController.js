@@ -23,6 +23,8 @@ exports.searchCoursesAndUsers = async (req, res) => {
   }
 }
 
+
+
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await CourseService.getAllCourses();

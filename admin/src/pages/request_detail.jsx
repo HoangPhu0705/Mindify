@@ -314,7 +314,7 @@ const RequestDetail = () => {
           </Typography>
           <div className="flex justify-center mb-8">
             <img
-              className="h-96 w-1/2 rounded-lg object-cover object-center"
+              className="h-96 w-1/2 rounded-lg object-contain object-center"
               src={details.request.idCard}
               alt="User Id"
             />
