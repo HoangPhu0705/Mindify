@@ -173,7 +173,11 @@ class _DiscussionState extends State<Discussion> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${commentDocs.length} Discussions',
+                            // '${commentDocs.length} Discussions'
+                            commentDocs.length > 1
+                        ? '${commentDocs.length.toString()} Discussions'
+                        : '${commentDocs.length.toString()} Discussion'
+                        ,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium!

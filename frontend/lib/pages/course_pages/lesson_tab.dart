@@ -396,7 +396,12 @@ class LessonTabState extends State<LessonTab> {
                       ),
                       AppSpacing.smallHorizontal,
                       Text(
-                        "${widget.course.students} students",
+                        // totalEnrollments > 1
+                        // ? '${totalEnrollments.toString()} students'
+                        // : '${totalEnrollments.toString()} student',
+                        widget.course.students > 1
+                        ? '${widget.course.students} students'
+                        : "${widget.course.students} student",
                       ),
                     ],
                   ),
