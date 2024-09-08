@@ -109,11 +109,14 @@ exports.approveRequest = async (requestId) => {
       status: "Approved",
     });
 
+    const authorUserRecord = await admin.auth().getUser(authorId);
+    const authorName = authorUserRecord.displayName;
+
     const userDoc = await UserCollection.doc(authorId).get();
     if (userDoc.exists) {
       const userData = userDoc.data();
       const deviceTokens = userData.deviceTokens;
-      console.log(deviceTokens);
+      const followers = userData.followerUser;
 
       if (deviceTokens && deviceTokens.length > 0) {
         const message = {
@@ -123,28 +126,66 @@ exports.approveRequest = async (requestId) => {
           },
           tokens: deviceTokens,
         };
-        
+
         try {
-          // Gửi thông báo tới danh sách token
+          // Send notification
           const response = await messaging.sendMulticast(message);
           console.log('Successfully sent message:', response);
         } catch (sendError) {
           console.error('Error sending message:', sendError);
         }
-        
       } else {
-        console.log('No device tokens found for user.');
+        console.log('No device tokens found for the author.');
       }
+
+      // Notify to followers
+      if (followers && followers.length > 0) {
+        for (const followerId of followers) {
+          console.log(followerId)
+          const followerDoc = await UserCollection.doc(followerId).get();
+          if (followerDoc.exists) {
+            const followerData = followerDoc.data();
+            const followerDeviceTokens = followerData.deviceTokens;
+            console.log(followerDeviceTokens)
+            if (followerDeviceTokens && followerDeviceTokens.length > 0) {
+              const followerMessage = {
+                notification: {
+                  title: 'New Course Published',
+                  body: `${authorName} has published a new course: ${courseName}. Check it out now!`,
+                },
+                tokens: followerDeviceTokens,
+              };
+
+              try {
+                const followerResponse = await messaging.sendMulticast(followerMessage);
+                console.log('Successfully sent message to follower:', followerResponse);
+              } catch (sendError) {
+                console.error('Error sending message to follower:', sendError);
+              }
+            } else {
+              console.log(`No device tokens found for follower: ${followerId}`);
+            }
+
+            // save noti to followers
+            await UserCollection.doc(followerId).collection('notifications').add({
+              title: 'New Course Published',
+              body: `${authorName} has published a new course: ${courseName}. Check it out now!`,
+              timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            });
+          }
+        }
+      }
+
+      // save noti to firestore
+      await UserCollection.doc(authorId).collection('notifications').add({
+        title: 'Course Approved',
+        body: `Your course: ${courseName} has been approved.`,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      console.log('Request approved successfully');
+      return { message: 'Request approved successfully' };
     }
-
-    await UserCollection.doc(authorId).collection('notifications').add({
-      title: 'Course Approved',
-      body: `Your course: ${courseName} has been approved.`,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    console.log('Request approved successfully');
-    return { message: 'Request approved successfully' };
   } catch (error) {
     console.error(`Error happened when approving request: ${error.message}`);
     throw new Error(`Error happened when approving request: ${error.message}`);
