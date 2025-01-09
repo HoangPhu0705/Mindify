@@ -29,7 +29,7 @@ Mindify is a cross-platform online learning and teaching application designed to
 
 - **Personalized Learning**: Users can customize their learning path based on preferences and skill levels.
 - **Comprehensive Learning Tools**: Includes video lectures, quizzes, study materials, and forums for discussions.
-- **Cross-Platform Support**: Available on mobile (iOS, Android) and web platforms for seamless access anywhere.
+- **Cross-Platform Support**: Available on mobile (iOS, Android).
 - **Admin Management**: Admin dashboard to manage users, courses, and requests.
 
 ## Tech Stack
